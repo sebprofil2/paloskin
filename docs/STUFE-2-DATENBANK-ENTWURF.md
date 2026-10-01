@@ -1,6 +1,6 @@
-# Stufe 2: eigene Buchungsablage auf Hetzner, Entwurf des Schemas zur Freigabe
+# Stufe 2: eigene Buchungsablage auf Hetzner, Schema (festgeschrieben)
 
-Stand: 1. Oktober 2026. Noch nichts gebaut. SQLite mit persistentem Volume zum Start, Schema so angelegt, dass es später unverändert nach PostgreSQL wandern kann (keine SQLite-Sonderfunktionen, Zeitstempel als ISO-Text in UTC, Kennungen als Text).
+Stand: 2. Oktober 2026, Entscheidungen von Dr. Vogel eingearbeitet. Noch nichts gebaut, Umsetzung nach dem Umzug. SQLite mit persistentem Volume zum Start, Schema so angelegt, dass es später unverändert nach PostgreSQL wandern kann (keine SQLite-Sonderfunktionen, Zeitstempel als ISO-Text in UTC, Kennungen als Text).
 
 ## Grundsätze
 
@@ -34,20 +34,23 @@ CREATE TABLE buchung (
   id              TEXT PRIMARY KEY,             -- ULID
   buchungsnummer  TEXT NOT NULL UNIQUE,         -- PS-XXXXXX, sichtbar für den Kunden
   kunde_id        TEXT NOT NULL REFERENCES kunde (id),
-  beginn_utc      TEXT NOT NULL,                -- ISO 8601 UTC
+  erstellt_am     TEXT NOT NULL,                -- Zeitpunkt der Buchung, UTC, wird nie überschrieben, auch nicht beim Verschieben
+  beginn_utc      TEXT NOT NULL,                -- Beginn des Termins, UTC; der Vorlauf ist beginn_utc minus erstellt_am, berechnet, nicht gespeichert
   ende_utc        TEXT NOT NULL,
   dauer_min       INTEGER NOT NULL CHECK (dauer_min BETWEEN 10 AND 240),
   personen        INTEGER NOT NULL DEFAULT 1 CHECK (personen IN (1,2)),
+  erster_besuch   INTEGER NOT NULL CHECK (erster_besuch IN (0,1)),  -- 1 ja, 0 nein
   besuch          TEXT NOT NULL CHECK (besuch IN ('erstbesuch','folgebesuch','kontrolle')),
   status          TEXT NOT NULL CHECK (status IN ('reserviert','bestaetigt','abgesagt','verschoben','erschienen','nicht_erschienen')),
   leistungscode   TEXT NOT NULL,                -- BOT+LDN+P2
   auswahl_json    TEXT NOT NULL,                -- Selection wie vom Server geprüft (Zonen, Sonstiges, Lachs-DNA, ...)
   preis_richtwert INTEGER,                      -- Euro brutto, Summe der Richtwerte, NULL bei Beratung
   einwilligung_am TEXT NOT NULL,                -- Zeitpunkt der Einwilligung
-  quelle          TEXT NOT NULL DEFAULT 'website', -- website, whatsapp, telefon, vor_ort
+  kanal           TEXT NOT NULL CHECK (kanal IN ('online','whatsapp','vor_ort')),
+  sprache         TEXT NOT NULL CHECK (sprache IN ('de','en','es','fr','pt')),  -- Sprache der Buchung
+  geraet          TEXT NOT NULL CHECK (geraet IN ('mobil','desktop','unbekannt')), -- grob aus dem User-Agent, keine Kennung
   kalender_event_id TEXT,                       -- Google-Ereignis, falls synchronisiert
   kalender_sync_am  TEXT,
-  erstellt_am     TEXT NOT NULL,
   geaendert_am    TEXT NOT NULL
 );
 CREATE INDEX buchung_kunde ON buchung (kunde_id);
@@ -80,14 +83,16 @@ CREATE TABLE notiz (
 );
 CREATE INDEX notiz_kunde ON notiz (kunde_id);
 
--- Statusverlauf je Buchung, für Nachvollziehbarkeit und CRM
+-- Statusverlauf je Buchung, für Nachvollziehbarkeit und CRM; bei Verschiebungen alter und neuer Beginn
 CREATE TABLE buchung_status (
-  id          TEXT PRIMARY KEY,
-  buchung_id  TEXT NOT NULL REFERENCES buchung (id) ON DELETE CASCADE,
-  von_status  TEXT,
-  zu_status   TEXT NOT NULL,
-  grund       TEXT,                             -- kunde_whatsapp, studio, system_timeout, ...
-  erstellt_am TEXT NOT NULL
+  id             TEXT PRIMARY KEY,
+  buchung_id     TEXT NOT NULL REFERENCES buchung (id) ON DELETE CASCADE,
+  von_status     TEXT,
+  zu_status      TEXT NOT NULL,
+  von_beginn_utc TEXT,                          -- nur bei Verschiebung: alter Beginn
+  zu_beginn_utc  TEXT,                          -- nur bei Verschiebung: neuer Beginn
+  grund          TEXT,                          -- kunde_whatsapp, studio, system_timeout, ...
+  erstellt_am    TEXT NOT NULL
 );
 CREATE INDEX buchung_status_buchung ON buchung_status (buchung_id);
 
@@ -119,8 +124,14 @@ CREATE TABLE begrenzung (
 - Zugriff nur aus der App; keine Freigabe nach außen.
 - Umzug nach PostgreSQL: gleiche Tabellen, `belegung` als Ausschlussbedingung auf Zeitbereich (`EXCLUDE USING gist (zeitraum WITH &&)`).
 
-## Offene Entscheidungen
+## Entscheidungen (2. Oktober 2026)
 
-1. Einheit 10 Minuten (passt zu 20-, 30-, 40-, 50-Minuten-Terminen) oder 5 Minuten?
-2. Soll der Hauptkalender weiter per frei/belegt gelesen werden, oder trägt Dr. Vogel private Blockaden künftig in „Palo Skin Termine“ ein?
-3. Kunde erkennen über Handynummer (Vorschlag) oder E-Mail?
+1. Zeiteinheit 10 Minuten (`belegung`).
+2. Hauptkalender weiterhin nur frei/belegt; er wird bei der Berechnung freier Zeiten gelesen, nie beschrieben.
+3. Kunde wird über die Handynummer erkannt (normalisiert, E.164, eindeutiger Index), E-Mail als zweites Merkmal (Index, kein Eindeutigkeitszwang).
+
+## Auswertung des Vorlaufs
+
+- Vorlauf = `beginn_utc` minus `erstellt_am`, zur Laufzeit berechnet. `erstellt_am` wird nie überschrieben; beim Verschieben ändert sich nur `beginn_utc`, der alte und der neue Beginn stehen in `buchung_status`.
+- Ohne Nachfrage beim Kunden erfasst: `kanal`, `sprache`, `personen`, `erster_besuch`, `geraet` (nur mobil, desktop oder unbekannt aus dem User-Agent, keine Kennung, kein Browsername).
+- Rückwirkend für Stufe 1: Die Google-Ereignisse liefern `created` (Zeitpunkt des Eintragens, UTC) und `start.dateTime`; geprüft am 2. Oktober 2026 mit einem Probetermin (`created: 2026-10-01T22:09:47.000Z`). Der Vorlauf der ersten Buchungen lässt sich daraus berechnen; beim Übernehmen in die Datenbank wird `created` zu `erstellt_am`.
