@@ -40,3 +40,19 @@ Stand: 1. Oktober 2026 (Berliner Zeit). Dieses Repository enthält die fertige s
 - Studionummer (WhatsApp, Anruf, SMS): +49 151 58872566.
 - Preise brutto: 1 Zone 120 €, 2 Zonen 210 €, 3 Zonen 300 €, jede weitere Zone 80 € (nur mit 3 Zonen), Kaumuskel 280 €, Nefertiti-Lift 280 €, Lachs-DNA 280 €, Lachs-DNA Viererpaket 1.000 €. Beratung ohne Preisangabe.
 - Keine langen Gedankenstriche in sichtbaren Texten, keine Abkürzungen, durchgehend Siezen.
+
+## Stand nach dem Einbau der Buchung (1. Oktober 2026, abends)
+
+Gebaut nach dem „Bauauftrag: Buchungsseite Palo Skin mit echtem Google-Kalender“, Fassung 2, und dem Entwurf Version 26.
+
+1. Next.js 16 liegt im Wurzelverzeichnis. `public` ist unverändert, nur `public/booking/index.html` ist nach `content/booking-interim.html` gewandert und wird von `/booking` ohne Testcode weiterhin ausgeliefert (`components/InterimBooking.tsx`).
+2. `vercel.json` enthält nur noch Framework und Region `fra1`. Weiterleitungen, Umschreibungen und Kopfzeilen stehen in `next.config.ts`.
+3. Zugang im Testbetrieb: `proxy.ts` setzt bei gültigem `?test=` ein Cookie, `app/booking/page.tsx` prüft Cookie oder Adresse. Die Serverrouten unter `app/api` prüfen dasselbe (`lib/access.ts`).
+4. Motoren in `lib/engine`: `MockEngine` (erfundene Zeiten, Buchungen im Speicher) und `GoogleCalendarEngine` (Dienstkonto über `google-auth-library`, REST-Aufrufe an die Calendar API). `cancel` und `reschedule` werfen „noch nicht gebaut“.
+5. Dauer in `lib/duration.ts`, Raster und Puffer in `lib/slots.ts`, Zeitrechnung in `lib/time.ts` (nur Europe/Berlin, Tests für den 25. Oktober 2026 in `lib/__tests__`).
+6. Texte in `lib/texts.ts`: Block T wörtlich aus dem Entwurf, Block X mit Ergänzungen für die echte Seite (Testhinweis, Buchungsnummer, Dauer, unklarer Ausgang, Konflikt, Absage per WhatsApp, Fußzeile). Die Übersetzungen von Block X sind von der KI und müssen gegengelesen werden.
+7. Bewusst weggelassen gegenüber dem Entwurf: der Satz „Die Bestätigung mit Kalendereinladung geht an …“ auf der Bestätigungsseite, weil in Stufe 1 keine E-Mail und keine Einladung verschickt wird. Ebenso der Hinweis zum Link in der Bestätigung; stattdessen steht dort der Satz zum Absagen per WhatsApp oder Anruf.
+8. Meldung an Dr. Vogel bei unklarem Buchungsausgang: deutlich markierte Zeile im Protokoll des Hostings und, falls `OWNER_WEBHOOK_URL` gesetzt ist, ein POST mit JSON. Eine E-Mail-Benachrichtigung gibt es noch nicht.
+9. Begrenzung auf sechs Buchungsversuche pro Stunde und Anschluss, im Speicher der Instanz. In Stufe 2 in die Datenbank verlegen.
+10. Vor Google-Start: Dienstkonto anlegen, Calendar API aktivieren, die drei Kalender dem Dienstkonto freigeben (offen: Termine lesen, Termine: lesen und ändern, Hauptkalender: nur frei/belegt), Variablen aus `.env.example` auf Vercel setzen, `BOOKING_ENGINE=google`.
+11. Vor dem ersten echten Kunden: Abschnitte 2 und 4 der Datenschutzerklärung umschreiben (Vercel statt GitHub Pages, Google Kalender mit Dienstkonto statt cal.com), siehe oben; danach `TEST_MODE=false`.
