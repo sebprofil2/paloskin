@@ -2,8 +2,8 @@
 window.PALO = window.PALO || {};
 window.PALO.HOME = {
 de:{
-  title:"Palo Skin by Dr. Vogel · Botulinum und Skin Booster in Berlin Prenzlauer Berg",
-  metaDesc:"Palo Skin by Dr. Vogel: ärztliche Botulinum-Behandlungen und Skin Booster in Berlin Prenzlauer Berg. Termin online buchen. Hagenauer Straße 14, 10435 Berlin.",
+  title:"Palo Skin | Dr. med. Sebastian Vogel, Berlin",
+  metaDesc:"Palo Skin by Dr. med. Sebastian Vogel: ärztliche Botulinum-Behandlungen und Skin Booster in Berlin Prenzlauer Berg. Termin online buchen. Hagenauer Straße 14, 10435 Berlin.",
   navPrices:"Behandlungen und Preise", navHow:"Ablauf", navStudio:"Studio", navFaq:"Fragen",
   book:"Termin buchen", bookNow:"Termin online buchen", whatsapp:"WhatsApp schreiben",
   h1:"Goodbye wrinkles.",
@@ -21,7 +21,7 @@ de:{
   s2H:"Gespräch und Behandlung", s2P:"Vor der ersten Behandlung klären wir Sie auf und beantworten alle Ihre Fragen.",
   studioH:"Das Studio",
   studioP:"Ein ruhiger Raum in Prenzlauer Berg, Behandlung ausschließlich durch Dr. med. Sebastian Vogel. Kein Wartezimmer, keine Fließbandtermine.",
-  studioP2:"Dr. Vogel ist Arzt und behandelt Sie in Ihrer Sprache: Deutsch, Englisch, Spanisch, Französisch oder Portugiesisch.",
+  studioP2:"Dr. med. Sebastian Vogel ist Arzt und behandelt Sie in Ihrer Sprache: Deutsch, Englisch, Spanisch, Französisch oder Portugiesisch.",
   faqH:"Häufige Fragen",
   q1:"Was ist eine Zone?", a1:"Eine Zone ist ein Behandlungsbereich, zum Beispiel die Zornesfalte, die Stirn oder die Krähenfüße (beide Seiten zusammen). Welche Zonen sinnvoll sind, entscheiden wir gemeinsam vor Ort.",
   q2:"Tut die Behandlung weh?", a2:"Die Einstiche mit sehr feinen Nadeln sind kurz und gut auszuhalten, eine Betäubung ist nicht nötig. Direkt danach können Sie wieder zur Arbeit oder zum Sport, kleine Rötungen verschwinden meist innerhalb einer Stunde.",
@@ -32,8 +32,8 @@ de:{
   imprint:"Impressum", privacy:"Datenschutz"
 },
 en:{
-  title:"Palo Skin by Dr. Vogel · Botulinum and skin boosters in Berlin Prenzlauer Berg",
-  metaDesc:"Palo Skin by Dr. Vogel: physician-led botulinum treatments and skin boosters in Berlin Prenzlauer Berg. Book online. Hagenauer Straße 14, 10435 Berlin.",
+  title:"Palo Skin | Dr. med. Sebastian Vogel, Berlin",
+  metaDesc:"Palo Skin by Dr. med. Sebastian Vogel: physician-led botulinum treatments and skin boosters in Berlin Prenzlauer Berg. Book online. Hagenauer Straße 14, 10435 Berlin.",
   navPrices:"Treatments and prices", navHow:"How it works", navStudio:"Studio", navFaq:"Questions",
   book:"Book appointment", bookNow:"Book online", whatsapp:"Message on WhatsApp",
   h1:"Goodbye wrinkles.",
@@ -51,7 +51,7 @@ en:{
   s2H:"Consultation and treatment", s2P:"Before your first treatment we inform you and answer all your questions.",
   studioH:"The studio",
   studioP:"A calm space in Prenzlauer Berg, treatments exclusively by Dr. med. Sebastian Vogel. No waiting room, no conveyor-belt appointments.",
-  studioP2:"Dr. Vogel is a physician and treats you in your language: German, English, Spanish, French or Portuguese.",
+  studioP2:"Dr. med. Sebastian Vogel is a physician and treats you in your language: German, English, Spanish, French or Portuguese.",
   faqH:"Frequently asked questions",
   q1:"What is an area?", a1:"An area is one treatment region, for example the frown lines, the forehead or the crow’s feet (both sides together). We decide together at your appointment which areas make sense.",
   q2:"Does it hurt?", a2:"The injections with very fine needles are brief and easy to tolerate; no anaesthetic is needed. You can go straight back to work or sport, and small red marks usually fade within an hour.",
@@ -62,8 +62,8 @@ en:{
   imprint:"Legal notice", privacy:"Privacy"
 },
 es:{
-  title:"Palo Skin by Dr. Vogel · Toxina botulínica y skin boosters en Berlín Prenzlauer Berg",
-  metaDesc:"Palo Skin by Dr. Vogel: tratamientos médicos con toxina botulínica y skin boosters en Berlín Prenzlauer Berg. Cita online. Hagenauer Straße 14, 10435 Berlín.",
+  title:"Palo Skin | Dr. med. Sebastian Vogel, Berlín",
+  metaDesc:"Palo Skin by Dr. med. Sebastian Vogel: tratamientos médicos con toxina botulínica y skin boosters en Berlín Prenzlauer Berg. Cita online. Hagenauer Straße 14, 10435 Berlín.",
   navPrices:"Tratamientos y precios", navHow:"Cómo funciona", navStudio:"Estudio", navFaq:"Preguntas",
   book:"Reservar cita", bookNow:"Reservar cita online", whatsapp:"Escribir por WhatsApp",
   h1:"Goodbye wrinkles.",
@@ -81,7 +81,7 @@ es:{
   s2H:"Consulta y tratamiento", s2P:"Antes del primer tratamiento le informamos y respondemos a todas sus preguntas.",
   studioH:"El estudio",
   studioP:"Un espacio tranquilo en Prenzlauer Berg, tratamientos exclusivamente a cargo del Dr. med. Sebastian Vogel. Sin sala de espera ni citas en cadena.",
-  studioP2:"El Dr. Vogel es médico y le atiende en su idioma: alemán, inglés, español, francés o portugués.",
+  studioP2:"El Dr. med. Sebastian Vogel es médico y le atiende en su idioma: alemán, inglés, español, francés o portugués.",
   faqH:"Preguntas frecuentes",
   q1:"¿Qué es una zona?", a1:"Una zona es un área de tratamiento, por ejemplo el entrecejo, la frente o las patas de gallo (ambos lados juntos). Decidimos juntos en la cita qué zonas tienen sentido.",
   q2:"¿Duele el tratamiento?", a2:"Los pinchazos con agujas muy finas son breves y se toleran bien; no hace falta anestesia. Puede volver al trabajo o al deporte de inmediato, y las pequeñas rojeces desaparecen normalmente en una hora.",
@@ -92,8 +92,8 @@ es:{
   imprint:"Aviso legal", privacy:"Privacidad"
 },
 fr:{
-  title:"Palo Skin by Dr. Vogel · Toxine botulique et skin boosters à Berlin Prenzlauer Berg",
-  metaDesc:"Palo Skin by Dr. Vogel : traitements médicaux à la toxine botulique et skin boosters à Berlin Prenzlauer Berg. Rendez-vous en ligne. Hagenauer Straße 14, 10435 Berlin.",
+  title:"Palo Skin | Dr. med. Sebastian Vogel, Berlin",
+  metaDesc:"Palo Skin by Dr. med. Sebastian Vogel : traitements médicaux à la toxine botulique et skin boosters à Berlin Prenzlauer Berg. Rendez-vous en ligne. Hagenauer Straße 14, 10435 Berlin.",
   navPrices:"Soins et tarifs", navHow:"Déroulement", navStudio:"Studio", navFaq:"Questions",
   book:"Prendre rendez-vous", bookNow:"Réserver en ligne", whatsapp:"Écrire sur WhatsApp",
   h1:"Goodbye wrinkles.",
@@ -111,7 +111,7 @@ fr:{
   s2H:"Entretien et soin", s2P:"Avant le premier soin, nous vous informons et répondons à toutes vos questions.",
   studioH:"Le studio",
   studioP:"Un espace calme à Prenzlauer Berg, soins réalisés exclusivement par le Dr. med. Sebastian Vogel. Pas de salle d’attente, pas de rendez-vous à la chaîne.",
-  studioP2:"Le Dr. Vogel est médecin et vous reçoit dans votre langue : allemand, anglais, espagnol, français ou portugais.",
+  studioP2:"Le Dr. med. Sebastian Vogel est médecin et vous reçoit dans votre langue : allemand, anglais, espagnol, français ou portugais.",
   faqH:"Questions fréquentes",
   q1:"Qu’est-ce qu’une zone ?", a1:"Une zone est une région traitée, par exemple la ride du lion, le front ou les pattes d’oie (les deux côtés ensemble). Nous décidons ensemble lors du rendez-vous des zones utiles.",
   q2:"Est-ce que ça fait mal ?", a2:"Les injections avec des aiguilles très fines sont brèves et bien supportées ; aucune anesthésie n’est nécessaire. Vous pouvez retourner au travail ou au sport tout de suite, et les petites rougeurs disparaissent en général en une heure.",
@@ -122,8 +122,8 @@ fr:{
   imprint:"Mentions légales", privacy:"Confidentialité"
 },
 pt:{
-  title:"Palo Skin by Dr. Vogel · Toxina botulínica e skin boosters em Berlim Prenzlauer Berg",
-  metaDesc:"Palo Skin by Dr. Vogel: tratamentos médicos com toxina botulínica e skin boosters em Berlim Prenzlauer Berg. Agendamento online. Hagenauer Straße 14, 10435 Berlim.",
+  title:"Palo Skin | Dr. med. Sebastian Vogel, Berlim",
+  metaDesc:"Palo Skin by Dr. med. Sebastian Vogel: tratamentos médicos com toxina botulínica e skin boosters em Berlim Prenzlauer Berg. Agendamento online. Hagenauer Straße 14, 10435 Berlim.",
   navPrices:"Tratamentos e preços", navHow:"Como funciona", navStudio:"Estúdio", navFaq:"Perguntas",
   book:"Agendar", bookNow:"Agendar online", whatsapp:"Falar pelo WhatsApp",
   h1:"Goodbye wrinkles.",
@@ -141,7 +141,7 @@ pt:{
   s2H:"Conversa e tratamento", s2P:"Antes do primeiro tratamento, orientamos você e respondemos a todas as suas perguntas.",
   studioH:"O estúdio",
   studioP:"Um espaço tranquilo em Prenzlauer Berg, tratamentos exclusivamente com o Dr. med. Sebastian Vogel. Sem sala de espera, sem atendimento em série.",
-  studioP2:"O Dr. Vogel é médico e atende você no seu idioma: alemão, inglês, espanhol, francês ou português.",
+  studioP2:"O Dr. med. Sebastian Vogel é médico e atende você no seu idioma: alemão, inglês, espanhol, francês ou português.",
   faqH:"Perguntas frequentes",
   q1:"O que é uma área?", a1:"Uma área é uma região de tratamento, por exemplo entre as sobrancelhas, a testa ou os pés de galinha (os dois lados juntos). Definimos juntos na consulta quais áreas fazem sentido.",
   q2:"O tratamento dói?", a2:"As aplicações com agulhas muito finas são rápidas e bem toleradas; não é preciso anestesia. Você pode voltar ao trabalho ou ao esporte em seguida, e pequenas vermelhidões somem normalmente em uma hora.",
