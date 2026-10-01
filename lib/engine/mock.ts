@@ -120,7 +120,7 @@ export class MockEngine implements BookingEngine {
     if (!free) return { status: "conflict" };
     const ref = bookingRefFor(i.requestId);
     const endMs = i.start.getTime() + i.durationMinutes * 60000;
-    const description = buildDescription({ bookingRef: ref, selection: i.selection, durationMinutes: i.durationMinutes, customer: i.customer, lang: i.lang, consentAt: i.consentAt });
+    const description = buildDescription({ bookingRef: ref, selection: i.selection, durationMinutes: i.durationMinutes, customer: i.customer, lang: i.lang, consentAt: i.consentAt, reminder: i.reminder });
     const stored: StoredBooking = {
       ref,
       requestId: i.requestId,

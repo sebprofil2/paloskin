@@ -26,6 +26,7 @@ interface Form {
   email: string;
   empfohlen: string;
   consent: boolean;
+  reminder: boolean;
 }
 
 interface Slot {
@@ -87,7 +88,7 @@ const blank = (checkup: boolean): State => ({
   open: { bot: false, boost: false },
   day: null,
   slot: null,
-  f: { vorname: "", nachname: "", handy: "", email: "", empfohlen: "", consent: false },
+  f: { vorname: "", nachname: "", handy: "", email: "", empfohlen: "", consent: false, reminder: false },
   errors: {},
   refSent: false,
 });
@@ -233,6 +234,19 @@ function Acc({ open, title, meta, chosen, onToggle, children }: { open: boolean;
   );
 }
 
+/* Das Wort „Datenschutzerklärung“ (je Sprache) im Einwilligungstext verlinken */
+function withPrivacyLink(text: string, word: string, href: string): React.ReactNode {
+  const i = text.toLowerCase().indexOf(word.toLowerCase());
+  if (i < 0) return text;
+  return (
+    <>
+      {text.slice(0, i)}
+      <a href={href} target="_blank" rel="noopener">{text.slice(i, i + word.length)}</a>
+      {text.slice(i + word.length)}
+    </>
+  );
+}
+
 /* ---------- Komponente ---------- */
 export function BookingApp({ initialLang, testMode, checkup }: { initialLang: Lang | null; testMode: boolean; checkup: boolean }) {
   const [lang, setLangState] = useState<Lang>(initialLang ?? "de");
@@ -246,6 +260,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   const numRef = useRef<HTMLDivElement>(null);
 
   const l = TEXTS[lang];
+  const langQuery = lang === "de" ? "" : `?lang=${lang}`;
   const loc = LANGS.find((x) => x.id === lang)!.loc;
   /* Preise: Tausendertrennzeichen je Sprache (EN Komma, FR geschütztes Leerzeichen, sonst Punkt), Euro dahinter, wie auf der Startseite */
   const fmt = useCallback((n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, THOUSANDS[lang]) + "\u00A0€", [lang]);
@@ -406,6 +421,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
       lang,
       customer: { vorname: s.f.vorname.trim(), nachname: s.f.nachname.trim(), handy: s.f.handy.trim(), email: s.f.email.trim() },
       consent: true,
+      reminder: s.f.reminder,
       website: (document.getElementById("website") as HTMLInputElement | null)?.value ?? "",
     };
     try {
@@ -767,7 +783,11 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
         </div>
         <label className={`check ${s.errors.consent ? "invalid" : ""}`} htmlFor="consent">
           <input id="consent" type="checkbox" checked={s.f.consent} onChange={(e) => setS((p) => clearErr({ ...p, f: { ...p.f, consent: e.target.checked } }, e.target.checked ? "consent" : ""))} />
-          <span>{l.consent}</span>
+          <span>{withPrivacyLink(l.consent, l.legalPrivacy, `/datenschutz${langQuery}`)}</span>
+        </label>
+        <label className="check" htmlFor="reminder">
+          <input id="reminder" type="checkbox" checked={s.f.reminder} onChange={(e) => setS((p) => ({ ...p, f: { ...p.f, reminder: e.target.checked } }))} />
+          <span>{l.reminderOpt}</span>
         </label>
         {s.errors.consent ? <div className="missing">{l.eConsent}</div> : null}
         {book.status === "error" ? <div className="missing">{l.bookErr}</div> : null}
@@ -789,7 +809,6 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
           <h1>{l.doneH}</h1>
           <p>{dayLabel(dayKey)}, {l.at(time)}.</p>
           <dl>
-            <dt>{l.durL}</dt><dd>{l.minutes(b.durationMinutes)}</dd>
             <dt>{l.addrL}</dt><dd><a href={MAPS} target="_blank" rel="noopener">{ADDRESS}</a></dd>
             <dt>{l.refL}</dt><dd>{b.ref}</dd>
           </dl>
@@ -835,7 +854,6 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     );
   };
 
-  const langQuery = lang === "de" ? "" : `?lang=${lang}`;
   const foot = (
     <nav className="foot" aria-label="Palo Skin">
       <a href={`/${langQuery}`}>{l.home}</a>

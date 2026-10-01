@@ -25,6 +25,7 @@ export interface DescriptionInput {
   customer: Customer;
   lang: Lang;
   consentAt: Date;
+  reminder: boolean;
 }
 
 /*
@@ -50,6 +51,7 @@ export function buildDescription(i: DescriptionInput): string {
   rows.push(`E-Mail-Adresse: ${i.customer.email.trim()}`);
   rows.push(`Sprache: ${LANG_NAMES[i.lang]}`);
   rows.push(`Einwilligung: ${formatBerlinDe(i.consentAt)} (Berliner Zeit)`);
+  rows.push(`Erinnerung per WhatsApp: ${i.reminder ? "ja" : "nein"}`);
   return rows.join("\n");
 }
 

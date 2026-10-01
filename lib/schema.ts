@@ -47,6 +47,8 @@ export const bookRequestSchema = z.object({
   lang: langSchema,
   customer: customerSchema,
   consent: z.literal(true),
+  /* freiwillige Erinnerung per WhatsApp */
+  reminder: z.boolean().default(false),
   /* Unsichtbares Lockfeld gegen Bots: muss leer bleiben */
   website: z.string().max(0).optional(),
 }).strict();

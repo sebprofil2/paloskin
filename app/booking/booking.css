@@ -300,3 +300,4 @@ a.btn-ghost{color:inherit;text-decoration:none;display:inline-block}
 .zsum b{font-weight:500}
 .zsum .zp{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:500}
 .zsum small{display:block;font-weight:400;color:var(--ink-3);font-size:13px;line-height:1.4;margin-top:2px}
+.check a{color:inherit;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ultramarin)}

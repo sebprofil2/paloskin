@@ -30,6 +30,7 @@ export interface BookInput {
   customer: Customer;
   lang: Lang;
   consentAt: Date;
+  reminder: boolean;
   testMode: boolean;
 }
 

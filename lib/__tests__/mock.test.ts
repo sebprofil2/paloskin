@@ -32,6 +32,7 @@ describe("Testmotor", () => {
       customer,
       lang: "de" as const,
       consentAt: new Date(),
+      reminder: true,
       testMode: true,
     };
     const a = await e.book(input);

@@ -46,6 +46,7 @@ export async function POST(req: Request) {
       customer: body.customer,
       lang: body.lang,
       consentAt: new Date(),
+      reminder: body.reminder,
       testMode: env.testMode,
     });
     logEvent("info", "book_result", { route: "book", bookingRef: ref, status: result.status, engine: env.engine });

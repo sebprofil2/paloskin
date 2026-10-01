@@ -193,11 +193,11 @@ export class GoogleCalendarEngine implements BookingEngine {
     const end = new Date(endMs);
     const body = {
       summary: buildTitle(i.customer, i.testMode),
-      description: buildDescription({ bookingRef: ref, selection: i.selection, durationMinutes: i.durationMinutes, customer: i.customer, lang: i.lang, consentAt: i.consentAt }),
+      description: buildDescription({ bookingRef: ref, selection: i.selection, durationMinutes: i.durationMinutes, customer: i.customer, lang: i.lang, consentAt: i.consentAt, reminder: i.reminder }),
       start: { dateTime: toBerlinIso(i.start), timeZone: "Europe/Berlin" },
       end: { dateTime: toBerlinIso(end), timeZone: "Europe/Berlin" },
       transparency: "opaque",
-      extendedProperties: { private: { bookingRef: ref, status: "confirmed", service: serviceCode(i.selection) } },
+      extendedProperties: { private: { bookingRef: ref, status: "confirmed", service: serviceCode(i.selection), reminder: i.reminder ? "ja" : "nein" } },
       reminders: { useDefault: true },
     };
     let created: GEvent;
