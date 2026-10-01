@@ -1,5 +1,7 @@
 # Reverse-Proxy mit automatischem HTTPS (Let's Encrypt) für paloskin.de auf dem Hetzner-Server.
 # Caddy holt und erneuert die Zertifikate selbst, sobald die DNS-Einträge auf den Server zeigen.
+# Die Sicherheitsheader (CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy) setzt die Anwendung selbst
+# (next.config.ts), damit sie auf Vercel und hier gleich sind. HSTS kommt erst hier, nach geprüftem HTTPS.
 
 paloskin.de {
 	redir https://www.paloskin.de{uri} permanent
@@ -7,13 +9,15 @@ paloskin.de {
 
 www.paloskin.de {
 	encode zstd gzip
-	reverse_proxy app:3000
+	reverse_proxy app:3000 {
+		# Nur Caddy setzt diese Kopfzeilen; die App vertraut X-Forwarded-For deshalb ausschließlich dem Proxy
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Real-IP {remote_host}
+	}
 
 	header {
-		Strict-Transport-Security "max-age=31536000; includeSubDomains"
-		X-Content-Type-Options "nosniff"
-		Referrer-Policy "strict-origin-when-cross-origin"
-		X-Frame-Options "DENY"
+		# Erst aktivieren, wenn HTTPS auf www und apex nachweislich läuft (Zertifikat, Weiterleitung, alle Seiten):
+		# Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		-Server
 	}
 

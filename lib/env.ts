@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 /* Umgebungsvariablen an einer Stelle gelesen. Kein Schlüssel verlässt den Server. */
 export interface Env {
   engine: "mock" | "google";
@@ -26,7 +28,16 @@ function int(v: string | undefined, fallback: number): number {
  * oder getrennt GOOGLE_SERVICE_ACCOUNT_EMAIL und GOOGLE_PRIVATE_KEY.
  */
 function serviceAccount(): { email: string; key: string } {
-  const raw = (process.env.GOOGLE_SERVICE_ACCOUNT_JSON ?? "").trim();
+  let raw = (process.env.GOOGLE_SERVICE_ACCOUNT_JSON ?? "").trim();
+  // Auf dem eigenen Server liegt die Schlüsseldatei als Secret außerhalb von Repository und Image; hier steht nur der Pfad
+  const file = (process.env.GOOGLE_SERVICE_ACCOUNT_FILE ?? "").trim();
+  if (!raw && file) {
+    try {
+      raw = readFileSync(file, "utf8").trim();
+    } catch {
+      console.error("[env] GOOGLE_SERVICE_ACCOUNT_FILE nicht lesbar");
+    }
+  }
   if (raw) {
     try {
       const j = JSON.parse(raw) as { client_email?: string; private_key?: string };
