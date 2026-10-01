@@ -4,14 +4,15 @@ import { emptySelection } from "../treatments";
 
 describe("Eingabeprüfung", () => {
   it("nur erlaubte Kennungen", () => {
-    expect(selectionSchema.safeParse({ ...emptySelection(), visit: "first", zones: "z9" }).success).toBe(false);
-    expect(selectionSchema.safeParse({ ...emptySelection(), visit: "first", extras: [8] }).success).toBe(false);
-    expect(selectionSchema.safeParse({ ...emptySelection(), visit: "first", zones: "z3", extras: [0, 7] }).success).toBe(true);
+    expect(selectionSchema.safeParse({ ...emptySelection(), visit: "first", zones: ["hals"] }).success).toBe(false);
+    expect(selectionSchema.safeParse({ ...emptySelection(), visit: "first", zones: ["stirn", "stirn"] }).success).toBe(false);
+    expect(selectionSchema.safeParse({ ...emptySelection(), visit: "first", zones: ["stirn", "lipflip", "nase"], otherZone: "Hals" }).success).toBe(true);
+    expect(selectionSchema.safeParse({ ...emptySelection(), visit: "first", zonesUnknown: true }).success).toBe(true);
   });
   it("Beratung oder Behandlung, Besuch nötig", () => {
     expect(selectionSchema.safeParse({ ...emptySelection(), visit: "first" }).success).toBe(false);
-    expect(selectionSchema.safeParse({ ...emptySelection(), visit: "first", beratung: true, zones: "z1" }).success).toBe(false);
-    expect(selectionSchema.safeParse({ ...emptySelection(), zones: "z1" }).success).toBe(false);
+    expect(selectionSchema.safeParse({ ...emptySelection(), visit: "first", beratung: true, zones: ["stirn"] }).success).toBe(false);
+    expect(selectionSchema.safeParse({ ...emptySelection(), zones: ["stirn"] }).success).toBe(false);
     expect(selectionSchema.safeParse({ ...emptySelection(), checkup: true }).success).toBe(true);
   });
   it("Buchung mit Lockfeld wird abgelehnt", () => {

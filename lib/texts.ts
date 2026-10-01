@@ -3,7 +3,7 @@
  * nichts umformuliert. Block X: Ergänzungen für die echte Seite (Testhinweis, Buchungsnummer,
  * unklarer Ausgang, Absage per WhatsApp), die im Entwurf nicht vorkommen.
  */
-import type { Lang } from "./treatments";
+import type { Lang, ZoneId } from "./treatments";
 
 export const LANGS: { id: Lang; name: string; loc: string }[] = [
   { id: "de", name: "Deutsch", loc: "de-DE" },
@@ -318,6 +318,13 @@ export interface ExtraTexts {
   home: string;
   legalImprint: string;
   legalPrivacy: string;
+  /* Zonenauswahl, alle Zonen gleichwertig (1. Oktober 2026) */
+  zoneNames: Record<ZoneId, string>;
+  zoneOther: string;
+  zoneUnknown: string;
+  zonesOpen: string;
+  zoneCountLabel: (n: number) => string;
+  zoneTiers: (p1: string, p2: string, p3: string, p4: string) => string;
 }
 
 const X: Record<Lang, ExtraTexts> = {
@@ -331,6 +338,10 @@ const X: Record<Lang, ExtraTexts> = {
     noneFree: "Online ist gerade kein Termin frei. Schreiben Sie uns per WhatsApp, dann finden wir einen.",
     refL: "Buchungsnummer", durL: "Dauer", minutes: (n) => `${n} Minuten`,
     home: "Zur Startseite", legalImprint: "Impressum", legalPrivacy: "Datenschutzerklärung",
+    zoneNames: { zornesfalte: "Zornesfalte", stirn: "Stirn", kraehenfuesse: "Krähenfüße", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Mundwinkel", erdbeerkinn: "Erdbeerkinn", gummysmile: "Gummy Smile", oberlippe: "Oberlippenfältchen", nase: "Nasenverschmälerung" },
+    zoneOther: "Sonstiges", zoneUnknown: "Weiß ich noch nicht", zonesOpen: "Zonen noch offen",
+    zoneCountLabel: (n) => `${n} ${n === 1 ? "Zone" : "Zonen"}`,
+    zoneTiers: (p1, p2, p3, p4) => `1 Zone ${p1}, 2 Zonen ${p2}, 3 Zonen ${p3}, jede weitere ${p4}`,
   },
   en: {
     testBanner: "Test version. Please enter invented names only and no real treatment wishes. The booking really does go into the calendar.",
@@ -342,6 +353,10 @@ const X: Record<Lang, ExtraTexts> = {
     noneFree: "No appointment is available online right now. Send us a WhatsApp message and we will find one.",
     refL: "Booking number", durL: "Duration", minutes: (n) => `${n} minutes`,
     home: "Back to the start page", legalImprint: "Legal notice", legalPrivacy: "Privacy policy",
+    zoneNames: { zornesfalte: "Frown lines", stirn: "Forehead", kraehenfuesse: "Crow’s feet", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Mouth corners", erdbeerkinn: "Dimpled chin", gummysmile: "Gummy Smile", oberlippe: "Upper lip lines", nase: "Nose slimming" },
+    zoneOther: "Other", zoneUnknown: "Not decided yet", zonesOpen: "Areas not decided yet",
+    zoneCountLabel: (n) => `${n} ${n === 1 ? "area" : "areas"}`,
+    zoneTiers: (p1, p2, p3, p4) => `1 area ${p1}, 2 areas ${p2}, 3 areas ${p3}, each additional ${p4}`,
   },
   es: {
     testBanner: "Versión de prueba. Introduzca solo nombres inventados y ningún deseo de tratamiento real. La reserva se registra de verdad en el calendario.",
@@ -353,6 +368,10 @@ const X: Record<Lang, ExtraTexts> = {
     noneFree: "Ahora mismo no hay ninguna cita libre online. Escríbanos por WhatsApp y encontraremos una.",
     refL: "Número de reserva", durL: "Duración", minutes: (n) => `${n} minutos`,
     home: "Volver a la página de inicio", legalImprint: "Aviso legal", legalPrivacy: "Política de privacidad",
+    zoneNames: { zornesfalte: "Entrecejo", stirn: "Frente", kraehenfuesse: "Patas de gallo", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Comisuras de la boca", erdbeerkinn: "Mentón en piel de naranja", gummysmile: "Sonrisa gingival", oberlippe: "Arrugas del labio superior", nase: "Afinar la nariz" },
+    zoneOther: "Otra", zoneUnknown: "Aún por decidir", zonesOpen: "Zonas por decidir",
+    zoneCountLabel: (n) => `${n} ${n === 1 ? "zona" : "zonas"}`,
+    zoneTiers: (p1, p2, p3, p4) => `1 zona ${p1}, 2 zonas ${p2}, 3 zonas ${p3}, cada zona adicional ${p4}`,
   },
   fr: {
     testBanner: "Version de test. Merci de n’indiquer que des noms inventés et aucun souhait de soin réel. La réservation est réellement inscrite dans l’agenda.",
@@ -364,6 +383,10 @@ const X: Record<Lang, ExtraTexts> = {
     noneFree: "Aucun rendez-vous n’est disponible en ligne pour le moment. Écrivez-nous sur WhatsApp, nous en trouverons un.",
     refL: "Numéro de réservation", durL: "Durée", minutes: (n) => `${n} minutes`,
     home: "Retour à la page d’accueil", legalImprint: "Mentions légales", legalPrivacy: "Politique de confidentialité",
+    zoneNames: { zornesfalte: "Ride du lion", stirn: "Front", kraehenfuesse: "Pattes d’oie", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Coins de la bouche", erdbeerkinn: "Menton en peau d’orange", gummysmile: "Sourire gingival", oberlippe: "Ridules de la lèvre supérieure", nase: "Affinement du nez" },
+    zoneOther: "Autre", zoneUnknown: "Pas encore décidé", zonesOpen: "Zones à définir",
+    zoneCountLabel: (n) => `${n} ${n === 1 ? "zone" : "zones"}`,
+    zoneTiers: (p1, p2, p3, p4) => `1 zone ${p1}, 2 zones ${p2}, 3 zones ${p3}, chaque zone supplémentaire ${p4}`,
   },
   pt: {
     testBanner: "Versão de teste. Use apenas nomes inventados e nenhum desejo real de tratamento. A reserva é registrada de verdade no calendário.",
@@ -375,6 +398,10 @@ const X: Record<Lang, ExtraTexts> = {
     noneFree: "No momento não há horário livre online. Mande uma mensagem pelo WhatsApp e encontramos um.",
     refL: "Número da reserva", durL: "Duração", minutes: (n) => `${n} minutos`,
     home: "Voltar à página inicial", legalImprint: "Informações legais", legalPrivacy: "Política de privacidade",
+    zoneNames: { zornesfalte: "Entre as sobrancelhas", stirn: "Testa", kraehenfuesse: "Pés de galinha", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Cantos da boca", erdbeerkinn: "Queixo em casca de laranja", gummysmile: "Sorriso gengival", oberlippe: "Rugas do lábio superior", nase: "Afinamento do nariz" },
+    zoneOther: "Outra", zoneUnknown: "Ainda não decidi", zonesOpen: "Áreas a definir",
+    zoneCountLabel: (n) => `${n} ${n === 1 ? "área" : "áreas"}`,
+    zoneTiers: (p1, p2, p3, p4) => `1 área ${p1}, 2 áreas ${p2}, 3 áreas ${p3}, cada área adicional ${p4}`,
   },
 };
 

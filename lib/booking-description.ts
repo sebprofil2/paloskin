@@ -42,7 +42,7 @@ export function buildDescription(i: DescriptionInput): string {
   if (items.length) {
     rows.push("Behandlungen:");
     for (const it of items) rows.push(`- ${it.label} (${it.price} Euro brutto)`);
-    if (hasTreatment(s)) rows.push(`Summe voraussichtlich: ${totalPrice(s)} Euro brutto`);
+    if (hasTreatment(s) && totalPrice(s) > 0) rows.push(`Summe voraussichtlich: ${totalPrice(s)} Euro brutto`);
   }
   if (s.note.trim()) rows.push(`Notiz: ${s.note.trim()}`);
   rows.push(`Dauer: ${i.durationMinutes} Minuten`);

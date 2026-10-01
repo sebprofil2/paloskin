@@ -290,3 +290,13 @@ a.btn-ghost{color:inherit;text-decoration:none;display:inline-block}
 .pending strong{font-weight:500;font-size:18px}
 .pending a{color:inherit;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ultramarin)}
 .note a.num{font-variant-numeric:tabular-nums}
+
+/* ---------- Zonenauswahl: alle Zonen gleichwertig, Summe darunter (1. Oktober 2026) ---------- */
+.zones{display:flex;flex-wrap:wrap;gap:8px}
+.zones .chip{background:var(--white);padding:10px 14px;font-size:16px}
+.zones .chip[aria-pressed="true"]{background:var(--white);box-shadow:inset 0 0 0 2px var(--ultramarin)}
+.zones input[type=text]{background:var(--white);font-size:16px;flex-basis:100%}
+.zsum{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:16px;padding:10px 12px;background:var(--kalk-2)}
+.zsum b{font-weight:500}
+.zsum .zp{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:500}
+.zsum small{display:block;font-weight:400;color:var(--ink-3);font-size:13px;line-height:1.4;margin-top:2px}

@@ -1,9 +1,9 @@
-/* Behandlungen, Preise (brutto) und Auswahl. Preise aus dem Entwurf Version 26. */
+/* Behandlungen, Preise (brutto) und Auswahl. Preise aus dem Entwurf Version 26, Zonenlogik vom 1. Oktober 2026. */
 export const PRICES = {
-  z1: 120,
-  z2: 210,
-  z3: 300,
-  extra: 80,
+  zone1: 120,
+  zone2: 210,
+  zone3: 300,
+  zoneMore: 80,
   kaumuskel: 280,
   nefertiti: 280,
   achsel: 480,
@@ -11,21 +11,37 @@ export const PRICES = {
   lachsPack: 1000,
 } as const;
 
-export const EXTRA_ZONE_COUNT = 8;
-
-/* Namen der zusätzlichen Zonen auf Deutsch, für die Kalenderbeschreibung */
-export const EXTRA_ZONES_DE = [
-  "Lip Flip",
-  "Brow Lift",
-  "Mundwinkel",
-  "Erdbeerkinn",
-  "Gummy Smile",
-  "Oberlippenfältchen",
-  "Bunny Lines",
-  "Nasenverschmälerung",
+/* Alle Zonen gleichwertig, Reihenfolge wie in der Oberfläche */
+export const ZONE_IDS = [
+  "zornesfalte",
+  "stirn",
+  "kraehenfuesse",
+  "browlift",
+  "lipflip",
+  "bunnylines",
+  "mundwinkel",
+  "erdbeerkinn",
+  "gummysmile",
+  "oberlippe",
+  "nase",
 ] as const;
+export type ZoneId = (typeof ZONE_IDS)[number];
 
-export type Zones = "z1" | "z2" | "z3";
+/* Namen auf Deutsch, für Kalenderbeschreibung und WhatsApp-Nachricht an das Studio */
+export const ZONE_NAMES_DE: Record<ZoneId, string> = {
+  zornesfalte: "Zornesfalte",
+  stirn: "Stirn",
+  kraehenfuesse: "Krähenfüße",
+  browlift: "Brow Lift",
+  lipflip: "Lip Flip",
+  bunnylines: "Bunny Lines",
+  mundwinkel: "Mundwinkel",
+  erdbeerkinn: "Erdbeerkinn",
+  gummysmile: "Gummy Smile",
+  oberlippe: "Oberlippenfältchen",
+  nase: "Nasenverschmälerung",
+};
+
 export type Lachs = "single" | "pack";
 export type Visit = "first" | "return";
 export type Lang = "de" | "en" | "es" | "fr" | "pt";
@@ -34,9 +50,12 @@ export interface Selection {
   visit: Visit | null;
   checkup: boolean;
   beratung: boolean;
-  zones: Zones | null;
-  extras: number[];
+  /** angetippte Zonen */
+  zones: ZoneId[];
+  /** „Sonstiges“: null = nicht gewählt, sonst der Freitext (darf leer sein) */
   otherZone: string | null;
+  /** „Weiß ich noch nicht“: Botulinum gewünscht, Zonen offen */
+  zonesUnknown: boolean;
   kaumuskel: boolean;
   nefertiti: boolean;
   achsel: boolean;
@@ -48,9 +67,9 @@ export const emptySelection = (): Selection => ({
   visit: null,
   checkup: false,
   beratung: false,
-  zones: null,
-  extras: [],
+  zones: [],
   otherZone: null,
+  zonesUnknown: false,
   kaumuskel: false,
   nefertiti: false,
   achsel: false,
@@ -58,9 +77,22 @@ export const emptySelection = (): Selection => ({
   note: "",
 });
 
-/** Botulinum im weiteren Sinn: Zonen, andere Zone, Kaumuskel, Nefertiti-Lift, Schwitzen. */
+/** Anzahl gewählter Zonen einschließlich „Sonstiges“. */
+export function zoneCount(s: Pick<Selection, "zones" | "otherZone">): number {
+  return s.zones.length + (s.otherZone !== null ? 1 : 0);
+}
+
+/** Staffel: 1 Zone 120, 2 Zonen 210, 3 Zonen 300, jede weitere 80. */
+export function zonePrice(n: number): number {
+  if (n <= 0) return 0;
+  if (n === 1) return PRICES.zone1;
+  if (n === 2) return PRICES.zone2;
+  return PRICES.zone3 + (n - 3) * PRICES.zoneMore;
+}
+
+/** Botulinum im weiteren Sinn: Zonen, Zonen offen, Kaumuskel, Nefertiti-Lift, Schwitzen. */
 export function hasBotulinum(s: Selection): boolean {
-  return !!s.zones || s.extras.length > 0 || s.otherZone !== null || s.kaumuskel || s.nefertiti || s.achsel;
+  return zoneCount(s) > 0 || s.zonesUnknown || s.kaumuskel || s.nefertiti || s.achsel;
 }
 
 export function hasTreatment(s: Selection): boolean {
@@ -72,20 +104,22 @@ export interface LineItem {
   price: number;
 }
 
-const ZONE_LABEL_DE: Record<Zones, string> = { z1: "1 Zone", z2: "2 Zonen", z3: "3 Zonen" };
+/** Deutsche Zonenliste, zum Beispiel „Zornesfalte, Stirn, Sonstiges: Hals“. */
+export function zoneListDe(s: Pick<Selection, "zones" | "otherZone">): string {
+  const names = s.zones.map((z) => ZONE_NAMES_DE[z]);
+  if (s.otherZone !== null) names.push(s.otherZone.trim() ? `Sonstiges: ${s.otherZone.trim()}` : "Sonstiges");
+  return names.join(", ");
+}
 
 /** Deutsche Positionen für Studio und Kalender. */
 export function lineItemsDe(s: Selection): LineItem[] {
   const out: LineItem[] = [];
-  if (s.zones) out.push({ label: `Botulinum, ${ZONE_LABEL_DE[s.zones]}`, price: PRICES[s.zones] });
-  for (const i of s.extras) {
-    const name = EXTRA_ZONES_DE[i];
-    if (name) out.push({ label: `Zusätzliche Zone: ${name}`, price: PRICES.extra });
-  }
-  if (s.otherZone !== null) out.push({ label: `Zusätzliche Zone: ${s.otherZone.trim() || "Andere Zone, noch nicht benannt"}`, price: PRICES.extra });
+  const n = zoneCount(s);
+  if (n > 0) out.push({ label: `Botulinum, ${n} ${n === 1 ? "Zone" : "Zonen"}: ${zoneListDe(s)}`, price: zonePrice(n) });
+  else if (s.zonesUnknown) out.push({ label: "Botulinum, Zonen noch offen", price: 0 });
   if (s.kaumuskel) out.push({ label: "Kaumuskel", price: PRICES.kaumuskel });
   if (s.nefertiti) out.push({ label: "Nefertiti-Lift", price: PRICES.nefertiti });
-  if (s.achsel) out.push({ label: "Übermäßiges Schwitzen, Hyperhidrose unter den Achseln", price: PRICES.achsel });
+  if (s.achsel) out.push({ label: "Übermäßiges Schwitzen (Hyperhidrose)", price: PRICES.achsel });
   if (s.lachs === "single") out.push({ label: "Lachs-DNA, eine Behandlung", price: PRICES.lachs });
   if (s.lachs === "pack") out.push({ label: "Lachs-DNA Viererpaket", price: PRICES.lachsPack });
   return out;

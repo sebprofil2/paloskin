@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { SlotDay } from "@/lib/slots";
 import { FLAGS, LANGS, TEXTS, isLang, type Texts } from "@/lib/texts";
-import { PRICES, hasBotulinum, hasTreatment, type Lachs, type Lang, type Selection, type Visit, type Zones } from "@/lib/treatments";
+import { PRICES, ZONE_IDS, hasBotulinum, hasTreatment, zoneCount, zonePrice, type Lachs, type Lang, type Selection, type Visit, type ZoneId } from "@/lib/treatments";
 
 /* ---------- Feste Angaben ---------- */
 const PHONE = "+49 151 58872566";
@@ -36,10 +36,10 @@ interface State {
   maxStep: Step;
   visit: Visit | null;
   beratung: boolean;
-  zones: Zones | null;
-  extras: number[];
+  zoneIds: ZoneId[];
   otherOn: boolean;
   otherText: string;
+  zonesUnknown: boolean;
   kaumuskel: boolean;
   nefertiti: boolean;
   achsel: boolean;
@@ -70,10 +70,10 @@ const blank = (checkup: boolean): State => ({
   maxStep: checkup ? 2 : 1,
   visit: null,
   beratung: false,
-  zones: null,
-  extras: [],
+  zoneIds: [],
   otherOn: false,
   otherText: "",
+  zonesUnknown: false,
   kaumuskel: false,
   nefertiti: false,
   achsel: false,
@@ -93,9 +93,9 @@ function toSelection(s: State, checkup: boolean): Selection {
     visit: s.visit,
     checkup,
     beratung: s.beratung,
-    zones: s.zones,
-    extras: s.extras,
+    zones: s.zoneIds,
     otherZone: s.otherOn ? s.otherText : null,
+    zonesUnknown: s.zonesUnknown,
     kaumuskel: s.kaumuskel,
     nefertiti: s.nefertiti,
     achsel: s.achsel,
@@ -331,7 +331,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     delete errors[key];
     return { ...p, errors };
   };
-  const clearT = (p: State): State => ({ ...p, zones: null, extras: [], kaumuskel: false, nefertiti: false, achsel: false, otherOn: false, otherText: "", lachs: null });
+  const clearT = (p: State): State => ({ ...p, zoneIds: [], zonesUnknown: false, kaumuskel: false, nefertiti: false, achsel: false, otherOn: false, otherText: "", lachs: null });
 
   const setVisit = (v: Visit) => update((p) => clearErr({ ...p, visit: v }, "visit"));
   const toggleBeratung = () =>
@@ -341,11 +341,12 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
       return clearErr(next, "treat");
     });
   const pick = (fn: (p: State) => Partial<State>) => update((p) => clearErr({ ...p, beratung: false, ...fn(p) }, "treat"));
-  const toggleZones = (z: Zones) => pick((p) => ({ zones: p.zones === z ? null : z }));
+  /* Zonen antippen; „Weiß ich noch nicht“ schließt konkrete Zonen aus und umgekehrt */
+  const toggleZone = (z: ZoneId) => pick((p) => ({ zoneIds: p.zoneIds.includes(z) ? p.zoneIds.filter((x) => x !== z) : [...p.zoneIds, z], zonesUnknown: false }));
+  const toggleUnknown = () => pick((p) => (p.zonesUnknown ? { zonesUnknown: false } : { zonesUnknown: true, zoneIds: [], otherOn: false, otherText: "" }));
   const toggleLachs = (v: Lachs) => pick((p) => ({ lachs: p.lachs === v ? null : v }));
   const toggleFlag = (k: "kaumuskel" | "nefertiti" | "achsel") => pick((p) => ({ [k]: !p[k] }));
-  const toggleExtra = (i: number) => pick((p) => ({ extras: p.extras.includes(i) ? p.extras.filter((x) => x !== i) : [...p.extras, i] }));
-  const toggleOther = () => pick((p) => ({ otherOn: !p.otherOn }));
+  const toggleOther = () => pick((p) => ({ otherOn: !p.otherOn, otherText: p.otherOn ? "" : p.otherText, zonesUnknown: false }));
   const toggleAcc = (k: "bot" | "boost") => update((p) => ({ ...p, open: { ...p.open, [k]: !p.open[k] } }));
 
   /* ---------- Prüfen und weiter ---------- */
@@ -537,10 +538,11 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
 
   /* ---------- Schritt 1: Behandlung ---------- */
   const stepTreat = () => {
-    const botChosen = [s.zones ? l[s.zones] : "", ...s.extras.map((i) => l.zones[i]), s.otherOn ? s.otherText.trim() || l.otherZone : "", s.kaumuskel ? l.kaumuskel : "", s.nefertiti ? l.nefertiti : "", s.achsel ? l.achsel : ""]
+    const botChosen = [...s.zoneIds.map((z) => l.zoneNames[z]), s.otherOn ? s.otherText.trim() || l.zoneOther : "", s.zonesUnknown ? l.zoneUnknown : "", s.kaumuskel ? l.kaumuskel : "", s.nefertiti ? l.nefertiti : "", s.achsel ? l.achsel : ""]
       .filter(Boolean)
       .join(", ");
     const boostChosen = s.lachs === "single" ? l.lachs : s.lachs === "pack" ? l.lachsPack : "";
+    const zoneN = zoneCount({ zones: s.zoneIds, otherZone: s.otherOn ? s.otherText : null });
     return (
       <section className="sec" id="sec-treat">
         <div className="block" id="sec-visit">
@@ -559,23 +561,25 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
           <div className="opts">
             <Opt t={l.unsureT} d={l.unsureD} p={l.consultPrice} on={s.beratung} onClick={toggleBeratung} />
           </div>
-          <Acc open={s.open.bot} onToggle={() => toggleAcc("bot")} title={l.botGroup} meta={priceTag(PRICES.z1)} chosen={botChosen}>
+          <Acc open={s.open.bot} onToggle={() => toggleAcc("bot")} title={l.botGroup} meta={priceTag(PRICES.zone1)} chosen={botChosen}>
             <div className="interest">{l.interestL}</div>
-            <div className="opts">
-              <Opt t={l.z1} d={l.z1D} p={priceTag(PRICES.z1)} on={s.zones === "z1"} onClick={() => toggleZones("z1")} />
-              <Opt t={l.z2} d={l.z2D} p={priceTag(PRICES.z2)} on={s.zones === "z2"} onClick={() => toggleZones("z2")} />
-              <Opt t={l.z3} d={l.z3D} p={priceTag(PRICES.z3)} on={s.zones === "z3"} onClick={() => toggleZones("z3")} />
-            </div>
-            <div className="extras">
-              <div className="sub"><span>{l.extraT}</span><span>{l.perZone(priceTag(PRICES.extra))}</span></div>
-              <div className="chips">
-                {l.zones.map((z, i) => (
-                  <button key={i} type="button" className="chip" aria-pressed={s.extras.includes(i)} onClick={() => toggleExtra(i)}>{z}</button>
-                ))}
-                <button type="button" className="chip" id="otherChip" aria-pressed={s.otherOn} onClick={toggleOther}>{l.otherZone}</button>
-              </div>
+            <div className="zones" role="group" aria-label={l.botGroup}>
+              {ZONE_IDS.map((z) => (
+                <button key={z} type="button" className="chip" aria-pressed={s.zoneIds.includes(z)} onClick={() => toggleZone(z)}>{l.zoneNames[z]}</button>
+              ))}
+              <button type="button" className="chip" id="otherChip" aria-pressed={s.otherOn} onClick={toggleOther}>{l.zoneOther}</button>
+              <button type="button" className="chip" id="unknownChip" aria-pressed={s.zonesUnknown} onClick={toggleUnknown}>{l.zoneUnknown}</button>
               {s.otherOn ? <input id="otherText" type="text" value={s.otherText} placeholder={l.otherPh} maxLength={80} autoFocus onChange={(e) => setS((p) => ({ ...p, otherText: e.target.value }))} /> : null}
             </div>
+            {zoneN > 0 || s.zonesUnknown ? (
+              <div className="zsum" aria-live="polite">
+                <b>
+                  {zoneN > 0 ? l.zoneCountLabel(zoneN) : l.zonesOpen}
+                  <small>{l.zoneTiers(priceTag(PRICES.zone1), priceTag(PRICES.zone2), priceTag(PRICES.zone3), priceTag(PRICES.zoneMore))}</small>
+                </b>
+                {zoneN > 0 ? <span className="zp">{priceTag(zonePrice(zoneN))}</span> : null}
+              </div>
+            ) : null}
             <div className="sub"><span>{l.moreGroup}</span></div>
             <div className="opts">
               <Opt t={l.kaumuskel} d={l.kaumuskelD} p={priceTag(PRICES.kaumuskel)} on={s.kaumuskel} kind="checkbox" onClick={() => toggleFlag("kaumuskel")} />
@@ -688,9 +692,10 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   /* ---------- Schritt 3: Angaben mit kompakter Übersicht ---------- */
   const overviewItems = (): string[] => {
     const out: string[] = [];
-    if (s.zones) out.push(l.botRow + l[s.zones]);
-    s.extras.forEach((i) => out.push(l.extraRow + l.zones[i]));
-    if (s.otherOn) out.push(l.extraRow + (s.otherText.trim() || l.otherZone));
+    const n = zoneCount({ zones: s.zoneIds, otherZone: s.otherOn ? s.otherText : null });
+    const names = [...s.zoneIds.map((z) => l.zoneNames[z]), ...(s.otherOn ? [s.otherText.trim() ? `${l.zoneOther}: ${s.otherText.trim()}` : l.zoneOther] : [])];
+    if (n > 0) out.push(`${l.botRow}${l.zoneCountLabel(n)}: ${names.join(", ")}`);
+    else if (s.zonesUnknown) out.push(`${l.botRow}${l.zonesOpen}`);
     if (s.kaumuskel) out.push(l.kaumuskel);
     if (s.nefertiti) out.push(l.nefertiti);
     if (s.achsel) out.push(l.achsel);

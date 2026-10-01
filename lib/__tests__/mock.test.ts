@@ -26,7 +26,7 @@ describe("Testmotor", () => {
     const slot = day.slots[0];
     const input = {
       requestId: "11111111-1111-4111-8111-111111111111",
-      selection: { ...emptySelection(), visit: "first" as const, zones: "z1" as const },
+      selection: { ...emptySelection(), visit: "first" as const, zones: ["stirn" as const] },
       start: new Date(slot.start),
       durationMinutes: 30,
       customer,

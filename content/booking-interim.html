@@ -218,6 +218,15 @@ textarea{min-height:72px}
 .dur{font-size:14px;color:var(--ink-2)}
 .bar .sum .k,.bar .sum .v{display:block}
 .bar .sum .v{font-variant-numeric:normal}
+/* Zonenauswahl: alle Zonen gleichwertig, Summe darunter (1. Oktober 2026) */
+.zones{display:flex;flex-wrap:wrap;gap:8px}
+.zones .chip{background:var(--white);padding:10px 14px;font-size:16px}
+.zones .chip[aria-pressed="true"]{background:var(--white);box-shadow:inset 0 0 0 2px var(--ultramarin)}
+.zones input[type=text]{background:var(--white);font-size:16px;flex-basis:100%}
+.zsum{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:16px;padding:10px 12px;background:var(--kalk-2)}
+.zsum b{font-weight:500}
+.zsum .zp{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:500}
+.zsum small{display:block;font-weight:400;color:var(--ink-3);font-size:13px;line-height:1.4;margin-top:2px}
 </style>
 </head>
 <body>
@@ -233,7 +242,11 @@ const P = window.PALO;
 /* ---------- Feste Angaben ---------- */
 const PHONE = "+49 151 58872566";
 const WA = "https://wa.me/4915158872566";
-const PRICES = {z1:120,z2:210,z3:300,extra:80,kaumuskel:280,nefertiti:280,lachs:280,lachsPack:1000};
+const PRICES = {z1:120,z2:210,z3:300,extra:80,kaumuskel:280,nefertiti:280,achsel:480,lachs:280,lachsPack:1000};
+/* Alle Zonen gleichwertig: 1 Zone 120, 2 Zonen 210, 3 Zonen 300, jede weitere 80 */
+const ZONE_IDS = ["zornesfalte","stirn","kraehenfuesse","browlift","lipflip","bunnylines","mundwinkel","erdbeerkinn","gummysmile","oberlippe","nase"];
+const ZONE_DE = {zornesfalte:"Zornesfalte",stirn:"Stirn",kraehenfuesse:"Krähenfüße",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Mundwinkel",erdbeerkinn:"Erdbeerkinn",gummysmile:"Gummy Smile",oberlippe:"Oberlippenfältchen",nase:"Nasenverschmälerung"};
+const zonePrice = n => n<=0 ? 0 : n===1 ? PRICES.z1 : n===2 ? PRICES.z2 : PRICES.z3+(n-3)*PRICES.extra;
 const SMS = "sms:+4915158872566";
 
 const LANGS = P.LANGS, FLAGS = P.FLAGS;
@@ -474,6 +487,14 @@ const X = {
   pt:{ dayQ:"Qual dia fica bom para você?", winQ:"Em qual período do dia?", wins:["Manhã","Meio-dia","Tarde","Noite"], flex:"Sou flexível", nameH:"Seu nome", interim:"Você nos envia o horário desejado pelo WhatsApp e confirmamos a hora exata em poucas horas. O agendamento online com horários em tempo real chega em breve.", send:"Enviar pedido pelo WhatsApp", sms:"Prefiro SMS", consentLine:"Ao enviar, você autoriza a Palo Skin a tratar seus dados, incluindo o tratamento escolhido, para marcar a consulta e lembrá-lo dela. Mais informações na <a href='/datenschutz?lang=pt'>política de privacidade</a>.", home:"Voltar à página inicial", eDay:"Escolha um dia ou “Sou flexível”.", eWin:"Escolha um período do dia.", msgHello:"Olá Palo Skin, gostaria de solicitar uma consulta.", msgWish:"Horário desejado", msgName:"Nome", msgFlex:"flexível" }
 };
 Object.keys(X).forEach(k => Object.assign(T[k], X[k]));
+const Z = {
+  de:{ interestL:"Ich interessiere mich für:", otherPh:"Welche Zone?", zoneNames:{zornesfalte:"Zornesfalte",stirn:"Stirn",kraehenfuesse:"Krähenfüße",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Mundwinkel",erdbeerkinn:"Erdbeerkinn",gummysmile:"Gummy Smile",oberlippe:"Oberlippenfältchen",nase:"Nasenverschmälerung"}, zoneOther:"Sonstiges", zoneUnknown:"Weiß ich noch nicht", zonesOpen:"Zonen noch offen", zoneCountLabel:n=>`${n} ${n===1?"Zone":"Zonen"}`, zoneTiers:(a,b,c,d)=>`1 Zone ${a}, 2 Zonen ${b}, 3 Zonen ${c}, jede weitere ${d}`, achsel:"Übermäßiges Schwitzen", achselD:"Hyperhidrose unter den Achseln" },
+  en:{ interestL:"I am interested in:", otherPh:"Which area?", zoneNames:{zornesfalte:"Frown lines",stirn:"Forehead",kraehenfuesse:"Crow’s feet",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Mouth corners",erdbeerkinn:"Dimpled chin",gummysmile:"Gummy Smile",oberlippe:"Upper lip lines",nase:"Nose slimming"}, zoneOther:"Other", zoneUnknown:"Not decided yet", zonesOpen:"Areas not decided yet", zoneCountLabel:n=>`${n} ${n===1?"area":"areas"}`, zoneTiers:(a,b,c,d)=>`1 area ${a}, 2 areas ${b}, 3 areas ${c}, each additional ${d}`, achsel:"Excessive sweating", achselD:"Hyperhidrosis of the underarms" },
+  es:{ interestL:"Me interesa:", otherPh:"¿Qué zona?", zoneNames:{zornesfalte:"Entrecejo",stirn:"Frente",kraehenfuesse:"Patas de gallo",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Comisuras de la boca",erdbeerkinn:"Mentón en piel de naranja",gummysmile:"Sonrisa gingival",oberlippe:"Arrugas del labio superior",nase:"Afinar la nariz"}, zoneOther:"Otra", zoneUnknown:"Aún por decidir", zonesOpen:"Zonas por decidir", zoneCountLabel:n=>`${n} ${n===1?"zona":"zonas"}`, zoneTiers:(a,b,c,d)=>`1 zona ${a}, 2 zonas ${b}, 3 zonas ${c}, cada zona adicional ${d}`, achsel:"Sudoración excesiva", achselD:"Hiperhidrosis de las axilas" },
+  fr:{ interestL:"Je m’intéresse à :", otherPh:"Quelle zone ?", zoneNames:{zornesfalte:"Ride du lion",stirn:"Front",kraehenfuesse:"Pattes d’oie",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Coins de la bouche",erdbeerkinn:"Menton en peau d’orange",gummysmile:"Sourire gingival",oberlippe:"Ridules de la lèvre supérieure",nase:"Affinement du nez"}, zoneOther:"Autre", zoneUnknown:"Pas encore décidé", zonesOpen:"Zones à définir", zoneCountLabel:n=>`${n} ${n===1?"zone":"zones"}`, zoneTiers:(a,b,c,d)=>`1 zone ${a}, 2 zones ${b}, 3 zones ${c}, chaque zone supplémentaire ${d}`, achsel:"Transpiration excessive", achselD:"Hyperhidrose des aisselles" },
+  pt:{ interestL:"Tenho interesse em:", otherPh:"Qual área?", zoneNames:{zornesfalte:"Entre as sobrancelhas",stirn:"Testa",kraehenfuesse:"Pés de galinha",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Cantos da boca",erdbeerkinn:"Queixo em casca de laranja",gummysmile:"Sorriso gengival",oberlippe:"Rugas do lábio superior",nase:"Afinamento do nariz"}, zoneOther:"Outra", zoneUnknown:"Ainda não decidi", zonesOpen:"Áreas a definir", zoneCountLabel:n=>`${n} ${n===1?"área":"áreas"}`, zoneTiers:(a,b,c,d)=>`1 área ${a}, 2 áreas ${b}, 3 áreas ${c}, cada área adicional ${d}`, achsel:"Suor excessivo", achselD:"Hiperidrose nas axilas" }
+};
+Object.keys(Z).forEach(k => Object.assign(T[k], Z[k]));
 /* Französisch: geschütztes Leerzeichen vor ? ! : ; und in « » */
 Object.keys(T.fr).forEach(k=>{ const v=T.fr[k]; if (typeof v==="string") T.fr[k]=v.replace(/ ([?!:;»])/g," $1").replace(/« /g,"« "); });
 
@@ -491,7 +512,7 @@ const mode = params.has("kontrolle") || params.has("checkup") ? "checkup" : "nor
 
 const blank = () => ({
   step:1, maxStep:1, visit:null,
-  zones:null, extras:[], kaumuskel:false, nefertiti:false, lachs:null,
+  zoneIds:[], otherOn:false, otherText:"", zonesUnknown:false, kaumuskel:false, nefertiti:false, achsel:false, lachs:null,
   beratung:false, note:"", noteOpen:false, zoneHelp:false, open:{bot:false,boost:false},
   day:null, flex:false, win:null, f:{vorname:"",nachname:""}, errors:{}
 });
@@ -502,12 +523,17 @@ if (mode==="checkup"){ s.step = 2; s.maxStep = 2; }
 const app = document.getElementById("app");
 const esc = t => String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
+const zoneN = () => s.zoneIds.length + (s.otherOn ? 1 : 0);
+/* Zonennamen in der Sprache l, „Sonstiges“ mit Freitext */
+function zoneNames(l){ const out = s.zoneIds.map(z=>l.zoneNames[z]); if (s.otherOn) out.push(s.otherText.trim() ? l.zoneOther+": "+s.otherText.trim() : l.zoneOther); return out; }
 function items(){
   const l=L(), out = [];
-  if (s.zones) out.push([l.botRow+l[s.zones], PRICES[s.zones]]);
-  if (s.zones==="z3") s.extras.forEach(i=>out.push([l.extraRow+l.zones[i], PRICES.extra]));
+  const n = zoneN();
+  if (n>0) out.push([l.botRow+l.zoneCountLabel(n)+": "+zoneNames(l).join(", "), zonePrice(n)]);
+  else if (s.zonesUnknown) out.push([l.botRow+l.zonesOpen, 0]);
   if (s.kaumuskel) out.push([l.kaumuskel,PRICES.kaumuskel]);
   if (s.nefertiti) out.push([l.nefertiti,PRICES.nefertiti]);
+  if (s.achsel) out.push([l.achsel,PRICES.achsel]);
   if (s.lachs==="single") out.push([l.lachsRow,PRICES.lachs]);
   if (s.lachs==="pack") out.push([l.lachsPack,PRICES.lachsPack]);
   return out;
@@ -523,7 +549,7 @@ function minutes(){
   if (s.beratung) return 30;
   if (!s.visit) return null;
   let m = s.visit==="return" ? 20 : 30;
-  const botox = !!s.zones || s.kaumuskel || s.nefertiti;
+  const botox = zoneN()>0 || s.zonesUnknown || s.kaumuskel || s.nefertiti || s.achsel;
   if (botox && s.lachs) m += 20;
   return m;
 }
@@ -538,12 +564,13 @@ function notes(){
   if (mode==="checkup") rows.push("Kontrolltermin");
   else rows.push(s.visit==="first" ? "Erster Besuch" : "Schon einmal da");
   if (s.beratung) rows.push("Noch unsicher, Beratung gewünscht");
-  if (s.zones) rows.push("Botulinum "+de[s.zones]+" ("+PRICES[s.zones]+" € brutto)");
-  if (s.zones==="z3" && s.extras.length) rows.push("Zusätzliche Zonen: "+s.extras.map(i=>de.zones[i]).join(", ")+" (je "+PRICES.extra+" € brutto)");
+  if (zoneN()>0) rows.push("Botulinum, "+de.zoneCountLabel(zoneN())+": "+zoneNames(de).join(", ")+" ("+zonePrice(zoneN())+" € brutto)");
+  else if (s.zonesUnknown) rows.push("Botulinum, Zonen noch offen");
   if (s.kaumuskel) rows.push("Kaumuskel ("+PRICES.kaumuskel+" € brutto)");
   if (s.nefertiti) rows.push("Nefertiti-Lift ("+PRICES.nefertiti+" € brutto)");
+  if (s.achsel) rows.push("Übermäßiges Schwitzen (Hyperhidrose) ("+PRICES.achsel+" € brutto)");
   if (s.lachs) rows.push(s.lachs==="pack" ? "Lachs-DNA Viererpaket ("+PRICES.lachsPack+" € brutto)" : "Lachs-DNA, eine Behandlung ("+PRICES.lachs+" € brutto)");
-  if (hasTreatment()) rows.push("Summe voraussichtlich "+total()+" € brutto");
+  if (hasTreatment() && total()>0) rows.push("Summe voraussichtlich "+total()+" € brutto");
   if (s.note.trim()) rows.push("Notiz: "+s.note.trim());
   rows.push("Dauer geplant: "+minutes()+" Minuten");
   rows.push("Sprache: "+LANGS.find(x=>x.id===lang).name);
@@ -582,23 +609,25 @@ function acc(key,title,meta,chosen,body){
 
 /* ---------- Schritt 1: Behandlung ---------- */
 function stepTreat(){
-  const l=L(), z3=s.zones==="z3";
-  const botChosen=[s.zones?l[s.zones]:"", s.kaumuskel?l.kaumuskel:"", s.nefertiti?l.nefertiti:""].filter(Boolean).join(", ");
+  const l=L(), n=zoneN();
+  const botChosen=[...zoneNames(l), s.zonesUnknown?l.zoneUnknown:"", s.kaumuskel?l.kaumuskel:"", s.nefertiti?l.nefertiti:"", s.achsel?l.achsel:""].filter(Boolean).join(", ");
   const boostChosen=s.lachs==="single"?l.lachs:s.lachs==="pack"?l.lachsPack:"";
-  const chips=l.zones.map((z,i)=>`<button type="button" class="chip" data-extra="${i}" aria-pressed="${s.extras.includes(i)}">${z}</button>`).join("");
+  const chips=ZONE_IDS.map(z=>`<button type="button" class="chip" data-zone="${z}" aria-pressed="${s.zoneIds.includes(z)}">${l.zoneNames[z]}</button>`).join("")
+    +`<button type="button" class="chip" id="otherChip" aria-pressed="${s.otherOn}">${l.zoneOther}</button>`
+    +`<button type="button" class="chip" id="unknownChip" aria-pressed="${s.zonesUnknown}">${l.zoneUnknown}</button>`
+    +(s.otherOn?`<input id="otherText" type="text" value="${esc(s.otherText)}" placeholder="${esc(l.otherPh)}" maxlength="80">`:"");
+  const zsum = (n>0||s.zonesUnknown)
+    ? `<div class="zsum" aria-live="polite"><b>${n>0?l.zoneCountLabel(n):l.zonesOpen}<small>${l.zoneTiers(fmtP(PRICES.z1),fmtP(PRICES.z2),fmtP(PRICES.z3),fmtP(PRICES.extra))}</small></b>${n>0?`<span class="zp">${fmtP(zonePrice(n))}</span>`:""}</div>`
+    : "";
   const botBody=`
-    <div class="sub"><span>${l.zonesL}</span><button type="button" class="help" id="zoneHelp" aria-expanded="${s.zoneHelp}">${l.zoneHelpQ}</button></div>
-    ${s.zoneHelp?`<p class="helpbox">${l.zoneHelpA}</p>`:""}
-    <div class="opts">
-      ${opt({id:"z1",t:l.z1,p:fmtP(PRICES.z1),on:s.zones==="z1"})}
-      ${opt({id:"z2",t:l.z2,p:fmtP(PRICES.z2),on:s.zones==="z2"})}
-      ${opt({id:"z3",t:l.z3,p:fmtP(PRICES.z3),on:z3})}
-    </div>
-    ${z3?`<div class="extras"><div class="sub"><span>${l.extraT}</span><span>${l.perZone(fmtP(PRICES.extra))}</span></div><div class="chips">${chips}</div></div>`:""}
+    <div class="interest">${l.interestL}</div>
+    <div class="zones" role="group" aria-label="${esc(l.botGroup)}">${chips}</div>
+    ${zsum}
     <div class="sub"><span>${l.moreGroup}</span></div>
     <div class="opts">
       ${opt({id:"kaumuskel",t:l.kaumuskel,d:l.kaumuskelD,p:fmtP(PRICES.kaumuskel),on:s.kaumuskel,kind:"checkbox"})}
       ${opt({id:"nefertiti",t:l.nefertiti,d:l.nefertitiD,p:fmtP(PRICES.nefertiti),on:s.nefertiti,kind:"checkbox"})}
+      ${opt({id:"achsel",t:l.achsel,d:l.achselD,p:fmtP(PRICES.achsel),on:s.achsel,kind:"checkbox"})}
     </div>`;
   const boostBody=`<div class="opts">
       ${opt({id:"lachs",t:l.lachs,d:l.lachsD,p:fmtP(PRICES.lachs),on:s.lachs==="single"})}
@@ -675,10 +704,11 @@ function message(){
   if (mode==="checkup") lines.push("Kontrolltermin");
   else lines.push(s.visit==="first" ? "Erster Besuch" : "Schon einmal da");
   if (s.beratung) lines.push("Noch unsicher, Beratung gewünscht");
-  if (s.zones) lines.push("Botulinum "+de[s.zones]);
-  if (s.zones==="z3" && s.extras.length) lines.push("Zusätzlich: "+s.extras.map(i=>de.zones[i]).join(", "));
+  if (zoneN()>0) lines.push("Botulinum, "+de.zoneCountLabel(zoneN())+": "+zoneNames(de).join(", "));
+  else if (s.zonesUnknown) lines.push("Botulinum, Zonen noch offen");
   if (s.kaumuskel) lines.push("Kaumuskel");
   if (s.nefertiti) lines.push("Nefertiti-Lift");
+  if (s.achsel) lines.push("Übermäßiges Schwitzen (Hyperhidrose)");
   if (s.lachs) lines.push(s.lachs==="pack" ? "Lachs-DNA Viererpaket" : "Lachs-DNA");
   if (s.note.trim()) lines.push("Notiz: "+s.note.trim());
   lines.push("Sprache: "+LANGS.find(x=>x.id===lang).name);
@@ -728,13 +758,12 @@ function render(keepScroll){
 const toTop = () => { app.scrollIntoView({block:"start"}); };
 
 function toggleTile(id){
-  const clearT = () => { s.zones=null; s.extras=[]; s.kaumuskel=s.nefertiti=false; s.lachs=null; };
+  const clearT = () => { s.zoneIds=[]; s.otherOn=false; s.otherText=""; s.zonesUnknown=false; s.kaumuskel=s.nefertiti=s.achsel=false; s.lachs=null; };
   if (id==="v-first"||id==="v-return"){ s.visit = id==="v-first"?"first":"return"; delete s.errors.visit; }
   else if (id==="beratung"){ s.beratung=!s.beratung; if (s.beratung){ clearT(); s.open={bot:false,boost:false}; } delete s.errors.treat; }
   else {
     s.beratung=false; delete s.errors.treat;
-    if (id==="z1"||id==="z2"||id==="z3"){ s.zones = s.zones===id?null:id; if (s.zones!=="z3") s.extras=[]; }
-    else if (id==="lachs") s.lachs = s.lachs==="single"?null:"single";
+    if (id==="lachs") s.lachs = s.lachs==="single"?null:"single";
     else if (id==="lachsPack") s.lachs = s.lachs==="pack"?null:"pack";
     else if (id in s) s[id]=!s[id];
   }
@@ -777,7 +806,10 @@ function bind(){
   app.querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{ const k=b.dataset.acc; s.open[k]=!s.open[k]; render(); });
   const zh=document.getElementById("zoneHelp"); if(zh) zh.onclick=()=>{ s.zoneHelp=!s.zoneHelp; render(); };
   const na=document.getElementById("noteAdd"); if(na) na.onclick=()=>{ s.noteOpen=true; render(); const n=document.getElementById("note"); if(n) n.focus(); };
-  app.querySelectorAll("[data-extra]").forEach(b=>b.onclick=()=>{ const i=Number(b.dataset.extra); s.extras = s.extras.includes(i) ? s.extras.filter(x=>x!==i) : [...s.extras,i]; render(); });
+  app.querySelectorAll("[data-zone]").forEach(b=>b.onclick=()=>{ const z=b.dataset.zone; s.zoneIds = s.zoneIds.includes(z) ? s.zoneIds.filter(x=>x!==z) : [...s.zoneIds,z]; s.zonesUnknown=false; s.beratung=false; delete s.errors.treat; render(); });
+  const oc=document.getElementById("otherChip"); if(oc) oc.onclick=()=>{ s.otherOn=!s.otherOn; if(!s.otherOn) s.otherText=""; s.zonesUnknown=false; s.beratung=false; delete s.errors.treat; render(); const t=document.getElementById("otherText"); if(t) t.focus({preventScroll:true}); };
+  const uc=document.getElementById("unknownChip"); if(uc) uc.onclick=()=>{ s.zonesUnknown=!s.zonesUnknown; if(s.zonesUnknown){ s.zoneIds=[]; s.otherOn=false; s.otherText=""; } s.beratung=false; delete s.errors.treat; render(); };
+  const ot=document.getElementById("otherText"); if(ot) ot.oninput=()=>{ s.otherText=ot.value; };
   const note=document.getElementById("note"); if(note) note.oninput=()=>{ s.note=note.value; };
   const sd=document.getElementById("send"); if(sd) sd.onclick=send;
   app.querySelectorAll("[data-day]").forEach(b=>b.onclick=()=>{ s.day=b.dataset.day; s.flex=false; delete s.errors.day; render(); });

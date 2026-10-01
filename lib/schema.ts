@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { hasTreatment, type Selection } from "./treatments";
+import { hasTreatment, ZONE_IDS, type Selection } from "./treatments";
 
 /* Nur erlaubte Behandlungskennungen und Werte kommen durch. */
 export const selectionSchema = z
@@ -7,9 +7,9 @@ export const selectionSchema = z
     visit: z.enum(["first", "return"]).nullable(),
     checkup: z.boolean().default(false),
     beratung: z.boolean(),
-    zones: z.enum(["z1", "z2", "z3"]).nullable(),
-    extras: z.array(z.number().int().min(0).max(7)).max(8),
+    zones: z.array(z.enum(ZONE_IDS)).max(ZONE_IDS.length),
     otherZone: z.string().trim().max(80).nullable(),
+    zonesUnknown: z.boolean().default(false),
     kaumuskel: z.boolean(),
     nefertiti: z.boolean(),
     achsel: z.boolean(),
@@ -18,7 +18,7 @@ export const selectionSchema = z
   })
   .superRefine((s, ctx) => {
     const sel = s as Selection;
-    if (new Set(s.extras).size !== s.extras.length) ctx.addIssue({ code: "custom", message: "Zonen doppelt" });
+    if (new Set(s.zones).size !== s.zones.length) ctx.addIssue({ code: "custom", message: "Zonen doppelt" });
     if (sel.checkup) return;
     if (!sel.visit) ctx.addIssue({ code: "custom", message: "Besuch fehlt" });
     if (sel.beratung && hasTreatment(sel)) ctx.addIssue({ code: "custom", message: "Beratung und Behandlung zugleich" });
