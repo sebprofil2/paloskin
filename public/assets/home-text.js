@@ -7,14 +7,14 @@ de:{
   navPrices:"Behandlungen und Preise", navHow:"Ablauf", navStudio:"Studio", navFaq:"Fragen",
   book:"Termin buchen", bookNow:"Termin online buchen", whatsapp:"WhatsApp schreiben",
   h1:"Goodbye wrinkles.",
-  lead:"Botulinum-Behandlungen und Skin Booster in Berlin Prenzlauer Berg. Ärztlich, persönlich, mit guter Beratung.",
+  lead:"Botulinum-Behandlungen und Skin Booster in Berlin Prenzlauer Berg. Ärztlich, persönlich, ehrlich beraten.",
   fAddress:"Adresse", fDoctor:"Behandler", doctor:"Arzt", fLang:"Sprachen", langs:"Deutsch, Englisch, Spanisch, Französisch, Portugiesisch", fHours:"Termine", hours:"Nach Online-Anfrage", hours2:"Nur mit Termin, Anfrage online oder per WhatsApp",
   pricesH:"Behandlungen und Preise",
   botH:"Botulinum-Behandlung",
   z1:"1 Zone", z2:"2 Zonen", z3:"3 Zonen", zx:"Jede weitere Zone",
   kau:"Kaumuskel", kauS:"Facial Slimming, Entspannung bei Zähneknirschen", nef:"Nefertiti-Lift", nefS:"Hals und Jawline", achsel:"Übermäßiges Schwitzen (Hyperhidrose)",
   boostH:"Skin Booster",
-  lachs:"Lachs-DNA, eine Behandlung", lachs4:"Lachs-DNA, Viererpaket",
+  lachs:"Lachs-DNA, eine Behandlung", lachs4:"Lachs-DNA, Viererpaket", lachsS:"Dunkle Augenringe, Augenpartie", lachs4S:"Dunkle Augenringe, vier Behandlungen", pLachs4:"1.000 €*",
   pnote:"* Richtwerte. Abrechnung nach der Gebührenordnung für Ärzte. Preise inklusive Mehrwertsteuer.",
   howH:"So läuft es ab",
   s1H:"Termin online wählen", s1P:"Behandlung aussuchen, Wunschtermin wählen, Anfrage absenden. Wir bestätigen den Termin per WhatsApp.",
@@ -28,8 +28,7 @@ de:{
   q3:"Wann sieht man das Ergebnis und wie lange hält es?", a3:"Die Wirkung beginnt nach etwa drei bis fünf Tagen und ist nach zwei Wochen vollständig. Sie hält in der Regel drei bis vier Monate, danach lässt sie langsam nach.",
   q4:"Gibt es Gründe, nicht zu behandeln?", a4:"Ja, zum Beispiel Schwangerschaft und Stillzeit, bestimmte Muskelerkrankungen, akute Infekte im Behandlungsbereich oder eine bekannte Unverträglichkeit. Das besprechen wir vor jeder Behandlung in Ruhe, im Zweifel behandeln wir nicht.",
   q5:"Wie kann ich einen Termin absagen oder verschieben?", a5:"Per WhatsApp an +49 151 58872566. Bitte mindestens 48 Stunden vorher, damit jemand anderes den Termin nutzen kann.",
-  q6:"Wie kann ich bezahlen?", a6:"Vor Ort nach der Behandlung, mit Karte oder in bar. Eine Rechnung erhalten Sie auf Wunsch.",
-  imprint:"Impressum", privacy:"Datenschutz"
+    imprint:"Impressum", privacy:"Datenschutz"
 },
 en:{
   title:"Palo Skin | Dr. med. Sebastian Vogel, Berlin",
@@ -37,14 +36,14 @@ en:{
   navPrices:"Treatments and prices", navHow:"How it works", navStudio:"Studio", navFaq:"Questions",
   book:"Book appointment", bookNow:"Book online", whatsapp:"Message on WhatsApp",
   h1:"Goodbye wrinkles.",
-  lead:"Botulinum treatments and skin boosters in Berlin Prenzlauer Berg. Physician-led, personal, with good advice.",
+  lead:"Botulinum treatments and skin boosters in Berlin Prenzlauer Berg. Doctor-led, personal, honest advice.",
   fAddress:"Address", fDoctor:"Your physician", doctor:"Physician", fLang:"Languages", langs:"German, English, Spanish, French, Portuguese", fHours:"Appointments", hours:"By online request", hours2:"By appointment only, request online or on WhatsApp",
   pricesH:"Treatments and prices",
   botH:"Botulinum treatment",
   z1:"1 area", z2:"2 areas", z3:"3 areas", zx:"Each additional area",
   kau:"Masseter", kauS:"Facial slimming, relief for teeth grinding", nef:"Nefertiti lift", nefS:"Neck and jawline", achsel:"Excessive sweating (hyperhidrosis)",
   boostH:"Skin booster",
-  lachs:"Salmon DNA, one treatment", lachs4:"Salmon DNA, pack of four",
+  lachs:"Salmon DNA, one treatment", lachs4:"Salmon DNA, pack of four", lachsS:"Dark circles, eye area", lachs4S:"Dark circles, four treatments", pLachs4:"1,000 €*",
   pnote:"* Guide prices. Billed according to the German fee schedule for physicians (Gebührenordnung für Ärzte). Prices include value added tax.",
   howH:"How it works",
   s1H:"Choose a time online", s1P:"Choose your treatment, pick a preferred time, send the request. We confirm the appointment on WhatsApp.",
@@ -58,8 +57,7 @@ en:{
   q3:"When do I see the result and how long does it last?", a3:"The effect starts after about three to five days and is complete after two weeks. It usually lasts three to four months and then wears off gradually.",
   q4:"Are there reasons not to treat?", a4:"Yes, for example pregnancy and breastfeeding, certain muscle disorders, acute infections in the treatment area or a known intolerance. We go through this calmly before every treatment; when in doubt, we don’t treat.",
   q5:"How do I cancel or reschedule?", a5:"On WhatsApp to +49 151 58872566. Please give at least 48 hours’ notice so someone else can use the slot.",
-  q6:"How can I pay?", a6:"On site after the treatment, by card or in cash. An invoice is available on request.",
-  imprint:"Legal notice", privacy:"Privacy"
+    imprint:"Legal notice", privacy:"Privacy"
 },
 es:{
   title:"Palo Skin | Dr. med. Sebastian Vogel, Berlín",
@@ -67,14 +65,14 @@ es:{
   navPrices:"Tratamientos y precios", navHow:"Cómo funciona", navStudio:"Estudio", navFaq:"Preguntas",
   book:"Reservar cita", bookNow:"Reservar cita online", whatsapp:"Escribir por WhatsApp",
   h1:"Goodbye wrinkles.",
-  lead:"Tratamientos con toxina botulínica y skin boosters en Berlín Prenzlauer Berg. Atención médica, personal y con buen asesoramiento.",
+  lead:"Tratamientos con toxina botulínica y skin boosters en Berlín Prenzlauer Berg. Médico, personal, con consejo honesto.",
   fAddress:"Dirección", fDoctor:"Le atiende", doctor:"Médico", fLang:"Idiomas", langs:"Alemán, inglés, español, francés, portugués", fHours:"Citas", hours:"Con solicitud online", hours2:"Solo con cita, solicitud online o por WhatsApp",
   pricesH:"Tratamientos y precios",
   botH:"Tratamiento con toxina botulínica",
   z1:"1 zona", z2:"2 zonas", z3:"3 zonas", zx:"Cada zona adicional",
   kau:"Masetero", kauS:"Facial slimming, alivio del bruxismo", nef:"Lifting Nefertiti", nefS:"Cuello y mandíbula", achsel:"Sudoración excesiva (hiperhidrosis)",
   boostH:"Skin booster",
-  lachs:"ADN de salmón, un tratamiento", lachs4:"ADN de salmón, pack de cuatro",
+  lachs:"ADN de salmón, un tratamiento", lachs4:"ADN de salmón, pack de cuatro", lachsS:"Ojeras, contorno de ojos", lachs4S:"Ojeras, cuatro tratamientos", pLachs4:"1.000 €*",
   pnote:"* Precios orientativos. Facturación según el baremo alemán de honorarios médicos (Gebührenordnung für Ärzte). Precios con el impuesto sobre el valor añadido incluido.",
   howH:"Cómo funciona",
   s1H:"Elija la hora online", s1P:"Elija el tratamiento, indique su cita deseada y envíe la solicitud. Confirmamos la cita por WhatsApp.",
@@ -88,8 +86,7 @@ es:{
   q3:"¿Cuándo se ve el resultado y cuánto dura?", a3:"El efecto empieza a los tres a cinco días y es completo a las dos semanas. Suele durar de tres a cuatro meses y después se va perdiendo poco a poco.",
   q4:"¿Hay motivos para no tratar?", a4:"Sí, por ejemplo embarazo y lactancia, ciertas enfermedades musculares, infecciones agudas en la zona o una intolerancia conocida. Lo hablamos con calma antes de cada tratamiento; en caso de duda, no tratamos.",
   q5:"¿Cómo cancelo o cambio una cita?", a5:"Por WhatsApp al +49 151 58872566. Por favor, con al menos 48 horas de antelación para que otra persona pueda aprovechar la cita.",
-  q6:"¿Cómo puedo pagar?", a6:"En el estudio después del tratamiento, con tarjeta o en efectivo. Factura a petición.",
-  imprint:"Aviso legal", privacy:"Privacidad"
+    imprint:"Aviso legal", privacy:"Privacidad"
 },
 fr:{
   title:"Palo Skin | Dr. med. Sebastian Vogel, Berlin",
@@ -97,14 +94,14 @@ fr:{
   navPrices:"Soins et tarifs", navHow:"Déroulement", navStudio:"Studio", navFaq:"Questions",
   book:"Prendre rendez-vous", bookNow:"Réserver en ligne", whatsapp:"Écrire sur WhatsApp",
   h1:"Goodbye wrinkles.",
-  lead:"Traitements à la toxine botulique et skin boosters à Berlin Prenzlauer Berg. Médical, personnel, avec de bons conseils.",
+  lead:"Traitements à la toxine botulique et skin boosters à Berlin Prenzlauer Berg. Un médecin, un suivi personnel, des conseils honnêtes.",
   fAddress:"Adresse", fDoctor:"Votre médecin", doctor:"Médecin", fLang:"Langues", langs:"Allemand, anglais, espagnol, français, portugais", fHours:"Rendez-vous", hours:"Sur demande en ligne", hours2:"Uniquement sur rendez-vous, demande en ligne ou sur WhatsApp",
   pricesH:"Soins et tarifs",
   botH:"Traitement à la toxine botulique",
   z1:"1 zone", z2:"2 zones", z3:"3 zones", zx:"Chaque zone supplémentaire",
   kau:"Masséter", kauS:"Facial slimming, détente en cas de bruxisme", nef:"Lifting Néfertiti", nefS:"Cou et mâchoire", achsel:"Transpiration excessive (hyperhidrose)",
   boostH:"Skin booster",
-  lachs:"ADN de saumon, une séance", lachs4:"ADN de saumon, forfait de quatre",
+  lachs:"ADN de saumon, une séance", lachs4:"ADN de saumon, forfait de quatre", lachsS:"Cernes, contour des yeux", lachs4S:"Cernes, quatre séances", pLachs4:"1 000 €*",
   pnote:"* Prix indicatifs. Facturation selon le barème allemand des honoraires médicaux (Gebührenordnung für Ärzte). Prix taxe sur la valeur ajoutée comprise.",
   howH:"Comment ça se passe",
   s1H:"Choisir un créneau en ligne", s1P:"Choisissez le soin, indiquez votre créneau souhaité, envoyez la demande. Nous confirmons le rendez-vous sur WhatsApp.",
@@ -118,8 +115,7 @@ fr:{
   q3:"Quand voit-on le résultat et combien de temps dure-t-il ?", a3:"L’effet commence après trois à cinq jours et est complet après deux semaines. Il dure en général trois à quatre mois, puis s’estompe progressivement.",
   q4:"Y a-t-il des raisons de ne pas traiter ?", a4:"Oui, par exemple la grossesse et l’allaitement, certaines maladies musculaires, une infection aiguë dans la zone ou une intolérance connue. Nous en parlons calmement avant chaque soin ; en cas de doute, nous ne traitons pas.",
   q5:"Comment annuler ou déplacer un rendez-vous ?", a5:"Sur WhatsApp au +49 151 58872566. Merci de prévenir au moins 48 heures à l’avance pour que quelqu’un d’autre puisse profiter du créneau.",
-  q6:"Comment puis-je payer ?", a6:"Sur place après le soin, par carte ou en espèces. Une facture vous est remise sur demande.",
-  imprint:"Mentions légales", privacy:"Confidentialité"
+    imprint:"Mentions légales", privacy:"Confidentialité"
 },
 pt:{
   title:"Palo Skin | Dr. med. Sebastian Vogel, Berlim",
@@ -127,14 +123,14 @@ pt:{
   navPrices:"Tratamentos e preços", navHow:"Como funciona", navStudio:"Estúdio", navFaq:"Perguntas",
   book:"Agendar", bookNow:"Agendar online", whatsapp:"Falar pelo WhatsApp",
   h1:"Goodbye wrinkles.",
-  lead:"Tratamentos com toxina botulínica e skin boosters em Berlim Prenzlauer Berg. Médico, pessoal e com boa orientação.",
+  lead:"Tratamentos com toxina botulínica e skin boosters em Berlim Prenzlauer Berg. Médico, pessoal, orientação honesta.",
   fAddress:"Endereço", fDoctor:"Quem atende", doctor:"Médico", fLang:"Idiomas", langs:"Alemão, inglês, espanhol, francês, português", fHours:"Horários", hours:"Com pedido online", hours2:"Somente com hora marcada, pedido online ou pelo WhatsApp",
   pricesH:"Tratamentos e preços",
   botH:"Tratamento com toxina botulínica",
   z1:"1 área", z2:"2 áreas", z3:"3 áreas", zx:"Cada área adicional",
   kau:"Masseter", kauS:"Facial slimming, alívio do bruxismo", nef:"Lifting Nefertiti", nefS:"Pescoço e mandíbula", achsel:"Suor excessivo (hiperidrose)",
   boostH:"Skin booster",
-  lachs:"DNA de salmão, uma sessão", lachs4:"DNA de salmão, pacote de quatro",
+  lachs:"DNA de salmão, uma sessão", lachs4:"DNA de salmão, pacote de quatro", lachsS:"Olheiras, área dos olhos", lachs4S:"Olheiras, quatro sessões", pLachs4:"1.000 €*",
   pnote:"* Valores de referência. Cobrança conforme a tabela alemã de honorários médicos (Gebührenordnung für Ärzte). Preços com imposto sobre o valor agregado incluído.",
   howH:"Como funciona",
   s1H:"Escolha o horário online", s1P:"Escolha o tratamento, indique o horário desejado e envie o pedido. Confirmamos a consulta pelo WhatsApp.",
@@ -148,8 +144,7 @@ pt:{
   q3:"Quando o resultado aparece e quanto tempo dura?", a3:"O efeito começa em três a cinco dias e fica completo em duas semanas. Costuma durar de três a quatro meses e depois vai diminuindo aos poucos.",
   q4:"Há motivos para não tratar?", a4:"Sim, por exemplo gravidez e amamentação, certas doenças musculares, infecções agudas na área ou uma intolerância conhecida. Conversamos sobre isso com calma antes de cada tratamento; na dúvida, não tratamos.",
   q5:"Como cancelo ou remarco?", a5:"Pelo WhatsApp para +49 151 58872566. Por favor, com pelo menos 48 horas de antecedência, para que outra pessoa possa usar o horário.",
-  q6:"Como posso pagar?", a6:"No estúdio, após o tratamento, com cartão ou em dinheiro. Nota fiscal mediante pedido.",
-  imprint:"Informações legais", privacy:"Privacidade"
+    imprint:"Informações legais", privacy:"Privacidade"
 }
 };
 /* Französisch: geschütztes Leerzeichen vor ? ! : ; */

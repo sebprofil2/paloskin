@@ -480,7 +480,9 @@ Object.keys(T.fr).forEach(k=>{ const v=T.fr[k]; if (typeof v==="string") T.fr[k]
 let lang = P.detectLang();
 const L = () => T[lang];
 const LOC = () => LANGS.find(x=>x.id===lang).loc;
-const fmt = n => new Intl.NumberFormat(LOC(),{style:"currency",currency:"EUR",maximumFractionDigits:0,minimumFractionDigits:0}).format(n);
+/* Preise: Tausendertrennzeichen je Sprache (EN Komma, FR geschütztes Leerzeichen, sonst Punkt), Euro dahinter */
+const SEP = {de:".",en:",",es:".",fr:"\u00A0",pt:"."};
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, SEP[lang]) + "\u00A0€";
 /* Sichtbare Preise: „ab“ und Sternchen, Fußnote unter der Liste */
 const fmtP = n => fmt(n)+"*";
 
