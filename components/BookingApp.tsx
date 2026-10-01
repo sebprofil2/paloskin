@@ -242,6 +242,8 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   const l = TEXTS[lang];
   const loc = LANGS.find((x) => x.id === lang)!.loc;
   const fmt = useCallback((n: number) => new Intl.NumberFormat(loc, { style: "currency", currency: "EUR", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(n), [loc]);
+  /* Sichtbare Preise: „ab“ und Sternchen, Fußnote unter der Liste */
+  const priceTag = (n: number) => `${l.from(fmt(n))}*`;
   const dfmt = useCallback((key: string, o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(loc, { ...o, timeZone: TZ }).format(keyToNoon(key)), [loc]);
   const dayWd = (key: string) => cap(dfmt(key, { weekday: "short" }).replace(/\.$/, ""));
   const dayN = (key: string) => Number(key.slice(8));
@@ -555,15 +557,15 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
           <div className="opts">
             <Opt t={l.unsureT} d={l.unsureD} p={l.consultPrice} on={s.beratung} onClick={toggleBeratung} />
           </div>
-          <Acc open={s.open.bot} onToggle={() => toggleAcc("bot")} title={l.botGroup} meta={l.from(fmt(PRICES.z1))} chosen={botChosen}>
+          <Acc open={s.open.bot} onToggle={() => toggleAcc("bot")} title={l.botGroup} meta={priceTag(PRICES.z1)} chosen={botChosen}>
             <div className="interest">{l.interestL}</div>
             <div className="opts">
-              <Opt t={l.z1} d={l.z1D} p={fmt(PRICES.z1)} on={s.zones === "z1"} onClick={() => toggleZones("z1")} />
-              <Opt t={l.z2} d={l.z2D} p={fmt(PRICES.z2)} on={s.zones === "z2"} onClick={() => toggleZones("z2")} />
-              <Opt t={l.z3} d={l.z3D} p={fmt(PRICES.z3)} on={s.zones === "z3"} onClick={() => toggleZones("z3")} />
+              <Opt t={l.z1} d={l.z1D} p={priceTag(PRICES.z1)} on={s.zones === "z1"} onClick={() => toggleZones("z1")} />
+              <Opt t={l.z2} d={l.z2D} p={priceTag(PRICES.z2)} on={s.zones === "z2"} onClick={() => toggleZones("z2")} />
+              <Opt t={l.z3} d={l.z3D} p={priceTag(PRICES.z3)} on={s.zones === "z3"} onClick={() => toggleZones("z3")} />
             </div>
             <div className="extras">
-              <div className="sub"><span>{l.extraT}</span><span>{l.perZone(fmt(PRICES.extra))}</span></div>
+              <div className="sub"><span>{l.extraT}</span><span>{l.perZone(priceTag(PRICES.extra))}</span></div>
               <div className="chips">
                 {l.zones.map((z, i) => (
                   <button key={i} type="button" className="chip" aria-pressed={s.extras.includes(i)} onClick={() => toggleExtra(i)}>{z}</button>
@@ -574,16 +576,16 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
             </div>
             <div className="sub"><span>{l.moreGroup}</span></div>
             <div className="opts">
-              <Opt t={l.kaumuskel} d={l.kaumuskelD} p={fmt(PRICES.kaumuskel)} on={s.kaumuskel} kind="checkbox" onClick={() => toggleFlag("kaumuskel")} />
-              <Opt t={l.nefertiti} d={l.nefertitiD} p={fmt(PRICES.nefertiti)} on={s.nefertiti} kind="checkbox" onClick={() => toggleFlag("nefertiti")} />
-              <Opt t={l.achsel} d={l.achselD} p={fmt(PRICES.achsel)} on={s.achsel} kind="checkbox" onClick={() => toggleFlag("achsel")} />
+              <Opt t={l.kaumuskel} d={l.kaumuskelD} p={priceTag(PRICES.kaumuskel)} on={s.kaumuskel} kind="checkbox" onClick={() => toggleFlag("kaumuskel")} />
+              <Opt t={l.nefertiti} d={l.nefertitiD} p={priceTag(PRICES.nefertiti)} on={s.nefertiti} kind="checkbox" onClick={() => toggleFlag("nefertiti")} />
+              <Opt t={l.achsel} d={l.achselD} p={priceTag(PRICES.achsel)} on={s.achsel} kind="checkbox" onClick={() => toggleFlag("achsel")} />
             </div>
           </Acc>
-          <Acc open={s.open.boost} onToggle={() => toggleAcc("boost")} title="Skin Booster" meta={l.from(fmt(PRICES.lachs))} chosen={boostChosen}>
+          <Acc open={s.open.boost} onToggle={() => toggleAcc("boost")} title="Skin Booster" meta={priceTag(PRICES.lachs)} chosen={boostChosen}>
             <div className="interest">{l.interestL}</div>
             <div className="opts">
-              <Opt t={l.lachs} d={l.lachsD} p={fmt(PRICES.lachs)} on={s.lachs === "single"} onClick={() => toggleLachs("single")} />
-              <Opt t={l.lachsPack} d={l.lachsPackD} p={fmt(PRICES.lachsPack)} on={s.lachs === "pack"} onClick={() => toggleLachs("pack")} />
+              <Opt t={l.lachs} d={l.lachsD} p={priceTag(PRICES.lachs)} on={s.lachs === "single"} onClick={() => toggleLachs("single")} />
+              <Opt t={l.lachsPack} d={l.lachsPackD} p={priceTag(PRICES.lachsPack)} on={s.lachs === "pack"} onClick={() => toggleLachs("pack")} />
             </div>
           </Acc>
         </div>
