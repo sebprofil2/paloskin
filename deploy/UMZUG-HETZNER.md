@@ -4,27 +4,21 @@ Stand: 2. Oktober 2026. Diese Anleitung ist zum Mitklicken geschrieben. Jeder Be
 
 Vorab: Es wird der Branch `zonen` ausgerollt. Die Live-Seite auf Vercel bleibt unverändert, bis Sie in Schritt 11 die DNS-Einträge umstellen. Bis dahin ist nichts öffentlich sichtbar.
 
-## 1. SSH-Schlüssel auf dem Mac erzeugen
+## 1. SSH-Schlüssel auf dem Mac erzeugen (erledigt am 2. Oktober 2026)
 
-1. Programm „Terminal“ öffnen (Programme, Dienstprogramme, Terminal).
-2. Prüfen, ob schon ein Schlüssel da ist:
+Schlüsselpaar liegt unter `~/.ssh/id_ed25519_paloskin` (privat, mit Passphrase) und `~/.ssh/id_ed25519_paloskin.pub` (öffentlich, Kommentar `paloskin-hetzner`). Alle `ssh`- und `scp`-Befehle unten verwenden diesen Schlüssel über `-i ~/.ssh/id_ed25519_paloskin`. Den öffentlichen Schlüssel anzeigen:
 
 ```bash
-ls ~/.ssh/id_ed25519.pub
+cat ~/.ssh/id_ed25519_paloskin.pub
 ```
 
-Erwartet: entweder der Dateiname (Schlüssel vorhanden, weiter mit Punkt 4) oder „No such file“ (dann Punkt 3).
+Bequemer wird es mit einem Eintrag in `~/.ssh/config` (anlegen, sobald die Server-IP bekannt ist); danach genügt `ssh paloskin`:
 
-3. Schlüssel erzeugen, Fragen mit Enter bestätigen, eine Passphrase wählen und merken:
-
-```bash
-ssh-keygen -t ed25519 -C "sebastian@paloskin.de"
 ```
-
-4. Öffentlichen Schlüssel anzeigen und komplett kopieren (eine Zeile, beginnt mit `ssh-ed25519`):
-
-```bash
-cat ~/.ssh/id_ed25519.pub
+Host paloskin
+  HostName <SERVER-IP>
+  User deploy
+  IdentityFile ~/.ssh/id_ed25519_paloskin
 ```
 
 ## 2. Server bei Hetzner bestellen
@@ -48,7 +42,7 @@ cat ~/.ssh/id_ed25519.pub
 1. Verbinden (beim ersten Mal die Frage „Are you sure you want to continue connecting“ mit `yes` beantworten):
 
 ```bash
-ssh root@<SERVER-IP>
+ssh -i ~/.ssh/id_ed25519_paloskin root@<SERVER-IP>
 ```
 
 Erwartet: eine Zeile, die mit `root@paloskin-1:~#` endet. Alle folgenden Blöcke in diesem Abschnitt laufen auf dem Server.
@@ -84,7 +78,7 @@ sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/; s/^#\?PasswordAuthenticatio
 6. Wichtig: Diese root-Sitzung offen lassen. Auf dem Mac ein zweites Terminalfenster öffnen und prüfen, dass der neue Zugang funktioniert:
 
 ```bash
-ssh deploy@<SERVER-IP>
+ssh -i ~/.ssh/id_ed25519_paloskin deploy@<SERVER-IP>
 ```
 
 Erwartet: `deploy@paloskin-1:~$`. Erst wenn das klappt, die root-Sitzung mit `exit` schließen. Ab jetzt immer als `deploy` anmelden; Befehle mit `sudo` fragen einmal das Passwort von `deploy` ab.
@@ -124,7 +118,7 @@ exit
 ```
 
 ```bash
-ssh deploy@<SERVER-IP>
+ssh -i ~/.ssh/id_ed25519_paloskin deploy@<SERVER-IP>
 ```
 
 Prüfen:
@@ -150,7 +144,7 @@ Erwartet: am Ende keine Fehlermeldung, `ls /opt/paloskin` zeigt unter anderem `D
 1. Auf dem Mac, in einem eigenen Terminalfenster (nicht auf dem Server): Schlüsseldatei hochladen.
 
 ```bash
-scp ~/Downloads/palo-skin-buchung-1a5f1b62d06a.json deploy@<SERVER-IP>:/home/deploy/service-account.json
+scp -i ~/.ssh/id_ed25519_paloskin ~/Downloads/palo-skin-buchung-1a5f1b62d06a.json deploy@<SERVER-IP>:/home/deploy/service-account.json
 ```
 
 2. Auf dem Server: an den endgültigen Ort verschieben, nur root darf lesen.
