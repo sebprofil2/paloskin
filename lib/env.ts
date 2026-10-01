@@ -30,7 +30,8 @@ export function readEnv(): Env {
   if (bookings && !busy.includes(bookings)) busy.push(bookings);
   return {
     engine: process.env.BOOKING_ENGINE === "google" ? "google" : "mock",
-    testMode: process.env.TEST_MODE === "true",
+    // Standard ist Testbetrieb: erst TEST_MODE=false schaltet die echte Buchung für alle frei
+    testMode: process.env.TEST_MODE !== "false",
     testCode: (process.env.TEST_ACCESS_CODE ?? "").trim(),
     stepMinutes: int(process.env.SLOT_STEP_MINUTES, 30),
     bufferMinutes: process.env.BUFFER_MINUTES === undefined ? 0 : int(process.env.BUFFER_MINUTES, 0),

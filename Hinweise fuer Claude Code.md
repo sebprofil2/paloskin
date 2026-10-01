@@ -56,3 +56,14 @@ Gebaut nach dem „Bauauftrag: Buchungsseite Palo Skin mit echtem Google-Kalende
 9. Begrenzung auf sechs Buchungsversuche pro Stunde und Anschluss, im Speicher der Instanz. In Stufe 2 in die Datenbank verlegen.
 10. Vor Google-Start: Dienstkonto anlegen, Calendar API aktivieren, die drei Kalender dem Dienstkonto freigeben (offen: Termine lesen, Termine: lesen und ändern, Hauptkalender: nur frei/belegt), Variablen aus `.env.example` auf Vercel setzen, `BOOKING_ENGINE=google`.
 11. Vor dem ersten echten Kunden: Abschnitte 2 und 4 der Datenschutzerklärung umschreiben (Vercel statt GitHub Pages, Google Kalender mit Dienstkonto statt cal.com), siehe oben; danach `TEST_MODE=false`.
+
+## Texte, die beim Umbau auf die Kalenderbuchung wieder angepasst werden müssen (1. Oktober 2026)
+
+Solange /booking die Zwischenlösung (Anfrage per WhatsApp) zeigt, sind die Texte der Startseite ehrlich auf die Anfrage formuliert. Sobald die echte Buchung mit Google Kalender für alle freigeschaltet ist (`TEST_MODE=false`), in `public/index.html` und `public/assets/home-text.js` in allen fünf Sprachen anpassen:
+
+1. `s1P` („So läuft es ab“, Schritt 1): derzeit „Behandlung aussuchen, Wunschtermin wählen, Anfrage absenden. Wir bestätigen den Termin per WhatsApp.“ Dann wieder auf die sofortige Bestätigung umstellen.
+2. `hours` (Kopfbereich, Termine): derzeit „Nach Online-Anfrage“. Dann „Nach Online-Buchung“.
+3. `hours2` (Studio, Termine): derzeit „Nur mit Termin, Anfrage online oder per WhatsApp“. Dann „Buchung online rund um die Uhr“.
+4. `a5` (Häufige Fragen, Absagen): nennt einen Link in der Bestätigungsmail, den es noch nicht gibt. Bis dahin prüfen, ob „per WhatsApp“ allein reichen soll.
+
+Außerdem: `TEST_MODE` gilt standardmäßig als eingeschaltet. Ohne Umgebungsvariablen auf Vercel zeigt /booking deshalb die Zwischenlösung, nie die Testbuchung.
