@@ -47,6 +47,8 @@ export type Visit = "first" | "return";
 export type Lang = "de" | "en" | "es" | "fr" | "pt";
 
 export interface Selection {
+  /** Buchende Person plus höchstens eine weitere; Behandlung gilt für die buchende Person */
+  persons: 1 | 2;
   visit: Visit | null;
   checkup: boolean;
   beratung: boolean;
@@ -64,6 +66,7 @@ export interface Selection {
 }
 
 export const emptySelection = (): Selection => ({
+  persons: 1,
   visit: null,
   checkup: false,
   beratung: false,

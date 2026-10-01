@@ -4,6 +4,7 @@ import { hasTreatment, ZONE_IDS, type Selection } from "./treatments";
 /* Nur erlaubte Behandlungskennungen und Werte kommen durch. */
 export const selectionSchema = z
   .object({
+    persons: z.union([z.literal(1), z.literal(2)]).default(1),
     visit: z.enum(["first", "return"]).nullable(),
     checkup: z.boolean().default(false),
     beratung: z.boolean(),

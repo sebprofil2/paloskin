@@ -79,3 +79,9 @@ Außerdem: `TEST_MODE` gilt standardmäßig als eingeschaltet. Ohne Umgebungsvar
 ## Notiz Bezahlung (1. Oktober 2026)
 
 Die Frage „Wie kann ich bezahlen?“ wurde aus den häufigen Fragen der Startseite entfernt. Zahlungsinformationen (Karte oder Überweisung) kommen später nur in die Buchungsbestätigung, nicht auf die Website.
+
+## Personenzahl in der Buchung (1. Oktober 2026)
+
+Schritt 1 beginnt mit „Für wie viele Personen?“ (1 Person vorausgewählt, höchstens 2). Besuchsfrage und Behandlung gelten für die buchende Person, die zweite wählt vor Ort. Dauer: jede weitere Person plus 20 Minuten (`lib/duration.ts`). Kalendereintrag und Auswahltext nennen „2 Personen“, der Preis ändert sich nicht. Nirgends auf der Website die Wörter Rabatt, Aktion, Vorteil oder günstiger.
+
+Für später, nicht gebaut: Nach einer Buchung für 1 Person soll die Bestätigung einen Hinweis enthalten, dass auf 2 Personen umgebucht werden kann, mit einem Link, der den bestehenden Termin um 20 Minuten verlängert statt einen neuen anzulegen. Bei Buchungen für 2 Personen kein solcher Hinweis. Braucht den Versand der Bestätigung und die Datenbank aus Stufe 2 (Buchungs-ID, Idempotenz, Verlängerung prüft erneut die Verfügbarkeit).

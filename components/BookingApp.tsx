@@ -32,6 +32,7 @@ interface Slot {
 }
 
 interface State {
+  persons: 1 | 2;
   step: Step;
   maxStep: Step;
   visit: Visit | null;
@@ -66,6 +67,7 @@ type SlotsState = { status: "idle" | "loading" | "ready" | "down"; days: SlotDay
 type BookState = { status: "idle" | "sending" | "error" | "conflict" | "pending" } | { status: "done"; booking: Booking };
 
 const blank = (checkup: boolean): State => ({
+  persons: 1,
   step: checkup ? 2 : 1,
   maxStep: checkup ? 2 : 1,
   visit: null,
@@ -90,6 +92,7 @@ const blank = (checkup: boolean): State => ({
 
 function toSelection(s: State, checkup: boolean): Selection {
   return {
+    persons: s.persons,
     visit: s.visit,
     checkup,
     beratung: s.beratung,
@@ -106,7 +109,7 @@ function toSelection(s: State, checkup: boolean): Selection {
 
 /* Alles, wovon die Dauer abhängt; ändert sich das, werden die freien Zeiten neu geladen */
 function durationKey(sel: Selection): string {
-  return JSON.stringify([sel.checkup, sel.visit, sel.beratung, hasBotulinum(sel), !!sel.lachs]);
+  return JSON.stringify([sel.checkup, sel.visit, sel.beratung, hasBotulinum(sel), !!sel.lachs, sel.persons]);
 }
 
 function normPhone(v: string): string {
@@ -545,6 +548,15 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     const zoneN = zoneCount({ zones: s.zoneIds, otherZone: s.otherOn ? s.otherText : null });
     return (
       <section className="sec" id="sec-treat">
+        <div className="block" id="sec-persons">
+          <span className="lbl">{l.personsQ}</span>
+          <div className="seg" role="radiogroup">
+            <button type="button" className="segb" role="radio" aria-checked={s.persons === 1} onClick={() => setS((p) => ({ ...p, persons: 1 }))}>{l.persons1}</button>
+            <button type="button" className="segb" role="radio" aria-checked={s.persons === 2} onClick={() => setS((p) => ({ ...p, persons: 2 }))}>{l.persons2}</button>
+          </div>
+          <p className="hint" style={{ margin: 0 }}>{l.personsMore}</p>
+          {s.persons === 2 ? <p className="hint" style={{ margin: 0, color: "var(--ink)" }}>{l.secondPerson}</p> : null}
+        </div>
         <div className="block" id="sec-visit">
           <span className="lbl">{l.visitQ}</span>
           {miss("visit")}
@@ -574,7 +586,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
             {zoneN > 0 || s.zonesUnknown ? (
               <div className="zsum" aria-live="polite">
                 <b>
-                  {zoneN > 0 ? l.zoneCountLabel(zoneN) : l.zonesOpen}
+                  {zoneN > 0 ? l.zoneCountLabel(zoneN) : l.zonesOpen}{s.persons === 2 ? `, ${l.persons2}` : ""}
                   <small>{l.zoneTiers(priceTag(PRICES.zone1), priceTag(PRICES.zone2), priceTag(PRICES.zone3), priceTag(PRICES.zoneMore))}</small>
                 </b>
                 {zoneN > 0 ? <span className="zp">{priceTag(zonePrice(zoneN))}</span> : null}
@@ -692,6 +704,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   /* ---------- Schritt 3: Angaben mit kompakter Übersicht ---------- */
   const overviewItems = (): string[] => {
     const out: string[] = [];
+    if (s.persons === 2) out.push(l.persons2);
     const n = zoneCount({ zones: s.zoneIds, otherZone: s.otherOn ? s.otherText : null });
     const names = [...s.zoneIds.map((z) => l.zoneNames[z]), ...(s.otherOn ? [s.otherText.trim() ? `${l.zoneOther}: ${s.otherText.trim()}` : l.zoneOther] : [])];
     if (n > 0) out.push(`${l.botRow}${l.zoneCountLabel(n)}: ${names.join(", ")}`);

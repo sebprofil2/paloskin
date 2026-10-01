@@ -16,6 +16,12 @@ describe("Dauer", () => {
     expect(durationMinutes({ ...emptySelection(), visit: "first", achsel: true, lachs: "pack" })).toBe(50);
     expect(durationMinutes({ ...emptySelection(), visit: "first", lachs: "pack" })).toBe(30);
   });
+  it("Jede weitere Person plus 20", () => {
+    expect(durationMinutes({ ...emptySelection(), persons: 2, visit: "first", zones: ["stirn"] })).toBe(50);
+    expect(durationMinutes({ ...emptySelection(), persons: 2, visit: "return", zones: ["stirn"] })).toBe(40);
+    expect(durationMinutes({ ...emptySelection(), persons: 2, visit: "return", zones: ["stirn"], lachs: "single" })).toBe(60);
+    expect(durationMinutes({ ...emptySelection(), persons: 2, visit: "first", beratung: true })).toBe(50);
+  });
   it("Kontrolltermin 15", () => {
     expect(durationMinutes({ ...emptySelection(), checkup: true })).toBe(15);
   });

@@ -489,11 +489,11 @@ const X = {
 };
 Object.keys(X).forEach(k => Object.assign(T[k], X[k]));
 const Z = {
-  de:{ interestL:"Ich interessiere mich für:", otherPh:"Welche Zone?", zoneNames:{zornesfalte:"Zornesfalte",stirn:"Stirn",kraehenfuesse:"Krähenfüße",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Mundwinkel",erdbeerkinn:"Erdbeerkinn",gummysmile:"Gummy Smile",oberlippe:"Oberlippenfältchen",nase:"Nasenverschmälerung"}, zoneOther:"Sonstiges", zoneUnknown:"Weiß ich noch nicht", zonesOpen:"Zonen noch offen", zoneCountLabel:n=>`${n} ${n===1?"Zone":"Zonen"}`, zoneTiers:(a,b,c,d)=>`1 Zone ${a}, 2 Zonen ${b}, 3 Zonen ${c}, jede weitere ${d}`, achsel:"Übermäßiges Schwitzen", achselD:"Hyperhidrose unter den Achseln" },
-  en:{ interestL:"I am interested in:", otherPh:"Which area?", zoneNames:{zornesfalte:"Frown lines",stirn:"Forehead",kraehenfuesse:"Crow’s feet",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Mouth corners",erdbeerkinn:"Dimpled chin",gummysmile:"Gummy Smile",oberlippe:"Upper lip lines",nase:"Nose slimming"}, zoneOther:"Other", zoneUnknown:"Not decided yet", zonesOpen:"Areas not decided yet", zoneCountLabel:n=>`${n} ${n===1?"area":"areas"}`, zoneTiers:(a,b,c,d)=>`1 area ${a}, 2 areas ${b}, 3 areas ${c}, each additional ${d}`, achsel:"Excessive sweating", achselD:"Hyperhidrosis of the underarms" },
-  es:{ interestL:"Me interesa:", otherPh:"¿Qué zona?", zoneNames:{zornesfalte:"Entrecejo",stirn:"Frente",kraehenfuesse:"Patas de gallo",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Comisuras de la boca",erdbeerkinn:"Mentón en piel de naranja",gummysmile:"Sonrisa gingival",oberlippe:"Arrugas del labio superior",nase:"Afinar la nariz"}, zoneOther:"Otra", zoneUnknown:"Aún por decidir", zonesOpen:"Zonas por decidir", zoneCountLabel:n=>`${n} ${n===1?"zona":"zonas"}`, zoneTiers:(a,b,c,d)=>`1 zona ${a}, 2 zonas ${b}, 3 zonas ${c}, cada zona adicional ${d}`, achsel:"Sudoración excesiva", achselD:"Hiperhidrosis de las axilas" },
-  fr:{ interestL:"Je m’intéresse à :", otherPh:"Quelle zone ?", zoneNames:{zornesfalte:"Ride du lion",stirn:"Front",kraehenfuesse:"Pattes d’oie",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Coins de la bouche",erdbeerkinn:"Menton en peau d’orange",gummysmile:"Sourire gingival",oberlippe:"Ridules de la lèvre supérieure",nase:"Affinement du nez"}, zoneOther:"Autre", zoneUnknown:"Pas encore décidé", zonesOpen:"Zones à définir", zoneCountLabel:n=>`${n} ${n===1?"zone":"zones"}`, zoneTiers:(a,b,c,d)=>`1 zone ${a}, 2 zones ${b}, 3 zones ${c}, chaque zone supplémentaire ${d}`, achsel:"Transpiration excessive", achselD:"Hyperhidrose des aisselles" },
-  pt:{ interestL:"Tenho interesse em:", otherPh:"Qual área?", zoneNames:{zornesfalte:"Entre as sobrancelhas",stirn:"Testa",kraehenfuesse:"Pés de galinha",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Cantos da boca",erdbeerkinn:"Queixo em casca de laranja",gummysmile:"Sorriso gengival",oberlippe:"Rugas do lábio superior",nase:"Afinamento do nariz"}, zoneOther:"Outra", zoneUnknown:"Ainda não decidi", zonesOpen:"Áreas a definir", zoneCountLabel:n=>`${n} ${n===1?"área":"áreas"}`, zoneTiers:(a,b,c,d)=>`1 área ${a}, 2 áreas ${b}, 3 áreas ${c}, cada área adicional ${d}`, achsel:"Suor excessivo", achselD:"Hiperidrose nas axilas" }
+  de:{ personsQ:"Für wie viele Personen?", persons1:"1 Person", persons2:"2 Personen", personsMore:"Mehr als zwei? Bitte angrenzende Termine buchen.", secondPerson:"Die zweite Person wählt ihre Behandlung vor Ort.", interestL:"Ich interessiere mich für:", otherPh:"Welche Zone?", zoneNames:{zornesfalte:"Zornesfalte",stirn:"Stirn",kraehenfuesse:"Krähenfüße",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Mundwinkel",erdbeerkinn:"Erdbeerkinn",gummysmile:"Gummy Smile",oberlippe:"Oberlippenfältchen",nase:"Nasenverschmälerung"}, zoneOther:"Sonstiges", zoneUnknown:"Weiß ich noch nicht", zonesOpen:"Zonen noch offen", zoneCountLabel:n=>`${n} ${n===1?"Zone":"Zonen"}`, zoneTiers:(a,b,c,d)=>`1 Zone ${a}, 2 Zonen ${b}, 3 Zonen ${c}, jede weitere ${d}`, achsel:"Übermäßiges Schwitzen", achselD:"Hyperhidrose unter den Achseln" },
+  en:{ personsQ:"For how many people?", persons1:"1 person", persons2:"2 people", personsMore:"More than two? Please book adjacent appointments.", secondPerson:"The second person chooses their treatment at the appointment.", interestL:"I am interested in:", otherPh:"Which area?", zoneNames:{zornesfalte:"Frown lines",stirn:"Forehead",kraehenfuesse:"Crow’s feet",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Mouth corners",erdbeerkinn:"Dimpled chin",gummysmile:"Gummy Smile",oberlippe:"Upper lip lines",nase:"Nose slimming"}, zoneOther:"Other", zoneUnknown:"Not decided yet", zonesOpen:"Areas not decided yet", zoneCountLabel:n=>`${n} ${n===1?"area":"areas"}`, zoneTiers:(a,b,c,d)=>`1 area ${a}, 2 areas ${b}, 3 areas ${c}, each additional ${d}`, achsel:"Excessive sweating", achselD:"Hyperhidrosis of the underarms" },
+  es:{ personsQ:"¿Para cuántas personas?", persons1:"1 persona", persons2:"2 personas", personsMore:"¿Más de dos? Por favor, reserve citas consecutivas.", secondPerson:"La segunda persona elige su tratamiento en la cita.", interestL:"Me interesa:", otherPh:"¿Qué zona?", zoneNames:{zornesfalte:"Entrecejo",stirn:"Frente",kraehenfuesse:"Patas de gallo",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Comisuras de la boca",erdbeerkinn:"Mentón en piel de naranja",gummysmile:"Sonrisa gingival",oberlippe:"Arrugas del labio superior",nase:"Afinar la nariz"}, zoneOther:"Otra", zoneUnknown:"Aún por decidir", zonesOpen:"Zonas por decidir", zoneCountLabel:n=>`${n} ${n===1?"zona":"zonas"}`, zoneTiers:(a,b,c,d)=>`1 zona ${a}, 2 zonas ${b}, 3 zonas ${c}, cada zona adicional ${d}`, achsel:"Sudoración excesiva", achselD:"Hiperhidrosis de las axilas" },
+  fr:{ personsQ:"Pour combien de personnes ?", persons1:"1 personne", persons2:"2 personnes", personsMore:"Plus de deux ? Merci de réserver des rendez-vous consécutifs.", secondPerson:"La deuxième personne choisit son soin sur place.", interestL:"Je m’intéresse à :", otherPh:"Quelle zone ?", zoneNames:{zornesfalte:"Ride du lion",stirn:"Front",kraehenfuesse:"Pattes d’oie",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Coins de la bouche",erdbeerkinn:"Menton en peau d’orange",gummysmile:"Sourire gingival",oberlippe:"Ridules de la lèvre supérieure",nase:"Affinement du nez"}, zoneOther:"Autre", zoneUnknown:"Pas encore décidé", zonesOpen:"Zones à définir", zoneCountLabel:n=>`${n} ${n===1?"zone":"zones"}`, zoneTiers:(a,b,c,d)=>`1 zone ${a}, 2 zones ${b}, 3 zones ${c}, chaque zone supplémentaire ${d}`, achsel:"Transpiration excessive", achselD:"Hyperhidrose des aisselles" },
+  pt:{ personsQ:"Para quantas pessoas?", persons1:"1 pessoa", persons2:"2 pessoas", personsMore:"Mais de duas? Por favor, agende horários seguidos.", secondPerson:"A segunda pessoa escolhe o tratamento na consulta.", interestL:"Tenho interesse em:", otherPh:"Qual área?", zoneNames:{zornesfalte:"Entre as sobrancelhas",stirn:"Testa",kraehenfuesse:"Pés de galinha",browlift:"Brow Lift",lipflip:"Lip Flip",bunnylines:"Bunny Lines",mundwinkel:"Cantos da boca",erdbeerkinn:"Queixo em casca de laranja",gummysmile:"Sorriso gengival",oberlippe:"Rugas do lábio superior",nase:"Afinamento do nariz"}, zoneOther:"Outra", zoneUnknown:"Ainda não decidi", zonesOpen:"Áreas a definir", zoneCountLabel:n=>`${n} ${n===1?"área":"áreas"}`, zoneTiers:(a,b,c,d)=>`1 área ${a}, 2 áreas ${b}, 3 áreas ${c}, cada área adicional ${d}`, achsel:"Suor excessivo", achselD:"Hiperidrose nas axilas" }
 };
 Object.keys(Z).forEach(k => Object.assign(T[k], Z[k]));
 /* Französisch: geschütztes Leerzeichen vor ? ! : ; und in « » */
@@ -513,7 +513,7 @@ const mode = params.has("kontrolle") || params.has("checkup") ? "checkup" : "nor
 
 const blank = () => ({
   step:1, maxStep:1, visit:null,
-  zoneIds:[], otherOn:false, otherText:"", zonesUnknown:false, kaumuskel:false, nefertiti:false, achsel:false, lachs:null,
+  persons:1, zoneIds:[], otherOn:false, otherText:"", zonesUnknown:false, kaumuskel:false, nefertiti:false, achsel:false, lachs:null,
   beratung:false, note:"", noteOpen:false, zoneHelp:false, open:{bot:false,boost:false},
   day:null, flex:false, win:null, f:{vorname:"",nachname:""}, errors:{}
 });
@@ -547,12 +547,12 @@ const visitChosen = () => mode==="checkup" || !!s.visit;
 /* Dauer: erster Besuch 30, schon einmal da 20, Beratung immer 30, Botulinum plus Lachs-DNA 20 mehr, Kontrolle 15 */
 function minutes(){
   if (mode==="checkup") return 15;
-  if (s.beratung) return 30;
+  if (s.beratung) return 30 + (s.persons-1)*20;
   if (!s.visit) return null;
   let m = s.visit==="return" ? 20 : 30;
   const botox = zoneN()>0 || s.zonesUnknown || s.kaumuskel || s.nefertiti || s.achsel;
   if (botox && s.lachs) m += 20;
-  return m;
+  return m + (s.persons-1)*20;
 }
 function calLink(){
   if (mode==="checkup") return CAL.user+"/"+CAL.checkup;
@@ -564,6 +564,7 @@ function notes(){
   const de=T.de, rows=[];
   if (mode==="checkup") rows.push("Kontrolltermin");
   else rows.push(s.visit==="first" ? "Erster Besuch" : "Schon einmal da");
+  if (s.persons===2) rows.push("2 Personen (die zweite Person wählt ihre Behandlung vor Ort)");
   if (s.beratung) rows.push("Noch unsicher, Beratung gewünscht");
   if (zoneN()>0) rows.push("Botulinum, "+de.zoneCountLabel(zoneN())+": "+zoneNames(de).join(", ")+" ("+zonePrice(zoneN())+" € brutto)");
   else if (s.zonesUnknown) rows.push("Botulinum, Zonen noch offen");
@@ -618,7 +619,7 @@ function stepTreat(){
     +`<button type="button" class="chip" id="unknownChip" aria-pressed="${s.zonesUnknown}">${l.zoneUnknown}</button>`
     +(s.otherOn?`<input id="otherText" type="text" value="${esc(s.otherText)}" placeholder="${esc(l.otherPh)}" maxlength="80">`:"");
   const zsum = (n>0||s.zonesUnknown)
-    ? `<div class="zsum" aria-live="polite"><b>${n>0?l.zoneCountLabel(n):l.zonesOpen}<small>${l.zoneTiers(fmtP(PRICES.z1),fmtP(PRICES.z2),fmtP(PRICES.z3),fmtP(PRICES.extra))}</small></b>${n>0?`<span class="zp">${fmtP(zonePrice(n))}</span>`:""}</div>`
+    ? `<div class="zsum" aria-live="polite"><b>${n>0?l.zoneCountLabel(n):l.zonesOpen}${s.persons===2?", "+l.persons2:""}<small>${l.zoneTiers(fmtP(PRICES.z1),fmtP(PRICES.z2),fmtP(PRICES.z3),fmtP(PRICES.extra))}</small></b>${n>0?`<span class="zp">${fmtP(zonePrice(n))}</span>`:""}</div>`
     : "";
   const botBody=`
     <div class="interest">${l.interestL}</div>
@@ -638,6 +639,14 @@ function stepTreat(){
     ? `<label class="field" for="note"><span class="l">${l.noteL} <em>${l.optional}</em></span><textarea id="note" rows="2" placeholder="${esc(l.notePh)}">${esc(s.note)}</textarea></label>`
     : `<button type="button" class="addlink" id="noteAdd">+ ${l.noteAdd}</button>`;
   return `<section class="sec" id="sec-treat">
+    <div class="block" id="sec-persons"><span class="lbl">${l.personsQ}</span>
+      <div class="seg" role="radiogroup">
+        <button type="button" class="segb" role="radio" data-persons="1" aria-checked="${s.persons===1}">${l.persons1}</button>
+        <button type="button" class="segb" role="radio" data-persons="2" aria-checked="${s.persons===2}">${l.persons2}</button>
+      </div>
+      <p class="hint" style="margin:0">${l.personsMore}</p>
+      ${s.persons===2?`<p class="hint" style="margin:0;color:var(--ink)">${l.secondPerson}</p>`:""}
+    </div>
     <div class="block" id="sec-visit"><span class="lbl">${l.visitQ}</span>${miss("visit")}
       <div class="seg" role="radiogroup">
         <button type="button" class="segb" role="radio" data-t="v-first" aria-checked="${s.visit==="first"}">${l.visitFirstLbl}</button>
@@ -712,6 +721,7 @@ function selectionText(){
   /* Auswahl auf Deutsch für das Studio */
   if (mode==="checkup") lines.push("Kontrolltermin");
   else lines.push(s.visit==="first" ? "Erster Besuch" : "Schon einmal da");
+  if (s.persons===2) lines.push(l.persons2);
   if (s.beratung) lines.push("Noch unsicher, Beratung gewünscht");
   if (zoneN()>0) lines.push("Botulinum, "+de.zoneCountLabel(zoneN())+": "+zoneNames(de).join(", "));
   else if (s.zonesUnknown) lines.push("Botulinum, Zonen noch offen");
@@ -815,6 +825,7 @@ function bind(){
   app.querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{ const k=b.dataset.acc; s.open[k]=!s.open[k]; render(); });
   const zh=document.getElementById("zoneHelp"); if(zh) zh.onclick=()=>{ s.zoneHelp=!s.zoneHelp; render(); };
   const na=document.getElementById("noteAdd"); if(na) na.onclick=()=>{ s.noteOpen=true; render(); const n=document.getElementById("note"); if(n) n.focus(); };
+  app.querySelectorAll("[data-persons]").forEach(b=>b.onclick=()=>{ s.persons=Number(b.dataset.persons); render(); });
   app.querySelectorAll("[data-zone]").forEach(b=>b.onclick=()=>{ const z=b.dataset.zone; s.zoneIds = s.zoneIds.includes(z) ? s.zoneIds.filter(x=>x!==z) : [...s.zoneIds,z]; s.zonesUnknown=false; s.beratung=false; delete s.errors.treat; render(); });
   const oc=document.getElementById("otherChip"); if(oc) oc.onclick=()=>{ s.otherOn=!s.otherOn; if(!s.otherOn) s.otherText=""; s.zonesUnknown=false; s.beratung=false; delete s.errors.treat; render(); const t=document.getElementById("otherText"); if(t) t.focus({preventScroll:true}); };
   const uc=document.getElementById("unknownChip"); if(uc) uc.onclick=()=>{ s.zonesUnknown=!s.zonesUnknown; if(s.zonesUnknown){ s.zoneIds=[]; s.otherOn=false; s.otherText=""; } s.beratung=false; delete s.errors.treat; render(); };

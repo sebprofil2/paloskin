@@ -325,6 +325,12 @@ export interface ExtraTexts {
   zonesOpen: string;
   zoneCountLabel: (n: number) => string;
   zoneTiers: (p1: string, p2: string, p3: string, p4: string) => string;
+  /* Personenzahl (1. Oktober 2026) */
+  personsQ: string;
+  persons1: string;
+  persons2: string;
+  personsMore: string;
+  secondPerson: string;
 }
 
 const X: Record<Lang, ExtraTexts> = {
@@ -339,6 +345,7 @@ const X: Record<Lang, ExtraTexts> = {
     refL: "Buchungsnummer", durL: "Dauer", minutes: (n) => `${n} Minuten`,
     home: "Zur Startseite", legalImprint: "Impressum", legalPrivacy: "Datenschutzerklärung",
     zoneNames: { zornesfalte: "Zornesfalte", stirn: "Stirn", kraehenfuesse: "Krähenfüße", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Mundwinkel", erdbeerkinn: "Erdbeerkinn", gummysmile: "Gummy Smile", oberlippe: "Oberlippenfältchen", nase: "Nasenverschmälerung" },
+    personsQ: "Für wie viele Personen?", persons1: "1 Person", persons2: "2 Personen", personsMore: "Mehr als zwei? Bitte angrenzende Termine buchen.", secondPerson: "Die zweite Person wählt ihre Behandlung vor Ort.",
     zoneOther: "Sonstiges", zoneUnknown: "Weiß ich noch nicht", zonesOpen: "Zonen noch offen",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "Zone" : "Zonen"}`,
     zoneTiers: (p1, p2, p3, p4) => `1 Zone ${p1}, 2 Zonen ${p2}, 3 Zonen ${p3}, jede weitere ${p4}`,
@@ -354,6 +361,7 @@ const X: Record<Lang, ExtraTexts> = {
     refL: "Booking number", durL: "Duration", minutes: (n) => `${n} minutes`,
     home: "Back to the start page", legalImprint: "Legal notice", legalPrivacy: "Privacy policy",
     zoneNames: { zornesfalte: "Frown lines", stirn: "Forehead", kraehenfuesse: "Crow’s feet", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Mouth corners", erdbeerkinn: "Dimpled chin", gummysmile: "Gummy Smile", oberlippe: "Upper lip lines", nase: "Nose slimming" },
+    personsQ: "For how many people?", persons1: "1 person", persons2: "2 people", personsMore: "More than two? Please book adjacent appointments.", secondPerson: "The second person chooses their treatment at the appointment.",
     zoneOther: "Other", zoneUnknown: "Not decided yet", zonesOpen: "Areas not decided yet",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "area" : "areas"}`,
     zoneTiers: (p1, p2, p3, p4) => `1 area ${p1}, 2 areas ${p2}, 3 areas ${p3}, each additional ${p4}`,
@@ -369,6 +377,7 @@ const X: Record<Lang, ExtraTexts> = {
     refL: "Número de reserva", durL: "Duración", minutes: (n) => `${n} minutos`,
     home: "Volver a la página de inicio", legalImprint: "Aviso legal", legalPrivacy: "Política de privacidad",
     zoneNames: { zornesfalte: "Entrecejo", stirn: "Frente", kraehenfuesse: "Patas de gallo", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Comisuras de la boca", erdbeerkinn: "Mentón en piel de naranja", gummysmile: "Sonrisa gingival", oberlippe: "Arrugas del labio superior", nase: "Afinar la nariz" },
+    personsQ: "¿Para cuántas personas?", persons1: "1 persona", persons2: "2 personas", personsMore: "¿Más de dos? Por favor, reserve citas consecutivas.", secondPerson: "La segunda persona elige su tratamiento en la cita.",
     zoneOther: "Otra", zoneUnknown: "Aún por decidir", zonesOpen: "Zonas por decidir",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "zona" : "zonas"}`,
     zoneTiers: (p1, p2, p3, p4) => `1 zona ${p1}, 2 zonas ${p2}, 3 zonas ${p3}, cada zona adicional ${p4}`,
@@ -384,6 +393,7 @@ const X: Record<Lang, ExtraTexts> = {
     refL: "Numéro de réservation", durL: "Durée", minutes: (n) => `${n} minutes`,
     home: "Retour à la page d’accueil", legalImprint: "Mentions légales", legalPrivacy: "Politique de confidentialité",
     zoneNames: { zornesfalte: "Ride du lion", stirn: "Front", kraehenfuesse: "Pattes d’oie", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Coins de la bouche", erdbeerkinn: "Menton en peau d’orange", gummysmile: "Sourire gingival", oberlippe: "Ridules de la lèvre supérieure", nase: "Affinement du nez" },
+    personsQ: "Pour combien de personnes ?", persons1: "1 personne", persons2: "2 personnes", personsMore: "Plus de deux ? Merci de réserver des rendez-vous consécutifs.", secondPerson: "La deuxième personne choisit son soin sur place.",
     zoneOther: "Autre", zoneUnknown: "Pas encore décidé", zonesOpen: "Zones à définir",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "zone" : "zones"}`,
     zoneTiers: (p1, p2, p3, p4) => `1 zone ${p1}, 2 zones ${p2}, 3 zones ${p3}, chaque zone supplémentaire ${p4}`,
@@ -399,6 +409,7 @@ const X: Record<Lang, ExtraTexts> = {
     refL: "Número da reserva", durL: "Duração", minutes: (n) => `${n} minutos`,
     home: "Voltar à página inicial", legalImprint: "Informações legais", legalPrivacy: "Política de privacidade",
     zoneNames: { zornesfalte: "Entre as sobrancelhas", stirn: "Testa", kraehenfuesse: "Pés de galinha", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Cantos da boca", erdbeerkinn: "Queixo em casca de laranja", gummysmile: "Sorriso gengival", oberlippe: "Rugas do lábio superior", nase: "Afinamento do nariz" },
+    personsQ: "Para quantas pessoas?", persons1: "1 pessoa", persons2: "2 pessoas", personsMore: "Mais de duas? Por favor, agende horários seguidos.", secondPerson: "A segunda pessoa escolhe o tratamento na consulta.",
     zoneOther: "Outra", zoneUnknown: "Ainda não decidi", zonesOpen: "Áreas a definir",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "área" : "áreas"}`,
     zoneTiers: (p1, p2, p3, p4) => `1 área ${p1}, 2 áreas ${p2}, 3 áreas ${p3}, cada área adicional ${p4}`,
