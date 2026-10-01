@@ -27,7 +27,7 @@ de:{
   q2:"Tut die Behandlung weh?", a2:"Die Einstiche mit sehr feinen Nadeln sind kurz und gut auszuhalten, eine Betäubung ist nicht nötig. Direkt danach können Sie wieder zur Arbeit oder zum Sport, kleine Rötungen verschwinden meist innerhalb einer Stunde.",
   q3:"Wann sieht man das Ergebnis und wie lange hält es?", a3:"Die Wirkung beginnt nach etwa drei bis fünf Tagen und ist nach zwei Wochen vollständig. Sie hält in der Regel drei bis vier Monate, danach lässt sie langsam nach.",
   q4:"Gibt es Gründe, nicht zu behandeln?", a4:"Ja, zum Beispiel Schwangerschaft und Stillzeit, bestimmte Muskelerkrankungen, akute Infekte im Behandlungsbereich oder eine bekannte Unverträglichkeit. Das besprechen wir vor jeder Behandlung in Ruhe, im Zweifel behandeln wir nicht.",
-  q5:"Wie kann ich einen Termin absagen oder verschieben?", a5:"Über den Link in Ihrer Bestätigungsmail oder per WhatsApp. Bitte mindestens 48 Stunden vorher, damit jemand anderes den Termin nutzen kann.",
+  q5:"Wie kann ich einen Termin absagen oder verschieben?", a5:"Per WhatsApp an +49 151 58872566. Bitte mindestens 48 Stunden vorher, damit jemand anderes den Termin nutzen kann.",
   q6:"Wie kann ich bezahlen?", a6:"Vor Ort nach der Behandlung, mit Karte oder in bar. Eine Rechnung erhalten Sie auf Wunsch.",
   imprint:"Impressum", privacy:"Datenschutz"
 },
@@ -57,7 +57,7 @@ en:{
   q2:"Does it hurt?", a2:"The injections with very fine needles are brief and easy to tolerate; no anaesthetic is needed. You can go straight back to work or sport, and small red marks usually fade within an hour.",
   q3:"When do I see the result and how long does it last?", a3:"The effect starts after about three to five days and is complete after two weeks. It usually lasts three to four months and then wears off gradually.",
   q4:"Are there reasons not to treat?", a4:"Yes, for example pregnancy and breastfeeding, certain muscle disorders, acute infections in the treatment area or a known intolerance. We go through this calmly before every treatment; when in doubt, we don’t treat.",
-  q5:"How do I cancel or reschedule?", a5:"Via the link in your confirmation email or on WhatsApp. Please give at least 48 hours’ notice so someone else can use the slot.",
+  q5:"How do I cancel or reschedule?", a5:"On WhatsApp to +49 151 58872566. Please give at least 48 hours’ notice so someone else can use the slot.",
   q6:"How can I pay?", a6:"On site after the treatment, by card or in cash. An invoice is available on request.",
   imprint:"Legal notice", privacy:"Privacy"
 },
@@ -87,7 +87,7 @@ es:{
   q2:"¿Duele el tratamiento?", a2:"Los pinchazos con agujas muy finas son breves y se toleran bien; no hace falta anestesia. Puede volver al trabajo o al deporte de inmediato, y las pequeñas rojeces desaparecen normalmente en una hora.",
   q3:"¿Cuándo se ve el resultado y cuánto dura?", a3:"El efecto empieza a los tres a cinco días y es completo a las dos semanas. Suele durar de tres a cuatro meses y después se va perdiendo poco a poco.",
   q4:"¿Hay motivos para no tratar?", a4:"Sí, por ejemplo embarazo y lactancia, ciertas enfermedades musculares, infecciones agudas en la zona o una intolerancia conocida. Lo hablamos con calma antes de cada tratamiento; en caso de duda, no tratamos.",
-  q5:"¿Cómo cancelo o cambio una cita?", a5:"Con el enlace del correo de confirmación o por WhatsApp. Por favor, con al menos 48 horas de antelación para que otra persona pueda aprovechar la cita.",
+  q5:"¿Cómo cancelo o cambio una cita?", a5:"Por WhatsApp al +49 151 58872566. Por favor, con al menos 48 horas de antelación para que otra persona pueda aprovechar la cita.",
   q6:"¿Cómo puedo pagar?", a6:"En el estudio después del tratamiento, con tarjeta o en efectivo. Factura a petición.",
   imprint:"Aviso legal", privacy:"Privacidad"
 },
@@ -117,7 +117,7 @@ fr:{
   q2:"Est-ce que ça fait mal ?", a2:"Les injections avec des aiguilles très fines sont brèves et bien supportées ; aucune anesthésie n’est nécessaire. Vous pouvez retourner au travail ou au sport tout de suite, et les petites rougeurs disparaissent en général en une heure.",
   q3:"Quand voit-on le résultat et combien de temps dure-t-il ?", a3:"L’effet commence après trois à cinq jours et est complet après deux semaines. Il dure en général trois à quatre mois, puis s’estompe progressivement.",
   q4:"Y a-t-il des raisons de ne pas traiter ?", a4:"Oui, par exemple la grossesse et l’allaitement, certaines maladies musculaires, une infection aiguë dans la zone ou une intolérance connue. Nous en parlons calmement avant chaque soin ; en cas de doute, nous ne traitons pas.",
-  q5:"Comment annuler ou déplacer un rendez-vous ?", a5:"Via le lien de votre e-mail de confirmation ou sur WhatsApp. Merci de prévenir au moins 48 heures à l’avance pour que quelqu’un d’autre puisse profiter du créneau.",
+  q5:"Comment annuler ou déplacer un rendez-vous ?", a5:"Sur WhatsApp au +49 151 58872566. Merci de prévenir au moins 48 heures à l’avance pour que quelqu’un d’autre puisse profiter du créneau.",
   q6:"Comment puis-je payer ?", a6:"Sur place après le soin, par carte ou en espèces. Une facture vous est remise sur demande.",
   imprint:"Mentions légales", privacy:"Confidentialité"
 },
@@ -147,7 +147,7 @@ pt:{
   q2:"O tratamento dói?", a2:"As aplicações com agulhas muito finas são rápidas e bem toleradas; não é preciso anestesia. Você pode voltar ao trabalho ou ao esporte em seguida, e pequenas vermelhidões somem normalmente em uma hora.",
   q3:"Quando o resultado aparece e quanto tempo dura?", a3:"O efeito começa em três a cinco dias e fica completo em duas semanas. Costuma durar de três a quatro meses e depois vai diminuindo aos poucos.",
   q4:"Há motivos para não tratar?", a4:"Sim, por exemplo gravidez e amamentação, certas doenças musculares, infecções agudas na área ou uma intolerância conhecida. Conversamos sobre isso com calma antes de cada tratamento; na dúvida, não tratamos.",
-  q5:"Como cancelo ou remarco?", a5:"Pelo link no e-mail de confirmação ou pelo WhatsApp. Por favor, com pelo menos 48 horas de antecedência, para que outra pessoa possa usar o horário.",
+  q5:"Como cancelo ou remarco?", a5:"Pelo WhatsApp para +49 151 58872566. Por favor, com pelo menos 48 horas de antecedência, para que outra pessoa possa usar o horário.",
   q6:"Como posso pagar?", a6:"No estúdio, após o tratamento, com cartão ou em dinheiro. Nota fiscal mediante pedido.",
   imprint:"Informações legais", privacy:"Privacidade"
 }

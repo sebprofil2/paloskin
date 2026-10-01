@@ -64,6 +64,6 @@ Solange /booking die Zwischenlösung (Anfrage per WhatsApp) zeigt, sind die Text
 1. `s1P` („So läuft es ab“, Schritt 1): derzeit „Behandlung aussuchen, Wunschtermin wählen, Anfrage absenden. Wir bestätigen den Termin per WhatsApp.“ Dann wieder auf die sofortige Bestätigung umstellen.
 2. `hours` (Kopfbereich, Termine): derzeit „Nach Online-Anfrage“. Dann „Nach Online-Buchung“.
 3. `hours2` (Studio, Termine): derzeit „Nur mit Termin, Anfrage online oder per WhatsApp“. Dann „Buchung online rund um die Uhr“.
-4. `a5` (Häufige Fragen, Absagen): nennt einen Link in der Bestätigungsmail, den es noch nicht gibt. Bis dahin prüfen, ob „per WhatsApp“ allein reichen soll.
+4. `a5` (Häufige Fragen, Absagen): derzeit „Per WhatsApp an +49 151 58872566 …“. Erst ändern, wenn es Absagen über einen Link gibt.
 
 Außerdem: `TEST_MODE` gilt standardmäßig als eingeschaltet. Ohne Umgebungsvariablen auf Vercel zeigt /booking deshalb die Zwischenlösung, nie die Testbuchung.
