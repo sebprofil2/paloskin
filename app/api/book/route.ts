@@ -3,8 +3,10 @@ import { hasAccess } from "@/lib/access";
 import { durationMinutes } from "@/lib/duration";
 import { readEnv } from "@/lib/env";
 import { getEngine, SlotsUnavailableError } from "@/lib/engine";
+import { errorClass, logEvent } from "@/lib/log";
 import { notifyOwner } from "@/lib/notify";
-import { allow, clientKey } from "@/lib/ratelimit";
+import { allow, clientKey, contactKey, LIMITS } from "@/lib/ratelimit";
+import { bookingRefFor } from "@/lib/ref";
 import { bookRequestSchema } from "@/lib/schema";
 import { bookingRange } from "@/lib/slots";
 
@@ -12,22 +14,29 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const noStore = { "cache-control": "no-store" };
+const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: noStore });
 
+/*
+ * Buchen. Der Browser liefert nur Auswahl, Startzeit, Kontakt, Sprache und Anfragekennung.
+ * Dauer, Fenster, Vorlauf, Horizont, Endzeit, Kalender und Buchungsnummer bestimmt der Server.
+ */
 export async function POST(req: Request) {
-  if (!hasAccess(req)) return NextResponse.json({ error: "no_access" }, { status: 401 });
+  if (!hasAccess(req)) return json({ error: "no_access" }, 401);
   const parsed = bookRequestSchema.safeParse(await req.json().catch(() => null));
-  if (!parsed.success) return NextResponse.json({ error: "invalid" }, { status: 400, headers: noStore });
+  if (!parsed.success) return json({ error: "invalid" }, 400);
   const body = parsed.data;
-  if (body.website) return NextResponse.json({ error: "invalid" }, { status: 400, headers: noStore });
-  if (!allow(clientKey(req))) return NextResponse.json({ error: "rate_limited" }, { status: 429, headers: noStore });
+  if (body.website) return json({ error: "invalid" }, 400);
+  if (!allow(clientKey(req), LIMITS.book.limit, LIMITS.book.windowMs)) return json({ error: "rate_limited" }, 429);
+  if (!allow(contactKey(body.customer.email, body.customer.handy), LIMITS.bookPerContact.limit, LIMITS.bookPerContact.windowMs)) return json({ error: "rate_limited" }, 429);
 
   const env = readEnv();
   const minutes = durationMinutes(body.selection);
   const start = new Date(body.start);
   const { from, to } = bookingRange();
   const onGrid = start.getTime() % (env.stepMinutes * 60000) === 0;
-  if (!onGrid || start < from || start > to) return NextResponse.json({ status: "conflict" }, { status: 409, headers: noStore });
+  if (!onGrid || start < from || start > to) return json({ status: "conflict" }, 409);
 
+  const ref = bookingRefFor(body.requestId);
   try {
     const result = await getEngine().book({
       requestId: body.requestId,
@@ -39,32 +48,34 @@ export async function POST(req: Request) {
       consentAt: new Date(),
       testMode: env.testMode,
     });
-    if (result.status === "booked") return NextResponse.json(result, { headers: noStore });
-    if (result.status === "conflict") return NextResponse.json(result, { status: 409, headers: noStore });
-    return NextResponse.json(result, { status: 202, headers: noStore });
+    logEvent("info", "book_result", { route: "book", bookingRef: ref, status: result.status, engine: env.engine });
+    if (result.status === "booked") return json(result);
+    if (result.status === "conflict") return json(result, 409);
+    return json(result, 202);
   } catch (e) {
-    console.error("[book]", e);
+    logEvent("error", "book_failed", { route: "book", bookingRef: ref, errorClass: errorClass(e), engine: env.engine });
     const unavailable = e instanceof SlotsUnavailableError;
-    return NextResponse.json({ error: unavailable ? "unavailable" : "failed" }, { status: 503, headers: noStore });
+    return json({ error: unavailable ? "unavailable" : "failed" }, 503);
   }
 }
 
 /* Nachfrage nach unklarem Ausgang: gibt es zur Anfragekennung schon eine Buchung? */
 export async function GET(req: Request) {
-  if (!hasAccess(req)) return NextResponse.json({ error: "no_access" }, { status: 401 });
+  if (!hasAccess(req)) return json({ error: "no_access" }, 401);
+  if (!allow(clientKey(req), LIMITS.slots.limit, LIMITS.slots.windowMs)) return json({ error: "rate_limited" }, 429);
   const url = new URL(req.url);
   const requestId = url.searchParams.get("requestId") ?? "";
-  if (!/^[0-9a-f-]{36}$/i.test(requestId)) return NextResponse.json({ error: "invalid" }, { status: 400, headers: noStore });
+  if (!/^[0-9a-f-]{36}$/i.test(requestId)) return json({ error: "invalid" }, 400);
   try {
     const booking = await getEngine().findByRequestId(requestId);
     if (!booking) {
       // Der Browser hat den Ausgang nicht erfahren und die Buchung nicht gefunden: Dr. Vogel informieren
-      if (url.searchParams.get("report") === "1") await notifyOwner("Unklarer Buchungsausgang (Browser)", { requestId });
-      return NextResponse.json({ status: "not_found" }, { status: 404, headers: noStore });
+      if (url.searchParams.get("report") === "1") await notifyOwner("Unklarer Buchungsausgang (Browser)", { bookingRef: bookingRefFor(requestId), status: "not_found" });
+      return json({ status: "not_found" }, 404);
     }
-    return NextResponse.json({ status: "booked", booking }, { headers: noStore });
+    return json({ status: "booked", booking });
   } catch (e) {
-    console.error("[book lookup]", e);
-    return NextResponse.json({ error: "failed" }, { status: 503, headers: noStore });
+    logEvent("error", "book_lookup_failed", { route: "book", errorClass: errorClass(e) });
+    return json({ error: "failed" }, 503);
   }
 }

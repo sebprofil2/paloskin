@@ -9,7 +9,7 @@ const CAL = encodeURIComponent(env.CALENDAR_BOOKINGS_ID);
 async function call(method, path) { const { token } = await jwt.getAccessToken(); const r = await fetch("https://www.googleapis.com/calendar/v3" + path, { method, headers: { authorization: `Bearer ${token}` } }); if (r.status === 204) return null; const t = await r.text(); if (!r.ok) throw new Error(`${r.status} ${t.slice(0, 200)}`); return JSON.parse(t); }
 const [mode = "show", ref] = process.argv.slice(2);
 const q = new URLSearchParams({ singleEvents: "true", orderBy: "startTime", timeMin: new Date().toISOString(), maxResults: "50" });
-if (ref) q.set("privateExtendedProperty", `bookingRef=${ref}`); else q.set("privateExtendedProperty", "source=paloskin-booking");
+if (ref) q.set("privateExtendedProperty", `bookingRef=${ref}`); else q.set("privateExtendedProperty", "status=confirmed");
 const list = await call("GET", `/calendars/${CAL}/events?${q}`);
 for (const e of list.items ?? []) {
   console.log(`\n${e.summary} | ${e.start?.dateTime} bis ${e.end?.dateTime} | ${e.transparency ?? "opaque"} | Kennung ${e.id}`);

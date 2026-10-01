@@ -12,6 +12,8 @@ const ADDRESS = "Hagenauer Straße 14, 10435 Berlin";
 const MAPS = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(ADDRESS);
 const WA = "https://wa.me/4915158872566";
 const TZ = "Europe/Berlin";
+/* Notizfeld erst mit der eigenen Ablage (Stufe 2): im Kalender steht keine Notiz */
+const NOTE_ENABLED = false;
 const THOUSANDS: Record<Lang, string> = { de: ".", en: ",", es: ".", fr: "\u00A0", pt: "." };
 
 type Step = 1 | 2 | 3;
@@ -607,7 +609,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
             </div>
           </Acc>
         </div>
-        {s.noteOpen || s.note ? (
+        {!NOTE_ENABLED ? null : s.noteOpen || s.note ? (
           <label className="field" htmlFor="note">
             <span className="l">{l.noteL}</span>
             <textarea id="note" rows={2} placeholder={l.notePh} value={s.note} maxLength={600} autoFocus={s.noteOpen && !s.note} onChange={(e) => setS((p) => ({ ...p, note: e.target.value }))} />

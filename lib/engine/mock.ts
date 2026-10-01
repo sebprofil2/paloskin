@@ -1,6 +1,7 @@
 import { readEnv } from "../env";
-import { makeBookingRef } from "../ref";
-import { buildDescription, buildTitle } from "../booking-description";
+import { bookingRefFor } from "../ref";
+import { buildDescription } from "../booking-description";
+import { logEvent } from "../log";
 import { bookingRange, computeSlots, isStartFree, windowFromBerlin, type Interval, type SlotDay } from "../slots";
 import { addDaysKey, berlinDateKey, berlinWeekday, dateKeysBetween, fromBerlinKey, toBerlinIso } from "../time";
 import { NotImplementedError, SlotsUnavailableError, type BookInput, type BookResult, type BookingEngine, type BookingSummary, type SlotsResult } from "./types";
@@ -117,7 +118,7 @@ export class MockEngine implements BookingEngine {
     const { windows, busy } = windowsFor(from, to);
     const free = isStartFree(i.start, { windows, busy, durationMinutes: i.durationMinutes, bufferMinutes: env.bufferMinutes, from, to });
     if (!free) return { status: "conflict" };
-    const ref = makeBookingRef();
+    const ref = bookingRefFor(i.requestId);
     const endMs = i.start.getTime() + i.durationMinutes * 60000;
     const description = buildDescription({ bookingRef: ref, selection: i.selection, durationMinutes: i.durationMinutes, customer: i.customer, lang: i.lang, consentAt: i.consentAt });
     const stored: StoredBooking = {
@@ -131,7 +132,7 @@ export class MockEngine implements BookingEngine {
       description,
     };
     byRequest.set(i.requestId, stored);
-    console.log(`[Testmotor] Buchung angelegt: ${buildTitle(i.customer, i.testMode)}\n${description}`);
+    logEvent("info", "mock_booked", { engine: "mock", bookingRef: ref, ms: i.durationMinutes });
     return { status: "booked", booking: strip(stored) };
   }
 
@@ -144,7 +145,7 @@ export class MockEngine implements BookingEngine {
     const b = byRequest.get(requestId);
     if (!b) return false;
     b.description += `\nEmpfehlung: ${referral}`;
-    console.log(`[Testmotor] Empfehlung ergänzt für ${b.ref}: ${referral}`);
+    logEvent("info", "mock_referral_added", { engine: "mock", bookingRef: b.ref });
     return true;
   }
 

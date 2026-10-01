@@ -17,6 +17,7 @@ export const selectionSchema = z
     lachs: z.enum(["single", "pack"]).nullable(),
     note: z.string().max(600).default(""),
   })
+  .strict()
   .superRefine((s, ctx) => {
     const sel = s as Selection;
     if (new Set(s.zones).size !== s.zones.length) ctx.addIssue({ code: "custom", message: "Zonen doppelt" });
@@ -30,14 +31,14 @@ export const langSchema = z.enum(["de", "en", "es", "fr", "pt"]);
 
 export const slotsRequestSchema = z.object({
   selection: selectionSchema,
-});
+}).strict();
 
 export const customerSchema = z.object({
   vorname: z.string().trim().min(1).max(60),
   nachname: z.string().trim().min(1).max(60),
   handy: z.string().trim().min(6).max(30),
   email: z.email().max(120),
-});
+}).strict();
 
 export const bookRequestSchema = z.object({
   requestId: z.uuid(),
@@ -48,12 +49,12 @@ export const bookRequestSchema = z.object({
   consent: z.literal(true),
   /* Unsichtbares Lockfeld gegen Bots: muss leer bleiben */
   website: z.string().max(0).optional(),
-});
+}).strict();
 
 export const referralSchema = z.object({
   requestId: z.uuid(),
   referral: z.string().trim().min(1).max(120),
-});
+}).strict();
 
 export type BookRequest = z.infer<typeof bookRequestSchema>;
 export type Customer = z.infer<typeof customerSchema>;

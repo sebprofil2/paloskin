@@ -1,7 +1,8 @@
 import { JWT } from "google-auth-library";
 import { readEnv } from "../env";
-import { makeBookingRef } from "../ref";
-import { buildDescription, buildTitle } from "../booking-description";
+import { bookingRefFor } from "../ref";
+import { buildDescription, buildTitle, serviceCode } from "../booking-description";
+import { errorClass, logEvent } from "../log";
 import { notifyOwner } from "../notify";
 import { bookingRange, computeSlots, isStartFree, type Interval } from "../slots";
 import { toBerlinIso } from "../time";
@@ -73,8 +74,7 @@ export class GoogleCalendarEngine implements BookingEngine {
     clearTimeout(timer);
     if (res.status === 204) return undefined as T;
     if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new GoogleError(`Google ${res.status}: ${text.slice(0, 300)}`, res.status);
+      throw new GoogleError(`Google ${res.status}`, res.status);
     }
     return (await res.json()) as T;
   }
@@ -140,17 +140,22 @@ export class GoogleCalendarEngine implements BookingEngine {
       const days = computeSlots({ windows, busy, durationMinutes: input.durationMinutes, bufferMinutes: env.bufferMinutes, stepMinutes: env.stepMinutes, from, to });
       return { days, from: toBerlinIso(from), to: toBerlinIso(to) };
     } catch (e) {
-      console.error("[Google] Freie Zeiten nicht lesbar", e);
-      throw new SlotsUnavailableError(e instanceof Error ? e.message : "unbekannt");
+      logEvent("error", "google_slots_failed", { engine: "google", errorClass: errorClass(e), httpStatus: e instanceof GoogleError ? (e.status ?? 0) : 0 });
+      throw new SlotsUnavailableError("Freie Zeiten nicht lesbar");
     }
   }
 
+  /** Suche über die aus der Anfragekennung abgeleitete Buchungsnummer; die Kennung selbst steht nicht im Kalender */
   async findByRequestId(requestId: string): Promise<BookingSummary | null> {
-    const g = readEnv().google;
-    const q = new URLSearchParams({ privateExtendedProperty: `requestId=${requestId}`, singleEvents: "true", maxResults: "5", showDeleted: "false" });
-    const page = await this.call<{ items?: GEvent[] }>("GET", `/calendars/${encodeURIComponent(g.calendarBookingsId)}/events?${q}`);
-    const ev = (page.items ?? []).find((e) => e.status !== "cancelled");
+    const ev = await this.findEventByRef(bookingRefFor(requestId));
     return ev ? toSummary(ev, requestId) : null;
+  }
+
+  private async findEventByRef(ref: string): Promise<GEvent | null> {
+    const g = readEnv().google;
+    const q = new URLSearchParams({ privateExtendedProperty: `bookingRef=${ref}`, singleEvents: "true", maxResults: "5", showDeleted: "false" });
+    const page = await this.call<{ items?: GEvent[] }>("GET", `/calendars/${encodeURIComponent(g.calendarBookingsId)}/events?${q}`);
+    return (page.items ?? []).find((e) => e.status !== "cancelled") ?? null;
   }
 
   private async findWithRetries(requestId: string, tries: number): Promise<BookingSummary | null> {
@@ -159,7 +164,7 @@ export class GoogleCalendarEngine implements BookingEngine {
         const found = await this.findByRequestId(requestId);
         if (found) return found;
       } catch (e) {
-        console.error("[Google] Nachfrage zur Anfragekennung fehlgeschlagen", e);
+        logEvent("warn", "google_lookup_failed", { engine: "google", errorClass: errorClass(e) });
       }
       await new Promise((r) => setTimeout(r, 1500));
     }
@@ -183,8 +188,8 @@ export class GoogleCalendarEngine implements BookingEngine {
     const free = isStartFree(i.start, { windows, busy, durationMinutes: i.durationMinutes, bufferMinutes: env.bufferMinutes, from, to });
     if (!free) return { status: "conflict" };
 
-    // 3. Eintragen, als belegt, ohne Gäste
-    const ref = makeBookingRef();
+    // 3. Eintragen, als belegt, ohne Gäste. Buchungsnummer aus der Anfragekennung abgeleitet (Idempotenz)
+    const ref = bookingRefFor(i.requestId);
     const end = new Date(endMs);
     const body = {
       summary: buildTitle(i.customer, i.testMode),
@@ -192,7 +197,7 @@ export class GoogleCalendarEngine implements BookingEngine {
       start: { dateTime: toBerlinIso(i.start), timeZone: "Europe/Berlin" },
       end: { dateTime: toBerlinIso(end), timeZone: "Europe/Berlin" },
       transparency: "opaque",
-      extendedProperties: { private: { requestId: i.requestId, bookingRef: ref, source: "paloskin-booking" } },
+      extendedProperties: { private: { bookingRef: ref, status: "confirmed", service: serviceCode(i.selection) } },
       reminders: { useDefault: true },
     };
     let created: GEvent;
@@ -204,7 +209,7 @@ export class GoogleCalendarEngine implements BookingEngine {
         // Unklarer Ausgang: nicht neu buchen, sondern die Anfragekennung erneut abfragen
         const found = await this.findWithRetries(i.requestId, 2);
         if (found) return { status: "booked", booking: found };
-        await notifyOwner("Unklarer Buchungsausgang", { requestId: i.requestId, start: toBerlinIso(i.start), name: `${i.customer.vorname} ${i.customer.nachname}`, error: ge.message });
+        await notifyOwner("Unklarer Buchungsausgang", { bookingRef: ref, status: "pending", errorClass: ge.kind, engine: "google" });
         return { status: "pending" };
       }
       throw e;
@@ -220,10 +225,10 @@ export class GoogleCalendarEngine implements BookingEngine {
           await this.call<void>("DELETE", `/calendars/${encodeURIComponent(g.calendarBookingsId)}/events/${encodeURIComponent(created.id)}?sendUpdates=none`, undefined, WRITE_TIMEOUT_MS);
           return { status: "conflict" };
         }
-        await notifyOwner("Überschneidung im Buchungskalender", { bookingRef: ref, start: toBerlinIso(i.start), other: overlapping.map((o) => o.summary ?? o.id) });
+        await notifyOwner("Überschneidung im Buchungskalender", { bookingRef: ref, status: "overlap", engine: "google" });
       }
     } catch (e) {
-      console.error("[Google] Prüfung auf Überschneidung fehlgeschlagen", e);
+      logEvent("warn", "google_overlap_check_failed", { bookingRef: ref, engine: "google", errorClass: errorClass(e) });
     }
 
     return { status: "booked", booking: { ref, requestId: i.requestId, start: toBerlinIso(i.start), end: toBerlinIso(end), durationMinutes: i.durationMinutes } };
@@ -231,9 +236,7 @@ export class GoogleCalendarEngine implements BookingEngine {
 
   async addReferral(requestId: string, referral: string): Promise<boolean> {
     const g = readEnv().google;
-    const q = new URLSearchParams({ privateExtendedProperty: `requestId=${requestId}`, singleEvents: "true", maxResults: "5" });
-    const page = await this.call<{ items?: GEvent[] }>("GET", `/calendars/${encodeURIComponent(g.calendarBookingsId)}/events?${q}`);
-    const ev = (page.items ?? []).find((e) => e.status !== "cancelled");
+    const ev = await this.findEventByRef(bookingRefFor(requestId));
     if (!ev) return false;
     const description = `${ev.description ?? ""}\nEmpfehlung: ${referral}`.trim();
     await this.call<GEvent>("PATCH", `/calendars/${encodeURIComponent(g.calendarBookingsId)}/events/${encodeURIComponent(ev.id)}?sendUpdates=none`, { description }, WRITE_TIMEOUT_MS);

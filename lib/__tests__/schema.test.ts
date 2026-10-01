@@ -27,5 +27,8 @@ describe("Eingabeprüfung", () => {
     expect(bookRequestSchema.safeParse(ok).success).toBe(true);
     expect(bookRequestSchema.safeParse({ ...ok, website: "http://spam" }).success).toBe(false);
     expect(bookRequestSchema.safeParse({ ...ok, consent: false }).success).toBe(false);
+    expect(bookRequestSchema.safeParse({ ...ok, calendarId: "x" }).success).toBe(false);
+    expect(bookRequestSchema.safeParse({ ...ok, end: "2026-10-26T12:00:00+01:00" }).success).toBe(false);
+    expect(bookRequestSchema.safeParse({ ...ok, customer: { ...ok.customer, guests: ["a@b.de"] } }).success).toBe(false);
   });
 });

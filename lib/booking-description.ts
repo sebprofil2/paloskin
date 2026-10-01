@@ -45,7 +45,6 @@ export function buildDescription(i: DescriptionInput): string {
     for (const it of items) rows.push(`- ${it.label} (${it.price} Euro brutto)`);
     if (hasTreatment(s) && totalPrice(s) > 0) rows.push(`Summe voraussichtlich: ${totalPrice(s)} Euro brutto`);
   }
-  if (s.note.trim()) rows.push(`Notiz: ${s.note.trim()}`);
   rows.push(`Dauer: ${i.durationMinutes} Minuten`);
   rows.push(`Handynummer: ${normalizePhone(i.customer.handy)}`);
   rows.push(`E-Mail-Adresse: ${i.customer.email.trim()}`);
@@ -54,7 +53,24 @@ export function buildDescription(i: DescriptionInput): string {
   return rows.join("\n");
 }
 
+/** Titel „Palo Skin: Vorname N.“, Nachname nur als Initiale */
 export function buildTitle(customer: Customer, testMode: boolean): string {
-  const name = `${customer.vorname.trim()} ${customer.nachname.trim()}`.trim();
+  const initial = customer.nachname.trim().charAt(0).toUpperCase();
+  const name = `${customer.vorname.trim()}${initial ? ` ${initial}.` : ""}`;
   return `${testMode ? "TEST " : ""}Palo Skin: ${name}`;
+}
+
+/** Leistungscode für extendedProperties, zum Beispiel BOT+LDN */
+export function serviceCode(s: Selection): string {
+  const codes: string[] = [];
+  if (s.beratung) codes.push("BER");
+  if (s.zones.length || s.otherZone !== null || s.zonesUnknown) codes.push("BOT");
+  if (s.kaumuskel) codes.push("KAU");
+  if (s.nefertiti) codes.push("NEF");
+  if (s.achsel) codes.push("HYP");
+  if (s.lachs === "single") codes.push("LDN");
+  if (s.lachs === "pack") codes.push("LDN4");
+  if (s.checkup) codes.push("KON");
+  if (s.persons === 2) codes.push("P2");
+  return codes.join("+") || "NONE";
 }

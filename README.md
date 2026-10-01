@@ -20,7 +20,7 @@ npm run typecheck
 npm run build
 ```
 
-Im Testbetrieb (`TEST_MODE=true`) ist die echte Buchung nur über `/booking?test=<TEST_ACCESS_CODE>` erreichbar. Der Code bleibt danach als Cookie gesetzt. Ohne Code zeigt `/booking` die Zwischenlösung (Anfrage per WhatsApp) aus `content/booking-interim.html`.
+Im Testbetrieb (Standard, solange nicht `TEST_MODE=false`) ist die echte Buchung nur nach Eingabe des Testcodes unter `/booking/zugang` erreichbar (Formular, HttpOnly-Cookie für 14 Tage, nie in der Adresse). Ohne Cookie zeigt `/booking` die Zwischenlösung (Anfrage per WhatsApp) aus `content/booking-interim.html`.
 
 Kontrolltermin-Link: `/booking?kontrolle` (15 Minuten, beginnt bei der Terminwahl). Sprache: `?lang=de|en|es|fr|pt`.
 

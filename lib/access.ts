@@ -1,22 +1,23 @@
+import { timingSafeEqual } from "node:crypto";
 import { readEnv } from "./env";
 
+/*
+ * Zugang im Testbetrieb: Der Testcode wird einmal über das Formular /booking/zugang eingegeben
+ * (POST, nie in der Adresse) und bleibt als HttpOnly-Cookie. Serverrouten prüfen nur das Cookie.
+ */
 export const TEST_COOKIE = "palo_test";
+export const TEST_COOKIE_MAX_AGE = 60 * 60 * 24 * 14; // 14 Tage, danach neu eingeben
 
-function sameCode(a: string, b: string): boolean {
-  if (!a || !b || a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-}
-
-/** Testcode gültig? Außerhalb des Testbetriebs ist alles erlaubt. */
 export function codeIsValid(code: string | null | undefined): boolean {
   const env = readEnv();
   if (!env.testMode) return true;
-  return sameCode(env.testCode, (code ?? "").trim());
+  const expected = Buffer.from(env.testCode);
+  const given = Buffer.from((code ?? "").trim());
+  if (!expected.length || expected.length !== given.length) return false;
+  return timingSafeEqual(expected, given);
 }
 
-function readCookie(req: Request, name: string): string | null {
+export function readCookie(req: Request, name: string): string | null {
   const raw = req.headers.get("cookie") ?? "";
   for (const part of raw.split(";")) {
     const [k, ...rest] = part.trim().split("=");
@@ -25,9 +26,12 @@ function readCookie(req: Request, name: string): string | null {
   return null;
 }
 
-/** Zugang für Serverrouten: Testcode aus Cookie oder Adresse. */
+/** Zugang für Serverrouten: nur über das Cookie, nie über die Adresse. */
 export function hasAccess(req: Request): boolean {
   if (!readEnv().testMode) return true;
-  const url = new URL(req.url);
-  return codeIsValid(readCookie(req, TEST_COOKIE)) || codeIsValid(url.searchParams.get("test"));
+  return codeIsValid(readCookie(req, TEST_COOKIE));
+}
+
+export function cookieHeader(code: string, secure: boolean): string {
+  return `${TEST_COOKIE}=${encodeURIComponent(code)}; Path=/; Max-Age=${TEST_COOKIE_MAX_AGE}; HttpOnly; SameSite=Strict${secure ? "; Secure" : ""}`;
 }

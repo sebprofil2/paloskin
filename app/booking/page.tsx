@@ -23,9 +23,9 @@ export default async function BookingPage({ searchParams }: { searchParams: Prom
   const sp = await searchParams;
   const env = readEnv();
 
-  /* Testbetrieb: ohne gültigen Testcode (Adresse oder Cookie) die Zwischenlösung, nie eine leere Seite */
+  /* Testbetrieb: ohne gültiges Cookie (Code über /booking/zugang) die Zwischenlösung, nie eine leere Seite */
   const cookieStore = await cookies();
-  const access = codeIsValid(one(sp.test)) || codeIsValid(cookieStore.get(TEST_COOKIE)?.value);
+  const access = codeIsValid(cookieStore.get(TEST_COOKIE)?.value);
   if (!access) return <InterimBooking />;
 
   const langParam = one(sp.lang);

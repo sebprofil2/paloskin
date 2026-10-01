@@ -44,5 +44,6 @@ describe("Testmotor", () => {
     expect(c.status).toBe("conflict");
     expect(await e.findByRequestId(input.requestId)).toEqual(a.status === "booked" ? a.booking : null);
     expect(await e.addReferral(input.requestId, "Anna")).toBe(true);
+    expect(a.status === "booked" && a.booking.ref).toMatch(/^PS-[A-Z2-9]{6}$/);
   });
 });

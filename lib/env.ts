@@ -16,6 +16,8 @@ export interface Env {
     calendarBusyIds: string[];
   };
   ownerWebhookUrl: string;
+  /** X-Forwarded-For nur vom eigenen Proxy (Caddy) übernehmen */
+  trustProxy: boolean;
 }
 
 function int(v: string | undefined, fallback: number): number {
@@ -77,5 +79,6 @@ export function readEnv(): Env {
       calendarBusyIds: busy,
     },
     ownerWebhookUrl: (process.env.OWNER_WEBHOOK_URL ?? "").trim(),
+    trustProxy: process.env.TRUST_PROXY === "true",
   };
 }
