@@ -94,3 +94,15 @@ Für später, nicht gebaut: Nach einer Buchung für 1 Person soll die Bestätigu
 4. Google-Fehler, Zeitüberschreitung oder Teilantwort ergeben nie „frei“. Nach einer Zeitüberschreitung beim Eintragen fragt der Server die Buchungsnummer nach: gefunden heißt „gespeichert, Antwort verloren“ (Bestätigung), nicht gefunden heißt „nicht gespeichert“ (Zustand „wir prüfen“, Meldung). Die Buchungsnummer ist aus der Anfragekennung abgeleitet (`lib/ref.ts`, SHA-256) und damit der Idempotenzschlüssel; die Anfragekennung selbst wird nicht gespeichert.
 5. Kalendereintrag minimal: Titel „Palo Skin: Vorname N.“ (Nachname als Initiale), Beschreibung mit Behandlung und Kontakt, `extendedProperties.private` nur `bookingRef`, `status`, `service` (Leistungscode wie BOT+LDN+P2). Keine Notiz im Kalender; das Notizfeld ist bis Stufe 2 ausgeblendet (`NOTE_ENABLED` in `components/BookingApp.tsx`).
 6. Protokolle (`lib/log.ts`): nur Ereignis, Zeit, Fehlerklasse, Kennungen. Keine Request-Bodies, Namen, Nummern oder Adressen; Google-Antworttexte werden nicht mitgeschrieben. Meldungen an Dr. Vogel enthalten nur Buchungsnummer, Status und Fehlerklasse.
+
+## Zweite Sicherheitsprüfung, Umsetzung (2. Oktober 2026)
+
+1. Image aus GitHub Actions (`.github/workflows/image.yml`) nach ghcr.io, privat; Server zieht nur. Notfall-Build über `deploy/docker-compose.build.yml`, Swap 2 GB als Reserve.
+2. Schritt 3 in zwei Phasen (`deploy/schritt3.sh`): erst `deploy` mit sudo testen, dann Root- und Passwort-Login abschalten.
+3. Dienstkontoschlüssel auf dem Host Eigentümer 10001:10001, Rechte 0400; Prüfung im Container dokumentiert (Abschnitt 6 der Umzugsanleitung).
+4. Zugangs-Cookie signiert (HMAC-SHA256 mit `TEST_COOKIE_SECRET`), Ablauf 7 Tage serverseitig geprüft, Secure hinter dem Proxy, Widerruf durch Wechsel des Schlüssels (`lib/access.ts`, Tests in `lib/__tests__/access.test.ts`).
+5. Schreibgeschütztes Dateisystem mit tmpfs für `/tmp` und `.next/cache`; Prüfbefehl in Abschnitt 6.
+6. Testplan unter `neu.paloskin.de` vor der DNS-Umstellung (Abschnitt 8), inklusive Neustart, Kalenderausfall und Wiederherstellung aus Backup.
+7. Docker-Protokolle daemonweit begrenzt (`deploy/daemon.json`), Speicherplatz im Heartbeat überwacht.
+8. Überwachung: Better Stack (Prag) mit HTTPS-Monitor und Heartbeat, Alarm an accounts@paloskin.de; `deploy/heartbeat.sh` (Abschnitt 14).
+9. Updates: Dependabot, monatlicher Image-Neubau, Ausrollen per `pull` und `up -d` (Abschnitt 15).

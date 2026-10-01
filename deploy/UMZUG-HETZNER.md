@@ -40,103 +40,53 @@ Tatsächlich bestellt: Projekt „Palo Skin Website“, Server `paloskin-1`, Typ
    - „Kostenpflichtig bestellen“.
 5. Nach einer Minute zeigt die Serverliste die IPv4-Adresse. Diese ist `<SERVER-IP>`. Die IPv6-Adresse (beginnt mit `2a01:`) notieren Sie als `<SERVER-IPV6>`; Hetzner zeigt ein Netz wie `2a01:4f8:…::/64`, die Serveradresse ist dieses Präfix mit `::1` am Ende.
 
-## 3. Erster Login und Grundschutz
+## 3. Erster Login und Grundschutz (zwei Phasen)
 
-1. Verbinden (beim ersten Mal die Frage „Are you sure you want to continue connecting“ mit `yes` beantworten):
+Phase A richtet alles ein, Phase B schaltet Root- und Passwort-Login erst ab, nachdem der Zugang als `deploy` samt `sudo` nachweislich funktioniert. Beides läuft über das Skript `deploy/schritt3.sh` beziehungsweise die Befehle unten; die root-Sitzung bleibt bis zum Ende von Phase B offen.
 
-```bash
-ssh -i ~/.ssh/id_ed25519_paloskin root@<SERVER-IP>
-```
-
-Erwartet: eine Zeile, die mit `root@paloskin-1:~#` endet. Alle folgenden Blöcke in diesem Abschnitt laufen auf dem Server.
-
-2. System aktualisieren (dauert einige Minuten):
+**Phase A, als root:**
 
 ```bash
-apt update && apt -y upgrade
+ssh -i ~/.ssh/id_ed25519_paloskin root@2.31.2.192
 ```
 
-3. Benutzer `deploy` anlegen. Es wird nach einem Passwort gefragt: ein langes wählen und sicher ablegen (wird für `sudo` gebraucht, nicht zum Anmelden). Die Fragen nach Name und Telefon mit Enter überspringen.
+1. System aktualisieren: `apt update && apt -y upgrade`
+2. Benutzer `deploy` anlegen, in die Gruppe `sudo`, ein langes sudo-Passwort setzen (im Passwortmanager ablegen), Ihren öffentlichen Schlüssel nach `/home/deploy/.ssh/authorized_keys` (Verzeichnis 700, Datei 600, Eigentümer deploy).
+3. UFW passend zur Hetzner-Firewall: eingehend nur 22, 80, 443 TCP; `ufw enable`.
+4. `unattended-upgrades` und `fail2ban` installieren und aktivieren, Zeitzone `Europe/Berlin`.
+5. Swap-Datei 2 GB als Reserve (`fallocate`, `mkswap`, `swapon`, Eintrag in `/etc/fstab`, `vm.swappiness=10`).
+
+**Prüfung, in einem zweiten Terminalfenster auf dem Mac:**
 
 ```bash
-adduser deploy
+ssh -i ~/.ssh/id_ed25519_paloskin deploy@2.31.2.192 'sudo -S -v < /dev/null 2>&1 | head -1; sudo -k; echo "angemeldet als $(whoami)"'
 ```
+
+Erwartet: `angemeldet als deploy`. Dann `sudo` mit Passwort prüfen (`sudo whoami` muss `root` ausgeben). Erst wenn beides klappt, Phase B.
+
+**Phase B, als root in der noch offenen Sitzung:**
 
 ```bash
-usermod -aG sudo deploy
+printf 'PermitRootLogin no\nPasswordAuthentication no\nKbdInteractiveAuthentication no\n' > /etc/ssh/sshd_config.d/10-paloskin.conf && sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config.d/50-cloud-init.conf 2>/dev/null; sshd -t && systemctl restart ssh && sshd -T | grep -E '^(permitrootlogin|passwordauthentication)'
 ```
 
-4. Ihren SSH-Schlüssel für `deploy` übernehmen:
-
-```bash
-mkdir -p /home/deploy/.ssh && cp /root/.ssh/authorized_keys /home/deploy/.ssh/ && chown -R deploy:deploy /home/deploy/.ssh && chmod 700 /home/deploy/.ssh && chmod 600 /home/deploy/.ssh/authorized_keys
-```
-
-5. Root-Login und Passwort-Login abschalten:
-
-```bash
-sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/; s/^#\?PasswordAuthentication.*/PasswordAuthentication no/; s/^#\?KbdInteractiveAuthentication.*/KbdInteractiveAuthentication no/' /etc/ssh/sshd_config && systemctl restart ssh
-```
-
-6. Wichtig: Diese root-Sitzung offen lassen. Auf dem Mac ein zweites Terminalfenster öffnen und prüfen, dass der neue Zugang funktioniert:
-
-```bash
-ssh -i ~/.ssh/id_ed25519_paloskin deploy@<SERVER-IP>
-```
-
-Erwartet: `deploy@paloskin-1:~$`. Erst wenn das klappt, die root-Sitzung mit `exit` schließen. Ab jetzt immer als `deploy` anmelden; Befehle mit `sudo` fragen einmal das Passwort von `deploy` ab.
-
-7. Firewall auf dem Server (zusätzlich zur Hetzner-Firewall) und automatische Sicherheitsupdates:
-
-```bash
-sudo ufw default deny incoming && sudo ufw default allow outgoing && sudo ufw allow 22/tcp && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo ufw --force enable
-```
-
-```bash
-sudo apt -y install unattended-upgrades fail2ban && sudo dpkg-reconfigure -plow unattended-upgrades
-```
-
-Bei der Rückfrage „Automatically download and install stable updates?“ mit Ja antworten.
-
-```bash
-sudo timedatectl set-timezone Europe/Berlin
-```
-
-8. Swap-Datei von 2 GB (nur bei 2 GB Arbeitsspeicher nötig):
-
-```bash
-sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile && echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab && echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swap.conf && sudo sysctl -p /etc/sysctl.d/99-swap.conf
-```
+Erwartet: `permitrootlogin no` und `passwordauthentication no`. Danach in neuer Verbindung prüfen, dass `ssh root@2.31.2.192` abgelehnt wird und `deploy` weiter hineinkommt. Dann die root-Sitzung mit `exit` schließen.
 
 ## 4. Docker installieren
 
 Auf dem Server als `deploy`:
 
 ```bash
-curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sudo sh /tmp/get-docker.sh
+curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sudo sh /tmp/get-docker.sh && sudo usermod -aG docker deploy
 ```
+
+Protokolle daemonweit begrenzen (10 MB, fünf Dateien je Container) und Container bei Daemon-Neustart weiterlaufen lassen:
 
 ```bash
-sudo usermod -aG docker deploy
+sudo install -m 644 /opt/paloskin/deploy/daemon.json /etc/docker/daemon.json && sudo systemctl restart docker
 ```
 
-Danach einmal abmelden und neu anmelden, damit die Gruppe gilt:
-
-```bash
-exit
-```
-
-```bash
-ssh -i ~/.ssh/id_ed25519_paloskin deploy@<SERVER-IP>
-```
-
-Prüfen:
-
-```bash
-docker compose version
-```
-
-Erwartet: `Docker Compose version v2.…`.
+(Die Datei liegt erst nach Schritt 5 im Verzeichnis; den Befehl dann ausführen.) Danach einmal abmelden und neu anmelden, damit die Gruppe `docker` gilt. Prüfen: `docker compose version`.
 
 Hinweis: Docker veröffentlicht Ports an UFW vorbei. Deshalb hat der App-Dienst in `deploy/docker-compose.yml` keinen `ports`-Eintrag; nur Caddy öffnet 80 und 443.
 
@@ -159,18 +109,24 @@ scp -i ~/.ssh/id_ed25519_paloskin ~/Downloads/palo-skin-buchung-1a5f1b62d06a.jso
 2. Auf dem Server: an den endgültigen Ort verschieben, nur root darf lesen.
 
 ```bash
-sudo mkdir -p /etc/paloskin && sudo mv /home/deploy/service-account.json /etc/paloskin/service-account.json && sudo chown root:root /etc/paloskin/service-account.json && sudo chmod 600 /etc/paloskin/service-account.json && sudo chmod 700 /etc/paloskin
+sudo mkdir -p /etc/paloskin && sudo mv /home/deploy/service-account.json /etc/paloskin/service-account.json && sudo chown 10001:10001 /etc/paloskin/service-account.json && sudo chmod 400 /etc/paloskin/service-account.json && sudo chmod 700 /etc/paloskin
 ```
 
-Prüfen:
+Der Container läuft als Benutzer 10001; Compose übernimmt bei Datei-Secrets weder Eigentümer noch Rechte, es gelten die der Datei auf dem Host. Deshalb Eigentümer 10001:10001 und Rechte 0400 (nur dieser Benutzer darf lesen, sonst niemand). Prüfen:
 
 ```bash
-sudo ls -l /etc/paloskin/
+sudo ls -ln /etc/paloskin/
 ```
 
-Erwartet: `-rw------- 1 root root … service-account.json`.
+Erwartet: `-r-------- 1 10001 10001 … service-account.json`. Nach dem Start in Schritt 7 im laufenden Container nachprüfen, dass die Datei lesbar ist und das Dateisystem sonst schreibgeschützt bleibt:
 
-3. Umgebungsvariablen anlegen: Vorlage kopieren und ausfüllen. Es öffnet sich der Editor nano; `TEST_ACCESS_CODE=` mit dem Testcode füllen (16 Zeichen aus dem Terminal auf dem Mac), die Kalenderkennungen sind schon eingetragen. Speichern mit Strg+O, Enter, verlassen mit Strg+X.
+```bash
+cd /opt/paloskin && docker compose -f deploy/docker-compose.yml exec app sh -c 'id; head -c 60 /run/secrets/google_service_account | grep -o "service_account" && echo "Secret lesbar"; touch /app/probe 2>&1 | grep -q "Read-only" && echo "Dateisystem schreibgeschützt"; touch /tmp/probe /app/.next/cache/probe && echo "tmpfs beschreibbar"'
+```
+
+Erwartet: `uid=10001 gid=10001`, `Secret lesbar`, `Dateisystem schreibgeschützt`, `tmpfs beschreibbar`.
+
+3. Umgebungsvariablen anlegen: Vorlage kopieren und ausfüllen. Es öffnet sich der Editor nano; `TEST_ACCESS_CODE=` mit dem Testcode füllen (16 Zeichen aus dem Terminal auf dem Mac), `TEST_COOKIE_SECRET=` mit einer langen Zufallszeichenfolge (zum Beispiel `openssl rand -hex 32`), die Kalenderkennungen sind schon eingetragen. Speichern mit Strg+O, Enter, verlassen mit Strg+X.
 
 ```bash
 sudo cp /opt/paloskin/deploy/paloskin.env.example /etc/paloskin/paloskin.env && sudo chmod 600 /etc/paloskin/paloskin.env && sudo nano /etc/paloskin/paloskin.env
@@ -183,6 +139,7 @@ Werte in der Datei:
 | `BOOKING_ENGINE` | `google` |
 | `TEST_MODE` | `true` |
 | `TEST_ACCESS_CODE` | der Testcode |
+| `TEST_COOKIE_SECRET` | Zufallszeichenfolge, Wechsel widerruft alle Zugangs-Cookies (7 Tage Laufzeit) |
 | `SLOT_STEP_MINUTES` | `30` |
 | `BUFFER_MINUTES` | `0` |
 | `CALENDAR_OPEN_ID` | bleibt wie in der Vorlage |
@@ -193,69 +150,76 @@ Werte in der Datei:
 
 Der Schlüsselpfad `GOOGLE_SERVICE_ACCOUNT_FILE` steht fest in `docker-compose.yml` und zeigt auf das Secret; in der Umgebungsdatei steht kein Schlüssel.
 
-## 7. Start
+## 7. Image holen und starten
 
-Auf dem Server:
+Das Image baut GitHub Actions bei jedem Push auf `zonen` (später `main`) und monatlich neu für `linux/amd64` und legt es unter `ghcr.io/sebprofil2/paloskin:<branch>` ab (`.github/workflows/image.yml`). Der Server baut nichts, er zieht nur das fertige Image. Vorbereitung auf GitHub, einmalig:
+
+1. Nach dem ersten Lauf der Action auf github.com unter „Packages“ das Paket `paloskin` öffnen, „Package settings“, „Change visibility“ auf **Private** stellen (das Repository ist öffentlich, das Image soll es nicht sein).
+2. Ein Token nur zum Lesen anlegen: github.com, Settings, Developer settings, Personal access tokens, „Tokens (classic)“, „Generate new token“, nur Haken bei `read:packages`, Laufzeit 1 Jahr, Name „paloskin-1 pull“. Token kopieren.
+
+Auf dem Server als `deploy` einmalig anmelden (Token wird abgefragt, nicht in der Befehlszeile eintippen):
 
 ```bash
-cd /opt/paloskin && docker compose -f deploy/docker-compose.yml up -d --build
+docker login ghcr.io -u sebprofil2
 ```
 
-Der erste Build dauert drei bis fünf Minuten. Danach:
+Start:
+
+```bash
+cd /opt/paloskin && docker compose -f deploy/docker-compose.yml pull && docker compose -f deploy/docker-compose.yml up -d
+```
+
+Danach:
 
 ```bash
 docker compose -f deploy/docker-compose.yml ps
 ```
 
-Erwartet: `app` mit Status `running (healthy)`, `caddy` mit `running`. Falls `app` nicht healthy wird:
+Erwartet: `app` mit Status `running (healthy)`, `caddy` mit `running`. Falls `app` nicht healthy wird: `docker compose -f deploy/docker-compose.yml logs --tail 50 app`. Caddy meldet bis zur DNS-Umstellung Zertifikatsfehler für www und apex; das ist erwartet. Für `neu.paloskin.de` (Schritt 8) holt es sofort ein Zertifikat.
+
+Notfall ohne GitHub Actions: `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.build.yml up -d --build` baut auf dem Server (dafür ist die Swap-Datei).
+
+## 8. Test unter neu.paloskin.de, vor der DNS-Umstellung
+
+Bei GoDaddy einen Eintrag `A` mit Name `neu` und Wert `2.31.2.192` anlegen (TTL 600). Nach wenigen Minuten holt Caddy ein echtes Zertifikat für `neu.paloskin.de`; der Block dafür steht im `Caddyfile` und wird nach dem Umzug entfernt. Dann auf dem Mac, alles mit echtem HTTPS:
+
+Startseite, Impressum, Datenschutz, Buchung (je `200`):
 
 ```bash
-docker compose -f deploy/docker-compose.yml logs --tail 50 app
+for p in / /impressum /datenschutz /booking /booking/zugang; do curl -s -o /dev/null -w "$p %{http_code}\n" "https://neu.paloskin.de$p"; done
 ```
 
-Caddy meldet in dieser Phase Fehler beim Zertifikat, weil die Domain noch auf Vercel zeigt. Das ist erwartet und verschwindet nach Schritt 11.
-
-## 8. Test über die Server-IP, vor der DNS-Umstellung
-
-Auf dem Mac. Der Parameter `--resolve` tut so, als zeige www.paloskin.de schon auf den Server; `-k` ignoriert das noch fehlende Zertifikat.
-
-Startseite, Erwartet `200`:
+Weiterleitung `/termine` auf `/booking` (`308`):
 
 ```bash
-curl -sk --resolve www.paloskin.de:443:<SERVER-IP> -o /dev/null -w "%{http_code}\n" https://www.paloskin.de/
+curl -s -o /dev/null -w "%{http_code} %{redirect_url}\n" https://neu.paloskin.de/termine
 ```
 
-Impressum, Datenschutz, Buchung (je `200`):
+Falsche Adresse (`404`), Schrift mit Cache-Regel (`200`, `max-age=31536000`), Sicherheitsheader:
 
 ```bash
-for p in /impressum /datenschutz /booking; do curl -sk --resolve www.paloskin.de:443:<SERVER-IP> -o /dev/null -w "$p %{http_code}\n" "https://www.paloskin.de$p"; done
+curl -s -o /dev/null -w "%{http_code}\n" https://neu.paloskin.de/gibtsnicht; curl -s -D - -o /dev/null https://neu.paloskin.de/assets/fonts/SchibstedGrotesk-Variable.woff2 | grep -i "cache-control"; curl -s -D - -o /dev/null https://neu.paloskin.de/booking | grep -i "content-security\|x-content\|x-frame\|referrer\|strict-transport"
 ```
 
-Weiterleitung `/termine` auf `/booking`, Erwartet `308` und `Location: https://www.paloskin.de/booking`:
+Zugangs-Cookie (muss `HttpOnly`, `Secure`, `SameSite=Strict` tragen und ohne Code abgelehnt werden):
 
 ```bash
-curl -sk --resolve www.paloskin.de:443:<SERVER-IP> -o /dev/null -w "%{http_code} %{redirect_url}\n" https://www.paloskin.de/termine
+curl -s -o /dev/null -D - -X POST https://neu.paloskin.de/api/zugang -d "code=falsch" | grep -i "^HTTP\|location\|set-cookie"
 ```
 
-Falsche Adresse, Erwartet `404`:
+Erwartet: `303` auf `/booking/zugang?fehler=1`, kein `set-cookie`. Mit richtigem Code (im Browser unter https://neu.paloskin.de/booking/zugang): Weiterleitung auf `/booking`, danach Terminanfrage mit erfundenem Namen bis zur Bestätigung, Eintrag in „Palo Skin Termine“ prüfen und löschen (`node scripts/google-cleanup.mjs delete <Nummer>` auf dem Mac).
+
+Kompletter Serverneustart:
 
 ```bash
-curl -sk --resolve www.paloskin.de:443:<SERVER-IP> -o /dev/null -w "%{http_code}\n" https://www.paloskin.de/gibtsnicht
+ssh -i ~/.ssh/id_ed25519_paloskin deploy@2.31.2.192 'sudo reboot'
 ```
 
-Schrift mit Cache-Regel, Erwartet `200` und `max-age=31536000`:
+Nach zwei Minuten: `docker compose -f deploy/docker-compose.yml ps` zeigt beide Dienste `running`, `swapon --show` zeigt `/swapfile`, https://neu.paloskin.de/booking antwortet `200`.
 
-```bash
-curl -sk --resolve www.paloskin.de:443:<SERVER-IP> -D - -o /dev/null https://www.paloskin.de/assets/fonts/SchibstedGrotesk-Variable.woff2 | grep -i "HTTP/\|cache-control"
-```
+Simulierter Kalenderausfall: in `/etc/paloskin/paloskin.env` die Kennung `CALENDAR_OPEN_ID` vorübergehend um ein Zeichen verändern, `docker compose -f deploy/docker-compose.yml up -d` (lädt die Umgebung neu). Im Browser mit Zugangs-Cookie bis Schritt 2 gehen: Erwartet „Gerade hakt es bei uns.“ mit WhatsApp-Nummer, keine Uhrzeiten, keine Buchung möglich. Protokoll zeigt `google_slots_failed` ohne Inhalte. Kennung zurücksetzen, erneut `up -d`, Uhrzeiten erscheinen wieder.
 
-Sicherheitsheader, Erwartet Zeilen mit `content-security-policy`, `x-content-type-options`, `x-frame-options`, `referrer-policy`:
-
-```bash
-curl -sk --resolve www.paloskin.de:443:<SERVER-IP> -D - -o /dev/null https://www.paloskin.de/booking | grep -i "content-security\|x-content\|x-frame\|referrer"
-```
-
-Buchung im Browser: Auf dem Mac die Datei `/etc/hosts` vorübergehend ergänzen (`sudo nano /etc/hosts`, Zeile `<SERVER-IP> www.paloskin.de paloskin.de`), dann in Safari https://www.paloskin.de/booking/zugang öffnen, die Zertifikatswarnung bestätigen, Testcode eingeben, eine Buchung mit erfundenem Namen durchführen, den Eintrag im Google-Kalender „Palo Skin Termine“ prüfen und löschen. Die Zeile aus `/etc/hosts` danach wieder entfernen.
+Wiederherstellung aus einem Hetzner-Backup: in der Hetzner-Konsole beim Server unter „Backups“ ein Backup auswählen, „Create Server from Backup“, als `paloskin-test` mit derselben Firewall. Mit `ssh -i ~/.ssh/id_ed25519_paloskin deploy@<TEST-IP>` anmelden, `docker compose -f /opt/paloskin/deploy/docker-compose.yml ps` prüfen (Container laufen, Secret vorhanden). Testserver danach löschen. Ergebnis mit Datum in der Hinweise-Datei festhalten.
 
 ## 9. Was Sie zusätzlich prüfen sollten
 
@@ -297,13 +261,36 @@ Solange die Domain bei Vercel nicht entfernt ist: bei GoDaddy die beiden Einträ
 
 ## 13. Später: Aktualisieren
 
+Siehe Abschnitt 15.
+
+## 14. Überwachung, schlank
+
+- **Externer HTTPS-Monitor:** Vorschlag Better Stack (Betterstack Uptime, Sitz Prag, EU; kostenloser Tarif mit HTTPS-Checks, Heartbeat-Monitoren und E-Mail-Alarm). Alternative mit Sitz in der EU: UptimeRobot (Malta). Einrichtung: Konto mit accounts@paloskin.de, Monitor „HTTPS“ auf `https://www.paloskin.de/booking` (nach dem Umzug), Intervall 3 Minuten, Alarm per E-Mail an accounts@paloskin.de nach zwei Fehlversuchen.
+- **Heartbeat vom Server:** Zweiter Monitor vom Typ „Heartbeat“ mit Erwartung alle 10 Minuten. Die URL in `/etc/paloskin/monitor.env` als `HEARTBEAT_URL=` eintragen (root, 0600). Das Skript `deploy/heartbeat.sh` prüft alle 5 Minuten Speicherplatz (Alarm ab 85 Prozent), Containerzustand und die Fehlerrate der Anwendung (ab 5 Fehlerzeilen in 10 Minuten) und sendet den Heartbeat nur bei gutem Zustand. Bleibt er aus, alarmiert der Monitor per E-Mail. Es werden nur Zähler ausgewertet, keine Inhalte. Cron einrichten:
+
 ```bash
-cd /opt/paloskin && git pull && docker compose -f deploy/docker-compose.yml up -d --build
+sudo install -m 755 /opt/paloskin/deploy/heartbeat.sh /usr/local/bin/paloskin-heartbeat && echo '*/5 * * * * deploy /usr/local/bin/paloskin-heartbeat' | sudo tee /etc/cron.d/paloskin-heartbeat
 ```
+
+- Ergebnis im Serverprotokoll: `journalctl -t paloskin-heartbeat --since today`.
+
+## 15. Update-Ablauf
+
+- **Dependabot** (`.github/dependabot.yml`) schlägt wöchentlich gebündelte Aktualisierungen für npm-Abhängigkeiten (Next.js, React, zod), das Basis-Image im Dockerfile und die Actions vor. Pull Requests nach Prüfung mergen; Typprüfung und Tests laufen lokal mit `npm run typecheck && npm test`.
+- **Monatliches Neubauen:** Die Action baut das Image am 1. jedes Monats neu, damit Sicherheitsupdates des Basis-Images (`node:24-alpine`) einfließen, auch ohne Codeänderung.
+- **Ausrollen auf den Server**, nach jedem gemergten Update oder spätestens monatlich:
+
+```bash
+cd /opt/paloskin && git pull && docker compose -f deploy/docker-compose.yml pull && docker compose -f deploy/docker-compose.yml up -d && docker image prune -f
+```
+
+- **Node-Hauptversion:** einmal jährlich im Oktober auf die aktuelle LTS (Dockerfile `node:XX-alpine`, `package.json` `engines`), zuerst lokal bauen und testen.
+- **Betriebssystem:** Sicherheitsupdates automatisch (unattended-upgrades); einmal im Monat `sudo apt update && sudo apt -y upgrade` und bei `/var/run/reboot-required` ein Neustart in einer ruhigen Stunde.
 
 ## Was die Dateien tun
 
-- `docker-compose.yml`: App ohne Root (Benutzer 10001), Dateisystem schreibgeschützt mit tmpfs für `/tmp` und den Next.js-Cache, alle Capabilities entfernt, `no-new-privileges`, Begrenzung auf 768 MB, 1 CPU und 256 Prozesse, Healthcheck, Protokolle begrenzt. Caddy mit 80 und 443, Zertifikate auf einem Volume.
+- `docker-compose.yml`: Image aus ghcr.io, App ohne Root (Benutzer 10001), Dateisystem schreibgeschützt mit tmpfs für `/tmp` und den Next.js-Cache, alle Capabilities entfernt, `no-new-privileges`, Begrenzung auf 640 MB, 1 CPU und 256 Prozesse, Healthcheck, Protokolle begrenzt. Caddy mit 80 und 443 (ohne HTTP/3), Zertifikate auf einem Volume. `docker-compose.build.yml` nur für den Notfall-Build auf dem Server.
+- `daemon.json`: daemonweite Protokollgrenzen und `live-restore`. `heartbeat.sh`: Zustandsprüfung und Heartbeat an den Monitor.
 - `Caddyfile`: Weiterleitung paloskin.de auf www, Reverse-Proxy zur App, nur Caddy setzt `X-Forwarded-For`, `Server`-Kopfzeile entfernt, HSTS vorbereitet.
 - Sicherheitsheader (CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy) setzt die App in `next.config.ts`, getestet mit Produktionsbuild ohne CSP-Verstöße.
 - `.dockerignore` schließt `.env*`, Schlüsseldateien, `.git`, `node_modules`, `.next` und `deploy` aus.

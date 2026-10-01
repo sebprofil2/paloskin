@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { codeIsValid, cookieHeader } from "@/lib/access";
+import { codeIsValid, cookieHeader, isSecureRequest, makeCookieValue } from "@/lib/access";
 import { readEnv } from "@/lib/env";
 import { logEvent } from "@/lib/log";
 import { allow, clientKey, LIMITS } from "@/lib/ratelimit";
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     return back(false, lang);
   }
   const res = back(true, lang);
-  res.headers.append("set-cookie", cookieHeader(code, url.protocol === "https:"));
+  res.headers.append("set-cookie", cookieHeader(makeCookieValue(), isSecureRequest(req)));
   logEvent("info", "access_granted", { route: "zugang" });
   return res;
 }

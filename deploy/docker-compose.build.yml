@@ -1,0 +1,7 @@
+# Nur im Notfall: Image auf dem Server bauen (braucht die Swap-Datei).
+# docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.build.yml up -d --build
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile

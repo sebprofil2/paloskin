@@ -37,7 +37,7 @@ export default async function ZugangPage({ searchParams }: { searchParams: Promi
                     <span className="l">Testcode</span>
                     <input id="code" name="code" type="password" autoComplete="off" required maxLength={80} />
                   </label>
-                  <p className="hint">Der Code wird nur einmal übertragen und bleibt 14 Tage als Cookie auf diesem Gerät.</p>
+                  <p className="hint">Der Code wird nur einmal übertragen und bleibt 7 Tage als Cookie auf diesem Gerät.</p>
                   <button type="submit" className="primary" style={{ marginTop: 12 }}>Weiter zur Buchung</button>
                 </form>
               </>

@@ -5,6 +5,8 @@ export interface Env {
   engine: "mock" | "google";
   testMode: boolean;
   testCode: string;
+  /** Signaturschlüssel für das Testzugangs-Cookie; Wechsel widerruft alle Cookies */
+  testCookieSecret: string;
   stepMinutes: number;
   bufferMinutes: number;
   mockDown: boolean;
@@ -68,6 +70,7 @@ export function readEnv(): Env {
     // Standard ist Testbetrieb: erst TEST_MODE=false schaltet die echte Buchung für alle frei
     testMode: process.env.TEST_MODE !== "false",
     testCode: (process.env.TEST_ACCESS_CODE ?? "").trim(),
+    testCookieSecret: (process.env.TEST_COOKIE_SECRET ?? "").trim(),
     stepMinutes: int(process.env.SLOT_STEP_MINUTES, 30),
     bufferMinutes: process.env.BUFFER_MINUTES === undefined ? 0 : int(process.env.BUFFER_MINUTES, 0),
     mockDown: process.env.BOOKING_MOCK_DOWN === "true",

@@ -2,7 +2,6 @@
 # Caddy holt und erneuert die Zertifikate selbst, sobald die DNS-Einträge auf den Server zeigen.
 # Die Sicherheitsheader (CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy) setzt die Anwendung selbst
 # (next.config.ts), damit sie auf Vercel und hier gleich sind. HSTS kommt erst hier, nach geprüftem HTTPS.
-
 # Kein HTTP/3 (UDP 443 ist in der Hetzner-Firewall nicht offen); nur HTTP/1.1 und HTTP/2.
 {
 	servers {
@@ -10,24 +9,18 @@
 	}
 }
 
-paloskin.de {
-	redir https://www.paloskin.de{uri} permanent
-}
-
-www.paloskin.de {
+(paloskin) {
 	encode zstd gzip
 	reverse_proxy app:3000 {
-		# Nur Caddy setzt diese Kopfzeilen; die App vertraut X-Forwarded-For deshalb ausschließlich dem Proxy
+		# Nur Caddy setzt diese Kopfzeilen; die App vertraut X-Forwarded-For und X-Forwarded-Proto deshalb nur dem Proxy
 		header_up X-Forwarded-For {remote_host}
 		header_up X-Real-IP {remote_host}
 	}
-
 	header {
 		# Erst aktivieren, wenn HTTPS auf www und apex nachweislich läuft (Zertifikat, Weiterleitung, alle Seiten):
 		# Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		-Server
 	}
-
 	log {
 		output file /var/log/caddy/paloskin.log {
 			roll_size 10mb
@@ -35,4 +28,17 @@ www.paloskin.de {
 		}
 		format json
 	}
+}
+
+# Testname vor der DNS-Umstellung (bei GoDaddy: A neu -> 2.31.2.192). Nach dem Umzug diesen Block entfernen.
+neu.paloskin.de {
+	import paloskin
+}
+
+paloskin.de {
+	redir https://www.paloskin.de{uri} permanent
+}
+
+www.paloskin.de {
+	import paloskin
 }
