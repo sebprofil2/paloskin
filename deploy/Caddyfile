@@ -1,0 +1,27 @@
+# Reverse-Proxy mit automatischem HTTPS (Let's Encrypt) für paloskin.de auf dem Hetzner-Server.
+# Caddy holt und erneuert die Zertifikate selbst, sobald die DNS-Einträge auf den Server zeigen.
+
+paloskin.de {
+	redir https://www.paloskin.de{uri} permanent
+}
+
+www.paloskin.de {
+	encode zstd gzip
+	reverse_proxy app:3000
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "DENY"
+		-Server
+	}
+
+	log {
+		output file /var/log/caddy/paloskin.log {
+			roll_size 10mb
+			roll_keep 5
+		}
+		format json
+	}
+}

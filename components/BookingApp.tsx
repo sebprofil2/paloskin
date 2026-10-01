@@ -12,6 +12,7 @@ const ADDRESS = "Hagenauer Straße 14, 10435 Berlin";
 const MAPS = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(ADDRESS);
 const WA = "https://wa.me/4915158872566";
 const TZ = "Europe/Berlin";
+const THOUSANDS: Record<Lang, string> = { de: ".", en: ",", es: ".", fr: "\u00A0", pt: "." };
 
 type Step = 1 | 2 | 3;
 type ErrorKey = keyof Texts;
@@ -241,7 +242,8 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
 
   const l = TEXTS[lang];
   const loc = LANGS.find((x) => x.id === lang)!.loc;
-  const fmt = useCallback((n: number) => new Intl.NumberFormat(loc, { style: "currency", currency: "EUR", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(n), [loc]);
+  /* Preise: Tausendertrennzeichen je Sprache (EN Komma, FR geschütztes Leerzeichen, sonst Punkt), Euro dahinter, wie auf der Startseite */
+  const fmt = useCallback((n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, THOUSANDS[lang]) + "\u00A0€", [lang]);
   /* Sichtbare Preise: „ab“ und Sternchen, Fußnote unter der Liste */
   const priceTag = (n: number) => `${fmt(n)}*`;
   const dfmt = useCallback((key: string, o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(loc, { ...o, timeZone: TZ }).format(keyToNoon(key)), [loc]);

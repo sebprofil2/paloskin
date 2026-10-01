@@ -1,0 +1,48 @@
+# Betrieb auf dem Hetzner-Server: Anwendung plus Caddy als Reverse-Proxy mit HTTPS.
+# Start:  docker compose -f deploy/docker-compose.yml --env-file /etc/paloskin/paloskin.env up -d --build
+# Die Umgebungsvariablen liegen außerhalb des Repositories, zum Beispiel in /etc/paloskin/paloskin.env (nur root lesbar).
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - /etc/paloskin/paloskin.env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/booking"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - caddy_logs:/var/log/caddy
+    depends_on:
+      - app
+
+volumes:
+  caddy_data:
+  caddy_config:
+  caddy_logs:
