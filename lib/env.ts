@@ -21,7 +21,29 @@ function int(v: string | undefined, fallback: number): number {
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
 }
 
+/*
+ * Dienstkonto: entweder die komplette Schlüsseldatei in GOOGLE_SERVICE_ACCOUNT_JSON
+ * oder getrennt GOOGLE_SERVICE_ACCOUNT_EMAIL und GOOGLE_PRIVATE_KEY.
+ */
+function serviceAccount(): { email: string; key: string } {
+  const raw = (process.env.GOOGLE_SERVICE_ACCOUNT_JSON ?? "").trim();
+  if (raw) {
+    try {
+      const j = JSON.parse(raw) as { client_email?: string; private_key?: string };
+      if (j.client_email && j.private_key) return { email: j.client_email, key: j.private_key };
+    } catch {
+      console.error("[env] GOOGLE_SERVICE_ACCOUNT_JSON ist kein gültiges JSON");
+    }
+  }
+  return {
+    email: (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "").trim(),
+    // Vercel speichert Zeilenumbrüche je nach Eingabe als \n: beide Formen zulassen
+    key: (process.env.GOOGLE_PRIVATE_KEY ?? "").replace(/\\n/g, "\n").replace(/^"|"$/g, ""),
+  };
+}
+
 export function readEnv(): Env {
+  const sa = serviceAccount();
   const busy = (process.env.CALENDAR_BUSY_IDS ?? "")
     .split(",")
     .map((x) => x.trim())
@@ -37,9 +59,8 @@ export function readEnv(): Env {
     bufferMinutes: process.env.BUFFER_MINUTES === undefined ? 0 : int(process.env.BUFFER_MINUTES, 0),
     mockDown: process.env.BOOKING_MOCK_DOWN === "true",
     google: {
-      serviceAccountEmail: (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "").trim(),
-      // Vercel speichert Zeilenumbrüche je nach Eingabe als \n: beide Formen zulassen
-      privateKey: (process.env.GOOGLE_PRIVATE_KEY ?? "").replace(/\\n/g, "\n").replace(/^"|"$/g, ""),
+      serviceAccountEmail: sa.email,
+      privateKey: sa.key,
       calendarOpenId: (process.env.CALENDAR_OPEN_ID ?? "").trim(),
       calendarBookingsId: bookings,
       calendarBusyIds: busy,

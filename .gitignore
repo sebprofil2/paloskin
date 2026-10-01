@@ -25,3 +25,7 @@ coverage/
 # Lokale Startkonfiguration der Claude-App
 .claude/
 *.tsbuildinfo
+
+# Google-Schlüsseldateien
+palo-skin-buchung-*.json
+*gserviceaccount*.json
