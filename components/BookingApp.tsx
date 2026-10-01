@@ -588,7 +588,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
             {zoneN > 0 || s.zonesUnknown ? (
               <div className="zsum" aria-live="polite">
                 <b>
-                  {zoneN > 0 ? l.zoneCountLabel(zoneN) : l.zonesOpen}{s.persons === 2 ? `, ${l.persons2}` : ""}
+                  {zoneN > 0 ? l.zoneCountLabel(zoneN) : l.zonesOpen}
                   <small>{l.zoneTiers(priceTag(PRICES.zone1), priceTag(PRICES.zone2), priceTag(PRICES.zone3), priceTag(PRICES.zoneMore))}</small>
                 </b>
                 {zoneN > 0 ? <span className="zp">{priceTag(zonePrice(zoneN))}</span> : null}

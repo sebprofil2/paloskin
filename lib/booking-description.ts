@@ -37,7 +37,7 @@ export function buildDescription(i: DescriptionInput): string {
   const rows: string[] = [];
   rows.push(`Buchungsnummer: ${i.bookingRef}`);
   rows.push(`Besuch: ${s.checkup ? "Kontrolltermin" : s.visit === "first" ? "Erster Besuch" : "Schon einmal da"}`);
-  if (s.persons === 2) rows.push("Personen: 2 (die zweite Person wählt ihre Behandlung vor Ort)");
+  if (s.persons === 2) rows.push("Zu zweit (die Begleitung entscheidet vor Ort, Behandlung gilt für die buchende Person)");
   if (s.beratung) rows.push("Behandlung: Noch unsicher, Beratung gewünscht");
   const items = lineItemsDe(s);
   if (items.length) {

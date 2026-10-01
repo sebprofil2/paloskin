@@ -345,7 +345,7 @@ const X: Record<Lang, ExtraTexts> = {
     refL: "Buchungsnummer", durL: "Dauer", minutes: (n) => `${n} Minuten`,
     home: "Zur Startseite", legalImprint: "Impressum", legalPrivacy: "Datenschutzerklärung",
     zoneNames: { zornesfalte: "Zornesfalte", stirn: "Stirn", kraehenfuesse: "Krähenfüße", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Mundwinkel", erdbeerkinn: "Erdbeerkinn", gummysmile: "Gummy Smile", oberlippe: "Oberlippenfältchen", nase: "Nasenverschmälerung" },
-    personsQ: "Für wie viele Personen?", persons1: "1 Person", persons2: "2 Personen", personsMore: "Mehr als zwei? Bitte angrenzende Termine buchen.", secondPerson: "Die zweite Person wählt ihre Behandlung vor Ort.",
+    personsQ: "Kommen Sie allein oder zu zweit?", persons1: "Allein", persons2: "Zu zweit", personsMore: "Zu dritt oder mehr? Schreiben Sie uns kurz per WhatsApp, wir legen die Termine direkt hintereinander.", secondPerson: "Schön, wir planen mehr Zeit ein. Ihre Begleitung entscheidet entspannt vor Ort, was sie möchte.",
     zoneOther: "Sonstiges", zoneUnknown: "Weiß ich noch nicht", zonesOpen: "Zonen noch offen",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "Zone" : "Zonen"}`,
     zoneTiers: (p1, p2, p3, p4) => `1 Zone ${p1}, 2 Zonen ${p2}, 3 Zonen ${p3}, jede weitere ${p4}`,
