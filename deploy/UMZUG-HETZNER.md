@@ -21,7 +21,10 @@ Host paloskin
   IdentityFile ~/.ssh/id_ed25519_paloskin
 ```
 
-## 2. Server bei Hetzner bestellen
+## 2. Server bei Hetzner bestellen (erledigt am 2. Oktober 2026)
+
+Tatsächlich bestellt: Projekt „Palo Skin Website“, Server `paloskin-1`, Typ CPX12 (1 vCPU AMD, 2 GB, 40 GB) in Nürnberg, Ubuntu 24.04, tägliche Backups, IPv4 `2.31.2.192`, IPv6 `2a01:4f8:1c16:71ba::1`. SSH-Key bei Hetzner „paloskin-hetzner“, Firewall „firewall-1“ mit TCP 22, 80, 443 und ICMP, ohne UDP 443 (Caddy läuft deshalb ohne HTTP/3). Wegen der 2 GB Arbeitsspeicher legt Schritt 3 eine Swap-Datei von 2 GB an, damit der Docker-Build von Next.js nicht am Speicher scheitert.
+
 
 1. https://console.hetzner.cloud anmelden, Projekt „paloskin“ anlegen (Neues Projekt).
 2. Links „Security“, Reiter „SSH Keys“, „SSH-Key hinzufügen“: den kopierten Schlüssel einfügen, Name „Mac Sebastian“.
@@ -86,7 +89,7 @@ Erwartet: `deploy@paloskin-1:~$`. Erst wenn das klappt, die root-Sitzung mit `ex
 7. Firewall auf dem Server (zusätzlich zur Hetzner-Firewall) und automatische Sicherheitsupdates:
 
 ```bash
-sudo ufw default deny incoming && sudo ufw default allow outgoing && sudo ufw allow 22/tcp && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo ufw allow 443/udp && sudo ufw --force enable
+sudo ufw default deny incoming && sudo ufw default allow outgoing && sudo ufw allow 22/tcp && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp && sudo ufw --force enable
 ```
 
 ```bash
@@ -97,6 +100,12 @@ Bei der Rückfrage „Automatically download and install stable updates?“ mit 
 
 ```bash
 sudo timedatectl set-timezone Europe/Berlin
+```
+
+8. Swap-Datei von 2 GB (nur bei 2 GB Arbeitsspeicher nötig):
+
+```bash
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile && echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab && echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swap.conf && sudo sysctl -p /etc/sysctl.d/99-swap.conf
 ```
 
 ## 4. Docker installieren

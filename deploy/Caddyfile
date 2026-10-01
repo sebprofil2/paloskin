@@ -3,6 +3,13 @@
 # Die Sicherheitsheader (CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy) setzt die Anwendung selbst
 # (next.config.ts), damit sie auf Vercel und hier gleich sind. HSTS kommt erst hier, nach geprüftem HTTPS.
 
+# Kein HTTP/3 (UDP 443 ist in der Hetzner-Firewall nicht offen); nur HTTP/1.1 und HTTP/2.
+{
+	servers {
+		protocols h1 h2
+	}
+}
+
 paloskin.de {
 	redir https://www.paloskin.de{uri} permanent
 }
