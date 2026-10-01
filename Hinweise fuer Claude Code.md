@@ -75,3 +75,7 @@ Außerdem: `TEST_MODE` gilt standardmäßig als eingeschaltet. Ohne Umgebungsvar
 - Freigegebene Kalender erscheinen in der Kalenderliste eines Dienstkontos erst, wenn sie einmal aufgenommen wurden: `node scripts/google-check.mjs add-open <Kalender-ID>`. Für den Betrieb ist das nicht nötig, der Motor arbeitet direkt mit den Kennungen aus den Umgebungsvariablen.
 - Die Kennung von „Palo Skin offen“ steht in Google Kalender unter Einstellungen, Kalender „Palo Skin offen“, Abschnitt „Kalender integrieren“, Feld „Kalender-ID“. Sie gehört in `CALENDAR_OPEN_ID`.
 - Testlauf: `node scripts/google-check.mjs list|busy|event` (Kalenderliste, frei/belegt der nächsten 7 Tage, Probetermin eintragen, lesen, löschen).
+
+## Notiz Bezahlung (1. Oktober 2026)
+
+Die Frage „Wie kann ich bezahlen?“ wurde aus den häufigen Fragen der Startseite entfernt. Zahlungsinformationen (Karte oder Überweisung) kommen später nur in die Buchungsbestätigung, nicht auf die Website.
