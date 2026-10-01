@@ -243,7 +243,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   const loc = LANGS.find((x) => x.id === lang)!.loc;
   const fmt = useCallback((n: number) => new Intl.NumberFormat(loc, { style: "currency", currency: "EUR", maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(n), [loc]);
   /* Sichtbare Preise: „ab“ und Sternchen, Fußnote unter der Liste */
-  const priceTag = (n: number) => `${l.from(fmt(n))}*`;
+  const priceTag = (n: number) => `${fmt(n)}*`;
   const dfmt = useCallback((key: string, o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(loc, { ...o, timeZone: TZ }).format(keyToNoon(key)), [loc]);
   const dayWd = (key: string) => cap(dfmt(key, { weekday: "short" }).replace(/\.$/, ""));
   const dayN = (key: string) => Number(key.slice(8));
