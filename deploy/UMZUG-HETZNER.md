@@ -40,7 +40,9 @@ Tatsächlich bestellt: Projekt „Palo Skin Website“, Server `paloskin-1`, Typ
    - „Kostenpflichtig bestellen“.
 5. Nach einer Minute zeigt die Serverliste die IPv4-Adresse. Diese ist `<SERVER-IP>`. Die IPv6-Adresse (beginnt mit `2a01:`) notieren Sie als `<SERVER-IPV6>`; Hetzner zeigt ein Netz wie `2a01:4f8:…::/64`, die Serveradresse ist dieses Präfix mit `::1` am Ende.
 
-## 3. Erster Login und Grundschutz (zwei Phasen)
+## 3. Erster Login und Grundschutz (zwei Phasen, erledigt am 2. Oktober 2026)
+
+Ergebnis: Benutzer `deploy` mit sudo (Passwort im Passwortmanager), UFW aktiv mit 22, 80, 443 TCP, unattended-upgrades und fail2ban aktiv, Zeitzone Europe/Berlin, Swap 2 GB, Root- und Passwort-Login abgeschaltet und gegengeprüft, Neustart durchgeführt. Auf dem Mac gibt es den Eintrag `Host paloskin` in `~/.ssh/config`, daher reicht ab jetzt `ssh paloskin`.
 
 Phase A richtet alles ein, Phase B schaltet Root- und Passwort-Login erst ab, nachdem der Zugang als `deploy` samt `sudo` nachweislich funktioniert. Beides läuft über das Skript `deploy/schritt3.sh` beziehungsweise die Befehle unten; die root-Sitzung bleibt bis zum Ende von Phase B offen.
 
