@@ -100,7 +100,7 @@ sudo mkdir -p /opt/paloskin && sudo chown deploy:deploy /opt/paloskin && git clo
 
 Erwartet: am Ende keine Fehlermeldung, `ls /opt/paloskin` zeigt unter anderem `Dockerfile`, `deploy`, `public`.
 
-## 6. Dienstkontoschlüssel und Umgebungsvariablen
+## 6. Dienstkontoschlüssel und Umgebungsvariablen (erledigt am 2. Oktober 2026: Schlüssel 10001:10001 0400, paloskin.env mit Testcode und Cookie-Schlüssel, docker login ghcr.io)
 
 1. Auf dem Mac, in einem eigenen Terminalfenster (nicht auf dem Server): Schlüsseldatei hochladen.
 
@@ -152,7 +152,7 @@ Werte in der Datei:
 
 Der Schlüsselpfad `GOOGLE_SERVICE_ACCOUNT_FILE` steht fest in `docker-compose.yml` und zeigt auf das Secret; in der Umgebungsdatei steht kein Schlüssel.
 
-## 7. Image holen und starten
+## 7. Image holen und starten (erledigt am 2. Oktober 2026: app healthy, Secret lesbar, Dateisystem schreibgeschützt, tmpfs beschreibbar, Zertifikat für neu.paloskin.de)
 
 Das Image baut GitHub Actions bei jedem Push auf `zonen` (später `main`) und monatlich neu für `linux/amd64` und legt es unter `ghcr.io/sebprofil2/paloskin:<branch>` ab (`.github/workflows/image.yml`). Der Server baut nichts, er zieht nur das fertige Image. Vorbereitung auf GitHub, einmalig:
 
