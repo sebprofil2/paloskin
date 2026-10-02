@@ -50,4 +50,5 @@ export const LIMITS = {
   slots: { limit: 60, windowMs: 60 * 1000 },
   referral: { limit: 10, windowMs: 60 * 60 * 1000 },
   access: { limit: 5, windowMs: 15 * 60 * 1000 },
+  termin: { limit: 20, windowMs: 15 * 60 * 1000 },
 } as const;

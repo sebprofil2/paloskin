@@ -119,3 +119,8 @@ Für später, nicht gebaut: Nach einer Buchung für 1 Person soll die Bestätigu
 - Bauauftrag in `docs/STUFE-2-BAUAUFTRAG.md` (ersetzt den Entwurf), Umsetzungsstand am Ende des Dokuments. Arbeitsbranch `stufe2`, Testinstanz `app-test` hinter `neu.paloskin.de` (Compose-Profil `test`), Ausrollen durch Fast-Forward von `zonen`.
 - Datenbank: `node:sqlite` (Node 24), Datei `/var/lib/paloskin/buchung.sqlite` (Volume, 10001:10001, 0700), lokal `.data/buchung.sqlite`. Schema `lib/db.ts`, Reservierung `lib/store.ts`, Ablauf `lib/booking.ts`, Hintergrundlauf `lib/jobs.ts` über `instrumentation.ts`.
 - Reihenfolge der weiteren Schritte: Bestätigungsmail und verbindliche Buchung (`BOOKING_BINDING`), Endpunkt im privaten Netz, Löschlauf und Backups, Notizfeld.
+
+## Buchung Stufe 2, Schritt 2: Bestätigungsmail, Terminlinks, Erinnerung (2. Oktober 2026)
+
+- Relay: `smtp-relay.gmail.com:587` STARTTLS ohne Anmeldung, Freigabe nur für IPv4 2.31.2.192 (Container spricht IPv4). Mailer `lib/mail.ts` (Betriebsarten relay, file, off), Inhalte `lib/mail-content.ts`, Texte `lib/texts-mail.ts`, Links `lib/links.ts` (HMAC mit `LINK_SECRET`), Seite `app/termin/[token]`, Route `app/api/termin`.
+- Zusage und Absage über den Link (Absage bis 48 Stunden vorher), Erinnerung 24 Stunden vorher, `BOOKING_BINDING` vorbereitet und aus. Lokal `MAIL_MODE=file` schreibt Mails nach `.data/mail`.

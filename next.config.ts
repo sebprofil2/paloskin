@@ -7,6 +7,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   agentRules: false,
+  // Mailversand läuft als normales Node-Modul, nicht gebündelt
+  serverExternalPackages: ["nodemailer"],
   trailingSlash: false,
   poweredByHeader: false,
   outputFileTracingIncludes: {
@@ -42,6 +44,10 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/booking/:path*",
+        headers: [{ key: "Cache-Control", value: "no-store" }],
+      },
+      {
+        source: "/termin/:path*",
         headers: [{ key: "Cache-Control", value: "no-store" }],
       },
       {

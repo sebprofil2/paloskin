@@ -326,3 +326,22 @@ docker compose -f /opt/paloskin/deploy/docker-compose.yml exec app node -e 'cons
 
 - **Hintergrundlauf:** alle 5 Minuten im Serverprozess (Protokollzeile `calendar_retry`), holt fehlende Kalendereinträge nach. Bleibt ein Eintrag 24 Stunden offen, schreibt die App `ALARM …` ins Protokoll; der Heartbeat bleibt dann aus und der Monitor alarmiert.
 - **Sicherung und Löschlauf:** folgen in Schritt 4 des Bauauftrags (`docs/STUFE-2-BAUAUFTRAG.md`). Bis dahin ist die Datei im täglichen Hetzner-Server-Backup enthalten.
+
+## 17. Stufe 2, Schritt 2: Bestätigungsmail über den Google-Relay (2. Oktober 2026)
+
+- **Relay in der Google-Admin-Konsole:** Apps, Google Workspace, Gmail, Routing, „SMTP-Relay-Dienst“: nur angegebene IP-Adressen, Eintrag 2.31.2.192 (bei Bedarf zusätzlich die IPv6-Adresse 2a01:4f8:1c16:71ba::1), TLS-Verschlüsselung erforderlich, keine SMTP-Authentifizierung, zulässige Absender nur eigene Domains. Der Hostname ist `smtp-relay.gmail.com` (nicht `smtp-relay.google.com`), Port 587, STARTTLS.
+- **Umgebung** in `/etc/paloskin/paloskin.env` ergänzen (Vorlage `deploy/paloskin.env.example`): `MAIL_RELAY_HOST`, `MAIL_RELAY_PORT`, `MAIL_FROM`, `MAIL_FROM_NAME`, `MAIL_REPLY_TO`, `BOOKING_BINDING=false` und `LINK_SECRET`. Den Schlüssel direkt auf dem Server erzeugen, ohne ihn anzuzeigen:
+
+```bash
+printf 'LINK_SECRET=%s\n' "$(openssl rand -base64 32)" >> /etc/paloskin/paloskin.env
+```
+
+- **Testinstanz:** `deploy/.env` (nicht im Repository) mit `PALOSKIN_TEST_MAIL=<Testadresse>`; dann gehen alle Mails von neu.paloskin.de an diese Adresse, egal welche Adresse im Formular steht.
+- **Probe von Hand**, falls der Relay ablehnt (die Antwortzeilen zeigen den Grund; wichtig ist `-4`, sonst meldet sich der Server über IPv6):
+
+```bash
+{ sleep 2; printf 'EHLO paloskin-1.paloskin.de\r\n'; sleep 1; printf 'QUIT\r\n'; sleep 1; } | openssl s_client -quiet -4 -starttls smtp -connect smtp-relay.gmail.com:587 2>&1 | grep -E '^[0-9]{3} '
+```
+
+- **Prüfen im Betrieb:** Protokollzeilen `mail_sent` und `mail_failed` (nur Buchungsnummer, Art und Fehlerklasse), Spalten `mail_confirmation_sent_at` und `mail_reminder_sent_at` in der Datenbank. Bleibt eine Bestätigung 24 Stunden aus, schreibt die App `ALARM Bestätigungsmail …` und der Heartbeat bleibt aus.
+- **Schalter verbindliche Buchung:** erst nach der Abnahme `BOOKING_BINDING=true` in `paloskin.env` setzen und den Container neu starten (`docker compose -f deploy/docker-compose.yml up -d app`).

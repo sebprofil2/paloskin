@@ -64,6 +64,8 @@ interface Booking {
   start: string;
   end: string;
   durationMinutes: number;
+  /** verbindlich gebucht (Schalter BOOKING_BINDING) oder Terminanfrage */
+  binding?: boolean;
 }
 
 type SlotsState = { status: "idle" | "loading" | "ready" | "down"; days: SlotDay[]; durationMinutes: number | null; key: string };
@@ -807,7 +809,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
       <>
         <div className="band" />
         <div className="confirm">
-          <h1>{l.doneH}</h1>
+          <h1>{b.binding ? l.doneBindingH : l.doneH}</h1>
           <p>{dayLabel(dayKey)}, {l.at(time)}.</p>
           <dl>
             <dt>{l.addrL}</dt><dd><a href={MAPS} target="_blank" rel="noopener">{ADDRESS}</a></dd>

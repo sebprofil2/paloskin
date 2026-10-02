@@ -24,6 +24,21 @@ export interface Env {
   dbPath: string;
   /** Verbindliche Buchung (confirmed) statt Terminanfrage (requested); erst nach der Abnahme einschalten */
   bookingBinding: boolean;
+  /** Öffentliche Adresse der Seite für Links in Mails, ohne Schrägstrich am Ende */
+  publicBaseUrl: string;
+  /** Signaturschlüssel der Terminlinks; leer heißt abgeleitet aus dem Cookie-Schlüssel */
+  linkSecret: string;
+  mail: {
+    /** relay: über SMTP-Relay senden; file: in eine Datei neben der Datenbank schreiben (Entwicklung); off: nichts senden */
+    mode: "relay" | "file" | "off";
+    host: string;
+    port: number;
+    from: string;
+    fromName: string;
+    replyTo: string;
+    /** Testinstanz: alle Mails an diese Adresse statt an den Kunden */
+    redirectTo: string;
+  };
 }
 
 function int(v: string | undefined, fallback: number): number {
@@ -61,6 +76,12 @@ function serviceAccount(): { email: string; key: string } {
   };
 }
 
+function mailMode(): "relay" | "file" | "off" {
+  const m = (process.env.MAIL_MODE ?? "").trim();
+  if (m === "relay" || m === "file" || m === "off") return m;
+  return (process.env.MAIL_RELAY_HOST ?? "").trim() ? "relay" : "off";
+}
+
 export function readEnv(): Env {
   const sa = serviceAccount();
   const busy = (process.env.CALENDAR_BUSY_IDS ?? "")
@@ -89,5 +110,16 @@ export function readEnv(): Env {
     trustProxy: process.env.TRUST_PROXY === "true",
     dbPath: (process.env.BOOKING_DB_PATH ?? "").trim() || ".data/buchung.sqlite",
     bookingBinding: process.env.BOOKING_BINDING === "true",
+    publicBaseUrl: ((process.env.PUBLIC_BASE_URL ?? "").trim() || "https://www.paloskin.de").replace(/\/+$/, ""),
+    linkSecret: (process.env.LINK_SECRET ?? "").trim(),
+    mail: {
+      mode: mailMode(),
+      host: (process.env.MAIL_RELAY_HOST ?? "").trim(),
+      port: int(process.env.MAIL_RELAY_PORT, 587),
+      from: (process.env.MAIL_FROM ?? "").trim() || "bookings@paloskin.de",
+      fromName: (process.env.MAIL_FROM_NAME ?? "").trim() || "Palo Skin by Dr. Vogel",
+      replyTo: (process.env.MAIL_REPLY_TO ?? "").trim() || "info@paloskin.de",
+      redirectTo: (process.env.MAIL_REDIRECT_TO ?? "").trim(),
+    },
   };
 }

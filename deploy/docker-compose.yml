@@ -22,6 +22,7 @@ services:
       HOSTNAME: "0.0.0.0"
       GOOGLE_SERVICE_ACCOUNT_FILE: /run/secrets/google_service_account
       BOOKING_DB_PATH: /var/lib/paloskin/buchung.sqlite
+      PUBLIC_BASE_URL: https://www.paloskin.de
     secrets:
       - google_service_account
     # Kein "ports": der App-Port bleibt im internen Docker-Netz. Veröffentlichte Docker-Ports würden UFW umgehen.
@@ -69,6 +70,9 @@ services:
       HOSTNAME: "0.0.0.0"
       GOOGLE_SERVICE_ACCOUNT_FILE: /run/secrets/google_service_account
       BOOKING_DB_PATH: /var/lib/paloskin-test/buchung.sqlite
+      PUBLIC_BASE_URL: https://neu.paloskin.de
+      # Alle Mails der Testinstanz gehen an diese Adresse statt an die eingegebene (deploy/.env auf dem Server, nicht im Repository)
+      MAIL_REDIRECT_TO: ${PALOSKIN_TEST_MAIL:-}
     secrets:
       - google_service_account
     expose:

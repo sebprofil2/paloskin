@@ -213,6 +213,8 @@ pt:{
 export interface ExtraTexts {
   testBanner: string;
   afterCancelReal: string;
+  /** Bestätigungsseite bei verbindlicher Buchung (BOOKING_BINDING) */
+  doneBindingH: string;
   pendingT: string;
   pendingP: string;
   conflict: string;
@@ -246,6 +248,7 @@ const X: Record<Lang, ExtraTexts> = {
   de: {
     testBanner: "Testversion. Bitte nur erfundene Namen und keine echten Behandlungswünsche eintragen. Die Buchung landet wirklich im Kalender.",
     afterCancelReal: "Absagen oder verschieben bitte per WhatsApp unter +49 151 58872566, mindestens 48 Stunden vorher.",
+    doneBindingH: "Ihr Termin ist gebucht. Die Bestätigung ist per E-Mail unterwegs.",
     pendingT: "Wir prüfen Ihre Buchung.", pendingP: "Bitte nicht erneut buchen, wir melden uns.",
     conflict: "Da war jemand schneller. Wählen Sie bitte eine andere Uhrzeit.",
     bookErr: "Das hat gerade nicht geklappt. Versuchen Sie es bitte noch einmal oder schreiben Sie uns per WhatsApp.",
@@ -263,6 +266,7 @@ const X: Record<Lang, ExtraTexts> = {
   en: {
     testBanner: "Test version. Please enter invented names only and no real treatment wishes. The booking really does go into the calendar.",
     afterCancelReal: "To cancel or reschedule, please send us a WhatsApp message or call +49 151 58872566, at least 48 hours in advance.",
+    doneBindingH: "Your appointment is booked. The confirmation is on its way by email.",
     pendingT: "We are checking your booking.", pendingP: "Please do not book again, we will get in touch.",
     conflict: "Someone was quicker. Please choose another time.",
     bookErr: "That didn’t work just now. Please try again or message us on WhatsApp.",
@@ -280,6 +284,7 @@ const X: Record<Lang, ExtraTexts> = {
   es: {
     testBanner: "Versión de prueba. Introduzca solo nombres inventados y ningún deseo de tratamiento real. La reserva se registra de verdad en el calendario.",
     afterCancelReal: "Para cancelar o cambiar la cita, escríbanos por WhatsApp o llámenos al +49 151 58872566, con al menos 48 horas de antelación.",
+    doneBindingH: "Su cita está reservada. La confirmación va de camino por correo electrónico.",
     pendingT: "Estamos comprobando su reserva.", pendingP: "Por favor, no vuelva a reservar. Nos pondremos en contacto con usted.",
     conflict: "Alguien ha sido más rápido. Elija otra hora, por favor.",
     bookErr: "Eso no ha funcionado. Inténtelo de nuevo o escríbanos por WhatsApp.",
@@ -297,6 +302,7 @@ const X: Record<Lang, ExtraTexts> = {
   fr: {
     testBanner: "Version de test. Merci de n’indiquer que des noms inventés et aucun souhait de soin réel. La réservation est réellement inscrite dans l’agenda.",
     afterCancelReal: "Pour annuler ou déplacer le rendez-vous, écrivez-nous sur WhatsApp ou appelez le +49 151 58872566, au moins 48 heures à l’avance.",
+    doneBindingH: "Votre rendez-vous est réservé. La confirmation arrive par e-mail.",
     pendingT: "Nous vérifions votre réservation.", pendingP: "Merci de ne pas réserver à nouveau, nous vous recontactons.",
     conflict: "Quelqu’un a été plus rapide. Choisissez une autre heure, s’il vous plaît.",
     bookErr: "Cela n’a pas fonctionné. Réessayez ou écrivez-nous sur WhatsApp.",
@@ -314,6 +320,7 @@ const X: Record<Lang, ExtraTexts> = {
   pt: {
     testBanner: "Versão de teste. Use apenas nomes inventados e nenhum desejo real de tratamento. A reserva é registrada de verdade no calendário.",
     afterCancelReal: "Para cancelar ou remarcar, mande uma mensagem pelo WhatsApp ou ligue para +49 151 58872566, com pelo menos 48 horas de antecedência.",
+    doneBindingH: "Sua consulta está marcada. A confirmação está a caminho por e-mail.",
     pendingT: "Estamos verificando a sua reserva.", pendingP: "Por favor, não reserve de novo, nós entramos em contato.",
     conflict: "Alguém foi mais rápido. Escolha outro horário, por favor.",
     bookErr: "Não deu certo agora. Tente de novo ou mande uma mensagem no WhatsApp.",

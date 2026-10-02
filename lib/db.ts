@@ -40,7 +40,16 @@ CREATE TABLE IF NOT EXISTS bookings (
   calendar_attempts INTEGER NOT NULL DEFAULT 0,
   calendar_attempted_at TEXT,
   updated_at TEXT NOT NULL,
-  deleted_at TEXT
+  deleted_at TEXT,
+  attendance_confirmed_at TEXT,
+  cancelled_at TEXT,
+  cancel_reason TEXT,
+  mail_confirmation_sent_at TEXT,
+  mail_confirmation_attempts INTEGER NOT NULL DEFAULT 0,
+  mail_confirmation_attempted_at TEXT,
+  mail_reminder_sent_at TEXT,
+  mail_reminder_attempts INTEGER NOT NULL DEFAULT 0,
+  mail_reminder_skipped INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS bookings_starts_at ON bookings (starts_at);
 CREATE INDEX IF NOT EXISTS bookings_reference ON bookings (reference);
@@ -56,7 +65,7 @@ CREATE TABLE IF NOT EXISTS booking_events (
   seq INTEGER PRIMARY KEY AUTOINCREMENT,
   event_id TEXT NOT NULL UNIQUE,
   booking_id TEXT NOT NULL,
-  type TEXT NOT NULL CHECK (type IN ('created', 'confirmed', 'cancelled', 'rescheduled', 'reminder_changed', 'completed', 'deleted')),
+  type TEXT NOT NULL CHECK (type IN ('created', 'confirmed', 'cancelled', 'rescheduled', 'reminder_changed', 'completed', 'deleted', 'attendance_confirmed')),
   payload TEXT NOT NULL,
   occurred_at TEXT NOT NULL
 );
@@ -83,7 +92,52 @@ export function openDatabase(path: string): DatabaseSync {
   db.exec("PRAGMA foreign_keys = ON");
   db.exec("PRAGMA synchronous = NORMAL");
   db.exec(SCHEMA);
+  migrate(db);
   return db;
+}
+
+/*
+ * Nachträge für Datenbanken, die mit einem älteren Schema angelegt wurden. Jeder Schritt prüft den Ist-Zustand
+ * und ist damit beliebig oft ausführbar. Schritt 2 (Bestätigungsmail, Zusage, Absage, Erinnerung).
+ */
+function migrate(db: DatabaseSync): void {
+  const columns = new Set((db.prepare("PRAGMA table_info(bookings)").all() as { name: string }[]).map((r) => r.name));
+  if (!columns.has("attendance_confirmed_at")) {
+    db.exec(`
+      BEGIN;
+      ALTER TABLE bookings ADD COLUMN attendance_confirmed_at TEXT;
+      ALTER TABLE bookings ADD COLUMN cancelled_at TEXT;
+      ALTER TABLE bookings ADD COLUMN cancel_reason TEXT;
+      ALTER TABLE bookings ADD COLUMN mail_confirmation_sent_at TEXT;
+      ALTER TABLE bookings ADD COLUMN mail_confirmation_attempts INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE bookings ADD COLUMN mail_confirmation_attempted_at TEXT;
+      ALTER TABLE bookings ADD COLUMN mail_reminder_sent_at TEXT;
+      ALTER TABLE bookings ADD COLUMN mail_reminder_attempts INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE bookings ADD COLUMN mail_reminder_skipped INTEGER NOT NULL DEFAULT 0;
+      COMMIT;
+    `);
+  }
+  // Die Prüfung der Ereignistypen lässt sich in SQLite nicht ändern: Tabelle neu anlegen, Zeilen samt Nummern übernehmen
+  const eventsSql = (db.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'booking_events'").get() as { sql: string } | undefined)?.sql ?? "";
+  if (eventsSql && !eventsSql.includes("attendance_confirmed")) {
+    db.exec(`
+      BEGIN;
+      CREATE TABLE booking_events_new (
+        seq INTEGER PRIMARY KEY AUTOINCREMENT,
+        event_id TEXT NOT NULL UNIQUE,
+        booking_id TEXT NOT NULL,
+        type TEXT NOT NULL CHECK (type IN ('created', 'confirmed', 'cancelled', 'rescheduled', 'reminder_changed', 'completed', 'deleted', 'attendance_confirmed')),
+        payload TEXT NOT NULL,
+        occurred_at TEXT NOT NULL
+      );
+      INSERT INTO booking_events_new (seq, event_id, booking_id, type, payload, occurred_at)
+        SELECT seq, event_id, booking_id, type, payload, occurred_at FROM booking_events ORDER BY seq;
+      DROP TABLE booking_events;
+      ALTER TABLE booking_events_new RENAME TO booking_events;
+      CREATE INDEX IF NOT EXISTS booking_events_booking ON booking_events (booking_id);
+      COMMIT;
+    `);
+  }
 }
 
 /** Verletzung einer Eindeutigkeit (PRIMARY KEY oder UNIQUE): „Da war jemand schneller“. */

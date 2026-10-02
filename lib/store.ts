@@ -18,7 +18,7 @@ const UNIT_MS = UNIT_MINUTES * 60000;
 
 export type BookingStatus = "requested" | "confirmed" | "cancelled" | "rescheduled" | "no_show" | "completed";
 export type CalendarState = "pending" | "written" | "failed";
-export type EventType = "created" | "confirmed" | "cancelled" | "rescheduled" | "reminder_changed" | "completed" | "deleted";
+export type EventType = "created" | "confirmed" | "cancelled" | "rescheduled" | "reminder_changed" | "completed" | "deleted" | "attendance_confirmed";
 
 export interface BookingRow {
   id: string;
@@ -53,6 +53,15 @@ export interface BookingRow {
   calendar_attempted_at: string | null;
   updated_at: string;
   deleted_at: string | null;
+  attendance_confirmed_at: string | null;
+  cancelled_at: string | null;
+  cancel_reason: string | null;
+  mail_confirmation_sent_at: string | null;
+  mail_confirmation_attempts: number;
+  mail_confirmation_attempted_at: string | null;
+  mail_reminder_sent_at: string | null;
+  mail_reminder_attempts: number;
+  mail_reminder_skipped: number;
 }
 
 /** Vollständiger Buchungsstand, wie er in Ereignissen und am Endpunkt erscheint. */
@@ -88,6 +97,9 @@ export interface BookingPublic {
   calendar_state: CalendarState;
   updated_at: string;
   deleted_at: string | null;
+  attendance_confirmed_at: string | null;
+  cancelled_at: string | null;
+  cancel_reason: string | null;
 }
 
 export interface ReserveInput {
@@ -154,6 +166,9 @@ export function toPublic(r: BookingRow): BookingPublic {
     calendar_state: r.calendar_state,
     updated_at: r.updated_at,
     deleted_at: r.deleted_at,
+    attendance_confirmed_at: r.attendance_confirmed_at,
+    cancelled_at: r.cancelled_at,
+    cancel_reason: r.cancel_reason,
   };
 }
 
@@ -327,6 +342,132 @@ export class Store {
   purgeIdempotency(now = new Date()): number {
     const limit = iso(new Date(now.getTime() - 7 * 86400000));
     return Number(this.db.prepare("DELETE FROM idempotency WHERE created_at < ?").run(limit).changes);
+  }
+
+  /** Absage: Status, Belegung freigeben, Ereignis, alles in einer Transaktion. Liefert null, wenn schon abgesagt oder gelöscht. */
+  cancel(id: string, reason: string, now = new Date()): BookingRow | null {
+    const at = iso(now);
+    this.db.exec("BEGIN IMMEDIATE");
+    try {
+      const row = this.get(id);
+      if (!row || row.deleted_at || row.status === "cancelled") {
+        this.db.exec("COMMIT");
+        return null;
+      }
+      this.db
+        .prepare("UPDATE bookings SET status = 'cancelled', cancelled_at = ?, cancel_reason = ?, updated_at = ? WHERE id = ?")
+        .run(at, reason.slice(0, 80), at, id);
+      this.db.prepare("DELETE FROM slot_locks WHERE booking_id = ?").run(id);
+      const updated = this.get(id)!;
+      this.appendEvent(updated, "cancelled", at);
+      this.db.exec("COMMIT");
+      return updated;
+    } catch (e) {
+      try {
+        this.db.exec("ROLLBACK");
+      } catch {
+        /* schon beendet */
+      }
+      throw e;
+    }
+  }
+
+  /** Zusage des Kunden („Ja, ich komme“): einmalig vermerken und als Ereignis schreiben. */
+  confirmAttendance(id: string, now = new Date()): BookingRow | null {
+    const at = iso(now);
+    this.db.exec("BEGIN IMMEDIATE");
+    try {
+      const row = this.get(id);
+      if (!row || row.deleted_at || row.status === "cancelled") {
+        this.db.exec("COMMIT");
+        return null;
+      }
+      if (row.attendance_confirmed_at) {
+        this.db.exec("COMMIT");
+        return row;
+      }
+      this.db.prepare("UPDATE bookings SET attendance_confirmed_at = ?, updated_at = ? WHERE id = ?").run(at, at, id);
+      const updated = this.get(id)!;
+      this.appendEvent(updated, "attendance_confirmed", at);
+      this.db.exec("COMMIT");
+      return updated;
+    } catch (e) {
+      try {
+        this.db.exec("ROLLBACK");
+      } catch {
+        /* schon beendet */
+      }
+      throw e;
+    }
+  }
+
+  mailConfirmationSent(id: string, now = new Date()): void {
+    this.db
+      .prepare("UPDATE bookings SET mail_confirmation_sent_at = ?, mail_confirmation_attempts = mail_confirmation_attempts + 1, mail_confirmation_attempted_at = ?, updated_at = ? WHERE id = ?")
+      .run(iso(now), iso(now), iso(now), id);
+  }
+
+  mailConfirmationFailed(id: string, now = new Date()): void {
+    this.db
+      .prepare("UPDATE bookings SET mail_confirmation_attempts = mail_confirmation_attempts + 1, mail_confirmation_attempted_at = ?, updated_at = ? WHERE id = ?")
+      .run(iso(now), iso(now), id);
+  }
+
+  mailReminderSent(id: string, now = new Date()): void {
+    this.db
+      .prepare("UPDATE bookings SET mail_reminder_sent_at = ?, mail_reminder_attempts = mail_reminder_attempts + 1, updated_at = ? WHERE id = ?")
+      .run(iso(now), iso(now), id);
+  }
+
+  mailReminderFailed(id: string, now = new Date()): void {
+    this.db.prepare("UPDATE bookings SET mail_reminder_attempts = mail_reminder_attempts + 1, updated_at = ? WHERE id = ?").run(iso(now), id);
+  }
+
+  mailReminderSkipped(id: string, now = new Date()): void {
+    this.db.prepare("UPDATE bookings SET mail_reminder_skipped = 1, updated_at = ? WHERE id = ?").run(iso(now), id);
+  }
+
+  /** Bestätigungsmails, die noch fehlen: gescheitert oder seit über zwei Minuten offen, Termin noch nicht vorbei. */
+  confirmationMailBacklog(now = new Date(), limit = 50): BookingRow[] {
+    const stale = iso(new Date(now.getTime() - 2 * 60000));
+    return this.db
+      .prepare(
+        `SELECT * FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_confirmation_sent_at IS NULL
+         AND starts_at > ? AND (mail_confirmation_attempts > 0 OR created_at < ?) ORDER BY created_at LIMIT ?`,
+      )
+      .all(iso(now), stale, limit) as unknown as BookingRow[];
+  }
+
+  /** Buchungen, deren Termin in 2 bis 24 Stunden beginnt und die noch keine Erinnerung bekommen haben. */
+  reminderCandidates(now = new Date(), limit = 50): BookingRow[] {
+    const from = iso(new Date(now.getTime() + 2 * 3600000));
+    const to = iso(new Date(now.getTime() + 24 * 3600000));
+    return this.db
+      .prepare(
+        `SELECT * FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_reminder_sent_at IS NULL AND mail_reminder_skipped = 0
+         AND starts_at > ? AND starts_at <= ? ORDER BY starts_at LIMIT ?`,
+      )
+      .all(from, to, limit) as unknown as BookingRow[];
+  }
+
+  /** Abgesagte Buchungen, deren Kalendereintrag noch steht. */
+  cancelledWithCalendarEvent(limit = 50): BookingRow[] {
+    return this.db
+      .prepare("SELECT * FROM bookings WHERE deleted_at IS NULL AND status = 'cancelled' AND calendar_event_id IS NOT NULL ORDER BY updated_at LIMIT ?")
+      .all(limit) as unknown as BookingRow[];
+  }
+
+  calendarEventRemoved(id: string, now = new Date()): void {
+    this.db.prepare("UPDATE bookings SET calendar_event_id = NULL, updated_at = ? WHERE id = ?").run(iso(now), id);
+  }
+
+  /** Anzahl Buchungen, deren Bestätigungsmail seit mehr als 24 Stunden fehlt (Termin noch nicht vorbei). */
+  countMailOverdue(now = new Date()): number {
+    const limit = iso(new Date(now.getTime() - 24 * 3600000));
+    const r = this.db
+      .prepare("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_confirmation_sent_at IS NULL AND starts_at > ? AND created_at < ?")
+      .get(iso(now), limit) as { n: number };
+    return r.n;
   }
 
   /** Nur für Tests und Prüfungen. */
