@@ -28,6 +28,8 @@ export interface Env {
   publicBaseUrl: string;
   /** Signaturschlüssel der Terminlinks; leer heißt abgeleitet aus dem Cookie-Schlüssel */
   linkSecret: string;
+  /** Bearer-Token des Endpunkts für das Kundensystem (privates Netz); leer heißt Endpunkt aus */
+  internToken: string;
   mail: {
     /** relay: über SMTP-Relay senden; file: in eine Datei neben der Datenbank schreiben (Entwicklung); off: nichts senden */
     mode: "relay" | "file" | "off";
@@ -112,6 +114,7 @@ export function readEnv(): Env {
     bookingBinding: process.env.BOOKING_BINDING === "true",
     publicBaseUrl: ((process.env.PUBLIC_BASE_URL ?? "").trim() || "https://www.paloskin.de").replace(/\/+$/, ""),
     linkSecret: (process.env.LINK_SECRET ?? "").trim(),
+    internToken: (process.env.INTERN_TOKEN ?? "").trim(),
     mail: {
       mode: mailMode(),
       host: (process.env.MAIL_RELAY_HOST ?? "").trim(),

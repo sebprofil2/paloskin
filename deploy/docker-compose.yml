@@ -111,6 +111,10 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      # Endpunkt für das Kundensystem: nur an der privaten Adresse, nie an 2.31.2.192
+      - "10.0.0.2:8443:8443"
+    environment:
+      INTERN_UPSTREAM: ${PALOSKIN_INTERN_UPSTREAM:-app:3000}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

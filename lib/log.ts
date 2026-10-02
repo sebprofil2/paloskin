@@ -2,9 +2,9 @@
  * Protokoll ohne personenbezogene Daten: nur Ereignis, Fehlerklasse, Zeit, Kennungen.
  * Erlaubt sind ausschließlich die Felder unten; alles andere wird verworfen.
  */
-const ALLOWED = new Set(["requestId", "bookingRef", "status", "errorClass", "httpStatus", "engine", "route", "ms", "calendar", "reason", "count", "mail"]);
+const ALLOWED = new Set(["requestId", "bookingRef", "status", "errorClass", "httpStatus", "engine", "route", "ms", "calendar", "reason", "count", "mail", "consumer", "seq"]);
 
-export type LogFields = Partial<Record<"requestId" | "bookingRef" | "status" | "errorClass" | "httpStatus" | "engine" | "route" | "ms" | "calendar" | "reason" | "count" | "mail", string | number | boolean>>;
+export type LogFields = Partial<Record<"requestId" | "bookingRef" | "status" | "errorClass" | "httpStatus" | "engine" | "route" | "ms" | "calendar" | "reason" | "count" | "mail" | "consumer" | "seq", string | number | boolean>>;
 
 export function logEvent(level: "info" | "warn" | "error", event: string, fields: LogFields = {}): void {
   const safe: Record<string, string | number | boolean> = {};

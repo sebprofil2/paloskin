@@ -345,3 +345,29 @@ printf 'LINK_SECRET=%s\n' "$(openssl rand -base64 32)" >> /etc/paloskin/paloskin
 
 - **Prüfen im Betrieb:** Protokollzeilen `mail_sent` und `mail_failed` (nur Buchungsnummer, Art und Fehlerklasse), Spalten `mail_confirmation_sent_at` und `mail_reminder_sent_at` in der Datenbank. Bleibt eine Bestätigung 24 Stunden aus, schreibt die App `ALARM Bestätigungsmail …` und der Heartbeat bleibt aus.
 - **Schalter verbindliche Buchung:** erst nach der Abnahme `BOOKING_BINDING=true` in `paloskin.env` setzen und den Container neu starten (`docker compose -f deploy/docker-compose.yml up -d app`).
+
+## 18. Stufe 2, Schritt 3: Endpunkt für das Kundensystem im privaten Netz (2. Oktober 2026)
+
+- **Privates Netz:** Hetzner-Netzwerk `paloskin-intern` (10.0.0.0/24) in der Cloud-Konsole anlegen und den Server anbinden. Ubuntu bekommt die Adresse per DHCP von selbst (Prüfung: `ip -4 -brief addr` zeigt `enp7s0` mit 10.0.0.2, `ip -4 route` eine Route 10.0.0.0/24 über 10.0.0.1). Die Hetzner-Firewall wirkt nicht auf das private Netz.
+- **UFW:** `sudo ufw allow from 10.0.0.0/24 to any port 8443 proto tcp`. Docker veröffentlicht 8443 ohnehin nur an 10.0.0.2 (Compose), von 2.31.2.192 aus wird die Verbindung abgewiesen.
+- **Token** erzeugen, ohne es anzuzeigen, dann einmal in einem Terminal-Tab ablesen und dem CRM-Projekt übergeben:
+
+```bash
+printf 'INTERN_TOKEN=%s\n' "$(openssl rand -base64 32)" >> /etc/paloskin/paloskin.env
+```
+
+- **Caddy** lauscht nach `docker compose up -d` auch an 10.0.0.2:8443 mit einem Zertifikat der internen Zertifizierungsstelle für 10.0.0.2 und `buchung.intern`. Wurzelzertifikat exportieren und an paloskin-2 geben (nur über das private Netz):
+
+```bash
+cd /opt/paloskin && docker compose -f deploy/docker-compose.yml cp caddy:/data/caddy/pki/authorities/local/root.crt /home/deploy/paloskin-intern-root.crt && scp /home/deploy/paloskin-intern-root.crt deploy@10.0.0.3:/etc/ssl/certs/paloskin-intern-root.crt
+```
+
+- **Prüfung vom Server selbst** (Quelladresse 10.0.0.2 liegt im privaten Netz); das Token nur aus der Datei lesen:
+
+```bash
+TOKEN=$(grep '^INTERN_TOKEN=' /etc/paloskin/paloskin.env | cut -d= -f2-); curl -sS --cacert /home/deploy/paloskin-intern-root.crt -H "Authorization: Bearer $TOKEN" https://10.0.0.2:8443/intern/v1/health; unset TOKEN
+```
+
+- Erwartung: ohne Token 401, mit falschem Zertifikat lehnt curl ab (`--cacert` auf eine andere CA), von außen `curl https://2.31.2.192:8443` Verbindung abgewiesen, `https://www.paloskin.de/intern/v1/health` 404.
+- **Testphase:** `PALOSKIN_INTERN_UPSTREAM=app-test:3000` in `deploy/.env` leitet den internen Block auf die Testinstanz; für den Betrieb die Zeile entfernen und Caddy neu erstellen (`up -d --force-recreate --no-deps caddy`).
+- **Schema** für das CRM-Projekt: `docs/SCHNITTSTELLE-KUNDENSYSTEM.md`.

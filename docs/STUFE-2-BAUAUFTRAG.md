@@ -100,3 +100,26 @@ Reihenfolge: zuerst Datenbank und Reservierung hinter der bestehenden Buchung (o
 - Scheitert der Versand, bleibt die Buchung gültig; der Hintergrundlauf wiederholt alle 5 Minuten, bis der Termin vorbei ist; nach 24 Stunden eine Alarmzeile, die den Heartbeat ausbleiben lässt. Protokoll nur mit Buchungsnummer und Fehlerklasse (SMTP-Code oder nodemailer-Kennung), nie mit Adressen oder Antworttext.
 - Neue Spalten in `bookings`: `attendance_confirmed_at`, `cancelled_at`, `cancel_reason`, `mail_confirmation_sent_at`, `mail_confirmation_attempts`, `mail_confirmation_attempted_at`, `mail_reminder_sent_at`, `mail_reminder_attempts`, `mail_reminder_skipped`. Bestehende Datenbanken werden beim Start nachgezogen (`lib/db.ts`, `migrate`), die Ereignistabelle wird für den neuen Typ einmalig neu angelegt, Nummern bleiben erhalten.
 - Testinstanz: `MAIL_REDIRECT_TO` (aus `deploy/.env` auf dem Server, Variable `PALOSKIN_TEST_MAIL`) leitet alle Mails der Testinstanz an eine Testadresse um, egal was eingegeben wurde; `PUBLIC_BASE_URL` ist dort `https://neu.paloskin.de`.
+
+## Fassung 4: Entscheidungen zur Schnittstelle (2. Oktober 2026, abends)
+
+Kurzfassung der „Entscheidungen Schnittstelle Buchung und Kundensystem, Antwort auf die Abweichungen“; gilt für Schritt 3.
+
+1. Leistungscodes im Ereignis nur in den gemeinsamen Codes des Kundensystems (glabella, forehead, crows_feet, masseter, nefertiti, hyperhidrosis_axilla, polynucleotides_eye, polynucleotides_eye_4, consultation, control und so weiter). Intern bleiben BER, BOT, KAU, NEF, HYP, LDN, LDN4 und die deutschen Zonenkennungen. Übersetzung in `lib/service-codes.ts` beim Schreiben jedes Ereignisses; Zuordnungstabelle in `docs/SCHNITTSTELLE-KUNDENSYSTEM.md`. Fehlt eine Entsprechung: Vorschlag melden statt raten.
+2. `appointment_type` explizit: checkup ergibt `control`, sonst first_visit ergibt `first`, sonst `follow_up`. `first_visit` und `checkup` bleiben zusätzlich.
+3. Kein Ereignis `completed`; Typ bleibt reserviert.
+4. Testbuchungen tragen `test: true`.
+5. Gleicher Umschlag für alle Ereignisse: seq, event_id, type, occurred_at, booking. Bei `deleted` nur id und reference in booking. Kein Feld booking_id auf oberster Ebene.
+6. `GET /intern/v1/events` ohne after ab 0; limit ohne Angabe 100, höchstens 500.
+7. `reminder_whatsapp` als Objekt `{ consented, consented_at }`.
+8. Rückweg `POST /intern/v1/bookings/{id}/status` mit der ULID und `{ status: confirmed | cancelled, reason }`.
+9. Netz paloskin-intern 10.0.0.0/24: paloskin-1 ist 10.0.0.2, Endpunkt 10.0.0.2:8443, paloskin-2 wird 10.0.0.3, Sicherungsserver 10.0.0.4.
+10. Caddy-Zertifikat für 10.0.0.2 und `buchung.intern`; Exportweg des Wurzelzertifikats in `deploy/UMZUG-HETZNER.md`.
+11. `docs/SCHNITTSTELLE-KUNDENSYSTEM.md` als fertiges Schema mit Beispielen je Ereignistyp.
+
+### Schritt 3: Ereignisse und Endpunkt (2. Oktober 2026)
+
+- Ereignisnutzlast nach Fassung 4 (`toPayload` in `lib/store.ts`): gemeinsame Codes, `appointment_type`, `reminder_whatsapp` als Objekt, `test`; `deleted_at` ist nicht Teil der Nutzlast (Löschung ist ein eigenes Ereignis). Vorschläge für Codes ohne Vorgabe: `botulinum` (BOT) und die Zonen `brow_lift`, `lip_flip`, `bunny_lines`, `mouth_corners`, `chin`, `gummy_smile`, `upper_lip`, `nose`; in der Tabelle als Vorschlag markiert.
+- Endpunkt unter `/intern/v1` (events, ack, bookings/{id}/status, health) in `app/intern`, Zugangsprüfung in `lib/intern.ts`: Kopfzeile `X-Palo-Intern: 1`, die nur der interne Caddy-Block setzt und die öffentlichen Blöcke entfernen; Bearer-Token aus `INTERN_TOKEN` in konstanter Zeit; 120 Anfragen pro Minute.
+- Caddy: zweiter Block `https://10.0.0.2:8443, https://buchung.intern:8443` mit `tls internal`, Port 8443 in Compose nur an 10.0.0.2 veröffentlicht, UFW erlaubt 8443 nur aus 10.0.0.0/24. Öffentliche Blöcke beantworten `/intern/*` mit 404. Ziel des internen Blocks über `PALOSKIN_INTERN_UPSTREAM` (Standard app, zum Testen app-test).
+- Bestätigung durch das Kundensystem schreibt nur bei `requested` ein Ereignis `confirmed`; mit Schalter `BOOKING_BINDING` entstehen Buchungen schon als `confirmed`, der Rückweg ändert dann nichts.

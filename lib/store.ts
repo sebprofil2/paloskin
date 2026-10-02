@@ -6,6 +6,7 @@ import { readEnv } from "./env";
 import type { Customer } from "./schema";
 import type { Interval } from "./slots";
 import type { Lang, Selection } from "./treatments";
+import { appointmentType, toSharedServiceCodes, toSharedZones, type AppointmentType } from "./service-codes";
 import { ulid } from "./ulid";
 
 /*
@@ -64,8 +65,11 @@ export interface BookingRow {
   mail_reminder_skipped: number;
 }
 
-/** Vollständiger Buchungsstand, wie er in Ereignissen und am Endpunkt erscheint. */
-export interface BookingPublic {
+/**
+ * Vollständiger Buchungsstand, wie er in Ereignissen und am Endpunkt erscheint (Fassung 4):
+ * gemeinsame Codes des Kundensystems, appointment_type, reminder_whatsapp als Objekt, test-Kennzeichen.
+ */
+export interface BookingPayload {
   id: string;
   reference: string;
   created_at: string;
@@ -73,18 +77,18 @@ export interface BookingPublic {
   ends_at: string;
   duration_minutes: number;
   persons: 1 | 2;
+  appointment_type: AppointmentType;
   first_visit: boolean;
+  checkup: boolean;
   service_codes: string[];
   zones: string[];
   other_zone: string | null;
   zones_unknown: boolean;
-  checkup: boolean;
   status: BookingStatus;
   channel: string;
   language: Lang;
   device: string;
-  reminder_whatsapp: boolean;
-  reminder_consent_at: string | null;
+  reminder_whatsapp: { consented: boolean; consented_at: string | null };
   consent_at: string;
   first_name: string;
   last_name: string;
@@ -95,11 +99,19 @@ export interface BookingPublic {
   test: boolean;
   calendar_event_id: string | null;
   calendar_state: CalendarState;
-  updated_at: string;
-  deleted_at: string | null;
   attendance_confirmed_at: string | null;
   cancelled_at: string | null;
   cancel_reason: string | null;
+  updated_at: string;
+}
+
+/** Ereignis-Umschlag, wie er am Endpunkt ausgeliefert wird. */
+export interface EventEnvelope {
+  seq: number;
+  event_id: string;
+  type: EventType;
+  occurred_at: string;
+  booking: BookingPayload | { id: string; reference: string };
 }
 
 export interface ReserveInput {
@@ -132,7 +144,7 @@ export function serviceCodesOf(s: Selection): string[] {
     .filter((c) => c !== "NONE" && c !== "P2" && c !== "KON");
 }
 
-export function toPublic(r: BookingRow): BookingPublic {
+export function toPayload(r: BookingRow): BookingPayload {
   const sel = JSON.parse(r.selection) as Selection;
   return {
     id: r.id,
@@ -142,18 +154,18 @@ export function toPublic(r: BookingRow): BookingPublic {
     ends_at: r.ends_at,
     duration_minutes: r.duration_minutes,
     persons: r.persons,
+    appointment_type: appointmentType({ checkup: r.checkup === 1, firstVisit: r.first_visit === 1 }),
     first_visit: r.first_visit === 1,
-    service_codes: JSON.parse(r.service_codes) as string[],
-    zones: JSON.parse(r.zones) as string[],
+    checkup: r.checkup === 1,
+    service_codes: toSharedServiceCodes(JSON.parse(r.service_codes) as string[]),
+    zones: toSharedZones(sel.zones),
     other_zone: sel.otherZone ?? null,
     zones_unknown: sel.zonesUnknown === true,
-    checkup: r.checkup === 1,
     status: r.status,
     channel: r.channel,
     language: r.language,
     device: r.device,
-    reminder_whatsapp: r.reminder_whatsapp === 1,
-    reminder_consent_at: r.reminder_consent_at,
+    reminder_whatsapp: { consented: r.reminder_whatsapp === 1, consented_at: r.reminder_consent_at },
     consent_at: r.consent_at,
     first_name: r.first_name,
     last_name: r.last_name,
@@ -164,11 +176,10 @@ export function toPublic(r: BookingRow): BookingPublic {
     test: r.test_mode === 1,
     calendar_event_id: r.calendar_event_id,
     calendar_state: r.calendar_state,
-    updated_at: r.updated_at,
-    deleted_at: r.deleted_at,
     attendance_confirmed_at: r.attendance_confirmed_at,
     cancelled_at: r.cancelled_at,
     cancel_reason: r.cancel_reason,
+    updated_at: r.updated_at,
   };
 }
 
@@ -200,7 +211,7 @@ export class Store {
   }
 
   /** Ereignis in der laufenden Transaktion anhängen; Nutzlast ist der vollständige Stand nach der Änderung. */
-  private appendEvent(booking: BookingRow, type: EventType, at: string, payload: unknown = toPublic(booking)): void {
+  private appendEvent(booking: BookingRow, type: EventType, at: string, payload: unknown = toPayload(booking)): void {
     this.db
       .prepare("INSERT INTO booking_events (event_id, booking_id, type, payload, occurred_at) VALUES (?, ?, ?, ?, ?)")
       .run(ulid(), booking.id, type, JSON.stringify(payload), at);
@@ -470,15 +481,90 @@ export class Store {
     return r.n;
   }
 
+  /** Bestätigung durch das Kundensystem: requested wird confirmed, Ereignis confirmed; sonst unverändert. */
+  confirmByCrm(id: string, now = new Date()): { outcome: "confirmed" | "unchanged" | "cancelled" | "missing"; booking: BookingRow | null } {
+    const at = iso(now);
+    this.db.exec("BEGIN IMMEDIATE");
+    try {
+      const row = this.get(id);
+      if (!row || row.deleted_at) {
+        this.db.exec("COMMIT");
+        return { outcome: "missing", booking: null };
+      }
+      if (row.status === "cancelled") {
+        this.db.exec("COMMIT");
+        return { outcome: "cancelled", booking: row };
+      }
+      if (row.status !== "requested") {
+        this.db.exec("COMMIT");
+        return { outcome: "unchanged", booking: row };
+      }
+      this.db.prepare("UPDATE bookings SET status = 'confirmed', updated_at = ? WHERE id = ?").run(at, id);
+      const updated = this.get(id)!;
+      this.appendEvent(updated, "confirmed", at);
+      this.db.exec("COMMIT");
+      return { outcome: "confirmed", booking: updated };
+    } catch (e) {
+      try {
+        this.db.exec("ROLLBACK");
+      } catch {
+        /* schon beendet */
+      }
+      throw e;
+    }
+  }
+
+  /** Ereignisse mit seq größer als after, aufsteigend, höchstens limit Stück. */
+  eventsAfter(after: number, limit: number): EventEnvelope[] {
+    const rows = this.db
+      .prepare("SELECT seq, event_id, type, payload, occurred_at FROM booking_events WHERE seq > ? ORDER BY seq LIMIT ?")
+      .all(after, limit) as { seq: number; event_id: string; type: EventType; payload: string; occurred_at: string }[];
+    return rows.map((r) => ({ seq: r.seq, event_id: r.event_id, type: r.type, occurred_at: r.occurred_at, booking: JSON.parse(r.payload) as BookingPayload }));
+  }
+
+  lastSeq(): number {
+    const r = this.db.prepare("SELECT COALESCE(MAX(seq), 0) AS n FROM booking_events").get() as { n: number };
+    return r.n;
+  }
+
+  /** Empfang bestätigen; die Nummer geht nie rückwärts. */
+  acknowledge(consumer: string, seq: number, now = new Date()): number {
+    this.db
+      .prepare(
+        `INSERT INTO consumers (name, acknowledged_seq, last_seen_at) VALUES (?, ?, ?)
+         ON CONFLICT(name) DO UPDATE SET acknowledged_seq = MAX(acknowledged_seq, excluded.acknowledged_seq), last_seen_at = excluded.last_seen_at`,
+      )
+      .run(consumer, seq, iso(now));
+    const r = this.db.prepare("SELECT acknowledged_seq FROM consumers WHERE name = ?").get(consumer) as { acknowledged_seq: number };
+    return r.acknowledged_seq;
+  }
+
+  touchConsumer(consumer: string, now = new Date()): void {
+    this.db
+      .prepare("INSERT INTO consumers (name, acknowledged_seq, last_seen_at) VALUES (?, 0, ?) ON CONFLICT(name) DO UPDATE SET last_seen_at = excluded.last_seen_at")
+      .run(consumer, iso(now));
+  }
+
+  consumers(): { name: string; acknowledged_seq: number; last_seen_at: string | null }[] {
+    return this.db.prepare("SELECT name, acknowledged_seq, last_seen_at FROM consumers ORDER BY name").all() as { name: string; acknowledged_seq: number; last_seen_at: string | null }[];
+  }
+
+  countMailUnsent(now = new Date()): number {
+    const r = this.db
+      .prepare("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_confirmation_sent_at IS NULL AND starts_at > ?")
+      .get(iso(now)) as { n: number };
+    return r.n;
+  }
+
   /** Nur für Tests und Prüfungen. */
-  eventsForBooking(id: string): { seq: number; type: EventType; payload: BookingPublic; occurred_at: string }[] {
+  eventsForBooking(id: string): { seq: number; type: EventType; payload: BookingPayload; occurred_at: string }[] {
     const rows = this.db.prepare("SELECT seq, type, payload, occurred_at FROM booking_events WHERE booking_id = ? ORDER BY seq").all(id) as {
       seq: number;
       type: EventType;
       payload: string;
       occurred_at: string;
     }[];
-    return rows.map((r) => ({ ...r, payload: JSON.parse(r.payload) as BookingPublic }));
+    return rows.map((r) => ({ ...r, payload: JSON.parse(r.payload) as BookingPayload }));
   }
 
   close(): void {

@@ -63,8 +63,10 @@ describe("Reservierung in der Datenbank", () => {
     expect(ev[0].seq).toBe(1);
     expect(ev[0].type).toBe("created");
     expect(ev[0].payload.note).toBe("Bitte leise");
-    expect(ev[0].payload.reminder_whatsapp).toBe(true);
-    expect(ev[0].payload.reminder_consent_at).toBe("2026-10-02T10:00:00.000Z");
+    expect(ev[0].payload.reminder_whatsapp).toEqual({ consented: true, consented_at: "2026-10-02T10:00:00.000Z" });
+    expect(ev[0].payload.appointment_type).toBe("first");
+    expect(ev[0].payload.service_codes).toEqual(["botulinum"]);
+    expect(ev[0].payload.zones).toEqual(["forehead", "glabella"]);
     expect(ev[0].payload.test).toBe(true);
     // Die Anfragekennung selbst steht nirgends
     const raw = JSON.stringify(s.db.prepare("SELECT * FROM idempotency").all());

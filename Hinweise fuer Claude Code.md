@@ -124,3 +124,8 @@ Für später, nicht gebaut: Nach einer Buchung für 1 Person soll die Bestätigu
 
 - Relay: `smtp-relay.gmail.com:587` STARTTLS ohne Anmeldung, Freigabe nur für IPv4 2.31.2.192 (Container spricht IPv4). Mailer `lib/mail.ts` (Betriebsarten relay, file, off), Inhalte `lib/mail-content.ts`, Texte `lib/texts-mail.ts`, Links `lib/links.ts` (HMAC mit `LINK_SECRET`), Seite `app/termin/[token]`, Route `app/api/termin`.
 - Zusage und Absage über den Link (Absage bis 48 Stunden vorher), Erinnerung 24 Stunden vorher, `BOOKING_BINDING` vorbereitet und aus. Lokal `MAIL_MODE=file` schreibt Mails nach `.data/mail`.
+
+## Buchung Stufe 2, Schritt 3: Ereignisse und Endpunkt (2. Oktober 2026)
+
+- Fassung 4 des Bauauftrags am Ende von `docs/STUFE-2-BAUAUFTRAG.md`; Schema für das CRM-Projekt in `docs/SCHNITTSTELLE-KUNDENSYSTEM.md` (Codes ohne Vorgabe sind als Vorschlag markiert).
+- Endpunkt `/intern/v1` (`app/intern`, `lib/intern.ts`), nur über den Caddy-Block an 10.0.0.2:8443 (tls internal) mit Kopfzeile `X-Palo-Intern` und `INTERN_TOKEN`. Öffentliche Blöcke liefern für `/intern/*` 404. Ziel des Blocks über `PALOSKIN_INTERN_UPSTREAM` in `deploy/.env`.
