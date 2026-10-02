@@ -273,7 +273,7 @@ Siehe Abschnitt 15.
 - **Heartbeat vom Server:** Zweiter Monitor vom Typ „Heartbeat“ mit Erwartung alle 10 Minuten. Die URL in `/etc/paloskin/monitor.env` als `HEARTBEAT_URL=` eintragen (root, 0600). Das Skript `deploy/heartbeat.sh` prüft alle 5 Minuten Speicherplatz (Alarm ab 85 Prozent), Containerzustand und die Fehlerrate der Anwendung (ab 5 Fehlerzeilen in 10 Minuten) und sendet den Heartbeat nur bei gutem Zustand. Bleibt er aus, alarmiert der Monitor per E-Mail. Es werden nur Zähler ausgewertet, keine Inhalte. Cron einrichten:
 
 ```bash
-sudo install -m 755 /opt/paloskin/deploy/heartbeat.sh /usr/local/bin/paloskin-heartbeat && echo '*/5 * * * * deploy /usr/local/bin/paloskin-heartbeat' | sudo tee /etc/cron.d/paloskin-heartbeat
+sudo install -m 755 /opt/paloskin/deploy/heartbeat.sh /usr/local/bin/paloskin-heartbeat && echo '*/5 * * * * root /usr/local/bin/paloskin-heartbeat' | sudo tee /etc/cron.d/paloskin-heartbeat
 ```
 
 - Ergebnis im Serverprotokoll: `journalctl -t paloskin-heartbeat --since today`.

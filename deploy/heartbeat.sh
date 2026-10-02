@@ -2,7 +2,7 @@
 # Alle 5 Minuten per Cron: prüft Speicherplatz, Container und Fehlerrate und sendet nur bei gutem Zustand
 # einen Heartbeat an den externen Monitor. Bleibt der Heartbeat aus, alarmiert der Monitor per E-Mail.
 # Keine Kundendaten: es werden nur Zähler und Zustände geprüft.
-# Konfiguration: /etc/paloskin/monitor.env mit HEARTBEAT_URL=https://...
+# Konfiguration: /etc/paloskin/monitor.env mit HEARTBEAT_URL=https://... (root, 0600); der Cron läuft deshalb als root.
 set -u
 ENV_FILE=/etc/paloskin/monitor.env
 [ -f "$ENV_FILE" ] && . "$ENV_FILE"
@@ -23,8 +23,11 @@ ERRORS=$($COMPOSE logs --since 10m app 2>/dev/null | grep -c '"level":"error"')
 [ "${ERRORS:-0}" -ge 5 ] && PROBLEMS+=("${ERRORS} Fehler in 10 Minuten")
 
 if [ ${#PROBLEMS[@]} -eq 0 ]; then
-  [ -n "${HEARTBEAT_URL:-}" ] && curl -fsS -m 10 -o /dev/null "$HEARTBEAT_URL"
-  logger -t paloskin-heartbeat "ok (disk ${USE}%, Fehler ${ERRORS:-0})"
+  SENT="kein Monitor konfiguriert"
+  if [ -n "${HEARTBEAT_URL:-}" ]; then
+    if curl -fsS -m 10 -o /dev/null "$HEARTBEAT_URL"; then SENT="Heartbeat gesendet"; else SENT="Heartbeat FEHLGESCHLAGEN"; fi
+  fi
+  logger -t paloskin-heartbeat "ok (disk ${USE}%, Fehler ${ERRORS:-0}), ${SENT}"
 else
   logger -t paloskin-heartbeat "PROBLEM: ${PROBLEMS[*]}"
 fi
