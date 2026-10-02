@@ -1,10 +1,10 @@
 # Baut das Container-Image für linux/amd64 außerhalb des Servers und legt es im GitHub Container Registry ab.
-# Auslöser: Push auf zonen oder main, monatlich (frische Basis-Images und Sicherheitsupdates), von Hand.
+# Auslöser: Push auf zonen, stufe2 oder main, monatlich (frische Basis-Images und Sicherheitsupdates), von Hand.
 name: Container-Image
 
 on:
   push:
-    branches: [zonen, main]
+    branches: [zonen, stufe2, main]
   schedule:
     - cron: "17 4 1 * *"
   workflow_dispatch:

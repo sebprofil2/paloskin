@@ -14,6 +14,9 @@ next-env.d.ts
 *.p12
 service-account*.json
 
+# Lokale Buchungsdatenbank
+.data/
+
 # Vercel
 .vercel/
 

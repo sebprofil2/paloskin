@@ -113,3 +113,9 @@ Für später, nicht gebaut: Nach einer Buchung für 1 Person soll die Bestätigu
 - Docker 29 mit Compose v5, Code unter `/opt/paloskin` (Branch `zonen`), Image aus `ghcr.io/sebprofil2/paloskin:zonen` (privat, Login als deploy gespeichert). Geheimnisse in `/etc/paloskin`: `service-account.json` (10001:10001, 0400), `paloskin.env` (deploy, 0600, mit Testcode und Cookie-Schlüssel).
 - Caddy ohne HTTP/3. Seit 2. Oktober 2026, 15:25 Uhr zeigen `www.paloskin.de` und `paloskin.de` auf den Server (TTL 600), Zertifikate von Let's Encrypt für beide, HSTS noch aus (erst nach einer Woche Stabilität einschalten). Vercel-Projekt und Domain dort noch eine Woche belassen (Rückweg), dann entfernen. Heartbeat-Cron alle 5 Minuten, Monitor-URL noch leer. Block `neu.paloskin.de` im Caddyfile nach dem Umzug entfernen.
 - Ausrollen: `cd /opt/paloskin && git pull && docker compose -f deploy/docker-compose.yml pull && docker compose -f deploy/docker-compose.yml up -d`.
+
+## Buchung Stufe 2, Schritt 1: Datenbank und Reservierung (2. Oktober 2026)
+
+- Bauauftrag in `docs/STUFE-2-BAUAUFTRAG.md` (ersetzt den Entwurf), Umsetzungsstand am Ende des Dokuments. Arbeitsbranch `stufe2`, Testinstanz `app-test` hinter `neu.paloskin.de` (Compose-Profil `test`), Ausrollen durch Fast-Forward von `zonen`.
+- Datenbank: `node:sqlite` (Node 24), Datei `/var/lib/paloskin/buchung.sqlite` (Volume, 10001:10001, 0700), lokal `.data/buchung.sqlite`. Schema `lib/db.ts`, Reservierung `lib/store.ts`, Ablauf `lib/booking.ts`, Hintergrundlauf `lib/jobs.ts` über `instrumentation.ts`.
+- Reihenfolge der weiteren Schritte: Bestätigungsmail und verbindliche Buchung (`BOOKING_BINDING`), Endpunkt im privaten Netz, Löschlauf und Backups, Notizfeld.

@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { MockEngine, mockInternals } from "../engine/mock";
-import { emptySelection } from "../treatments";
-
-const customer = { vorname: "Erika", nachname: "Muster", handy: "0151 1234567", email: "erika@example.com" };
 
 describe("Testmotor", () => {
   beforeEach(() => mockInternals.reset());
@@ -19,32 +16,26 @@ describe("Testmotor", () => {
     expect(winter?.slots[0].start.endsWith("+01:00")).toBe(true);
   });
 
-  it("bucht genau einmal je Anfragekennung und blockiert die Zeit", async () => {
+  it("nimmt Reservierungen der Datenbank als belegt und prüft Fenster", async () => {
     const e = new MockEngine();
     const r = await e.getSlots({ durationMinutes: 30 });
     const day = r.days.find((d) => d.slots.length)!;
     const slot = day.slots[0];
-    const input = {
-      requestId: "11111111-1111-4111-8111-111111111111",
-      selection: { ...emptySelection(), visit: "first" as const, zones: ["stirn" as const] },
-      start: new Date(slot.start),
-      durationMinutes: 30,
-      customer,
-      lang: "de" as const,
-      consentAt: new Date(),
-      reminder: true,
-      testMode: true,
-    };
-    const a = await e.book(input);
-    const b = await e.book(input);
-    expect(a.status).toBe("booked");
-    expect(b).toEqual(a);
-    const again = await e.getSlots({ durationMinutes: 30 });
+    const start = new Date(slot.start);
+    expect(await e.isStartFree({ start, durationMinutes: 30 })).toBe(true);
+    const again = await e.getSlots({ durationMinutes: 30, extraBusy: [{ start: start.getTime(), end: start.getTime() + 1800000 }] });
     expect(again.days.find((d) => d.date === day.date)?.slots.some((s) => s.start === slot.start)).toBe(false);
-    const c = await e.book({ ...input, requestId: "22222222-2222-4222-8222-222222222222" });
-    expect(c.status).toBe("conflict");
-    expect(await e.findByRequestId(input.requestId)).toEqual(a.status === "booked" ? a.booking : null);
-    expect(await e.addReferral(input.requestId, "Anna")).toBe(true);
-    expect(a.status === "booked" && a.booking.ref).toMatch(/^PS-[A-Z2-9]{6}$/);
+    // Sonntag 04:00 liegt in keinem Fenster
+    expect(await e.isStartFree({ start: new Date("2026-10-11T02:00:00Z"), durationMinutes: 30 })).toBe(false);
+  });
+
+  it("verwaltet Kalendereinträge im Speicher", async () => {
+    const e = new MockEngine();
+    const id = await e.createEvent({ reference: "PS-TEST01", title: "T", description: "D", start: new Date(), end: new Date(), serviceCode: "BOT", reminder: false });
+    expect(await e.findEventIdByRef("PS-TEST01")).toBe(id);
+    await e.appendDescription(id, "Empfehlung: Anna");
+    expect(mockInternals.events.get(id)?.description).toContain("Anna");
+    await e.deleteEvent(id);
+    expect(await e.findEventIdByRef("PS-TEST01")).toBeNull();
   });
 });

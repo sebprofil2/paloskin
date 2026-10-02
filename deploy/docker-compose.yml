@@ -5,6 +5,10 @@
 # Umgebungsvariablen: /etc/paloskin/paloskin.env (root, 0600), Vorlage deploy/paloskin.env.example
 # Dienstkontoschlüssel: /etc/paloskin/service-account.json, Eigentümer 10001:10001, Rechte 0400
 #   (Compose übernimmt bei Datei-Secrets uid, gid und mode nicht; es gelten die Rechte der Datei auf dem Host)
+# Buchungsdatenbank (Stufe 2): SQLite unter /var/lib/paloskin/buchung.sqlite auf dem Host, Verzeichnis 10001:10001 0700,
+#   als einziges beschreibbares Verzeichnis eingebunden; der Container bleibt sonst schreibgeschützt.
+# Testcontainer app-test (Profil test): Image eines Arbeitsbranches, eigene Datenbank unter /var/lib/paloskin-test,
+#   erreichbar nur über neu.paloskin.de. Start: docker compose -f deploy/docker-compose.yml --profile test up -d app-test
 
 services:
   app:
@@ -17,6 +21,7 @@ services:
       PORT: "3000"
       HOSTNAME: "0.0.0.0"
       GOOGLE_SERVICE_ACCOUNT_FILE: /run/secrets/google_service_account
+      BOOKING_DB_PATH: /var/lib/paloskin/buchung.sqlite
     secrets:
       - google_service_account
     # Kein "ports": der App-Port bleibt im internen Docker-Netz. Veröffentlichte Docker-Ports würden UFW umgehen.
@@ -26,6 +31,8 @@ services:
       - intern
     user: "10001:10001"
     read_only: true
+    volumes:
+      - /var/lib/paloskin:/var/lib/paloskin
     tmpfs:
       - /tmp:size=32m,mode=1777
       - /app/.next/cache:size=64m,uid=10001,gid=10001
@@ -35,6 +42,52 @@ services:
       - no-new-privileges:true
     pids_limit: 256
     mem_limit: 640m
+    cpus: 1.0
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/booking"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # Testinstanz für neu.paloskin.de: gleicher Aufbau, anderes Image-Tag, eigene Datenbank. Läuft nur mit --profile test.
+  app-test:
+    image: ghcr.io/sebprofil2/paloskin:${PALOSKIN_TEST_TAG:-stufe2}
+    profiles:
+      - test
+    restart: unless-stopped
+    env_file:
+      - /etc/paloskin/paloskin.env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+      GOOGLE_SERVICE_ACCOUNT_FILE: /run/secrets/google_service_account
+      BOOKING_DB_PATH: /var/lib/paloskin-test/buchung.sqlite
+    secrets:
+      - google_service_account
+    expose:
+      - "3000"
+    networks:
+      - intern
+    user: "10001:10001"
+    read_only: true
+    volumes:
+      - /var/lib/paloskin-test:/var/lib/paloskin-test
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+      - /app/.next/cache:size=64m,uid=10001,gid=10001
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    mem_limit: 512m
     cpus: 1.0
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/booking"]

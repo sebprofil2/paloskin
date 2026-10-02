@@ -1,18 +1,9 @@
-import type { Customer } from "../schema";
-import type { SlotDay } from "../slots";
-import type { Lang, Selection } from "../treatments";
+import type { Interval, SlotDay } from "../slots";
 
 export class SlotsUnavailableError extends Error {
   constructor(message = "Freie Zeiten nicht verfügbar") {
     super(message);
     this.name = "SlotsUnavailableError";
-  }
-}
-
-export class NotImplementedError extends Error {
-  constructor(what: string) {
-    super(`${what}: noch nicht gebaut`);
-    this.name = "NotImplementedError";
   }
 }
 
@@ -22,38 +13,32 @@ export interface SlotsResult {
   to: string;
 }
 
-export interface BookInput {
-  requestId: string;
-  selection: Selection;
+/** Kalendereintrag, den die Buchung nach der Reservierung schreibt. */
+export interface CalendarEventInput {
+  reference: string;
+  title: string;
+  description: string;
   start: Date;
-  durationMinutes: number;
-  customer: Customer;
-  lang: Lang;
-  consentAt: Date;
+  end: Date;
+  serviceCode: string;
   reminder: boolean;
-  testMode: boolean;
 }
 
-export interface BookingSummary {
-  ref: string;
-  requestId: string;
-  /** Beginn und Ende mit Berliner Versatz */
-  start: string;
-  end: string;
-  durationMinutes: number;
-}
-
-export type BookResult =
-  | { status: "booked"; booking: BookingSummary }
-  | { status: "conflict" }
-  | { status: "pending" };
-
+/*
+ * Der Motor kennt nur den Kalender. Reservierung, Idempotenz und Buchungsstand liegen in der Datenbank (lib/store.ts),
+ * der Ablauf in lib/booking.ts.
+ */
 export interface BookingEngine {
   readonly name: "mock" | "google";
-  getSlots(input: { durationMinutes: number; now?: Date }): Promise<SlotsResult>;
-  book(input: BookInput): Promise<BookResult>;
-  findByRequestId(requestId: string): Promise<BookingSummary | null>;
-  addReferral(requestId: string, referral: string): Promise<boolean>;
-  cancel(bookingRef: string): Promise<void>;
-  reschedule(bookingRef: string, newStart: Date): Promise<void>;
+  /** Freie Zeiten aus Fenstern minus belegt; extraBusy sind die Reservierungen der Datenbank. */
+  getSlots(input: { durationMinutes: number; now?: Date; extraBusy?: Interval[] }): Promise<SlotsResult>;
+  /** Liegt der Beginn in einem offenen Fenster und ist die Zeit laut Kalender frei? Wirft SlotsUnavailableError, wenn der Kalender nicht lesbar ist. */
+  isStartFree(input: { start: Date; durationMinutes: number; now?: Date }): Promise<boolean>;
+  /** Eintrag anlegen; liefert die Kennung des Eintrags. Fehler werden geworfen und vom Aufrufer als „failed“ vermerkt. */
+  createEvent(input: CalendarEventInput): Promise<string>;
+  /** Vorhandenen Eintrag zur Buchungsnummer suchen (Wiederholung nach unklarem Ausgang). */
+  findEventIdByRef(reference: string): Promise<string | null>;
+  deleteEvent(eventId: string): Promise<void>;
+  /** Zeile an die Beschreibung anhängen, zum Beispiel die Empfehlung. */
+  appendDescription(eventId: string, line: string): Promise<void>;
 }

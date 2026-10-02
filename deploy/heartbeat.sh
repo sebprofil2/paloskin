@@ -19,8 +19,13 @@ echo "$STATE" | grep -q '^app running healthy' || PROBLEMS+=("app nicht healthy"
 echo "$STATE" | grep -q '^caddy running' || PROBLEMS+=("caddy nicht running")
 
 # 3. Fehlerrate der Anwendung in den letzten 10 Minuten (JSON-Zeilen mit level error, ohne Inhalte)
-ERRORS=$($COMPOSE logs --since 10m app 2>/dev/null | grep -c '"level":"error"')
+APP_LOG=$($COMPOSE logs --since 10m app 2>/dev/null)
+ERRORS=$(printf '%s\n' "$APP_LOG" | grep -c '"level":"error"')
 [ "${ERRORS:-0}" -ge 5 ] && PROBLEMS+=("${ERRORS} Fehler in 10 Minuten")
+
+# 4. Dauerhafter Alarm der Anwendung (zum Beispiel Kalendereintrag seit 24 Stunden offen): kein Heartbeat, bis er behoben ist
+ALARMS=$(printf '%s\n' "$APP_LOG" | grep -c '"event":"ALARM')
+[ "${ALARMS:-0}" -ge 1 ] && PROBLEMS+=("Alarm der Anwendung")
 
 if [ ${#PROBLEMS[@]} -eq 0 ]; then
   SENT="kein Monitor konfiguriert"

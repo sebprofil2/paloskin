@@ -299,3 +299,30 @@ cd /opt/paloskin && git pull && docker compose -f deploy/docker-compose.yml pull
 - Sicherheitsheader (CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy) setzt die App in `next.config.ts`, getestet mit Produktionsbuild ohne CSP-Verstöße.
 - `.dockerignore` schließt `.env*`, Schlüsseldateien, `.git`, `node_modules`, `.next` und `deploy` aus.
 - Nicht lokal getestet: der Docker-Build selbst (kein Docker auf diesem Mac). Erster Lauf in Schritt 7.
+
+## 16. Stufe 2: Buchungsdatenbank und Testinstanz (ab 2. Oktober 2026)
+
+Die Buchung reserviert jetzt in einer SQLite-Datei auf dem Server; der Kalender ist nur noch die Sicht des Arztes. Der Container bleibt schreibgeschützt, nur das Datenbankverzeichnis ist beschreibbar eingebunden.
+
+- **Verzeichnisse anlegen** (einmalig, Eigentümer ist der App-Benutzer 10001 im Container):
+
+```bash
+sudo install -d -m 700 -o 10001 -g 10001 /var/lib/paloskin /var/lib/paloskin-test
+```
+
+- **Testinstanz** `app-test`: gleiches Compose-File, Profil `test`, Image-Tag des Arbeitsbranches (Standard `stufe2`, änderbar mit `PALOSKIN_TEST_TAG`), eigene Datenbank unter `/var/lib/paloskin-test`, erreichbar nur über `neu.paloskin.de`. Sie nutzt dieselben Kalender wie die Seite, Testbuchungen erscheinen also als „TEST Palo Skin: …“ in „Palo Skin Termine“ und werden danach gelöscht (`scripts/google-cleanup.mjs`).
+
+```bash
+cd /opt/paloskin && git fetch && git checkout stufe2 && git pull && docker compose -f deploy/docker-compose.yml --profile test pull app-test && docker compose -f deploy/docker-compose.yml --profile test up -d app-test && docker compose -f deploy/docker-compose.yml exec caddy caddy reload --config /etc/caddy/Caddyfile
+```
+
+- **Ausrollen nach bestandenem Test:** Branch `zonen` auf den Stand von `stufe2` bringen (Fast-Forward), dann wie in Abschnitt 15 (`git checkout zonen && git pull && … pull && … up -d`). Beim ersten Ausrollen bekommt der Container das Volume; die Datenbank wird beim ersten Zugriff angelegt (WAL-Modus, drei Dateien `buchung.sqlite`, `-wal`, `-shm`).
+- **Testinstanz anhalten:** `docker compose -f deploy/docker-compose.yml --profile test stop app-test` (neu.paloskin.de antwortet dann mit 502).
+- **Blick in die Datenbank ohne Kundendaten** (Anzahl Buchungen, Kalenderzustand, Ereignisse), aus dem Container heraus, nur lesend:
+
+```bash
+docker compose -f /opt/paloskin/deploy/docker-compose.yml exec app node -e 'const {DatabaseSync}=require("node:sqlite");const db=new DatabaseSync(process.env.BOOKING_DB_PATH,{readOnly:true});console.log(db.prepare("select status, calendar_state, count(*) n from bookings where deleted_at is null group by 1,2").all(), db.prepare("select count(*) events, max(seq) last_seq from booking_events").get())'
+```
+
+- **Hintergrundlauf:** alle 5 Minuten im Serverprozess (Protokollzeile `calendar_retry`), holt fehlende Kalendereinträge nach. Bleibt ein Eintrag 24 Stunden offen, schreibt die App `ALARM …` ins Protokoll; der Heartbeat bleibt dann aus und der Monitor alarmiert.
+- **Sicherung und Löschlauf:** folgen in Schritt 4 des Bauauftrags (`docs/STUFE-2-BAUAUFTRAG.md`). Bis dahin ist die Datei im täglichen Hetzner-Server-Backup enthalten.

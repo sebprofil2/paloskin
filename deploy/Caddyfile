@@ -11,7 +11,7 @@
 
 (paloskin) {
 	encode zstd gzip
-	reverse_proxy app:3000 {
+	reverse_proxy {args[0]} {
 		# Nur Caddy setzt diese Kopfzeilen; die App vertraut X-Forwarded-For und X-Forwarded-Proto deshalb nur dem Proxy
 		header_up X-Forwarded-For {remote_host}
 		header_up X-Real-IP {remote_host}
@@ -30,9 +30,9 @@
 	}
 }
 
-# Testname vor der DNS-Umstellung (bei GoDaddy: A neu -> 2.31.2.192). Nach dem Umzug diesen Block entfernen.
+# Testname: zeigt auf die Testinstanz app-test (Profil test), nicht auf die laufende Seite.
 neu.paloskin.de {
-	import paloskin
+	import paloskin app-test:3000
 }
 
 paloskin.de {
@@ -40,5 +40,5 @@ paloskin.de {
 }
 
 www.paloskin.de {
-	import paloskin
+	import paloskin app:3000
 }

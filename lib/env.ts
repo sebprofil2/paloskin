@@ -20,6 +20,10 @@ export interface Env {
   ownerWebhookUrl: string;
   /** X-Forwarded-For nur vom eigenen Proxy (Caddy) übernehmen */
   trustProxy: boolean;
+  /** SQLite-Datei der Buchung (Stufe 2), auf dem Server /var/lib/paloskin/buchung.sqlite */
+  dbPath: string;
+  /** Verbindliche Buchung (confirmed) statt Terminanfrage (requested); erst nach der Abnahme einschalten */
+  bookingBinding: boolean;
 }
 
 function int(v: string | undefined, fallback: number): number {
@@ -83,5 +87,7 @@ export function readEnv(): Env {
     },
     ownerWebhookUrl: (process.env.OWNER_WEBHOOK_URL ?? "").trim(),
     trustProxy: process.env.TRUST_PROXY === "true",
+    dbPath: (process.env.BOOKING_DB_PATH ?? "").trim() || ".data/buchung.sqlite",
+    bookingBinding: process.env.BOOKING_BINDING === "true",
   };
 }

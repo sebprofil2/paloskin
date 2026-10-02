@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import { hasAccess } from "@/lib/access";
+import { placeBooking, summarize } from "@/lib/booking";
+import { deviceFrom } from "@/lib/device";
 import { durationMinutes } from "@/lib/duration";
 import { readEnv } from "@/lib/env";
-import { getEngine, SlotsUnavailableError } from "@/lib/engine";
 import { errorClass, logEvent } from "@/lib/log";
 import { notifyOwner } from "@/lib/notify";
 import { allow, clientKey, contactKey, LIMITS } from "@/lib/ratelimit";
 import { bookingRefFor } from "@/lib/ref";
 import { bookRequestSchema } from "@/lib/schema";
 import { bookingRange } from "@/lib/slots";
+import { getStore } from "@/lib/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,6 +21,7 @@ const json = (body: unknown, status = 200) => NextResponse.json(body, { status, 
 /*
  * Buchen. Der Browser liefert nur Auswahl, Startzeit, Kontakt, Sprache und Anfragekennung.
  * Dauer, Fenster, Vorlauf, Horizont, Endzeit, Kalender und Buchungsnummer bestimmt der Server.
+ * Maßgeblich ist die Reservierung in der Datenbank; der Kalendereintrag folgt (lib/booking.ts).
  */
 export async function POST(req: Request) {
   if (!hasAccess(req)) return json({ error: "no_access" }, 401);
@@ -38,7 +41,7 @@ export async function POST(req: Request) {
 
   const ref = bookingRefFor(body.requestId);
   try {
-    const result = await getEngine().book({
+    const result = await placeBooking({
       requestId: body.requestId,
       selection: body.selection,
       start,
@@ -47,16 +50,16 @@ export async function POST(req: Request) {
       lang: body.lang,
       consentAt: new Date(),
       reminder: body.reminder,
+      device: deviceFrom(req.headers.get("user-agent")),
       testMode: env.testMode,
+      binding: env.bookingBinding,
     });
     logEvent("info", "book_result", { route: "book", bookingRef: ref, status: result.status, engine: env.engine });
     if (result.status === "booked") return json(result);
-    if (result.status === "conflict") return json(result, 409);
-    return json(result, 202);
+    return json(result, 409);
   } catch (e) {
     logEvent("error", "book_failed", { route: "book", bookingRef: ref, errorClass: errorClass(e), engine: env.engine });
-    const unavailable = e instanceof SlotsUnavailableError;
-    return json({ error: unavailable ? "unavailable" : "failed" }, 503);
+    return json({ error: "failed" }, 503);
   }
 }
 
@@ -68,13 +71,13 @@ export async function GET(req: Request) {
   const requestId = url.searchParams.get("requestId") ?? "";
   if (!/^[0-9a-f-]{36}$/i.test(requestId)) return json({ error: "invalid" }, 400);
   try {
-    const booking = await getEngine().findByRequestId(requestId);
+    const booking = getStore().findByRequestId(requestId);
     if (!booking) {
       // Der Browser hat den Ausgang nicht erfahren und die Buchung nicht gefunden: Dr. Vogel informieren
       if (url.searchParams.get("report") === "1") await notifyOwner("Unklarer Buchungsausgang (Browser)", { bookingRef: bookingRefFor(requestId), status: "not_found" });
       return json({ status: "not_found" }, 404);
     }
-    return json({ status: "booked", booking });
+    return json({ status: "booked", booking: summarize(booking, requestId) });
   } catch (e) {
     logEvent("error", "book_lookup_failed", { route: "book", errorClass: errorClass(e) });
     return json({ error: "failed" }, 503);

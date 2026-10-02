@@ -1,18 +1,16 @@
 import { JWT } from "google-auth-library";
 import { readEnv } from "../env";
-import { bookingRefFor } from "../ref";
-import { buildDescription, buildTitle, serviceCode } from "../booking-description";
 import { errorClass, logEvent } from "../log";
-import { notifyOwner } from "../notify";
 import { bookingRange, computeSlots, isStartFree, type Interval } from "../slots";
 import { toBerlinIso } from "../time";
-import { NotImplementedError, SlotsUnavailableError, type BookInput, type BookResult, type BookingEngine, type BookingSummary, type SlotsResult } from "./types";
+import { SlotsUnavailableError, type BookingEngine, type CalendarEventInput, type SlotsResult } from "./types";
 
 /*
  * Echter Motor: Google Calendar API über ein Dienstkonto. Alle Zugriffe nur hier, auf dem Server.
  *   Palo Skin offen (CALENDAR_OPEN_ID): Zeitfenster lesen, singleEvents, ganztägige Einträge ignorieren
  *   Belegt (CALENDAR_BUSY_IDS): nur frei/belegt über freebusy; ein Fehler gilt nie als frei
  *   Palo Skin Termine (CALENDAR_BOOKINGS_ID): Einträge anlegen, ohne Gäste, ohne Einladungen
+ * Reservierung und Buchungsstand liegen in der Datenbank; der Kalender ist die Sicht des Arztes auf den Tag.
  */
 
 const API = "https://www.googleapis.com/calendar/v3";
@@ -79,6 +77,10 @@ export class GoogleCalendarEngine implements BookingEngine {
     return (await res.json()) as T;
   }
 
+  private bookingsPath(suffix = ""): string {
+    return `/calendars/${encodeURIComponent(readEnv().google.calendarBookingsId)}/events${suffix}`;
+  }
+
   private async listEvents(calendarId: string, from: Date, to: Date, extra: Record<string, string> = {}): Promise<GEvent[]> {
     const items: GEvent[] = [];
     let pageToken: string | undefined;
@@ -132,12 +134,20 @@ export class GoogleCalendarEngine implements BookingEngine {
     return out;
   }
 
-  async getSlots(input: { durationMinutes: number; now?: Date }): Promise<SlotsResult> {
+  async getSlots(input: { durationMinutes: number; now?: Date; extraBusy?: Interval[] }): Promise<SlotsResult> {
     const env = readEnv();
     const { from, to } = bookingRange(input.now);
     try {
       const [windows, busy] = await Promise.all([this.openWindows(from, to), this.busyTimes(from, to)]);
-      const days = computeSlots({ windows, busy, durationMinutes: input.durationMinutes, bufferMinutes: env.bufferMinutes, stepMinutes: env.stepMinutes, from, to });
+      const days = computeSlots({
+        windows,
+        busy: [...busy, ...(input.extraBusy ?? [])],
+        durationMinutes: input.durationMinutes,
+        bufferMinutes: env.bufferMinutes,
+        stepMinutes: env.stepMinutes,
+        from,
+        to,
+      });
       return { days, from: toBerlinIso(from), to: toBerlinIso(to) };
     } catch (e) {
       logEvent("error", "google_slots_failed", { engine: "google", errorClass: errorClass(e), httpStatus: e instanceof GoogleError ? (e.status ?? 0) : 0 });
@@ -145,136 +155,56 @@ export class GoogleCalendarEngine implements BookingEngine {
     }
   }
 
-  /** Suche über die aus der Anfragekennung abgeleitete Buchungsnummer; die Kennung selbst steht nicht im Kalender */
-  async findByRequestId(requestId: string): Promise<BookingSummary | null> {
-    const ev = await this.findEventByRef(bookingRefFor(requestId));
-    return ev ? toSummary(ev, requestId) : null;
-  }
-
-  private async findEventByRef(ref: string): Promise<GEvent | null> {
-    const g = readEnv().google;
-    const q = new URLSearchParams({ privateExtendedProperty: `bookingRef=${ref}`, singleEvents: "true", maxResults: "5", showDeleted: "false" });
-    const page = await this.call<{ items?: GEvent[] }>("GET", `/calendars/${encodeURIComponent(g.calendarBookingsId)}/events?${q}`);
-    return (page.items ?? []).find((e) => e.status !== "cancelled") ?? null;
-  }
-
-  private async findWithRetries(requestId: string, tries: number): Promise<BookingSummary | null> {
-    for (let i = 0; i < tries; i++) {
-      try {
-        const found = await this.findByRequestId(requestId);
-        if (found) return found;
-      } catch (e) {
-        logEvent("warn", "google_lookup_failed", { engine: "google", errorClass: errorClass(e) });
-      }
-      await new Promise((r) => setTimeout(r, 1500));
-    }
-    return null;
-  }
-
-  async book(i: BookInput): Promise<BookResult> {
+  /** Unmittelbar vor dem Reservieren: offenes Fenster und frei laut freebusy. Nicht lesbar heißt nie „frei“, sondern Fehler. */
+  async isStartFree(input: { start: Date; durationMinutes: number; now?: Date }): Promise<boolean> {
     const env = readEnv();
-    const g = env.google;
-
-    // 1. Gleiche Anfragekennung: vorhandene Buchung zurückgeben, kein zweites Ereignis
-    const existing = await this.findByRequestId(i.requestId).catch(() => null);
-    if (existing) return { status: "booked", booking: existing };
-
-    // 2. Unmittelbar vor dem Eintragen: offenes Fenster und frei laut freebusy
-    const { from, to } = bookingRange();
-    const endMs = i.start.getTime() + i.durationMinutes * 60000;
-    const dayBefore = new Date(i.start.getTime() - 86400000);
+    const { from, to } = bookingRange(input.now);
+    const endMs = input.start.getTime() + input.durationMinutes * 60000;
+    const dayBefore = new Date(input.start.getTime() - 86400000);
     const dayAfter = new Date(endMs + 86400000);
-    const [windows, busy] = await Promise.all([this.openWindows(dayBefore, dayAfter), this.busyTimes(dayBefore, dayAfter)]);
-    const free = isStartFree(i.start, { windows, busy, durationMinutes: i.durationMinutes, bufferMinutes: env.bufferMinutes, from, to });
-    if (!free) return { status: "conflict" };
+    try {
+      const [windows, busy] = await Promise.all([this.openWindows(dayBefore, dayAfter), this.busyTimes(dayBefore, dayAfter)]);
+      return isStartFree(input.start, { windows, busy, durationMinutes: input.durationMinutes, bufferMinutes: env.bufferMinutes, from, to });
+    } catch (e) {
+      logEvent("error", "google_check_failed", { engine: "google", errorClass: errorClass(e), httpStatus: e instanceof GoogleError ? (e.status ?? 0) : 0 });
+      throw new SlotsUnavailableError("Kalender nicht lesbar");
+    }
+  }
 
-    // 3. Eintragen, als belegt, ohne Gäste. Buchungsnummer aus der Anfragekennung abgeleitet (Idempotenz)
-    const ref = bookingRefFor(i.requestId);
-    const end = new Date(endMs);
+  /** Eintragen, als belegt, ohne Gäste. Fehler gehen an den Aufrufer, der den Eintrag später nachholt. */
+  async createEvent(i: CalendarEventInput): Promise<string> {
     const body = {
-      summary: buildTitle(i.customer, i.testMode),
-      description: buildDescription({ bookingRef: ref, selection: i.selection, durationMinutes: i.durationMinutes, customer: i.customer, lang: i.lang, consentAt: i.consentAt, reminder: i.reminder }),
+      summary: i.title,
+      description: i.description,
       start: { dateTime: toBerlinIso(i.start), timeZone: "Europe/Berlin" },
-      end: { dateTime: toBerlinIso(end), timeZone: "Europe/Berlin" },
+      end: { dateTime: toBerlinIso(i.end), timeZone: "Europe/Berlin" },
       transparency: "opaque",
-      extendedProperties: { private: { bookingRef: ref, status: "confirmed", service: serviceCode(i.selection), reminder: i.reminder ? "ja" : "nein" } },
+      extendedProperties: { private: { bookingRef: i.reference, status: "confirmed", service: i.serviceCode, reminder: i.reminder ? "ja" : "nein" } },
       reminders: { useDefault: true },
     };
-    let created: GEvent;
+    const created = await this.call<GEvent>("POST", this.bookingsPath("?sendUpdates=none"), body, WRITE_TIMEOUT_MS);
+    return created.id;
+  }
+
+  async findEventIdByRef(reference: string): Promise<string | null> {
+    const q = new URLSearchParams({ privateExtendedProperty: `bookingRef=${reference}`, singleEvents: "true", maxResults: "5", showDeleted: "false" });
+    const page = await this.call<{ items?: GEvent[] }>("GET", this.bookingsPath(`?${q}`));
+    return (page.items ?? []).find((e) => e.status !== "cancelled")?.id ?? null;
+  }
+
+  async deleteEvent(eventId: string): Promise<void> {
     try {
-      created = await this.call<GEvent>("POST", `/calendars/${encodeURIComponent(g.calendarBookingsId)}/events?sendUpdates=none`, body, WRITE_TIMEOUT_MS);
+      await this.call<void>("DELETE", this.bookingsPath(`/${encodeURIComponent(eventId)}?sendUpdates=none`), undefined, WRITE_TIMEOUT_MS);
     } catch (e) {
-      const ge = e instanceof GoogleError ? e : null;
-      if (ge && (ge.kind === "timeout" || ge.kind === "network")) {
-        // Unklarer Ausgang: nicht neu buchen, sondern die Anfragekennung erneut abfragen
-        const found = await this.findWithRetries(i.requestId, 2);
-        if (found) return { status: "booked", booking: found };
-        await notifyOwner("Unklarer Buchungsausgang", { bookingRef: ref, status: "pending", errorClass: ge.kind, engine: "google" });
-        return { status: "pending" };
-      }
+      // Schon gelöscht oder nie geschrieben: Ziel erreicht
+      if (e instanceof GoogleError && (e.status === 404 || e.status === 410)) return;
       throw e;
     }
-
-    // 4. Direkt danach im selben Zeitfenster nachsehen: zwei Einträge, eigener jünger, dann eigenen löschen
-    try {
-      const overlapping = (await this.listEvents(g.calendarBookingsId, i.start, end)).filter((e) => e.id !== created.id && overlapsEvent(e, i.start.getTime(), endMs));
-      if (overlapping.length) {
-        const ownCreated = created.created ?? new Date().toISOString();
-        const younger = overlapping.every((o) => isYounger(created.id, ownCreated, o));
-        if (younger) {
-          await this.call<void>("DELETE", `/calendars/${encodeURIComponent(g.calendarBookingsId)}/events/${encodeURIComponent(created.id)}?sendUpdates=none`, undefined, WRITE_TIMEOUT_MS);
-          return { status: "conflict" };
-        }
-        await notifyOwner("Überschneidung im Buchungskalender", { bookingRef: ref, status: "overlap", engine: "google" });
-      }
-    } catch (e) {
-      logEvent("warn", "google_overlap_check_failed", { bookingRef: ref, engine: "google", errorClass: errorClass(e) });
-    }
-
-    return { status: "booked", booking: { ref, requestId: i.requestId, start: toBerlinIso(i.start), end: toBerlinIso(end), durationMinutes: i.durationMinutes } };
   }
 
-  async addReferral(requestId: string, referral: string): Promise<boolean> {
-    const g = readEnv().google;
-    const ev = await this.findEventByRef(bookingRefFor(requestId));
-    if (!ev) return false;
-    const description = `${ev.description ?? ""}\nEmpfehlung: ${referral}`.trim();
-    await this.call<GEvent>("PATCH", `/calendars/${encodeURIComponent(g.calendarBookingsId)}/events/${encodeURIComponent(ev.id)}?sendUpdates=none`, { description }, WRITE_TIMEOUT_MS);
-    return true;
+  async appendDescription(eventId: string, line: string): Promise<void> {
+    const ev = await this.call<GEvent>("GET", this.bookingsPath(`/${encodeURIComponent(eventId)}`));
+    const description = `${ev.description ?? ""}\n${line}`.trim();
+    await this.call<GEvent>("PATCH", this.bookingsPath(`/${encodeURIComponent(eventId)}?sendUpdates=none`), { description }, WRITE_TIMEOUT_MS);
   }
-
-  async cancel(): Promise<void> {
-    throw new NotImplementedError("Absagen");
-  }
-
-  async reschedule(): Promise<void> {
-    throw new NotImplementedError("Verschieben");
-  }
-}
-
-function overlapsEvent(e: GEvent, startMs: number, endMs: number): boolean {
-  if (!e.start?.dateTime || !e.end?.dateTime) return false;
-  const s = Date.parse(e.start.dateTime);
-  const en = Date.parse(e.end.dateTime);
-  return s < endMs && startMs < en;
-}
-
-/** Eigener Eintrag jünger als der andere? Bei gleicher Erstellungszeit entscheidet die Kennung, damit genau einer weicht. */
-function isYounger(ownId: string, ownCreated: string, other: GEvent): boolean {
-  const a = Date.parse(ownCreated);
-  const b = Date.parse(other.created ?? "");
-  if (Number.isFinite(a) && Number.isFinite(b) && a !== b) return a > b;
-  return ownId > other.id;
-}
-
-function toSummary(e: GEvent, requestId: string): BookingSummary {
-  const start = new Date(e.start?.dateTime ?? 0);
-  const end = new Date(e.end?.dateTime ?? 0);
-  return {
-    ref: e.extendedProperties?.private?.bookingRef ?? "PS-?",
-    requestId,
-    start: toBerlinIso(start),
-    end: toBerlinIso(end),
-    durationMinutes: Math.round((end.getTime() - start.getTime()) / 60000),
-  };
 }
