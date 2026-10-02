@@ -73,6 +73,9 @@ services:
       PUBLIC_BASE_URL: https://neu.paloskin.de
       # Alle Mails der Testinstanz gehen an diese Adresse statt an die eingegebene (deploy/.env auf dem Server, nicht im Repository)
       MAIL_REDIRECT_TO: ${PALOSKIN_TEST_MAIL:-}
+      # Die Testinstanz sendet und bucht verbindlich, unabhängig vom Stand auf www (überschreibbar in deploy/.env)
+      MAIL_MODE: ${PALOSKIN_TEST_MAIL_MODE:-relay}
+      BOOKING_BINDING: ${PALOSKIN_TEST_BINDING:-true}
     secrets:
       - google_service_account
     expose:

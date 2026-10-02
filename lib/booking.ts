@@ -170,7 +170,7 @@ export async function sendReminder(b: BookingRow, deps: Deps = defaultDeps(), no
     return "skipped";
   }
   try {
-    await mailer.send(reminderMail(b, now));
+    await mailer.send(reminderMail(b));
     store.mailReminderSent(b.id, now);
     logEvent("info", "mail_sent", { bookingRef: b.reference, mail: "reminder" });
     return "sent";

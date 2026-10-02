@@ -1,33 +1,33 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { buildIcs, confirmationMail, reminderMail, treatmentRows, whenLabels } from "../mail-content";
+import { buildIcs, confirmationMail, reminderMail, whenLabels } from "../mail-content";
 import type { BookingRow } from "../store";
 import { emptySelection, type Lang, type Selection } from "../treatments";
 
-function row(over: Partial<BookingRow> = {}, sel: Partial<Selection> = {}): BookingRow {
-  const selection: Selection = { ...emptySelection(), persons: 2, visit: "first", zones: ["stirn", "zornesfalte", "kraehenfuesse"], note: "Geheime Notiz", ...sel };
+function row(over: Partial<BookingRow> = {}): BookingRow {
+  const selection: Selection = { ...emptySelection(), persons: 2, visit: "first", zones: ["stirn", "zornesfalte", "kraehenfuesse"], note: "Geheime Notiz" };
   return {
     id: "01M3YWQ51D0EPJ4VSS2B2MQT7H",
     reference: "PS-ABC234",
     created_at: "2026-10-01T10:00:00.000Z",
-    starts_at: "2026-10-05T12:00:00.000Z", // Montag 14:00 Sommerzeit
-    ends_at: "2026-10-05T12:50:00.000Z",
+    starts_at: "2026-10-08T06:00:00.000Z", // Donnerstag 08:00 Sommerzeit
+    ends_at: "2026-10-08T06:50:00.000Z",
     duration_minutes: 50,
     persons: 2,
     first_visit: 1,
     service_codes: JSON.stringify(["BOT"]),
     zones: JSON.stringify(selection.zones),
     checkup: 0,
-    status: "requested",
+    status: "confirmed",
     channel: "web",
     language: "de",
     device: "mobile",
     reminder_whatsapp: 1,
     reminder_consent_at: "2026-10-01T10:00:00.000Z",
     consent_at: "2026-10-01T10:00:00.000Z",
-    first_name: "Erika",
+    first_name: "Verena",
     last_name: "Muster",
     phone_e164: "+491511234567",
-    email: "erika@example.com",
+    email: "verena@example.com",
     note: "Geheime Notiz",
     referral: null,
     selection: JSON.stringify(selection),
@@ -51,7 +51,9 @@ function row(over: Partial<BookingRow> = {}, sel: Partial<Selection> = {}): Book
   };
 }
 
-describe("Bestätigungsmail", () => {
+const FORBIDDEN = ["PS-ABC234", "Geheime Notiz", "Botox", "Stirn", "Zornesfalte", "Vorauswahl", "Buchungsnummer", "Palo Skin by"];
+
+describe("Bestätigungsmail nach Freigabe", () => {
   beforeEach(() => {
     process.env.LINK_SECRET = "test-schluessel";
     process.env.PUBLIC_BASE_URL = "https://www.paloskin.de";
@@ -61,79 +63,82 @@ describe("Bestätigungsmail", () => {
     delete process.env.PUBLIC_BASE_URL;
   });
 
-  it("Deutsch, Terminanfrage, zu zweit, Struktur der Übersicht, keine Notiz", () => {
+  it("Deutsch wörtlich, zu zweit, ohne Nummer und ohne Behandlung", () => {
     const m = confirmationMail(row(), new Date("2026-10-01T10:00:00Z"));
-    expect(m.to).toBe("erika@example.com");
-    expect(m.subject).toBe("Ihre Terminanfrage bei Palo Skin am Montag, 5. Oktober um 14:00 Uhr");
-    expect(m.text).toContain("Guten Tag Erika,");
-    expect(m.text).toContain("Termin: Montag, 5. Oktober 2026, 14:00 Uhr");
-    expect(m.text).toContain("Wir haben für Sie beide Zeit eingeplant.");
-    expect(m.text).toContain("Hagenauer Straße 14, 10435 Berlin");
-    expect(m.text).toContain("Buchungsnummer: PS-ABC234");
-    expect(m.text).toContain("Unverbindliche Vorauswahl:");
-    expect(m.text).toContain("- Zu zweit");
-    expect(m.text).toContain("- Botox: 3 Zonen: Stirn, Zornesfalte, Krähenfüße");
-    expect(m.text).toContain("48 Stunden");
-    expect(m.text).toContain("+49 151 58872566");
-    expect(m.text).toMatch(/Ja, ich komme: https:\/\/www\.paloskin\.de\/termin\/01M3YWQ51D0EPJ4VSS2B2MQT7H\.[A-Za-z0-9_-]{27}\?a=ja/);
-    expect(m.text).toMatch(/Termin absagen: https:\/\/www\.paloskin\.de\/termin\/[^ ]+\?a=absagen/);
-    expect(m.text).not.toContain("Geheime Notiz");
-    expect(m.html).not.toContain("Geheime Notiz");
-    expect(m.html).toContain("<a href=\"https://www.paloskin.de/termin/");
+    expect(m.to).toBe("verena@example.com");
+    expect(m.subject).toBe("Ihr Termin bei PALO SKIN am Donnerstag, 8. Oktober um 08:00 Uhr");
+    const t = m.text;
+    expect(t).toContain("Guten Tag Verena,\n\nschön, dass Sie kommen. Ihr Termin steht:\n\nDonnerstag, 8. Oktober 2026, 08:00 Uhr\nPALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin (Karte öffnen: https://www.google.com/maps/");
+    expect(t).toContain("\n\nWir haben für Sie beide Zeit eingeplant.\n");
+    expect(t).toContain("Einen Tag vorher erinnern wir Sie noch einmal kurz.");
+    expect(t).toMatch(/Kommt etwas dazwischen\? Termin absagen oder verschieben: https:\/\/www\.paloskin\.de\/termin\/01M3YWQ51D0EPJ4VSS2B2MQT7H\.[A-Za-z0-9_-]{27}\?a=absagen\n/);
+    expect(t).toContain("Bitte mindestens 48 Stunden vorher, dann freut sich jemand anderes über die Zeit. Kurzfristig erreichen Sie uns per WhatsApp unter +49 151 58872566.");
+    expect(t).toContain("Die Kalenderdatei für Ihr Handy hängt an.");
+    expect(t).toContain("Bis bald\nDr. med. Sebastian Vogel\nPALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin\nWhatsApp +49 151 58872566");
+    expect(t).not.toContain("Ja, ich komme");
+    for (const f of FORBIDDEN) {
+      expect(t, f).not.toContain(f);
+      expect(m.html, f).not.toContain(f);
+      expect(m.ics!.content, f).not.toContain(f);
+    }
+    expect(m.html).toContain("Termin absagen oder verschieben</a>");
     expect(m.html).not.toContain("<img");
-    expect(m.text).not.toContain("TEST");
     expect(m.ics?.filename).toBe("termin.ics");
   });
 
-  it("verbindlich: anderer Betreff und Einstieg, Testbetrieb kennzeichnet", () => {
-    const m = confirmationMail(row({ status: "confirmed", test_mode: 1 }));
-    expect(m.subject).toBe("TEST: Ihr Termin bei Palo Skin am Montag, 5. Oktober um 14:00 Uhr");
-    expect(m.text).toContain("Ihr Termin ist gebucht.");
-    expect(m.text).toContain("Testbetrieb");
-    expect(m.ics?.content).toContain("STATUS:CONFIRMED");
+  it("allein: kein Satz für zwei; Testbetrieb kennzeichnet; Anfrage ohne Schalter", () => {
+    const m = confirmationMail(row({ persons: 1 }));
+    expect(m.text).not.toContain("beide");
+    const t = confirmationMail(row({ test_mode: 1 }));
+    expect(t.subject).toBe("TEST: Ihr Termin bei PALO SKIN am Donnerstag, 8. Oktober um 08:00 Uhr");
+    expect(t.text).toContain("Testbetrieb");
+    const r = confirmationMail(row({ status: "requested" }));
+    expect(r.subject).toBe("Ihre Terminanfrage bei PALO SKIN am Donnerstag, 8. Oktober um 08:00 Uhr");
+    expect(r.text).toContain("vorgemerkt");
+    expect(r.ics?.content).toContain("STATUS:TENTATIVE");
   });
 
-  it("ICS in Weltzeit, Sommer- und Winterzeit", () => {
-    const summer = buildIcs(row(), "de", "https://www.paloskin.de/termin/x", new Date("2026-10-01T10:00:00Z"));
-    expect(summer).toContain("DTSTART:20261005T120000Z");
-    expect(summer).toContain("DTEND:20261005T125000Z");
-    expect(summer).toContain("UID:PS-ABC234@paloskin.de");
-    expect(summer).toContain("STATUS:TENTATIVE");
-    expect(summer).toContain("LOCATION:Hagenauer Straße 14\\, 10435 Berlin");
-    expect(summer.split("\r\n").every((l) => Buffer.byteLength(l) <= 75)).toBe(true);
-    // 26. Oktober 2026, 10:00 Berlin ist nach der Umstellung 09:00 Weltzeit
+  it("Kalenderdatei: Titel, Ort, nur Absagehinweis, Weltzeit mit Endzeit, Winterzeit", () => {
+    const ics = buildIcs(row(), "de", new Date("2026-10-01T10:00:00Z"));
+    expect(ics).toContain("SUMMARY:Termin bei PALO SKIN");
+    expect(ics).toContain("LOCATION:PALO SKIN by Dr. Vogel\\, Hagenauer Straße 14\\, 10435 Berlin");
+    expect(ics).toContain("DESCRIPTION:Absagen oder verschieben bitte mindestens 48 Stunden vorher.");
+    expect(ics).toContain("DTSTART:20261008T060000Z");
+    expect(ics).toContain("DTEND:20261008T065000Z");
+    expect(ics).toContain("STATUS:CONFIRMED");
+    expect(ics).not.toContain("URL:");
+    expect(ics.split("\r\n").every((l) => Buffer.byteLength(l) <= 75)).toBe(true);
     const winter = whenLabels(new Date("2026-10-26T09:00:00Z"), "de");
-    expect(winter).toEqual({ date: "Montag, 26. Oktober", dateYear: "Montag, 26. Oktober 2026", time: "10:00 Uhr" });
-    const w = buildIcs(row({ starts_at: "2026-10-26T09:00:00.000Z", ends_at: "2026-10-26T09:30:00.000Z" }), "de", "https://x", new Date());
-    expect(w).toContain("DTSTART:20261026T090000Z");
+    expect(winter).toEqual({ date: "Montag, 26. Oktober", dateYear: "Montag, 26. Oktober 2026", weekday: "Montag", time: "10:00 Uhr" });
+    expect(buildIcs(row({ starts_at: "2026-10-26T09:00:00.000Z", ends_at: "2026-10-26T09:30:00.000Z" }), "de")).toContain("DTSTART:20261026T090000Z");
   });
 
-  it("alle Sprachen: Betreff, Anrede, Uhrzeit in Landesschreibweise", () => {
-    // Die Datumsschreibweise (Komma nach dem Wochentag) hängt von der ICU-Version der Node-Installation ab
-    const expected: Record<Lang, [RegExp, string]> = {
-      de: [/^Ihre Terminanfrage bei Palo Skin am Montag, 5\. Oktober um 14:00 Uhr$/, "Guten Tag Erika,"],
-      en: [/^Your appointment request at Palo Skin for Monday,? 5 October at 14:00$/, "Hello Erika,"],
-      es: [/^Su solicitud de cita en Palo Skin para el Lunes,? 5 de octubre a las 14:00 h$/, "Hola Erika,"],
-      fr: [/^Votre demande de rendez-vous chez Palo Skin pour le Lundi 5 octobre à 14 h 00$/, "Bonjour Erika,"],
-      pt: [/^Seu pedido de horário na Palo Skin para Segunda-feira,? 5 de outubro às 14:00$/, "Olá Erika,"],
+  it("Erinnerung wörtlich, mit Knopf, ohne Kalenderdatei", () => {
+    const m = reminderMail(row());
+    expect(m.subject).toBe("Morgen um 08:00 Uhr bei PALO SKIN");
+    expect(m.text).toContain("Guten Tag Verena,\n\nmorgen ist es so weit: Donnerstag, 8. Oktober, 08:00 Uhr, bei uns in der Hagenauer Straße 14. Wir freuen uns auf Sie.\n\nEin Klick genügt: Ja, ich komme: https://www.paloskin.de/termin/");
+    expect(m.text).toContain("Falls es doch nicht passt, schreiben Sie uns bitte kurz per WhatsApp unter +49 151 58872566, dann finden wir eine neue Zeit.\n\nBis morgen\nDr. med. Sebastian Vogel\nPALO SKIN by Dr. Vogel");
+    expect(m.text).not.toContain("absagen");
+    expect(m.html).toContain(">Ja, ich komme</a>");
+    expect(m.ics).toBeUndefined();
+    for (const f of FORBIDDEN) expect(m.text, f).not.toContain(f);
+  });
+
+  it("alle Sprachen: Betreff, Anrede, nichts Verbotenes", () => {
+    const expected: Record<Lang, [RegExp, string, RegExp]> = {
+      de: [/^Ihr Termin bei PALO SKIN am Donnerstag, 8\. Oktober um 08:00 Uhr$/, "Guten Tag Verena,", /^Morgen um 08:00 Uhr bei PALO SKIN$/],
+      en: [/^Your appointment at PALO SKIN on Thursday,? 8 October at 08:00$/, "Hello Verena,", /^Tomorrow at 08:00 at PALO SKIN$/],
+      es: [/^Su cita en PALO SKIN el Jueves,? 8 de octubre a las 08:00 h$/, "Hola Verena,", /^Mañana a las 08:00 h en PALO SKIN$/],
+      fr: [/^Votre rendez-vous chez PALO SKIN le Jeudi 8 octobre à 08 h 00$/, "Bonjour Verena,", /^Demain à 08 h 00 chez PALO SKIN$/],
+      pt: [/^Sua consulta na PALO SKIN em Quinta-feira,? 8 de outubro às 08:00$/, "Olá Verena,", /^Amanhã às 08:00 na PALO SKIN$/],
     };
     for (const lang of Object.keys(expected) as Lang[]) {
       const m = confirmationMail(row({ language: lang }));
       expect(m.subject, lang).toMatch(expected[lang][0]);
       expect(m.text, lang).toContain(expected[lang][1]);
-      expect(m.text, lang).not.toContain("Geheime Notiz");
+      expect(reminderMail(row({ language: lang })).subject, lang).toMatch(expected[lang][2]);
+      for (const f of FORBIDDEN) expect(m.text, `${lang} ${f}`).not.toContain(f);
     }
-    // Französisch mit geschütztem Leerzeichen vor dem Doppelpunkt
-    expect(reminderMail(row({ language: "fr" })).subject.startsWith("Rappel\u00A0:")).toBe(true);
-  });
-
-  it("Erinnerung ohne Kalenderdatei, Kontrolltermin als Zeile", () => {
-    const m = reminderMail(row());
-    expect(m.subject).toBe("Erinnerung: Ihr Termin bei Palo Skin am Montag, 5. Oktober um 14:00 Uhr");
-    expect(m.text).toContain("steht bevor");
-    expect(m.ics).toBeUndefined();
-    expect(treatmentRows({ ...emptySelection(), checkup: true, persons: 1 }, "de")).toEqual(["Kontrolltermin"]);
-    expect(treatmentRows({ ...emptySelection(), visit: "return", beratung: true }, "en")).toEqual(["Consultation, treatment to be decided"]);
-    expect(treatmentRows({ ...emptySelection(), visit: "return", zones: [], otherZone: "Kinn", lachs: "pack" }, "de")).toEqual(["Botox: 1 Zone: Sonstiges: Kinn", "Skin Booster: Lachs-DNA Viererpaket"]);
+    expect(confirmationMail(row({ language: "fr" })).text).toContain("fixé :");
   });
 });

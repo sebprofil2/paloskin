@@ -120,8 +120,8 @@ export function readEnv(): Env {
       host: (process.env.MAIL_RELAY_HOST ?? "").trim(),
       port: int(process.env.MAIL_RELAY_PORT, 587),
       from: (process.env.MAIL_FROM ?? "").trim() || "bookings@paloskin.de",
-      fromName: (process.env.MAIL_FROM_NAME ?? "").trim() || "Palo Skin by Dr. Vogel",
-      replyTo: (process.env.MAIL_REPLY_TO ?? "").trim() || "info@paloskin.de",
+      fromName: (process.env.MAIL_FROM_NAME ?? "").trim() || "PALO SKIN by Dr. Vogel",
+      replyTo: (process.env.MAIL_REPLY_TO ?? "").trim() || "bookings@paloskin.de",
       redirectTo: (process.env.MAIL_REDIRECT_TO ?? "").trim(),
     },
   };
