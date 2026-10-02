@@ -74,7 +74,7 @@ printf 'PermitRootLogin no\nPasswordAuthentication no\nKbdInteractiveAuthenticat
 
 Erwartet: `permitrootlogin no` und `passwordauthentication no`. Danach in neuer Verbindung prüfen, dass `ssh root@2.31.2.192` abgelehnt wird und `deploy` weiter hineinkommt. Dann die root-Sitzung mit `exit` schließen.
 
-## 4. Docker installieren
+## 4. Docker installieren (erledigt am 2. Oktober 2026: Docker 29.8, Compose v5.5, daemon.json aktiv, deploy in Gruppe docker)
 
 Auf dem Server als `deploy`:
 
@@ -92,7 +92,7 @@ sudo install -m 644 /opt/paloskin/deploy/daemon.json /etc/docker/daemon.json && 
 
 Hinweis: Docker veröffentlicht Ports an UFW vorbei. Deshalb hat der App-Dienst in `deploy/docker-compose.yml` keinen `ports`-Eintrag; nur Caddy öffnet 80 und 443.
 
-## 5. Code vom Branch „zonen“ auf den Server
+## 5. Code vom Branch „zonen“ auf den Server (erledigt am 2. Oktober 2026, /opt/paloskin)
 
 ```bash
 sudo mkdir -p /opt/paloskin && sudo chown deploy:deploy /opt/paloskin && git clone --branch zonen https://github.com/sebprofil2/paloskin.git /opt/paloskin
