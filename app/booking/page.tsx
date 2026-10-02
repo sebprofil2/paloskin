@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Termin buchen · Palo Skin by Dr. Vogel",
   description:
-    "Termin bei Palo Skin by Dr. Vogel in Berlin Prenzlauer Berg online buchen: Botulinum-Behandlung, Skin Booster oder Beratung. Sofortige Bestätigung mit Kalendereinladung.",
+    "Termin bei Palo Skin by Dr. Vogel in Berlin Prenzlauer Berg online buchen: Botox-Behandlung, Skin Booster oder Beratung. Sofortige Bestätigung mit Kalendereinladung.",
   alternates: { canonical: "https://www.paloskin.de/booking" },
 };
 
