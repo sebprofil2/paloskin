@@ -109,21 +109,22 @@ describe("Bestätigungsmail", () => {
   });
 
   it("alle Sprachen: Betreff, Anrede, Uhrzeit in Landesschreibweise", () => {
-    const expected: Record<Lang, [string, string]> = {
-      de: ["Ihre Terminanfrage bei Palo Skin am Montag, 5. Oktober um 14:00 Uhr", "Guten Tag Erika,"],
-      en: ["Your appointment request at Palo Skin for Monday 5 October at 14:00", "Hello Erika,"],
-      es: ["Su solicitud de cita en Palo Skin para el Lunes, 5 de octubre a las 14:00 h", "Hola Erika,"],
-      fr: ["Votre demande de rendez-vous chez Palo Skin pour le Lundi 5 octobre à 14 h 00", "Bonjour Erika,"],
-      pt: ["Seu pedido de horário na Palo Skin para Segunda-feira, 5 de outubro às 14:00", "Olá Erika,"],
+    // Die Datumsschreibweise (Komma nach dem Wochentag) hängt von der ICU-Version der Node-Installation ab
+    const expected: Record<Lang, [RegExp, string]> = {
+      de: [/^Ihre Terminanfrage bei Palo Skin am Montag, 5\. Oktober um 14:00 Uhr$/, "Guten Tag Erika,"],
+      en: [/^Your appointment request at Palo Skin for Monday,? 5 October at 14:00$/, "Hello Erika,"],
+      es: [/^Su solicitud de cita en Palo Skin para el Lunes,? 5 de octubre a las 14:00 h$/, "Hola Erika,"],
+      fr: [/^Votre demande de rendez-vous chez Palo Skin pour le Lundi 5 octobre à 14 h 00$/, "Bonjour Erika,"],
+      pt: [/^Seu pedido de horário na Palo Skin para Segunda-feira,? 5 de outubro às 14:00$/, "Olá Erika,"],
     };
     for (const lang of Object.keys(expected) as Lang[]) {
       const m = confirmationMail(row({ language: lang }));
-      expect(m.subject, lang).toBe(expected[lang][0]);
+      expect(m.subject, lang).toMatch(expected[lang][0]);
       expect(m.text, lang).toContain(expected[lang][1]);
       expect(m.text, lang).not.toContain("Geheime Notiz");
     }
     // Französisch mit geschütztem Leerzeichen vor dem Doppelpunkt
-    expect(reminderMail(row({ language: "fr" })).subject.startsWith("Rappel :")).toBe(true);
+    expect(reminderMail(row({ language: "fr" })).subject.startsWith("Rappel\u00A0:")).toBe(true);
   });
 
   it("Erinnerung ohne Kalenderdatei, Kontrolltermin als Zeile", () => {
