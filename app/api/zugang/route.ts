@@ -12,10 +12,10 @@ export const dynamic = "force-dynamic";
  * Weiterleitung auf /booking. Der Code selbst wird nicht protokolliert.
  */
 export async function POST(req: Request) {
-  const url = new URL(req.url);
+  /* Relative Weiterleitung: hinter dem Proxy wäre der absolute Ursprung die interne Adresse (0.0.0.0:3000) */
   const back = (ok: boolean, lang: string) => {
     const target = ok ? `/booking${lang ? `?lang=${lang}` : ""}` : `/booking/zugang?fehler=1${lang ? `&lang=${lang}` : ""}`;
-    return NextResponse.redirect(new URL(target, url.origin), { status: 303, headers: { "cache-control": "no-store" } });
+    return new NextResponse(null, { status: 303, headers: { location: target, "cache-control": "no-store" } });
   };
   if (!readEnv().testMode) return back(true, "");
   if (!allow(clientKey(req), LIMITS.access.limit, LIMITS.access.windowMs)) {
