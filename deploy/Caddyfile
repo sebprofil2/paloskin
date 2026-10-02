@@ -7,6 +7,8 @@
 	servers {
 		protocols h1 h2
 	}
+	# Verbindungen ohne Servernamen (Aufruf über die Adresse 10.0.0.2 im privaten Netz) bekommen das Zertifikat für 10.0.0.2
+	fallback_sni 10.0.0.2
 }
 
 (paloskin) {
