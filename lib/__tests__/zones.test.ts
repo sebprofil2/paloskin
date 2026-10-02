@@ -8,16 +8,16 @@ describe("Zonen gleichwertig, Preis nach Anzahl", () => {
   it("Lip Flip, Brow Lift und Mundwinkel sind 3 Zonen für 300", () => {
     const s = { ...emptySelection(), visit: "first" as const, zones: ["lipflip" as const, "browlift" as const, "mundwinkel" as const] };
     expect(zoneCount(s)).toBe(3);
-    expect(lineItemsDe(s)[0]).toEqual({ label: "Botulinum, 3 Zonen: Lip Flip, Brow Lift, Mundwinkel", price: 300 });
+    expect(lineItemsDe(s)[0]).toEqual({ label: "Botox: 3 Zonen: Lip Flip, Brow Lift, Mundwinkel", price: 300 });
   });
   it("Sonstiges zählt als Zone und erscheint mit Text", () => {
     const s = { ...emptySelection(), visit: "first" as const, zones: ["stirn" as const], otherZone: "Hals" };
     expect(zoneCount(s)).toBe(2);
-    expect(lineItemsDe(s)[0].label).toBe("Botulinum, 2 Zonen: Stirn, Sonstiges: Hals");
+    expect(lineItemsDe(s)[0].label).toBe("Botox: 2 Zonen: Stirn, Sonstiges: Hals");
     expect(totalPrice({ ...s, achsel: true })).toBe(210 + 480);
   });
   it("Zonen noch offen ohne Preis", () => {
     const s = { ...emptySelection(), visit: "first" as const, zonesUnknown: true };
-    expect(lineItemsDe(s)).toEqual([{ label: "Botulinum, Zonen noch offen", price: 0 }]);
+    expect(lineItemsDe(s)).toEqual([{ label: "Botox: Zonen noch offen", price: 0 }]);
   });
 });

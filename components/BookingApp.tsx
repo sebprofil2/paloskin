@@ -727,11 +727,11 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     const names = [...s.zoneIds.map((z) => l.zoneNames[z]), ...(s.otherOn ? [s.otherText.trim() ? `${l.zoneOther}: ${s.otherText.trim()}` : l.zoneOther] : [])];
     if (n > 0) out.push(`${l.botRow}${l.zoneCountLabel(n)}: ${names.join(", ")}`);
     else if (s.zonesUnknown) out.push(`${l.botRow}${l.zonesOpen}`);
-    if (s.kaumuskel) out.push(l.kaumuskel);
-    if (s.nefertiti) out.push(l.nefertiti);
-    if (s.achsel) out.push(l.achsel);
-    if (s.lachs === "single") out.push(l.lachsRow);
-    if (s.lachs === "pack") out.push(l.lachsPack);
+    if (s.kaumuskel) out.push(`${l.botRow}${l.kaumuskel}`);
+    if (s.nefertiti) out.push(`${l.botRow}${l.nefertiti}`);
+    if (s.achsel) out.push(`${l.botRow}${l.achsel}`);
+    if (s.lachs === "single") out.push(`${l.boostRow}${l.lachsRow}`);
+    if (s.lachs === "pack") out.push(`${l.boostRow}${l.lachsPack}`);
     return out;
   };
 
@@ -745,6 +745,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
       {!checkup ? (
         <div className="ov-row">
           <div className="ov-lines">
+            <div className="ov-line nb" style={{ margin: 0, fontSize: 14 }}><span>{l.noCommitTag}</span></div>
             {s.beratung ? <div className="ov-line"><span>{l.beratungRow}</span></div> : null}
             {overviewItems().map((n, i) => <div key={i} className="ov-line"><span>{n}</span></div>)}
           </div>

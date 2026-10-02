@@ -118,13 +118,13 @@ export function zoneListDe(s: Pick<Selection, "zones" | "otherZone">): string {
 export function lineItemsDe(s: Selection): LineItem[] {
   const out: LineItem[] = [];
   const n = zoneCount(s);
-  if (n > 0) out.push({ label: `Botulinum, ${n} ${n === 1 ? "Zone" : "Zonen"}: ${zoneListDe(s)}`, price: zonePrice(n) });
-  else if (s.zonesUnknown) out.push({ label: "Botulinum, Zonen noch offen", price: 0 });
-  if (s.kaumuskel) out.push({ label: "Kaumuskel", price: PRICES.kaumuskel });
-  if (s.nefertiti) out.push({ label: "Nefertiti-Lift", price: PRICES.nefertiti });
-  if (s.achsel) out.push({ label: "Übermäßiges Schwitzen (Hyperhidrose)", price: PRICES.achsel });
-  if (s.lachs === "single") out.push({ label: "Lachs-DNA, eine Behandlung", price: PRICES.lachs });
-  if (s.lachs === "pack") out.push({ label: "Lachs-DNA Viererpaket", price: PRICES.lachsPack });
+  if (n > 0) out.push({ label: `Botox: ${n} ${n === 1 ? "Zone" : "Zonen"}: ${zoneListDe(s)}`, price: zonePrice(n) });
+  else if (s.zonesUnknown) out.push({ label: "Botox: Zonen noch offen", price: 0 });
+  if (s.kaumuskel) out.push({ label: "Botox: Kaumuskel", price: PRICES.kaumuskel });
+  if (s.nefertiti) out.push({ label: "Botox: Nefertiti-Lift", price: PRICES.nefertiti });
+  if (s.achsel) out.push({ label: "Botox: Übermäßiges Schwitzen (Hyperhidrose)", price: PRICES.achsel });
+  if (s.lachs === "single") out.push({ label: "Skin Booster: Lachs-DNA, eine Behandlung", price: PRICES.lachs });
+  if (s.lachs === "pack") out.push({ label: "Skin Booster: Lachs-DNA Viererpaket", price: PRICES.lachsPack });
   return out;
 }
 

@@ -228,6 +228,14 @@ textarea{min-height:72px}
 .zsum b{font-weight:500}
 .zsum .zp{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:500}
 .zsum small{display:block;font-weight:400;color:var(--ink-3);font-size:13px;line-height:1.4;margin-top:2px}
+
+/* ---------- Breite begrenzen: Chrome rechnet die Mindestbreite umbrechender Kachelzeilen als Summe aller Kacheln ---------- */
+.page>*,.sec>*,.block>*,.accp>*,.accw,.acc,.zones,.zsum,.opts,.opt{min-width:0;max-width:100%}
+.accw{overflow:hidden}
+/* Zonen-Kacheln: fester Rahmen von 2 Pixeln, beim Auswählen wechselt nur die Farbe, nichts springt */
+.zones .chip{border:2px solid var(--line);box-shadow:none;background:var(--white);padding:8px 12px;font-size:16px;line-height:1.2}
+.zones .chip:hover:not(:disabled){border-color:var(--ink);box-shadow:none}
+.zones .chip[aria-pressed="true"]{border-color:var(--ultramarin);box-shadow:none;background:var(--white)}
 </style>
 </head>
 <body>
@@ -261,7 +269,7 @@ de:{
   visitQ:"Waren Sie schon einmal bei uns?", vFirst:"Ich komme zum ersten Mal", vReturn:"Ich war schon einmal da",
   visitFirstLbl:"Erster Besuch", visitReturnLbl:"Schon einmal da", checkupLbl:"Kontrolltermin",
   treatQ:"Wofür interessieren Sie sich?", unsureT:"Ich lasse mich erst beraten", unsureD:"Wir nehmen uns Zeit und finden gemeinsam, was zu Ihnen passt.", afterConsult:"Preis nach Beratung",
-  botGroup:"Botulinum-Behandlung", z1:"1 Zone", z2:"2 Zonen", z3:"3 Zonen", choice:"nach Wahl",
+  botGroup:"Botox-Behandlung", z1:"1 Zone", z2:"2 Zonen", z3:"3 Zonen", choice:"nach Wahl",
   extraT:"Zusätzliche Zonen", extraOff:p=>`${p} je Zone, nur zusammen mit 3 Zonen`, extraOn:p=>`${p} je Zone. Wählen Sie, welche dazukommen sollen.`,
   moreGroup:"Weitere Behandlungen",
   kaumuskel:"Kaumuskel", kaumuskelD:"Kaumuskelentspannung und Facial Slimming", nefertiti:"Nefertiti-Lift", nefertitiD:"Hals und Jawline, Entspannung",
@@ -279,10 +287,10 @@ de:{
   dataH:"Ihre Angaben", vorname:"Vorname", nachname:"Nachname", handy:"Handynummer", handyWhy:"(für Bestätigung und Erinnerung per WhatsApp)", email:"E-Mail-Adresse",
   phoneReturn:"Bitte dieselbe Handynummer wie bei Ihrem letzten Besuch, damit wir Sie wiedererkennen.",
   refQ:"Hat Ihnen jemand Palo Skin empfohlen?", yes:"Ja", no:"Nein", refPh:"Name oder Empfehlungscode",
-  consent:"Ich willige ein, dass Palo Skin meine Angaben einschließlich der gewählten Behandlung zur Terminvereinbarung verarbeitet und mir Bestätigung und Erinnerung per WhatsApp schickt. Die Erinnerung können Sie jederzeit abbestellen. Mehr dazu in der Datenschutzerklärung.", required:"Pflicht",
+  consent:"Ich bin einverstanden, dass Palo Skin meine Angaben für meinen Termin verarbeitet. Mehr in der Datenschutzerklärung.", required:"Pflicht",
   cancelT:"Etwas kommt dazwischen?", cancelP:"Sagen Sie uns bitte mindestens 48 Stunden vorher Bescheid, dann freut sich jemand anderes über den Termin.",
   sumHead:"Ihr Termin", beratungRow:"Beratung, Behandlung noch offen", beratungVal:"nach Beratung", estimate:"Voraussichtlich", notePrefix:"Notiz: ",
-  botRow:"Botulinum, ", extraRow:"Zusätzliche Zone: ",
+  botRow:"Botox: ", boostRow:"Skin Booster: ", extraRow:"Zusätzliche Zone: ",
   doneH:"Ihr Termin ist gebucht", doneMail:e=>`Die Bestätigung mit Kalendereinladung geht an ${e}.`,
   gcal:"In Google Kalender eintragen", ocal:"In Outlook-Kalender eintragen", ical:"In iPhone-Kalender eintragen",
   icsNote:"Auf der echten Seite öffnet sich hier sofort der iPhone-Kalender mit dem fertigen Termin. Im Entwurf ist das Herunterladen gesperrt.",
@@ -306,7 +314,7 @@ en:{
   visitQ:"Have you visited us before?", vFirst:"This is my first visit", vReturn:"I have been here before",
   visitFirstLbl:"First visit", visitReturnLbl:"Returning", checkupLbl:"Follow-up",
   treatQ:"What are you interested in?", unsureT:"I’d like advice first", unsureD:"We take our time and find together what suits you.", afterConsult:"Price after consultation",
-  botGroup:"Botulinum treatment", z1:"1 area", z2:"2 areas", z3:"3 areas", choice:"of your choice",
+  botGroup:"Botox treatment", z1:"1 area", z2:"2 areas", z3:"3 areas", choice:"of your choice",
   extraT:"Additional areas", extraOff:p=>`${p} per area, only together with 3 areas`, extraOn:p=>`${p} per area. Choose which ones to add.`,
   moreGroup:"Other treatments",
   kaumuskel:"Masseter", kaumuskelD:"Jaw muscle relaxation and facial slimming", nefertiti:"Nefertiti lift", nefertitiD:"Neck and jawline, relaxation",
@@ -324,10 +332,10 @@ en:{
   dataH:"How can we reach you?", vorname:"First name", nachname:"Last name", handy:"Mobile number", handyWhy:"(for your appointment confirmation on WhatsApp)", email:"Email address",
   phoneReturn:"Ideally the same number as last time, so we recognise you straight away.",
   refQ:"Did someone recommend Palo Skin to you?", yes:"Yes", no:"No", refPh:"Name or referral code",
-  consent:"I agree that Palo Skin processes my details, including the chosen treatment, for my appointment. More in the privacy policy.", required:"Required",
+  consent:"I agree that Palo Skin processes my details for my appointment. More in the privacy policy.", required:"Required",
   cancelT:"Something came up?", cancelP:"Please let us know at least 48 hours ahead, so someone else can enjoy the appointment.",
   sumHead:"Your appointment", beratungRow:"Consultation, treatment to be decided", beratungVal:"after consultation", estimate:"Estimated", notePrefix:"Note: ",
-  botRow:"Botulinum, ", extraRow:"Additional area: ",
+  botRow:"Botox: ", boostRow:"Skin Booster: ", extraRow:"Additional area: ",
   doneH:"Lovely, your request has arrived. We’ll confirm it shortly on WhatsApp.", doneMail:e=>`The confirmation with a calendar invitation is on its way to ${e}.`,
   gcal:"Add to Google Calendar", ocal:"Add to Outlook Calendar", ical:"Add to iPhone Calendar",
   icsNote:"On the live page, this opens the iPhone calendar with the appointment ready. Downloading is disabled in the mockup.",
@@ -351,7 +359,7 @@ es:{
   visitQ:"¿Ya nos ha visitado antes?", vFirst:"Vengo por primera vez", vReturn:"Ya he estado antes",
   visitFirstLbl:"Primera visita", visitReturnLbl:"Ya ha estado", checkupLbl:"Revisión",
   treatQ:"¿Qué le interesa?", unsureT:"Prefiero que me asesoren primero", unsureD:"Nos tomamos el tiempo para encontrar juntos lo que le conviene.", afterConsult:"Precio tras la consulta",
-  botGroup:"Tratamiento con toxina botulínica", z1:"1 zona", z2:"2 zonas", z3:"3 zonas", choice:"a elegir",
+  botGroup:"Tratamiento con Botox", z1:"1 zona", z2:"2 zonas", z3:"3 zonas", choice:"a elegir",
   extraT:"Zonas adicionales", extraOff:p=>`${p} por zona, solo junto con 3 zonas`, extraOn:p=>`${p} por zona. Elija cuáles quiere añadir.`,
   moreGroup:"Otros tratamientos",
   kaumuskel:"Masetero", kaumuskelD:"Relajación del masetero y facial slimming", nefertiti:"Lifting Nefertiti", nefertitiD:"Cuello y mandíbula, relajación",
@@ -369,10 +377,10 @@ es:{
   dataH:"¿Cómo podemos contactarle?", vorname:"Nombre", nachname:"Apellidos", handy:"Número de móvil", handyWhy:"(para confirmarle la cita por WhatsApp)", email:"Correo electrónico",
   phoneReturn:"Mejor el mismo número que la última vez, así le reconocemos enseguida.",
   refQ:"¿Alguien le ha recomendado Palo Skin?", yes:"Sí", no:"No", refPh:"Nombre o código de recomendación",
-  consent:"Acepto que Palo Skin trate mis datos, incluido el tratamiento elegido, para mi cita. Más información en la política de privacidad.", required:"Obligatorio",
+  consent:"Acepto que Palo Skin trate mis datos para mi cita. Más información en la política de privacidad.", required:"Obligatorio",
   cancelT:"¿Le ha surgido algo?", cancelP:"Avísenos al menos 48 horas antes, así otra persona podrá aprovechar la cita.",
   sumHead:"Su cita", beratungRow:"Consulta, tratamiento por decidir", beratungVal:"tras la consulta", estimate:"Estimado", notePrefix:"Nota: ",
-  botRow:"Toxina botulínica, ", extraRow:"Zona adicional: ",
+  botRow:"Botox: ", boostRow:"Skin Booster: ", extraRow:"Zona adicional: ",
   doneH:"Perfecto, hemos recibido su solicitud. Se la confirmamos en breve por WhatsApp.", doneMail:e=>`La confirmación con la invitación de calendario se enviará a ${e}.`,
   gcal:"Añadir a Google Calendar", ocal:"Añadir al calendario de Outlook", ical:"Añadir al calendario del iPhone",
   icsNote:"En la página real se abre aquí directamente el calendario del iPhone con la cita. En el borrador la descarga está desactivada.",
@@ -396,7 +404,7 @@ fr:{
   visitQ:"Nous avez-vous déjà rendu visite ?", vFirst:"C’est ma première visite", vReturn:"Ce n’est pas ma première visite",
   visitFirstLbl:"Première visite", visitReturnLbl:"Déjà venu(e)", checkupLbl:"Contrôle",
   treatQ:"Qu’est-ce qui vous intéresse ?", unsureT:"J’aimerais d’abord un conseil", unsureD:"Nous prenons le temps de trouver ensemble ce qui vous convient.", afterConsult:"Prix après consultation",
-  botGroup:"Traitement à la toxine botulique", z1:"1 zone", z2:"2 zones", z3:"3 zones", choice:"au choix",
+  botGroup:"Traitement Botox", z1:"1 zone", z2:"2 zones", z3:"3 zones", choice:"au choix",
   extraT:"Zones supplémentaires", extraOff:p=>`${p} par zone, uniquement avec 3 zones`, extraOn:p=>`${p} par zone. Choisissez celles à ajouter.`,
   moreGroup:"Autres soins",
   kaumuskel:"Masséter", kaumuskelD:"Détente du masséter et affinement du visage", nefertiti:"Lifting Néfertiti", nefertitiD:"Cou et mâchoire, détente",
@@ -414,10 +422,10 @@ fr:{
   dataH:"Comment pouvons-nous vous joindre ?", vorname:"Prénom", nachname:"Nom", handy:"Numéro de portable", handyWhy:"(pour la confirmation du rendez-vous par WhatsApp)", email:"Adresse e-mail",
   phoneReturn:"Idéalement le même numéro que la dernière fois, ainsi nous vous reconnaissons tout de suite.",
   refQ:"Quelqu’un vous a-t-il recommandé Palo Skin ?", yes:"Oui", no:"Non", refPh:"Nom ou code de parrainage",
-  consent:"J’accepte que Palo Skin traite mes données, y compris le soin choisi, pour mon rendez-vous. Plus d’informations dans la politique de confidentialité.", required:"Obligatoire",
+  consent:"J’accepte que Palo Skin traite mes données pour mon rendez-vous. Plus d’informations dans la politique de confidentialité.", required:"Obligatoire",
   cancelT:"Un empêchement ?", cancelP:"Prévenez-nous au moins 48 heures à l’avance, ainsi quelqu’un d’autre pourra profiter du rendez-vous.",
   sumHead:"Votre rendez-vous", beratungRow:"Consultation, soin à définir", beratungVal:"après consultation", estimate:"Estimation", notePrefix:"Note : ",
-  botRow:"Toxine botulique, ", extraRow:"Zone supplémentaire : ",
+  botRow:"Botox : ", boostRow:"Skin Booster : ", extraRow:"Zone supplémentaire : ",
   doneH:"Parfait, votre demande est bien arrivée. Nous la confirmons rapidement par WhatsApp.", doneMail:e=>`La confirmation avec l’invitation de calendrier est envoyée à ${e}.`,
   gcal:"Ajouter à Google Agenda", ocal:"Ajouter au calendrier Outlook", ical:"Ajouter au calendrier de l’iPhone",
   icsNote:"Sur la vraie page, le calendrier de l’iPhone s’ouvre ici directement avec le rendez-vous. Le téléchargement est désactivé dans la maquette.",
@@ -441,7 +449,7 @@ pt:{
   visitQ:"Você já nos visitou antes?", vFirst:"É a minha primeira vez", vReturn:"Já estive aqui antes",
   visitFirstLbl:"Primeira visita", visitReturnLbl:"Retorno", checkupLbl:"Revisão",
   treatQ:"Pelo que você se interessa?", unsureT:"Quero orientação primeiro", unsureD:"Reservamos um tempo para encontrar juntos o que combina com você.", afterConsult:"Preço após a avaliação",
-  botGroup:"Tratamento com toxina botulínica", z1:"1 área", z2:"2 áreas", z3:"3 áreas", choice:"à sua escolha",
+  botGroup:"Tratamento com Botox", z1:"1 área", z2:"2 áreas", z3:"3 áreas", choice:"à sua escolha",
   extraT:"Áreas adicionais", extraOff:p=>`${p} por área, somente junto com 3 áreas`, extraOn:p=>`${p} por área. Escolha quais deseja adicionar.`,
   moreGroup:"Outros tratamentos",
   kaumuskel:"Masseter", kaumuskelD:"Relaxamento do masseter e afinamento facial", nefertiti:"Lifting Nefertiti", nefertitiD:"Pescoço e mandíbula, relaxamento",
@@ -459,10 +467,10 @@ pt:{
   dataH:"Como podemos falar com você?", vorname:"Nome", nachname:"Sobrenome", handy:"Celular", handyWhy:"(para a confirmação do horário pelo WhatsApp)", email:"E-mail",
   phoneReturn:"De preferência o mesmo número da última vez, assim reconhecemos você na hora.",
   refQ:"Alguém recomendou a Palo Skin para você?", yes:"Sim", no:"Não", refPh:"Nome ou código de indicação",
-  consent:"Concordo que a Palo Skin trate meus dados, incluindo o tratamento escolhido, para o meu horário. Mais detalhes na política de privacidade.", required:"Obrigatório",
+  consent:"Concordo que a Palo Skin trate meus dados para o meu horário. Mais detalhes na política de privacidade.", required:"Obrigatório",
   cancelT:"Surgiu um imprevisto?", cancelP:"Avise com pelo menos 48 horas de antecedência, assim outra pessoa aproveita o horário.",
   sumHead:"Sua consulta", beratungRow:"Avaliação, tratamento a definir", beratungVal:"após a avaliação", estimate:"Previsto", notePrefix:"Observação: ",
-  botRow:"Toxina botulínica, ", extraRow:"Área adicional: ",
+  botRow:"Botox: ", boostRow:"Skin Booster: ", extraRow:"Área adicional: ",
   doneH:"Que bom, recebemos seu pedido. Confirmamos em breve pelo WhatsApp.", doneMail:e=>`A confirmação com o convite de calendário será enviada para ${e}.`,
   gcal:"Adicionar ao Google Agenda", ocal:"Adicionar ao calendário do Outlook", ical:"Adicionar ao calendário do iPhone",
   icsNote:"Na página real, o calendário do iPhone abre aqui direto com a consulta. No rascunho, o download está desativado.",
@@ -532,11 +540,11 @@ function items(){
   const n = zoneN();
   if (n>0) out.push([l.botRow+l.zoneCountLabel(n)+": "+zoneNames(l).join(", "), zonePrice(n)]);
   else if (s.zonesUnknown) out.push([l.botRow+l.zonesOpen, 0]);
-  if (s.kaumuskel) out.push([l.kaumuskel,PRICES.kaumuskel]);
-  if (s.nefertiti) out.push([l.nefertiti,PRICES.nefertiti]);
-  if (s.achsel) out.push([l.achsel,PRICES.achsel]);
-  if (s.lachs==="single") out.push([l.lachsRow,PRICES.lachs]);
-  if (s.lachs==="pack") out.push([l.lachsPack,PRICES.lachsPack]);
+  if (s.kaumuskel) out.push([l.botRow+l.kaumuskel,PRICES.kaumuskel]);
+  if (s.nefertiti) out.push([l.botRow+l.nefertiti,PRICES.nefertiti]);
+  if (s.achsel) out.push([l.botRow+l.achsel,PRICES.achsel]);
+  if (s.lachs==="single") out.push([l.boostRow+l.lachsRow,PRICES.lachs]);
+  if (s.lachs==="pack") out.push([l.boostRow+l.lachsPack,PRICES.lachsPack]);
   return out;
 }
 const total = () => items().reduce((a,[,p])=>a+p,0);
@@ -566,12 +574,12 @@ function notes(){
   else rows.push(s.visit==="first" ? "Erster Besuch" : "Schon einmal da");
   if (s.persons===2) rows.push("Zu zweit (die Begleitung entscheidet vor Ort)");
   if (s.beratung) rows.push("Noch unsicher, Beratung gewünscht");
-  if (zoneN()>0) rows.push("Botulinum, "+de.zoneCountLabel(zoneN())+": "+zoneNames(de).join(", ")+" ("+zonePrice(zoneN())+" € brutto)");
-  else if (s.zonesUnknown) rows.push("Botulinum, Zonen noch offen");
-  if (s.kaumuskel) rows.push("Kaumuskel ("+PRICES.kaumuskel+" € brutto)");
-  if (s.nefertiti) rows.push("Nefertiti-Lift ("+PRICES.nefertiti+" € brutto)");
-  if (s.achsel) rows.push("Übermäßiges Schwitzen (Hyperhidrose) ("+PRICES.achsel+" € brutto)");
-  if (s.lachs) rows.push(s.lachs==="pack" ? "Lachs-DNA Viererpaket ("+PRICES.lachsPack+" € brutto)" : "Lachs-DNA, eine Behandlung ("+PRICES.lachs+" € brutto)");
+  if (zoneN()>0) rows.push("Botox: "+de.zoneCountLabel(zoneN())+": "+zoneNames(de).join(", ")+" ("+zonePrice(zoneN())+" € brutto)");
+  else if (s.zonesUnknown) rows.push("Botox: Zonen noch offen");
+  if (s.kaumuskel) rows.push("Botox: Kaumuskel ("+PRICES.kaumuskel+" € brutto)");
+  if (s.nefertiti) rows.push("Botox: Nefertiti-Lift ("+PRICES.nefertiti+" € brutto)");
+  if (s.achsel) rows.push("Botox: Übermäßiges Schwitzen (Hyperhidrose) ("+PRICES.achsel+" € brutto)");
+  if (s.lachs) rows.push(s.lachs==="pack" ? "Skin Booster: Lachs-DNA Viererpaket ("+PRICES.lachsPack+" € brutto)" : "Skin Booster: Lachs-DNA, eine Behandlung ("+PRICES.lachs+" € brutto)");
   if (hasTreatment() && total()>0) rows.push("Summe voraussichtlich "+total()+" € brutto");
   if (s.note.trim()) rows.push("Notiz: "+s.note.trim());
   rows.push("Dauer geplant: "+minutes()+" Minuten");
@@ -723,12 +731,12 @@ function selectionText(){
   else lines.push(s.visit==="first" ? "Erster Besuch" : "Schon einmal da");
   if (s.persons===2) lines.push(l.persons2);
   if (s.beratung) lines.push("Noch unsicher, Beratung gewünscht");
-  if (zoneN()>0) lines.push("Botulinum, "+de.zoneCountLabel(zoneN())+": "+zoneNames(de).join(", "));
-  else if (s.zonesUnknown) lines.push("Botulinum, Zonen noch offen");
-  if (s.kaumuskel) lines.push("Kaumuskel");
-  if (s.nefertiti) lines.push("Nefertiti-Lift");
-  if (s.achsel) lines.push("Übermäßiges Schwitzen (Hyperhidrose)");
-  if (s.lachs) lines.push(s.lachs==="pack" ? "Lachs-DNA Viererpaket" : "Lachs-DNA");
+  if (zoneN()>0) lines.push("Botox: "+de.zoneCountLabel(zoneN())+": "+zoneNames(de).join(", "));
+  else if (s.zonesUnknown) lines.push("Botox: Zonen noch offen");
+  if (s.kaumuskel) lines.push("Botox: Kaumuskel");
+  if (s.nefertiti) lines.push("Botox: Nefertiti-Lift");
+  if (s.achsel) lines.push("Botox: Übermäßiges Schwitzen (Hyperhidrose)");
+  if (s.lachs) lines.push(s.lachs==="pack" ? "Skin Booster: Lachs-DNA Viererpaket" : "Skin Booster: Lachs-DNA, eine Behandlung");
   if (s.note.trim()) lines.push("Notiz: "+s.note.trim());
   lines.push("Sprache: "+LANGS.find(x=>x.id===lang).name);
   return lines.join("\n");

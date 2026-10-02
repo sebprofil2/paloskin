@@ -30,7 +30,7 @@ Stelle, dann aktueller Text. Zeilen mit „Altbestand“ sind im Code noch vorha
 24. **Schritt 1, Überschrift Behandlung** (treatQ): Wofür interessieren Sie sich?
 25. **Schritt 1, Karte Beratung, Titel** (unsureT): Ich lasse mich erst beraten
 26. **Schritt 1, Karte Beratung, Untertitel** (unsureD): Wir nehmen uns Zeit und finden gemeinsam, was zu Ihnen passt.
-27. **Schritt 1, Aufklappbereich Botulinum, Titel** (botGroup): Botulinum-Behandlung
+27. **Schritt 1, Aufklappbereich Botox, Titel** (botGroup): Botox-Behandlung
 28. **Schritt 1, Zwischentitel weitere Behandlungen** (moreGroup): Weitere Behandlungen
 29. **Schritt 1, Karte Kaumuskel, Titel** (kaumuskel): Kaumuskel
 30. **Schritt 1, Karte Kaumuskel, Untertitel** (kaumuskelD): Kaumuskelentspannung und Facial Slimming
@@ -70,86 +70,86 @@ Stelle, dann aktueller Text. Zeilen mit „Altbestand“ sind im Code noch vorha
 64. **Schritt 3, Hinweis unter Handynummer bei Schon einmal da** (phoneReturn): Am besten dieselbe Nummer wie beim letzten Mal, dann erkennen wir Sie gleich wieder.
 65. **Bestätigung, Frage Empfehlung** (refQ): Hat Ihnen jemand Palo Skin empfohlen?
 66. **Bestätigung, Platzhalter Empfehlung** (refPh): Name oder Empfehlungscode
-67. **Schritt 3, Einwilligung** (consent): Ich bin einverstanden, dass Palo Skin meine Angaben, auch die gewählte Behandlung, für meinen Termin verarbeitet. Mehr in der Datenschutzerklärung.
+67. **Schritt 3, Einwilligung** (consent): Ich bin einverstanden, dass Palo Skin meine Angaben für meinen Termin verarbeitet. Mehr in der Datenschutzerklärung.
 68. **Schritt 3, Kasten Absage, Titel** (cancelT): Etwas kommt dazwischen?
 69. **Schritt 3, Kasten Absage, Text** (cancelP): Sagen Sie uns bitte mindestens 48 Stunden vorher Bescheid, dann freut sich jemand anderes über den Termin.
 70. **Schritt 3, Übersicht, Kopfzeile** (sumHead): Ihr Termin
 71. **Schritt 3, Übersicht, Zeile Beratung** (beratungRow): Beratung, Behandlung noch offen
-72. **Schritt 3, Übersicht, Vorsatz Botulinum-Zeile** (botRow): Botulinum, 
-73. **Bestätigung, Überschrift** (doneH): Schön, Ihre Terminanfrage ist da. Wir bestätigen sie kurz per WhatsApp.
-74. **Bestätigung, Knopf Google** (gcal): In Google Kalender eintragen
-75. **Bestätigung, Knopf Outlook** (ocal): In Outlook-Kalender eintragen
-76. **Bestätigung, Knopf iPhone** (ical): In iPhone-Kalender eintragen
-77. **Bestätigung, Beschriftung Adresse** (addrL): Adresse
-78. **Leiste unten, Knopf in Schritt 3** (book): Termin anfragen
-79. **Schritt 2, Hinweis beim Kontrolltermin-Link** (checkupP): Sie wurden zu einem kurzen Kontrolltermin eingeladen.
-80. **Kalenderdatei und Kalenderlinks, Absagehinweis** (cancelShort): Absagen bitte mindestens 48 Stunden vorher.
-81. **Fehlermeldung Besuch** (eVisit): Kurz noch: Waren Sie schon einmal bei uns?
-82. **Fehlermeldung Behandlung** (eTreat): Kurz noch: Bitte eine Behandlung wählen oder „Ich lasse mich erst beraten“.
-83. **Fehlermeldung Uhrzeit** (eSlot): Kurz noch: Bitte eine Uhrzeit wählen.
-84. **Fehlermeldung Vorname** (eVorname): Kurz noch: Ihr Vorname fehlt.
-85. **Fehlermeldung Nachname** (eNachname): Kurz noch: Ihr Nachname fehlt.
-86. **Fehlermeldung Handynummer** (eHandy): Kurz noch: Die Handynummer scheint unvollständig.
-87. **Fehlermeldung E-Mail** (eEmail): Kurz noch: Die E-Mail-Adresse stimmt noch nicht ganz.
-88. **Fehlermeldung Einwilligung** (eConsent): Ohne diese Einwilligung können wir den Termin nicht anlegen.
-89. **Testbalken oben** (testBanner): Testversion. Bitte nur erfundene Namen und keine echten Behandlungswünsche eintragen. Die Buchung landet wirklich im Kalender.
-90. **Bestätigung, Hinweis Absage** (afterCancelReal): Absagen oder verschieben bitte per WhatsApp unter +49 151 58872566, mindestens 48 Stunden vorher.
-91. **Schritt 3, unklarer Ausgang, Titel** (pendingT): Wir prüfen Ihre Buchung.
-92. **Schritt 3, unklarer Ausgang, Text** (pendingP): Bitte nicht erneut buchen, wir melden uns.
-93. **Schritt 2, Termin gerade vergeben** (conflict): Da war jemand schneller. Wählen Sie bitte eine andere Uhrzeit.
-94. **Schritt 3, Fehler beim Buchen** (bookErr): Das hat gerade nicht geklappt. Versuchen Sie es bitte noch einmal oder schreiben Sie uns per WhatsApp.
-95. **Schritt 2, beim Laden** (loading): Einen Moment, wir schauen in den Kalender.
-96. **Schritt 2, kein Termin online frei** (noneFree): Online ist gerade nichts frei. Schreiben Sie uns per WhatsApp, wir finden einen Termin für Sie.
-97. **Bestätigung, Beschriftung Buchungsnummer** (refL): Buchungsnummer
-98. **Bestätigung, Beschriftung Dauer** (durL): Dauer
-99. **Bestätigung, Dauer** (minutes): 50 Minuten  (Vorlage mit Beispielwert)
-100. **Fußzeile, Link Startseite** (home): Zur Startseite
-101. **Fußzeile, Link Impressum** (legalImprint): Impressum
-102. **Fußzeile, Link Datenschutz** (legalPrivacy): Datenschutzerklärung
-103. **Schritt 1, Zonenkacheln** (zoneNames): Zornesfalte | Stirn | Krähenfüße | Brow Lift | Lip Flip | Bunny Lines | Mundwinkel | Erdbeerkinn | Gummy Smile | Oberlippenfältchen | Nasenverschmälerung
-104. **Schritt 1, Personen, Frage** (personsQ): Kommen Sie allein oder zu zweit?
-105. **Schritt 1, Personen, Kachel 1** (persons1): Allein
-106. **Schritt 1, Personen, Kachel 2** (persons2): Zu zweit
-107. **Schritt 1, Personen, Hinweis** (personsMore): Zu dritt oder mehr? Schreiben Sie uns kurz per WhatsApp, wir legen die Termine direkt hintereinander.
-108. **Schritt 1, Personen, Hinweis bei Zu zweit** (secondPerson): Schön, wir planen mehr Zeit ein. Ihre Begleitung entscheidet entspannt vor Ort, was sie möchte.
-109. **Schlüssel reminderOpt** (reminderOpt): Erinnern Sie mich gern per WhatsApp an den Termin.
-110. **Schritt 1, Zonen, Kachel Sonstiges** (zoneOther): Sonstiges
-111. **Schritt 1, Zonen, Kachel Weiß ich noch nicht** (zoneUnknown): Weiß ich noch nicht
-112. **Schritt 1, Summenzeile ohne Zonen** (zonesOpen): Zonen noch offen
-113. **Schritt 1, Summenzeile (Anzahl)** (zoneCountLabel): 3 Zonen  (Vorlage mit Beispielwert)
-114. **Schritt 1, Summenzeile, Staffel klein** (zoneTiers): 1 Zone 120 €*, 2 Zonen 210 €*, 3 Zonen 300 €*, jede weitere 80 €*  (Vorlage mit Beispielwert)
+72. **Schritt 3, Übersicht, Vorsatz Botox-Zeile** (botRow): Botox: 
+73. **Schritt 3, Übersicht, Vorsatz Skin-Booster-Zeile** (boostRow): Skin Booster: 
+74. **Bestätigung, Überschrift** (doneH): Schön, Ihre Terminanfrage ist da. Wir bestätigen sie kurz per WhatsApp.
+75. **Bestätigung, Knopf Google** (gcal): In Google Kalender eintragen
+76. **Bestätigung, Knopf Outlook** (ocal): In Outlook-Kalender eintragen
+77. **Bestätigung, Knopf iPhone** (ical): In iPhone-Kalender eintragen
+78. **Bestätigung, Beschriftung Adresse** (addrL): Adresse
+79. **Leiste unten, Knopf in Schritt 3** (book): Termin anfragen
+80. **Schritt 2, Hinweis beim Kontrolltermin-Link** (checkupP): Sie wurden zu einem kurzen Kontrolltermin eingeladen.
+81. **Kalenderdatei und Kalenderlinks, Absagehinweis** (cancelShort): Absagen bitte mindestens 48 Stunden vorher.
+82. **Fehlermeldung Besuch** (eVisit): Kurz noch: Waren Sie schon einmal bei uns?
+83. **Fehlermeldung Behandlung** (eTreat): Kurz noch: Bitte eine Behandlung wählen oder „Ich lasse mich erst beraten“.
+84. **Fehlermeldung Uhrzeit** (eSlot): Kurz noch: Bitte eine Uhrzeit wählen.
+85. **Fehlermeldung Vorname** (eVorname): Kurz noch: Ihr Vorname fehlt.
+86. **Fehlermeldung Nachname** (eNachname): Kurz noch: Ihr Nachname fehlt.
+87. **Fehlermeldung Handynummer** (eHandy): Kurz noch: Die Handynummer scheint unvollständig.
+88. **Fehlermeldung E-Mail** (eEmail): Kurz noch: Die E-Mail-Adresse stimmt noch nicht ganz.
+89. **Fehlermeldung Einwilligung** (eConsent): Kurz noch: Ohne Ihr Einverständnis können wir den Termin leider nicht anlegen.
+90. **Testbalken oben** (testBanner): Testversion. Bitte nur erfundene Namen und keine echten Behandlungswünsche eintragen. Die Buchung landet wirklich im Kalender.
+91. **Bestätigung, Hinweis Absage** (afterCancelReal): Absagen oder verschieben bitte per WhatsApp unter +49 151 58872566, mindestens 48 Stunden vorher.
+92. **Schritt 3, unklarer Ausgang, Titel** (pendingT): Wir prüfen Ihre Buchung.
+93. **Schritt 3, unklarer Ausgang, Text** (pendingP): Bitte nicht erneut buchen, wir melden uns.
+94. **Schritt 2, Termin gerade vergeben** (conflict): Da war jemand schneller. Wählen Sie bitte eine andere Uhrzeit.
+95. **Schritt 3, Fehler beim Buchen** (bookErr): Das hat gerade nicht geklappt. Versuchen Sie es bitte noch einmal oder schreiben Sie uns per WhatsApp.
+96. **Schritt 2, beim Laden** (loading): Einen Moment, wir schauen in den Kalender.
+97. **Schritt 2, kein Termin online frei** (noneFree): Online ist gerade nichts frei. Schreiben Sie uns per WhatsApp, wir finden einen Termin für Sie.
+98. **Bestätigung, Beschriftung Buchungsnummer** (refL): Buchungsnummer
+99. **Bestätigung, Beschriftung Dauer** (durL): Dauer
+100. **Bestätigung, Dauer** (minutes): 50 Minuten  (Vorlage mit Beispielwert)
+101. **Fußzeile, Link Startseite** (home): Zur Startseite
+102. **Fußzeile, Link Impressum** (legalImprint): Impressum
+103. **Fußzeile, Link Datenschutz** (legalPrivacy): Datenschutzerklärung
+104. **Schritt 1, Zonenkacheln** (zoneNames): Zornesfalte | Stirn | Krähenfüße | Brow Lift | Lip Flip | Bunny Lines | Mundwinkel | Erdbeerkinn | Gummy Smile | Oberlippenfältchen | Nasenverschmälerung
+105. **Schritt 1, Personen, Frage** (personsQ): Kommen Sie allein oder zu zweit?
+106. **Schritt 1, Personen, Kachel 1** (persons1): Allein
+107. **Schritt 1, Personen, Kachel 2** (persons2): Zu zweit
+108. **Schritt 1, Personen, Hinweis** (personsMore): Zu dritt oder mehr? Schreiben Sie uns kurz per WhatsApp, wir legen die Termine direkt hintereinander.
+109. **Schritt 1, Personen, Hinweis bei Zu zweit** (secondPerson): Schön, wir planen mehr Zeit ein. Ihre Begleitung entscheidet entspannt vor Ort, was sie möchte.
+110. **Schritt 3, freiwilliger Haken Erinnerung** (reminderOpt): Erinnern Sie mich gern per WhatsApp an den Termin.
+111. **Schritt 1, Zonen, Kachel Sonstiges** (zoneOther): Sonstiges
+112. **Schritt 1, Zonen, Kachel Weiß ich noch nicht** (zoneUnknown): Weiß ich noch nicht
+113. **Schritt 1, Summenzeile ohne Zonen** (zonesOpen): Zonen noch offen
+114. **Schritt 1, Summenzeile (Anzahl)** (zoneCountLabel): 3 Zonen  (Vorlage mit Beispielwert)
+115. **Schritt 1, Summenzeile, Staffel klein** (zoneTiers): 1 Zone 120 €*, 2 Zonen 210 €*, 3 Zonen 300 €*, jede weitere 80 €*  (Vorlage mit Beispielwert)
 
 ## B. Zwischenlösung (/booking ohne Testcode), zusätzliche Texte
 
 Die Zwischenlösung nutzt dieselben Texte wie A für Kopf, Schritt 1 und Fehlermeldungen; abweichend sind nur die Texte in Schritt 2 (Wunschtermin per WhatsApp):
 
-115. **Zwischenlösung, Kasten Auswahl, Überschrift** (selH): Ihre Auswahl
-116. **Zwischenlösung, Kasten Auswahl, Hinweis** (selHint): Kopieren Sie Ihre Auswahl einfach und fügen Sie sie im Chat ein.
-117. **Zwischenlösung, Knopf Auswahl kopieren** (copySel): Auswahl kopieren
-118. **Zwischenlösung, Schritt 2, Frage Tag** (dayQ): Welcher Tag passt Ihnen?
-119. **Zwischenlösung, Schritt 2, Frage Tageszeit** (winQ): Zu welcher Tageszeit?
-120. **Zwischenlösung, Schritt 2, Kacheln Tageszeit** (wins): Vormittag | Mittag | Nachmittag | Abend
-121. **Zwischenlösung, Schritt 2, Kachel flexibel** (flex): Ich bin flexibel
-122. **Zwischenlösung, Schritt 2, Überschrift Name** (nameH): Ihr Name
-123. **Zwischenlösung, Schritt 2, Erklärtext oben** (interim): Sagen Sie uns, wann es Ihnen passt. Wir melden uns per WhatsApp und bestätigen die genaue Uhrzeit.
-124. **Zwischenlösung, Knopf unten** (send): Anfrage per WhatsApp senden
-125. **Zwischenlösung, Knopf SMS** (sms): Lieber per SMS
-126. **Zwischenlösung, Einwilligungszeile** (consentLine): Mit dem Absenden sind Sie einverstanden, dass Palo Skin Ihre Angaben, auch die gewählte Behandlung, für Ihren Termin verarbeitet. Mehr in der <a href='/datenschutz'>Datenschutzerklärung</a>.
-127. **Zwischenlösung, Link unter der Karte** (home): Zur Startseite
-128. **Zwischenlösung, Fehlermeldung Tag** (eDay): Bitte wählen Sie einen Tag oder „Ich bin flexibel“.
-129. **Zwischenlösung, Fehlermeldung Tageszeit** (eWin): Bitte wählen Sie eine Tageszeit.
-130. **Zwischenlösung, WhatsApp-Nachricht (einziger Inhalt des Links)** (msgHello): Hallo Palo Skin, ich möchte einen Termin anfragen.
-131. **Zwischenlösung, Auswahl, Vorsatz Wunschtermin** (msgWish): Wunschtermin
-132. **Zwischenlösung, Auswahl, Vorsatz Name** (msgName): Name
-133. **Zwischenlösung, Auswahl, Wort für flexibel** (msgFlex): flexibel
+116. **Zwischenlösung, Kasten Auswahl, Überschrift** (selH): Ihre Auswahl
+117. **Zwischenlösung, Kasten Auswahl, Hinweis** (selHint): Kopieren Sie Ihre Auswahl einfach und fügen Sie sie im Chat ein.
+118. **Zwischenlösung, Knopf Auswahl kopieren** (copySel): Auswahl kopieren
+119. **Zwischenlösung, Schritt 2, Frage Tag** (dayQ): Welcher Tag passt Ihnen?
+120. **Zwischenlösung, Schritt 2, Frage Tageszeit** (winQ): Zu welcher Tageszeit?
+121. **Zwischenlösung, Schritt 2, Kacheln Tageszeit** (wins): Vormittag | Mittag | Nachmittag | Abend
+122. **Zwischenlösung, Schritt 2, Kachel flexibel** (flex): Ich bin flexibel
+123. **Zwischenlösung, Schritt 2, Überschrift Name** (nameH): Ihr Name
+124. **Zwischenlösung, Schritt 2, Erklärtext oben** (interim): Sagen Sie uns, wann es Ihnen passt. Wir melden uns per WhatsApp und bestätigen die genaue Uhrzeit.
+125. **Zwischenlösung, Knopf unten** (send): Anfrage per WhatsApp senden
+126. **Zwischenlösung, Knopf SMS** (sms): Lieber per SMS
+127. **Zwischenlösung, Einwilligungszeile** (consentLine): Mit dem Absenden sind Sie einverstanden, dass Palo Skin Ihre Angaben, auch die gewählte Behandlung, für Ihren Termin verarbeitet. Mehr in der <a href='/datenschutz'>Datenschutzerklärung</a>.
+128. **Zwischenlösung, Link unter der Karte** (home): Zur Startseite
+129. **Zwischenlösung, Fehlermeldung Tag** (eDay): Bitte wählen Sie einen Tag oder „Ich bin flexibel“.
+130. **Zwischenlösung, Fehlermeldung Tageszeit** (eWin): Bitte wählen Sie eine Tageszeit.
+131. **Zwischenlösung, WhatsApp-Nachricht (einziger Inhalt des Links)** (msgHello): Hallo Palo Skin, ich möchte einen Termin anfragen.
+132. **Zwischenlösung, Auswahl, Vorsatz Wunschtermin** (msgWish): Wunschtermin
+133. **Zwischenlösung, Auswahl, Vorsatz Name** (msgName): Name
+134. **Zwischenlösung, Auswahl, Wort für flexibel** (msgFlex): flexibel
 
 ## C. Zwischenlösung, Texte, die vom Next.js-Stand abweichen (älterer Entwurf)
 
-134. **Schritt 1, Karte Beratung, Preiszeile** (consultPrice): Preis folgt
-135. **Schritt 3, Überschrift** (dataH): Ihre Angaben
-136. **Schritt 3, Zusatz zur Handynummer** (handyWhy): (für Bestätigung und Erinnerung per WhatsApp)
-137. **Schritt 3, Hinweis unter Handynummer bei Schon einmal da** (phoneReturn): Bitte dieselbe Handynummer wie bei Ihrem letzten Besuch, damit wir Sie wiedererkennen.
-138. **Schritt 3, Einwilligung** (consent): Ich willige ein, dass Palo Skin meine Angaben einschließlich der gewählten Behandlung zur Terminvereinbarung verarbeitet und mir Bestätigung und Erinnerung per WhatsApp schickt. Die Erinnerung können Sie jederzeit abbestellen. Mehr dazu in der Datenschutzerklärung.
+135. **Schritt 1, Karte Beratung, Preiszeile** (consultPrice): Preis folgt
+136. **Schritt 3, Überschrift** (dataH): Ihre Angaben
+137. **Schritt 3, Zusatz zur Handynummer** (handyWhy): (für Bestätigung und Erinnerung per WhatsApp)
+138. **Schritt 3, Hinweis unter Handynummer bei Schon einmal da** (phoneReturn): Bitte dieselbe Handynummer wie bei Ihrem letzten Besuch, damit wir Sie wiedererkennen.
 139. **Bestätigung, Überschrift** (doneH): Ihr Termin ist gebucht
 140. **Leiste unten, Knopf in Schritt 3** (book): Termin buchen
 

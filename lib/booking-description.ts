@@ -42,7 +42,7 @@ export function buildDescription(i: DescriptionInput): string {
   if (s.beratung) rows.push("Behandlung: Noch unsicher, Beratung gewünscht");
   const items = lineItemsDe(s);
   if (items.length) {
-    rows.push("Behandlungen:");
+    rows.push("Behandlungen (unverbindliche Vorauswahl):");
     for (const it of items) rows.push(`- ${it.label} (${it.price} Euro brutto)`);
     if (hasTreatment(s) && totalPrice(s) > 0) rows.push(`Summe voraussichtlich: ${totalPrice(s)} Euro brutto`);
   }
