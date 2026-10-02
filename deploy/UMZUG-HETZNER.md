@@ -181,7 +181,9 @@ Erwartet: `app` mit Status `running (healthy)`, `caddy` mit `running`. Falls `ap
 
 Notfall ohne GitHub Actions: `docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.build.yml up -d --build` baut auf dem Server (dafür ist die Swap-Datei).
 
-## 8. Test unter neu.paloskin.de, vor der DNS-Umstellung
+## 8. Test unter neu.paloskin.de, vor der DNS-Umstellung (am 2. Oktober 2026 erledigt bis auf die Wiederherstellung aus dem Backup)
+
+Ergebnis: alle Seiten 200, `/termine` 308 auf `/booking`, 404 korrekt, Schrift mit Cache-Regel, Sicherheitsheader gesetzt, Zertifikat von Let's Encrypt für neu.paloskin.de, Zugangs-Cookie HttpOnly, SameSite=Strict, Secure, 7 Tage, falscher Code ohne Cookie. Serverneustart: beide Dienste wieder da, Swap aktiv. Kalenderausfall simuliert: freie Zeiten 503 „unavailable“, Buchungsversuch 503, keine Erfolgsmeldung, Protokoll nur `google_slots_failed` und `book_failed` ohne Inhalte, nach Rückbau wieder 200. Echte Terminanfrage über die Domain im Kalender „Palo Skin Termine“ eingetragen (Titel „TEST Palo Skin: Erika S.“) und gelöscht. Heartbeat-Cron installiert (`ok (disk 13%, Fehler 0)`), Monitor-URL folgt mit dem Better-Stack-Konto. Offen: Wiederherstellung aus einem Hetzner-Backup auf einen Testserver (Hetzner-Konsole, siehe unten).
 
 Bei GoDaddy einen Eintrag `A` mit Name `neu` und Wert `2.31.2.192` anlegen (TTL 600). Nach wenigen Minuten holt Caddy ein echtes Zertifikat für `neu.paloskin.de`; der Block dafür steht im `Caddyfile` und wird nach dem Umzug entfernt. Dann auf dem Mac, alles mit echtem HTTPS:
 

@@ -106,3 +106,10 @@ Für später, nicht gebaut: Nach einer Buchung für 1 Person soll die Bestätigu
 7. Docker-Protokolle daemonweit begrenzt (`deploy/daemon.json`), Speicherplatz im Heartbeat überwacht.
 8. Überwachung: Better Stack (Prag) mit HTTPS-Monitor und Heartbeat, Alarm an accounts@paloskin.de; `deploy/heartbeat.sh` (Abschnitt 14).
 9. Updates: Dependabot, monatlicher Image-Neubau, Ausrollen per `pull` und `up -d` (Abschnitt 15).
+
+## Server paloskin-1 (Hetzner, Stand 2. Oktober 2026)
+
+- CPX12 Nürnberg, Ubuntu 24.04, IPv4 2.31.2.192, IPv6 2a01:4f8:1c16:71ba::1, Hetzner-Firewall „firewall-1“ (TCP 22, 80, 443, ICMP), tägliche Backups. Zugang nur per Schlüssel als `deploy` (`ssh paloskin` vom Mac), Root- und Passwort-Login aus, UFW 22/80/443, fail2ban, unattended-upgrades, Swap 2 GB.
+- Docker 29 mit Compose v5, Code unter `/opt/paloskin` (Branch `zonen`), Image aus `ghcr.io/sebprofil2/paloskin:zonen` (privat, Login als deploy gespeichert). Geheimnisse in `/etc/paloskin`: `service-account.json` (10001:10001, 0400), `paloskin.env` (deploy, 0600, mit Testcode und Cookie-Schlüssel).
+- Caddy ohne HTTP/3, Zertifikat für `neu.paloskin.de` vorhanden; `www.paloskin.de` und `paloskin.de` zeigen noch auf Vercel. Heartbeat-Cron alle 5 Minuten, Monitor-URL noch leer.
+- Ausrollen: `cd /opt/paloskin && git pull && docker compose -f deploy/docker-compose.yml pull && docker compose -f deploy/docker-compose.yml up -d`.
