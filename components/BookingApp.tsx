@@ -812,7 +812,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
           <h1>{b.binding ? l.doneBindingH : l.doneH}</h1>
           <p>{dayLabel(dayKey)}, {l.at(time)}.</p>
           <dl>
-            <dt>{l.addrL}</dt><dd><a href={MAPS} target="_blank" rel="noopener">{ADDRESS}</a></dd>
+            <dt>{l.addrL}</dt><dd className="addr"><a href={MAPS} target="_blank" rel="noopener">{ADDRESS}</a></dd>
             <dt>{l.refL}</dt><dd>{b.ref}</dd>
           </dl>
           <div className="cal">

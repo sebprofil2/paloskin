@@ -64,7 +64,7 @@ export default async function TerminPage({ params, searchParams }: { params: Pro
         <p style={{ fontSize: 22, lineHeight: 1.3 }}>{when.dateYear}, {when.time}</p>
         <dl>
           <dt>{t.addrL}</dt>
-          <dd><a href={MAPS_LINK} target="_blank" rel="noopener">{STUDIO}, {ADDRESS}</a></dd>
+          <dd className="addr"><a href={MAPS_LINK} target="_blank" rel="noopener">{`${STUDIO}, ${ADDRESS}`}</a></dd>
           <dt>{t.refL}</dt>
           <dd>{booking.reference}</dd>
         </dl>
