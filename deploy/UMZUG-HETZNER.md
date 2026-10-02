@@ -235,7 +235,7 @@ Wiederherstellung aus einem Hetzner-Backup: in der Hetzner-Konsole beim Server u
 
 Nichts zu tun. Sobald DNS auf den Server zeigt, holt Caddy das Zertifikat selbst (ein bis zwei Minuten).
 
-## 11. DNS bei GoDaddy umstellen
+## 11. DNS bei GoDaddy umstellen (erledigt am 2. Oktober 2026: www und apex auf 2.31.2.192, Zertifikate von Let's Encrypt für beide, http auf https 308, apex auf www 301, HSTS noch aus)
 
 1. Vorher bei GoDaddy, „Meine Produkte“, Domain paloskin.de, „DNS verwalten“: die bestehenden Einträge fotografieren oder notieren (für den Rückweg). Typisch: `A @ 76.76.21.21` und `CNAME www cname.vercel-dns.com` (die genauen Werte stehen auch im Vercel-Projekt unter Settings, Domains).
 2. TTL der beiden Einträge auf 600 Sekunden setzen, eine Stunde warten (dann greift der Wechsel später schnell).
