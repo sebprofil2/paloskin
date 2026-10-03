@@ -129,11 +129,19 @@ describe("Bestätigungsmail nach Freigabe", () => {
     expect(r.ics?.content).toContain("STATUS:TENTATIVE");
   });
 
-  it("Kalenderdatei: Titel, Ort, nur Absagehinweis mit WhatsApp und Kartenlink, Weltzeit mit Endzeit, Winterzeit", () => {
+  it("Kalenderdatei: Titel, Ort, persönlicher Link und Kartenlink, kein WhatsApp, Erinnerung 1 Stunde vorher, Weltzeit mit Endzeit, Winterzeit", () => {
     const ics = buildIcs(row(), "de", new Date("2026-10-01T10:00:00Z"));
+    const flat = ics.replace(/\r\n /g, "");
     expect(ics).toContain("SUMMARY:Termin bei PALO SKIN");
     expect(ics).toContain("LOCATION:PALO SKIN by Dr. Vogel\\, Hagenauer Straße 14\\, 10435 Berlin");
-    expect(ics.replace(/\r\n /g, "")).toContain("DESCRIPTION:Verschieben oder absagen bis 24 Stunden vorher über den Link in Ihrer Terminbestätigung\\, danach per WhatsApp an +49 151 58872566. So finden Sie uns: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8");
+    expect(flat).toMatch(/DESCRIPTION:Termin ansehen\\, verschieben oder absagen \(bis 24 Stunden vorher\):\\nhttps:\/\/www\.paloskin\.de\/termin\/[A-Za-z0-9._-]+\\nSo finden Sie uns: https:\/\/maps\.app\.goo\.gl\/c3KoXo6d9YU5P2wy8\r\n/);
+    expect(flat).not.toContain("WhatsApp");
+    expect(flat).toContain("BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:Termin bei PALO SKIN\r\nTRIGGER:-PT1H\r\nEND:VALARM\r\nEND:VEVENT");
+    for (const lang of ["en", "es", "fr", "pt"] as const) {
+      const other = buildIcs(row(), lang).replace(/\r\n /g, "");
+      expect(other).toMatch(/DESCRIPTION:[^\r]*\\nhttps:\/\/www\.paloskin\.de\/termin\/[^\r]*maps\.app\.goo\.gl/);
+      expect(other).not.toContain("WhatsApp");
+    }
     expect(ics).toContain("DTSTART:20261008T060000Z");
     expect(ics).toContain("DTEND:20261008T065000Z");
     expect(ics).toContain("STATUS:CONFIRMED");

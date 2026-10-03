@@ -29,11 +29,12 @@ a{color:inherit}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 
 .band{height:10px;background:var(--ultramarin)}
-.wrap{width:100%;max-width:var(--max);margin:0 auto;padding-inline:20px}
-@media (min-width:720px){.wrap{padding-inline:32px}}
+/* Seitenrand: 20 Pixel, auf dem iPhone mindestens der sichere Bereich; gilt für Kopfzeile, Inhalt und Fußzeile gleich */
+.wrap{width:100%;max-width:var(--max);margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+@media (min-width:720px){.wrap{padding-left:max(32px,env(safe-area-inset-left,0px));padding-right:max(32px,env(safe-area-inset-right,0px))}}
 
 /* Kopf */
-.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:18px}
 .wm{text-decoration:none;display:block;line-height:1.1}
 .wm b{display:block;font-weight:500;font-size:22px;letter-spacing:.09em}
 .wm span{display:block;font-size:13px;letter-spacing:.04em;color:var(--ink-2);margin-top:2px}
@@ -164,7 +165,7 @@ footer a:hover{color:var(--ink);text-decoration:underline}
 footer .fl{display:flex;flex-wrap:wrap;gap:18px}
 
 /* Mobile Leiste */
-.mbar{position:sticky;bottom:0;z-index:20;background:var(--kalk);border-top:1px solid var(--line);padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:10px}
+.mbar{position:sticky;bottom:0;z-index:20;background:var(--kalk);border-top:1px solid var(--line);padding:10px max(20px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));display:flex;gap:10px}
 .mbar .btn{flex:1}
 @media (min-width:860px){.mbar{display:none}}
 

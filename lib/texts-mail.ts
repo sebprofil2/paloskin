@@ -50,7 +50,8 @@ export interface MailTexts {
   closingReminder: string;
   /* Kalenderdatei */
   icsTitle: string;
-  icsDescription: string;
+  /** Beschreibung des Kalendereintrags (Datei, Google, Outlook): persönlicher Link zur Terminseite und Kartenlink */
+  icsDescription: (link: string) => string;
   /* Terminseite */
   pageTitle: string;
   pageIntro: string;
@@ -116,7 +117,7 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     rescheduleLink: "Termin verschieben",
     closingReminder: "Bis morgen!",
     icsTitle: `Termin bei ${BRAND}`,
-    icsDescription: `Verschieben oder absagen bis 24 Stunden vorher über den Link in Ihrer Terminbestätigung, danach per WhatsApp an ${PHONE}. So finden Sie uns: ${MAPS_LINK}`,
+    icsDescription: (link) => `Termin ansehen, verschieben oder absagen (bis 24 Stunden vorher):\n${link}\nSo finden Sie uns: ${MAPS_LINK}`,
     pageTitle: "Ihr Termin",
     pageIntro: `hier finden Sie Ihren Termin bei ${BRAND}:`,
     windowOpen: "Den Termin verschieben oder absagen können Sie bis 24 Stunden vorher.",
@@ -176,7 +177,7 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     rescheduleLink: "Reschedule appointment",
     closingReminder: "See you tomorrow!",
     icsTitle: `Appointment at ${BRAND}`,
-    icsDescription: `Reschedule or cancel up to 24 hours in advance via the link in your confirmation, after that on WhatsApp at ${PHONE}. How to find us: ${MAPS_LINK}`,
+    icsDescription: (link) => `View, reschedule or cancel your appointment (up to 24 hours in advance):\n${link}\nHow to find us: ${MAPS_LINK}`,
     pageTitle: "Your appointment",
     pageIntro: `here is your appointment at ${BRAND}:`,
     windowOpen: "You can reschedule or cancel the appointment up to 24 hours in advance.",
@@ -236,7 +237,7 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     rescheduleLink: "Cambiar la cita",
     closingReminder: "¡Hasta mañana!",
     icsTitle: `Cita en ${BRAND}`,
-    icsDescription: `Cambie o cancele hasta 24 horas antes a través del enlace de su confirmación, después por WhatsApp al ${PHONE}. Cómo llegar: ${MAPS_LINK}`,
+    icsDescription: (link) => `Ver, cambiar o cancelar su cita (hasta 24 horas antes):\n${link}\nCómo llegar: ${MAPS_LINK}`,
     pageTitle: "Su cita",
     pageIntro: `aquí tiene su cita en ${BRAND}:`,
     windowOpen: "Puede cambiar o cancelar la cita hasta 24 horas antes.",
@@ -296,7 +297,7 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     rescheduleLink: "Déplacer le rendez-vous",
     closingReminder: `À demain${NB}!`,
     icsTitle: `Rendez-vous chez ${BRAND}`,
-    icsDescription: `Déplacement ou annulation jusqu’à 24 heures avant via le lien de votre confirmation, ensuite sur WhatsApp au ${PHONE}. Comment nous trouver${NB}: ${MAPS_LINK}`,
+    icsDescription: (link) => `Voir, déplacer ou annuler votre rendez-vous (jusqu’à 24 heures avant)${NB}:\n${link}\nComment nous trouver${NB}: ${MAPS_LINK}`,
     pageTitle: "Votre rendez-vous",
     pageIntro: `voici votre rendez-vous chez ${BRAND}${NB}:`,
     windowOpen: "Vous pouvez déplacer ou annuler le rendez-vous jusqu’à 24 heures avant.",
@@ -356,7 +357,7 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     rescheduleLink: "Remarcar a consulta",
     closingReminder: "Até amanhã!",
     icsTitle: `Consulta na ${BRAND}`,
-    icsDescription: `Remarcação ou cancelamento até 24 horas antes pelo link da sua confirmação, depois pelo WhatsApp no ${PHONE}. Como chegar: ${MAPS_LINK}`,
+    icsDescription: (link) => `Ver, remarcar ou cancelar sua consulta (até 24 horas antes):\n${link}\nComo chegar: ${MAPS_LINK}`,
     pageTitle: "Sua consulta",
     pageIntro: `aqui está a sua consulta na ${BRAND}:`,
     windowOpen: "Você pode remarcar ou cancelar a consulta até 24 horas antes.",

@@ -58,7 +58,7 @@ function icsStamp(d: Date): string {
   return `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}${p(d.getUTCDate())}T${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}Z`;
 }
 
-const icsEscape = (t: string) => t.replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+const icsEscape = (t: string) => t.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
 
 function icsFold(line: string): string {
   if (Buffer.byteLength(line, "utf8") <= 75) return line;
@@ -74,7 +74,7 @@ function icsFold(line: string): string {
   return out.join("\r\n ");
 }
 
-/** Kalenderdatei: Titel „Termin bei PALO SKIN“, Ort, Beschreibung nur Absagehinweis mit WhatsApp-Nummer und Kartenlink. */
+/** Kalenderdatei: Titel „Termin bei PALO SKIN“, Ort, Beschreibung mit persönlichem Link zur Terminseite und Kartenlink, Erinnerung 1 Stunde vorher. */
 export function buildIcs(b: BookingRow, lang: Lang, now = new Date()): string {
   const m = MAIL_TEXTS[lang];
   const lines = [
@@ -90,8 +90,13 @@ export function buildIcs(b: BookingRow, lang: Lang, now = new Date()): string {
     `DTEND:${icsStamp(new Date(b.ends_at))}`,
     `SUMMARY:${icsEscape(m.icsTitle)}`,
     `LOCATION:${icsEscape(`${STUDIO}, ${ADDRESS}`)}`,
-    `DESCRIPTION:${icsEscape(m.icsDescription)}`,
+    `DESCRIPTION:${icsEscape(m.icsDescription(terminUrl(b.id)))}`,
     `STATUS:${b.status === "confirmed" ? "CONFIRMED" : "TENTATIVE"}`,
+    "BEGIN:VALARM",
+    "ACTION:DISPLAY",
+    `DESCRIPTION:${icsEscape(m.icsTitle)}`,
+    "TRIGGER:-PT1H",
+    "END:VALARM",
     "END:VEVENT",
     "END:VCALENDAR",
   ];
@@ -110,8 +115,9 @@ export function calendarLinks(b: BookingRow, lang: Lang): CalendarLinks {
   const start = new Date(b.starts_at);
   const end = new Date(b.ends_at);
   const location = `${STUDIO}, ${ADDRESS}`;
-  const google = new URLSearchParams({ action: "TEMPLATE", text: m.icsTitle, dates: `${icsStamp(start)}/${icsStamp(end)}`, location, details: m.icsDescription });
-  const outlook = new URLSearchParams({ subject: m.icsTitle, startdt: start.toISOString(), enddt: end.toISOString(), location, body: m.icsDescription, path: "/calendar/action/compose", rru: "addevent" });
+  const details = m.icsDescription(terminUrl(b.id));
+  const google = new URLSearchParams({ action: "TEMPLATE", text: m.icsTitle, dates: `${icsStamp(start)}/${icsStamp(end)}`, location, details });
+  const outlook = new URLSearchParams({ subject: m.icsTitle, startdt: start.toISOString(), enddt: end.toISOString(), location, body: details, path: "/calendar/action/compose", rru: "addevent" });
   return {
     google: `https://calendar.google.com/calendar/render?${google}`,
     ics: `${readEnv().publicBaseUrl}/termin/${terminToken(b.id)}/kalender.ics`,

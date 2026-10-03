@@ -70,7 +70,8 @@ PALO SKIN by Dr. Vogel
 
 Titel: Termin bei PALO SKIN
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Verschieben oder absagen bis 24 Stunden vorher über den Link in Ihrer Terminbestätigung, danach per WhatsApp an +49 151 58872566. So finden Sie uns: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Beschreibung: Termin ansehen, verschieben oder absagen (bis 24 Stunden vorher): / <persönlicher Link https://www.paloskin.de/termin/...> / So finden Sie uns: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die eigene Standarderinnerung)
 
 ### Terminseite
 
@@ -178,7 +179,8 @@ PALO SKIN by Dr. Vogel
 
 Titel: Appointment at PALO SKIN
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Reschedule or cancel up to 24 hours in advance via the link in your confirmation, after that on WhatsApp at +49 151 58872566. How to find us: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Beschreibung: View, reschedule or cancel your appointment (up to 24 hours in advance): / <persönlicher Link https://www.paloskin.de/termin/...> / How to find us: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die eigene Standarderinnerung)
 
 ### Terminseite
 
@@ -286,7 +288,8 @@ PALO SKIN by Dr. Vogel
 
 Titel: Cita en PALO SKIN
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Cambie o cancele hasta 24 horas antes a través del enlace de su confirmación, después por WhatsApp al +49 151 58872566. Cómo llegar: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Beschreibung: Ver, cambiar o cancelar su cita (hasta 24 horas antes): / <persönlicher Link https://www.paloskin.de/termin/...> / Cómo llegar: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die eigene Standarderinnerung)
 
 ### Terminseite
 
@@ -394,7 +397,8 @@ PALO SKIN by Dr. Vogel
 
 Titel: Rendez-vous chez PALO SKIN
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Déplacement ou annulation jusqu’à 24 heures avant via le lien de votre confirmation, ensuite sur WhatsApp au +49 151 58872566. Comment nous trouver : https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Beschreibung: Voir, déplacer ou annuler votre rendez-vous (jusqu’à 24 heures avant) : / <persönlicher Link https://www.paloskin.de/termin/...> / Comment nous trouver : https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die eigene Standarderinnerung)
 
 ### Terminseite
 
@@ -502,7 +506,8 @@ PALO SKIN by Dr. Vogel
 
 Titel: Consulta na PALO SKIN
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Remarcação ou cancelamento até 24 horas antes pelo link da sua confirmação, depois pelo WhatsApp no +49 151 58872566. Como chegar: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Beschreibung: Ver, remarcar ou cancelar sua consulta (até 24 horas antes): / <persönlicher Link https://www.paloskin.de/termin/...> / Como chegar: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die eigene Standarderinnerung)
 
 ### Terminseite
 

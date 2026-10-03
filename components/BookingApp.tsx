@@ -186,7 +186,8 @@ function Acc({ open, title, meta, chosen, onToggle, children }: { open: boolean;
     <div className={`accw ${chosen ? "has" : ""}`}>
       <button type="button" className="acc" aria-expanded={open} onClick={onToggle}>
         <span className="at">{title}</span>
-        <span className="am">{chosen || meta}</span>
+        {/* Gewählte Einträge stehen nicht doppelt im Kopf: Markierung an den Karten und Zonensumme reichen. Der Einstiegspreis nur, solange nichts gewählt ist. */}
+        <span className="am">{chosen ? "" : meta}</span>
         <span className="chev" aria-hidden="true" />
       </button>
       {open ? <div className="accp">{children}</div> : null}

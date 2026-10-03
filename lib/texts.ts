@@ -212,7 +212,6 @@ pt:{
 /* Ergänzungen für die echte Seite. Deutsch nach Bauauftrag, Übersetzungen bitte gegenlesen. */
 export interface ExtraTexts {
   testBanner: string;
-  afterCancelReal: string;
   /** unter der Uhrzeitauswahl, immer sichtbar; „per WhatsApp“ wird verlinkt */
   noSlotHint: string;
   noSlotLink: string;
@@ -259,7 +258,6 @@ export interface ExtraTexts {
 const X: Record<Lang, ExtraTexts> = {
   de: {
     testBanner: "Testversion. Bitte nur erfundene Namen und keine echten Behandlungswünsche eintragen. Die Buchung landet wirklich im Kalender.",
-    afterCancelReal: "Absagen oder verschieben bitte per WhatsApp unter +49 151 58872566, mindestens 48 Stunden vorher.",
     noSlotHint: "Kein passender Termin dabei? Schreiben Sie uns gern per WhatsApp.", noSlotLink: "per WhatsApp", otherTime: "Andere Zeit wählen",
     mapL: "So finden Sie uns", saveQ: "Möchten Sie den Termin gleich im Kalender speichern?",
     doneBindingH: "Gebucht! Wir freuen uns auf Sie.", doneBindingP: "Alle Details bekommen Sie gleich per E-Mail.",
@@ -280,7 +278,6 @@ const X: Record<Lang, ExtraTexts> = {
   },
   en: {
     testBanner: "Test version. Please enter invented names only and no real treatment wishes. The booking really does go into the calendar.",
-    afterCancelReal: "To cancel or reschedule, please send us a WhatsApp message or call +49 151 58872566, at least 48 hours in advance.",
     noSlotHint: "No suitable time? Feel free to message us on WhatsApp.", noSlotLink: "on WhatsApp", otherTime: "Choose another time",
     mapL: "How to find us", saveQ: "Would you like to save the appointment to your calendar right away?",
     doneBindingH: "Booked! We look forward to seeing you.", doneBindingP: "All the details will reach you by email in a moment.",
@@ -301,7 +298,6 @@ const X: Record<Lang, ExtraTexts> = {
   },
   es: {
     testBanner: "Versión de prueba. Introduzca solo nombres inventados y ningún deseo de tratamiento real. La reserva se registra de verdad en el calendario.",
-    afterCancelReal: "Para cancelar o cambiar la cita, escríbanos por WhatsApp o llámenos al +49 151 58872566, con al menos 48 horas de antelación.",
     noSlotHint: "¿Ninguna hora le viene bien? Escríbanos con gusto por WhatsApp.", noSlotLink: "por WhatsApp", otherTime: "Elegir otra hora",
     mapL: "Cómo llegar", saveQ: "¿Quiere guardar la cita en su calendario ahora mismo?",
     doneBindingH: "¡Reservado! Le esperamos.", doneBindingP: "Todos los detalles le llegan enseguida por correo electrónico.",
@@ -322,7 +318,6 @@ const X: Record<Lang, ExtraTexts> = {
   },
   fr: {
     testBanner: "Version de test. Merci de n’indiquer que des noms inventés et aucun souhait de soin réel. La réservation est réellement inscrite dans l’agenda.",
-    afterCancelReal: "Pour annuler ou déplacer le rendez-vous, écrivez-nous sur WhatsApp ou appelez le +49 151 58872566, au moins 48 heures à l’avance.",
     noSlotHint: "Aucun créneau ne vous convient ? Écrivez-nous volontiers sur WhatsApp.", noSlotLink: "sur WhatsApp", otherTime: "Choisir un autre créneau",
     mapL: "Comment nous trouver", saveQ: "Souhaitez-vous enregistrer le rendez-vous tout de suite dans votre agenda ?",
     doneBindingH: "Réservé ! Nous avons hâte de vous accueillir.", doneBindingP: "Tous les détails vous parviennent dans un instant par e-mail.",
@@ -343,7 +338,6 @@ const X: Record<Lang, ExtraTexts> = {
   },
   pt: {
     testBanner: "Versão de teste. Use apenas nomes inventados e nenhum desejo real de tratamento. A reserva é registrada de verdade no calendário.",
-    afterCancelReal: "Para cancelar ou remarcar, mande uma mensagem pelo WhatsApp ou ligue para +49 151 58872566, com pelo menos 48 horas de antecedência.",
     noSlotHint: "Nenhum horário serve? Fale conosco pelo WhatsApp.", noSlotLink: "pelo WhatsApp", otherTime: "Escolher outro horário",
     mapL: "Como chegar", saveQ: "Quer salvar a consulta no seu calendário agora mesmo?",
     doneBindingH: "Marcado! Esperamos por você.", doneBindingP: "Todos os detalhes chegam já por e-mail.",
