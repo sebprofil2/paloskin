@@ -103,12 +103,20 @@ describe("Bestätigungsmail nach Freigabe", () => {
     expect(confirmationMail(row(), new Date("2026-10-07T08:01:00Z")).text).not.toContain("Am Tag vorher erinnern wir Sie noch einmal.");
   });
 
-  it("Buchung weniger als 24 Stunden vorher: kein Verschieben-Satz, Knopf „Termin ansehen“", () => {
-    const m = confirmationMail(row(), new Date("2026-10-07T10:00:00Z")); // 22 Stunden vorher
-    expect(m.text).not.toContain("verschieben oder absagen");
-    expect(m.text).toMatch(/Termin ansehen: https:\/\/www\.paloskin\.de\/termin\//);
-    expect(m.html).toContain(">Termin ansehen</a>");
-    expect(m.html).not.toContain("Termin verschieben oder absagen");
+  it("Buchung weniger als 24 Stunden vorher (22 und 3 Stunden): kein 24-Stunden-Satz, Knopf „Termin verschieben oder absagen“", () => {
+    for (const now of [new Date("2026-10-07T10:00:00Z"), new Date("2026-10-08T03:00:00Z")]) {
+      const m = confirmationMail(row(), now);
+      expect(m.text).not.toContain("bis 24 Stunden vorher");
+      expect(m.text).toMatch(/Termin verschieben oder absagen: https:\/\/www\.paloskin\.de\/termin\//);
+      expect(m.html).toContain(">Termin verschieben oder absagen</a>");
+      expect(m.html).not.toContain("bis 24 Stunden vorher");
+      expect(m.text).not.toContain("Termin ansehen:");
+    }
+  });
+
+  it("Buchung mehr als 24 Stunden vorher: Satz zu den 24 Stunden und Knopf", () => {
+    const m = confirmationMail(row(), new Date("2026-10-06T10:00:00Z"));
+    expect(m.text).toContain("Den Termin verschieben oder absagen können Sie bis 24 Stunden vorher über diesen Link.\nTermin verschieben oder absagen: https://www.paloskin.de/termin/");
   });
 
   it("nach dem Verschieben: Betreff Verschoben, erster Satz, Hinweis auf den alten Kalendereintrag", () => {

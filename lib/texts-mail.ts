@@ -38,7 +38,6 @@ export interface MailTexts {
   reminderNote: string;
   cancelInfo: string;
   manageLink: string;
-  viewLink: string;
   closing: string;
   /* Erinnerungsmail */
   introReminder: string;
@@ -107,7 +106,6 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     reminderNote: "Am Tag vorher erinnern wir Sie noch einmal.",
     cancelInfo: "Den Termin verschieben oder absagen können Sie bis 24 Stunden vorher über diesen Link.",
     manageLink: "Termin verschieben oder absagen",
-    viewLink: "Termin ansehen",
     closing: "Bis bald!",
     introReminder: `morgen sehen wir uns bei ${BRAND}, wir freuen uns auf Sie!`,
     punctualShort: "Ihr Termin beginnt pünktlich, in der Regel ganz ohne Wartezeit. Kommen Sie bitte zur vereinbarten Zeit oder höchstens fünf Minuten vorher.",
@@ -167,7 +165,6 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     reminderNote: "We’ll remind you once more the day before.",
     cancelInfo: "You can reschedule or cancel the appointment up to 24 hours in advance via this link.",
     manageLink: "Reschedule or cancel appointment",
-    viewLink: "View appointment",
     closing: "See you soon!",
     introReminder: `we’ll see you tomorrow at ${BRAND}, we look forward to seeing you!`,
     punctualShort: "Your appointment starts on time, usually with no waiting at all. Please arrive at the agreed time or at most five minutes early.",
@@ -227,7 +224,6 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     reminderNote: "El día anterior se lo recordamos una vez más.",
     cancelInfo: "Puede cambiar o cancelar la cita hasta 24 horas antes a través de este enlace.",
     manageLink: "Cambiar o cancelar la cita",
-    viewLink: "Ver la cita",
     closing: "¡Hasta pronto!",
     introReminder: `mañana nos vemos en ${BRAND}, ¡le esperamos!`,
     punctualShort: "Su cita empieza puntual, por lo general sin ninguna espera. Venga, por favor, a la hora acordada o como máximo cinco minutos antes.",
@@ -287,7 +283,6 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     reminderNote: "La veille, nous vous enverrons un rappel.",
     cancelInfo: "Vous pouvez déplacer ou annuler le rendez-vous jusqu’à 24 heures avant via ce lien.",
     manageLink: "Déplacer ou annuler le rendez-vous",
-    viewLink: "Voir le rendez-vous",
     closing: `À bientôt${NB}!`,
     introReminder: `nous nous voyons demain chez ${BRAND}, nous avons hâte de vous accueillir${NB}!`,
     punctualShort: "Votre rendez-vous commence à l’heure, en général sans aucune attente. Merci de venir à l’heure convenue ou au plus cinq minutes avant.",
@@ -347,7 +342,6 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     reminderNote: "No dia anterior, lembramos você mais uma vez.",
     cancelInfo: "Você pode remarcar ou cancelar a consulta até 24 horas antes por este link.",
     manageLink: "Remarcar ou cancelar a consulta",
-    viewLink: "Ver a consulta",
     closing: "Até breve!",
     introReminder: `amanhã nos vemos na ${BRAND}, esperamos por você!`,
     punctualShort: "Sua consulta começa pontualmente, em geral sem nenhuma espera. Por favor, chegue na hora combinada ou no máximo cinco minutos antes.",

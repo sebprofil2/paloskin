@@ -60,13 +60,13 @@ export interface Deps {
 
 const defaultDeps = (): Deps => ({ store: getStore(), engine: getEngine(), mailer: getMailer() });
 
-/** Verschieben und Absagen über den Link bis 8 Stunden vor dem Termin; kommuniziert werden 24 Stunden. */
-export const SHORT_NOTICE_MS = 8 * 3600000;
+/** Verschieben und kurzfristige Absage über den Link bis 2 Stunden vor dem Termin (Entscheidung Dr. Vogel, 3. Oktober 2026); kommuniziert werden 24 Stunden. */
+export const SHORT_NOTICE_MS = 2 * 3600000;
 export { CANCEL_LEAD_MS };
 
 export type TerminWindow = "open" | "short" | "closed" | "past" | "cancelled";
 
-/** Was die Terminseite anbietet: open (mehr als 24 Stunden), short (24 bis 8 Stunden), closed (unter 8), past, cancelled. */
+/** Was die Terminseite anbietet: open (mehr als 24 Stunden), short (24 bis 2 Stunden), closed (unter 2), past, cancelled. */
 export function terminWindow(b: BookingRow, now = new Date()): TerminWindow {
   if (b.status === "cancelled" || b.deleted_at) return "cancelled";
   if (Date.parse(b.ends_at) <= now.getTime()) return "past";
@@ -220,7 +220,7 @@ export async function cancelBooking(id: string, reason: string, deps: Deps = def
 export type RescheduleResult = { status: "rescheduled"; booking: BookingRow } | { status: "conflict" } | { status: "invalid" } | { status: "missing" };
 
 /**
- * Verschieben (bis 8 Stunden vor dem alten Termin, beliebig oft): neue Zeit nach denselben Regeln wie bei der Buchung,
+ * Verschieben (bis 2 Stunden vor dem alten Termin, beliebig oft): neue Zeit nach denselben Regeln wie bei der Buchung,
  * dieselbe Dauer; erst neue Belegung, dann Freigabe der alten (eine Transaktion). Kalendereintrag wird verschoben,
  * neue Bestätigung geht raus, Erinnerung nach den normalen Regeln, Studio-Mail.
  */

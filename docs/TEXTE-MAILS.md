@@ -28,8 +28,8 @@ Möchten Sie den Termin gleich im Kalender speichern?
 
 Am Tag vorher erinnern wir Sie noch einmal. (nur wenn eine Erinnerung kommt)
 
-Den Termin verschieben oder absagen können Sie bis 24 Stunden vorher über diesen Link.
-[Termin verschieben oder absagen] (unter 24 Stunden: [Termin ansehen] ohne den Satz davor)
+Den Termin verschieben oder absagen können Sie bis 24 Stunden vorher über diesen Link. (nur wenn bei der Buchung mehr als 24 Stunden bleiben)
+[Termin verschieben oder absagen] (immer)
 
 Bis bald!
 Dr. med. Sebastian Vogel
@@ -81,8 +81,8 @@ Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die ei
 - Hinweis: Ihr Termin beginnt pünktlich, in der Regel ganz ohne Wartezeit. Kommen Sie bitte zur vereinbarten Zeit oder höchstens fünf Minuten vorher.
 - Zusage: Passt der Termin weiterhin für Sie? Dann bestätigen Sie bitte kurz mit einem Klick: [Ja, ich komme]
 - Mehr als 24 Stunden: Den Termin verschieben oder absagen können Sie bis 24 Stunden vorher. [Termin verschieben] [Termin absagen]
-- 24 bis 8 Stunden: Sie können nicht kommen? Bitte sagen Sie uns kurz Bescheid, dann können wir die Zeit noch vergeben. [Termin verschieben] [Leider verhindert]
-- Weniger als 8 Stunden: kein Satz, keine Knöpfe
+- 24 bis 2 Stunden: Sie können nicht kommen? Bitte sagen Sie uns kurz Bescheid, dann können wir die Zeit noch vergeben. [Termin verschieben] [Leider verhindert]
+- Weniger als 2 Stunden: kein Satz, keine Knöpfe
 - Nach Zusage: Danke! Wir freuen uns auf Sie am Mittwoch, 7. Oktober, um 08:00 Uhr.
 - Rückfrage vor Absage: Möchten Sie Ihren Termin absagen? Mittwoch, 7. Oktober, 08:00 Uhr [Termin absagen] [Termin behalten] Oder lieber verschieben? [Termin verschieben]
 - Nach Absage: Ihr Termin ist abgesagt. Wir freuen uns, Sie ein anderes Mal zu sehen. [Neuen Termin buchen]
@@ -137,8 +137,8 @@ Would you like to save the appointment to your calendar right away?
 
 We’ll remind you once more the day before. (nur wenn eine Erinnerung kommt)
 
-You can reschedule or cancel the appointment up to 24 hours in advance via this link.
-[Reschedule or cancel appointment] (unter 24 Stunden: [View appointment] ohne den Satz davor)
+You can reschedule or cancel the appointment up to 24 hours in advance via this link. (nur wenn bei der Buchung mehr als 24 Stunden bleiben)
+[Reschedule or cancel appointment] (immer)
 
 See you soon!
 Dr. med. Sebastian Vogel
@@ -190,8 +190,8 @@ Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die ei
 - Hinweis: Your appointment starts on time, usually with no waiting at all. Please arrive at the agreed time or at most five minutes early.
 - Zusage: Does the appointment still suit you? Then please confirm briefly with one click: [Yes, I’ll be there]
 - Mehr als 24 Stunden: You can reschedule or cancel the appointment up to 24 hours in advance. [Reschedule appointment] [Cancel appointment]
-- 24 bis 8 Stunden: Can’t make it? Please let us know briefly so we can still give the time to someone else. [Reschedule appointment] [Unable to come]
-- Weniger als 8 Stunden: kein Satz, keine Knöpfe
+- 24 bis 2 Stunden: Can’t make it? Please let us know briefly so we can still give the time to someone else. [Reschedule appointment] [Unable to come]
+- Weniger als 2 Stunden: kein Satz, keine Knöpfe
 - Nach Zusage: Thank you! We look forward to seeing you on Wednesday 7 October at 08:00.
 - Rückfrage vor Absage: Would you like to cancel your appointment? Wednesday 7 October, 08:00 [Cancel appointment] [Keep appointment] Or would you rather reschedule? [Reschedule appointment]
 - Nach Absage: Your appointment is cancelled. We look forward to seeing you another time. [Book a new appointment]
@@ -246,8 +246,8 @@ Hemos reservado tiempo para los dos. (nur bei zu zweit)
 
 El día anterior se lo recordamos una vez más. (nur wenn eine Erinnerung kommt)
 
-Puede cambiar o cancelar la cita hasta 24 horas antes a través de este enlace.
-[Cambiar o cancelar la cita] (unter 24 Stunden: [Ver la cita] ohne den Satz davor)
+Puede cambiar o cancelar la cita hasta 24 horas antes a través de este enlace. (nur wenn bei der Buchung mehr als 24 Stunden bleiben)
+[Cambiar o cancelar la cita] (immer)
 
 ¡Hasta pronto!
 Dr. med. Sebastian Vogel
@@ -299,8 +299,8 @@ Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die ei
 - Hinweis: Su cita empieza puntual, por lo general sin ninguna espera. Venga, por favor, a la hora acordada o como máximo cinco minutos antes.
 - Zusage: ¿La cita le sigue viniendo bien? Entonces confírmela brevemente con un clic: [Sí, voy a ir]
 - Mehr als 24 Stunden: Puede cambiar o cancelar la cita hasta 24 horas antes. [Cambiar la cita] [Cancelar la cita]
-- 24 bis 8 Stunden: ¿No puede venir? Avísenos brevemente, así aún podemos dar la hora a otra persona. [Cambiar la cita] [No puedo ir]
-- Weniger als 8 Stunden: kein Satz, keine Knöpfe
+- 24 bis 2 Stunden: ¿No puede venir? Avísenos brevemente, así aún podemos dar la hora a otra persona. [Cambiar la cita] [No puedo ir]
+- Weniger als 2 Stunden: kein Satz, keine Knöpfe
 - Nach Zusage: ¡Gracias! Le esperamos el miércoles, 7 de octubre a las 08:00 h.
 - Rückfrage vor Absage: ¿Quiere cancelar su cita? Miércoles, 7 de octubre, 08:00 h [Cancelar la cita] [Mantener la cita] ¿O prefiere cambiarla? [Cambiar la cita]
 - Nach Absage: Su cita queda cancelada. Nos alegrará verle en otra ocasión. [Reservar una nueva cita]
@@ -355,8 +355,8 @@ Souhaitez-vous enregistrer le rendez-vous tout de suite dans votre agenda ?
 
 La veille, nous vous enverrons un rappel. (nur wenn eine Erinnerung kommt)
 
-Vous pouvez déplacer ou annuler le rendez-vous jusqu’à 24 heures avant via ce lien.
-[Déplacer ou annuler le rendez-vous] (unter 24 Stunden: [Voir le rendez-vous] ohne den Satz davor)
+Vous pouvez déplacer ou annuler le rendez-vous jusqu’à 24 heures avant via ce lien. (nur wenn bei der Buchung mehr als 24 Stunden bleiben)
+[Déplacer ou annuler le rendez-vous] (immer)
 
 À bientôt !
 Dr. med. Sebastian Vogel
@@ -408,8 +408,8 @@ Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die ei
 - Hinweis: Votre rendez-vous commence à l’heure, en général sans aucune attente. Merci de venir à l’heure convenue ou au plus cinq minutes avant.
 - Zusage: Le rendez-vous vous convient toujours ? Alors confirmez-le en un clic : [Oui, je viens]
 - Mehr als 24 Stunden: Vous pouvez déplacer ou annuler le rendez-vous jusqu’à 24 heures avant. [Déplacer le rendez-vous] [Annuler le rendez-vous]
-- 24 bis 8 Stunden: Vous ne pouvez pas venir ? Dites-le-nous en un mot, nous pourrons encore proposer le créneau à quelqu’un d’autre. [Déplacer le rendez-vous] [Empêchement]
-- Weniger als 8 Stunden: kein Satz, keine Knöpfe
+- 24 bis 2 Stunden: Vous ne pouvez pas venir ? Dites-le-nous en un mot, nous pourrons encore proposer le créneau à quelqu’un d’autre. [Déplacer le rendez-vous] [Empêchement]
+- Weniger als 2 Stunden: kein Satz, keine Knöpfe
 - Nach Zusage: Merci ! Nous avons hâte de vous accueillir le mercredi 7 octobre à 08 h 00.
 - Rückfrage vor Absage: Souhaitez-vous annuler votre rendez-vous ? Mercredi 7 octobre, 08 h 00 [Annuler le rendez-vous] [Garder le rendez-vous] Ou plutôt le déplacer ? [Déplacer le rendez-vous]
 - Nach Absage: Votre rendez-vous est annulé. Au plaisir de vous voir une autre fois. [Réserver un nouveau rendez-vous]
@@ -464,8 +464,8 @@ Quer salvar a consulta no seu calendário agora mesmo?
 
 No dia anterior, lembramos você mais uma vez. (nur wenn eine Erinnerung kommt)
 
-Você pode remarcar ou cancelar a consulta até 24 horas antes por este link.
-[Remarcar ou cancelar a consulta] (unter 24 Stunden: [Ver a consulta] ohne den Satz davor)
+Você pode remarcar ou cancelar a consulta até 24 horas antes por este link. (nur wenn bei der Buchung mehr als 24 Stunden bleiben)
+[Remarcar ou cancelar a consulta] (immer)
 
 Até breve!
 Dr. med. Sebastian Vogel
@@ -517,8 +517,8 @@ Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die ei
 - Hinweis: Sua consulta começa pontualmente, em geral sem nenhuma espera. Por favor, chegue na hora combinada ou no máximo cinco minutos antes.
 - Zusage: A consulta continua boa para você? Então confirme rapidamente com um clique: [Sim, eu vou]
 - Mehr als 24 Stunden: Você pode remarcar ou cancelar a consulta até 24 horas antes. [Remarcar a consulta] [Cancelar a consulta]
-- 24 bis 8 Stunden: Não vai conseguir vir? Avise rapidamente, assim ainda podemos oferecer o horário a outra pessoa. [Remarcar a consulta] [Não consigo ir]
-- Weniger als 8 Stunden: kein Satz, keine Knöpfe
+- 24 bis 2 Stunden: Não vai conseguir vir? Avise rapidamente, assim ainda podemos oferecer o horário a outra pessoa. [Remarcar a consulta] [Não consigo ir]
+- Weniger als 2 Stunden: kein Satz, keine Knöpfe
 - Nach Zusage: Obrigado! Esperamos por você em quarta-feira, 7 de outubro, às 08:00.
 - Rückfrage vor Absage: Quer cancelar a sua consulta? Quarta-feira, 7 de outubro, 08:00 [Cancelar a consulta] [Manter a consulta] Ou prefere remarcar? [Remarcar a consulta]
 - Nach Absage: Sua consulta foi cancelada. Será um prazer ver você em outra ocasião. [Marcar uma nova consulta]

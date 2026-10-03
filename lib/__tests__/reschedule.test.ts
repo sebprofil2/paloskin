@@ -62,20 +62,20 @@ describe("Verschieben, Fristen, Studio-Mails (Block 6 und 8)", () => {
     return out;
   }
 
-  it("Terminseite: Fenster bei 25, 23, 9 und 7 Stunden vor dem Termin", async () => {
+  it("Terminseite: Fenster bei 25, 23, 3 und 1 Stunde vor dem Termin", async () => {
     const [s1] = await freeStarts(1);
     await placeBooking(input("11111111-1111-4111-8111-111111111111", s1), deps());
     const b = store.findByRequestId("11111111-1111-4111-8111-111111111111")!;
     const at = (h: number) => new Date(Date.parse(b.starts_at) - h * 3600000);
     expect(terminWindow(b, at(25))).toBe("open");
     expect(terminWindow(b, at(23))).toBe("short");
-    expect(terminWindow(b, at(9))).toBe("short");
-    expect(terminWindow(b, at(7))).toBe("closed");
+    expect(terminWindow(b, at(3))).toBe("short");
+    expect(terminWindow(b, at(1))).toBe("closed");
     expect(terminWindow(b, new Date(Date.parse(b.ends_at) + 1))).toBe("past");
-    // Serverseitig: Verschieben bei 7 Stunden abgelehnt
+    // Serverseitig: Verschieben 1 Stunde vorher abgelehnt, 3 Stunden vorher erlaubt (Prüfung des Fensters)
     const [s2] = (await freeStarts(2)).slice(1);
-    expect((await rescheduleBooking(b.id, s2, deps(), at(7))).status).toBe("invalid");
-    expect((await cancelBooking(b.id, "customer_link", deps(), at(7)))).not.toBeNull(); // die Datenbank selbst verbietet nichts, die Route prüft das Fenster
+    expect((await rescheduleBooking(b.id, s2, deps(), at(1))).status).toBe("invalid");
+    expect((await cancelBooking(b.id, "customer_link", deps(), at(1)))).not.toBeNull(); // die Datenbank selbst verbietet nichts, die Route prüft das Fenster
   });
 
   it("verschiebt atomar: alte Zeit bleibt, bis die neue sicher ist; Kalender verschoben, nicht doppelt; alter Link zeigt neuen Termin", async () => {
@@ -160,7 +160,7 @@ describe("Verschieben, Fristen, Studio-Mails (Block 6 und 8)", () => {
     expect(w.subject).toMatch(/^\[TEST\] Abgesagt: /);
     expect(w.body).toContain("Die Zeit ist wieder frei.");
     expect(studioMailFor("cancelled_short", b).subject).toMatch(/^\[TEST\] Kurzfristig abgesagt: /);
-    // Absage über die Route 24 bis 8 Stunden vorher ergibt „Kurzfristig abgesagt“
+    // Absage über die Route 24 bis 2 Stunden vorher ergibt „Kurzfristig abgesagt“
     mailer.sent = [];
     await cancelBooking(b.id, "customer_link_short", deps(), new Date(Date.parse(b.starts_at) - 10 * 3600000));
     expect(mailer.sent.find((x) => x.to === "studio@example.com")!.subject).toMatch(/^\[TEST\] Kurzfristig abgesagt: /);

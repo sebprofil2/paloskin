@@ -21,7 +21,7 @@ const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 /*
  * Terminseite aus den Mails (Gesamtauftrag vom 3. Oktober 2026): Anrede, blauer Kasten, Pünktlichkeitshinweis, Zusage,
  * dann je nach Zeit bis zum Termin Verschieben und Absagen (mehr als 24 Stunden), Verschieben und „Leider verhindert“
- * (24 bis 8 Stunden) oder nichts (unter 8 Stunden). Änderungen nur per POST.
+ * (24 bis 2 Stunden) oder nichts (unter 2 Stunden). Änderungen nur per POST.
  */
 export default async function TerminPage({ params, searchParams }: { params: Promise<{ token: string }>; searchParams: Promise<Params> }) {
   const { token } = await params;

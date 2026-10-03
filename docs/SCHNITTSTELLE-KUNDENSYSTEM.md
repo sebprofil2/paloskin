@@ -84,7 +84,7 @@ Felder von `booking` (alle Zeiten UTC mit `Z`):
 | `test` | bool | Testbuchung (Testbetrieb der Seite); im Kundensystem gesondert behandeln |
 | `calendar_event_id`, `calendar_state` | Text, `pending`/`written`/`failed` | Kalendereintrag des Arztes |
 | `attendance_confirmed_at` | Zeit oder null | Zusage des Kunden über den Mail-Link |
-| `cancelled_at`, `cancel_reason` | Zeit, Text | Absage; `customer_link` (Kunde über den Link, mehr als 24 Stunden vorher), `customer_link_short` (Kunde, 24 bis 8 Stunden vorher), `studio_calendar` (Studio hat den Eintrag im Kalender gelöscht) oder `studio_cancelled` (Kundensystem) |
+| `cancelled_at`, `cancel_reason` | Zeit, Text | Absage; `customer_link` (Kunde über den Link, mehr als 24 Stunden vorher), `customer_link_short` (Kunde, 24 bis 2 Stunden vorher), `studio_calendar` (Studio hat den Eintrag im Kalender gelöscht) oder `studio_cancelled` (Kundensystem) |
 | `updated_at` | Zeit | letzte Änderung |
 
 ## 7. Ereignistypen mit Beispielen

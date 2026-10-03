@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 /*
  * Zusage oder Absage über den signierten Link aus der Mail (Formular, POST). Die Fristen gelten auch hier:
- * Absage bis 8 Stunden vor dem Termin (ja: jederzeit vor dem Termin). Antwort ist eine Weiterleitung auf die Terminseite.
+ * Absage bis 2 Stunden vor dem Termin (ja: jederzeit vor dem Termin). Antwort ist eine Weiterleitung auf die Terminseite.
  */
 export async function POST(req: Request) {
   const back = (token: string, m: string) =>

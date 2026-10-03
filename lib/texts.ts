@@ -37,7 +37,7 @@ export interface DraftTexts {
   slotQ: string; slotQCheckup: string; downT: string; downP: string; copy: string; copied: string; marked: string; nextFree: string; orDay: string; dayAria: string; closed: string; closedAria: string; holiday: string; fullT: string; fullP: string;
   at: Fn1;
   dataH: string; vorname: string; nachname: string; handy: string; handyWhy: string; emailWhy: string; email: string; phoneReturn: string;
-  refQ: string; refPh: string; consent: string; cancelT: string; cancelP: string; sumHead: string; beratungRow: string; botRow: string; boostRow: string; doneH: string; gcal: string; ocal: string; ical: string; addrL: string; book: string; checkupP: string; cancelShort: string;
+  refQ: string; refPh: string; consent: string; cancelT: string; cancelP: string; sumHead: string; beratungRow: string; botRow: string; boostRow: string; doneH: string; gcal: string; ocal: string; ical: string; addrL: string; book: string; checkupP: string;
   eVisit: string; eTreat: string; eSlot: string; eVorname: string; eNachname: string; eHandy: string; eEmail: string; eConsent: string;
   }
 
@@ -70,7 +70,6 @@ de:{
   sumHead:"Ihr Termin", beratungRow:"Beratung, Behandlung noch offen", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Schön, Ihre Terminanfrage ist da. Wir bestätigen sie kurz per WhatsApp.", gcal:"Google Kalender", ocal:"Outlook", ical:"iPhone-Kalender",
   addrL:"Adresse", book:"Termin buchen",
   checkupP:"Sie wurden zu einem kurzen Kontrolltermin eingeladen.",
-  cancelShort:"Absagen bitte mindestens 48 Stunden vorher.",
   eVisit:"Kurz noch: Waren Sie schon einmal bei uns?", eTreat:"Kurz noch: Bitte eine Behandlung wählen oder „Ich lasse mich erst beraten“.", eSlot:"Kurz noch: Bitte eine Uhrzeit wählen.",
   eVorname:"Kurz noch: Ihr Vorname fehlt.", eNachname:"Kurz noch: Ihr Nachname fehlt.", eHandy:"Die Handynummer scheint nicht zu stimmen. Bitte prüfen Sie sie noch einmal.",
   eEmail:"Kurz noch: Die E-Mail-Adresse stimmt noch nicht ganz.", eConsent:"Kurz noch: Ohne Ihr Einverständnis können wir den Termin leider nicht anlegen.",
@@ -103,7 +102,6 @@ en:{
   sumHead:"Your appointment", beratungRow:"Consultation, treatment to be decided", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Lovely, your request has arrived. We’ll confirm it shortly on WhatsApp.", gcal:"Google Calendar", ocal:"Outlook", ical:"iPhone Calendar",
   addrL:"Address", book:"Book appointment",
   checkupP:"You have been invited to a short follow-up appointment.",
-  cancelShort:"Please cancel at least 48 hours in advance.",
   eVisit:"Just one thing: Have you been with us before?", eTreat:"Just one thing: Please choose a treatment or “I’d like advice first”.", eSlot:"Just one thing: Please choose a time.",
   eVorname:"Just one thing: Your first name is missing.", eNachname:"Just one thing: Your last name is missing.", eHandy:"The mobile number does not seem to be right. Please check it once more.",
   eEmail:"Just one thing: The email address isn’t quite right yet.", eConsent:"Just one thing: Without your consent we unfortunately can’t create the appointment.",
@@ -136,7 +134,6 @@ es:{
   sumHead:"Su cita", beratungRow:"Consulta, tratamiento por decidir", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Perfecto, hemos recibido su solicitud. Se la confirmamos en breve por WhatsApp.", gcal:"Google Calendar", ocal:"Outlook", ical:"Calendario del iPhone",
   addrL:"Dirección", book:"Reservar cita",
   checkupP:"Le hemos invitado a una breve cita de revisión.",
-  cancelShort:"Por favor, cancele con al menos 48 horas de antelación.",
   eVisit:"Un detalle: ¿Ya ha estado con nosotros?", eTreat:"Un detalle: Elija un tratamiento o «Prefiero que me asesoren primero».", eSlot:"Un detalle: Elija una hora.",
   eVorname:"Un detalle: Falta su nombre.", eNachname:"Un detalle: Faltan sus apellidos.", eHandy:"El número de móvil no parece correcto. Por favor, revíselo otra vez.",
   eEmail:"Un detalle: El correo electrónico aún no es correcto.", eConsent:"Un detalle: Sin su consentimiento no podemos registrar la cita.",
@@ -169,7 +166,6 @@ fr:{
   sumHead:"Votre rendez-vous", beratungRow:"Consultation, soin à définir", botRow:"Botox : ", boostRow:"Skin Booster : ", doneH:"Parfait, votre demande est bien arrivée. Nous la confirmons rapidement par WhatsApp.", gcal:"Google Agenda", ocal:"Outlook", ical:"Calendrier iPhone",
   addrL:"Adresse", book:"Réserver le rendez-vous",
   checkupP:"Vous avez été invité(e) à un court rendez-vous de contrôle.",
-  cancelShort:"Merci d’annuler au moins 48 heures à l’avance.",
   eVisit:"Juste une chose : Êtes-vous déjà venu chez nous ?", eTreat:"Juste une chose : Choisissez un soin ou « J’aimerais d’abord un conseil ».", eSlot:"Juste une chose : Choisissez une heure.",
   eVorname:"Juste une chose : Votre prénom manque.", eNachname:"Juste une chose : Votre nom manque.", eHandy:"Le numéro de portable ne semble pas correct. Merci de le vérifier encore une fois.",
   eEmail:"Juste une chose : L’adresse e-mail n’est pas encore tout à fait correcte.", eConsent:"Juste une chose : Sans votre accord, nous ne pouvons malheureusement pas enregistrer le rendez-vous.",
@@ -202,7 +198,6 @@ pt:{
   sumHead:"Sua consulta", beratungRow:"Avaliação, tratamento a definir", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Que bom, recebemos seu pedido. Confirmamos em breve pelo WhatsApp.", gcal:"Google Agenda", ocal:"Outlook", ical:"Calendário do iPhone",
   addrL:"Endereço", book:"Marcar horário",
   checkupP:"Você foi convidado(a) para uma breve consulta de revisão.",
-  cancelShort:"Por favor, cancele com pelo menos 48 horas de antecedência.",
   eVisit:"Só mais uma coisa: Você já esteve com a gente?", eTreat:"Só mais uma coisa: Escolha um tratamento ou “Quero orientação primeiro”.", eSlot:"Só mais uma coisa: Escolha um horário.",
   eVorname:"Só mais uma coisa: Falta seu nome.", eNachname:"Só mais uma coisa: Falta seu sobrenome.", eHandy:"O número de celular não parece correto. Por favor, confira mais uma vez.",
   eEmail:"Só mais uma coisa: O e-mail ainda não está certinho.", eConsent:"Só mais uma coisa: Sem a sua autorização não conseguimos registrar o horário.",

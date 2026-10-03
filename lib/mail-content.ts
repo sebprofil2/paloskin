@@ -145,7 +145,7 @@ function wrap(lang: Lang, test: boolean, body: string[]): string {
 /**
  * Bestätigungsmail nach der Buchung, oder nach dem Verschieben (rescheduled_at gesetzt): dann Betreff „Verschoben“,
  * anderer erster Satz und der Hinweis, den alten Kalendereintrag zu löschen. Der Erinnerungssatz steht nur, wenn die
- * Erinnerung noch kommt; der Verschieben-Satz nur, wenn mehr als 24 Stunden bis zum Termin bleiben.
+ * Erinnerung noch kommt; der Verschieben-Satz nur, wenn mehr als 24 Stunden bis zum Termin bleiben; der Knopf „Termin verschieben oder absagen“ steht immer.
  */
 export function confirmationMail(b: BookingRow, now = new Date()): MailMessage {
   const lang = b.language;
@@ -169,8 +169,9 @@ export function confirmationMail(b: BookingRow, now = new Date()): MailMessage {
   text.push(m.saveQ, `${m.gcal}: ${cal.google}`, `${m.ical}: ${cal.ics}`, `${m.ocal}: ${cal.outlook}`, "");
   if (rescheduled) text.push(m.oldCalendarNote, "");
   if (reminderComes) text.push(m.reminderNote, "");
-  if (canManage) text.push(m.cancelInfo, `${m.manageLink}: ${link}`, "");
-  else text.push(`${m.viewLink}: ${link}`, "");
+  // Jede Buchung geht mindestens 2 Stunden vorher ein: der Knopf heißt immer „Termin verschieben oder absagen“, der Satz zu den 24 Stunden nur, wenn noch mehr als 24 Stunden bleiben
+  if (canManage) text.push(m.cancelInfo);
+  text.push(`${m.manageLink}: ${link}`, "");
   text.push(m.closing, SIGNER, STUDIO);
 
   const html = wrap(lang, test, [
@@ -182,7 +183,7 @@ export function confirmationMail(b: BookingRow, now = new Date()): MailMessage {
     `<p style="margin:0 0 6px">${escapeHtml(m.saveQ)}</p><p style="margin:0 0 14px">${button(cal.google, m.gcal, false)}${button(cal.ics, m.ical, false)}${button(cal.outlook, m.ocal, false)}</p>`,
     rescheduled ? p(m.oldCalendarNote) : "",
     reminderComes ? p(m.reminderNote) : "",
-    canManage ? `<p style="margin:0 0 6px">${escapeHtml(m.cancelInfo)}</p><p style="margin:0 0 14px">${button(link, m.manageLink)}</p>` : `<p style="margin:0 0 14px">${button(link, m.viewLink)}</p>`,
+    `${canManage ? `<p style="margin:0 0 6px">${escapeHtml(m.cancelInfo)}</p>` : ""}<p style="margin:0 0 14px">${button(link, m.manageLink)}</p>`,
     `<p style="margin:16px 0 0">${escapeHtml(m.closing)}<br>${escapeHtml(SIGNER)}<br>${escapeHtml(STUDIO)}</p>`,
   ]);
 
