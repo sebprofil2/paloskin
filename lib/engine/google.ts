@@ -210,6 +210,15 @@ export class GoogleCalendarEngine implements BookingEngine {
       .map((e) => ({ id: e.id, summary: e.summary ?? "", description: e.description ?? "", start: new Date(e.start!.dateTime!), end: new Date(e.end!.dateTime!) }));
   }
 
+  async moveEvent(eventId: string, start: Date, end: Date): Promise<void> {
+    await this.call<GEvent>(
+      "PATCH",
+      this.bookingsPath(`/${encodeURIComponent(eventId)}?sendUpdates=none`),
+      { start: { dateTime: toBerlinIso(start), timeZone: "Europe/Berlin" }, end: { dateTime: toBerlinIso(end), timeZone: "Europe/Berlin" } },
+      WRITE_TIMEOUT_MS,
+    );
+  }
+
   async appendDescription(eventId: string, line: string): Promise<void> {
     const ev = await this.call<GEvent>("GET", this.bookingsPath(`/${encodeURIComponent(eventId)}`));
     const description = `${ev.description ?? ""}\n${line}`.trim();

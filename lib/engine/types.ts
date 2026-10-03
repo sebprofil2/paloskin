@@ -39,6 +39,8 @@ export interface BookingEngine {
   /** Vorhandenen Eintrag zur Buchungsnummer suchen (Wiederholung nach unklarem Ausgang). */
   findEventIdByRef(reference: string): Promise<string | null>;
   deleteEvent(eventId: string): Promise<void>;
+  /** Eintrag auf eine neue Zeit verschieben (kein zweiter Eintrag). */
+  moveEvent(eventId: string, start: Date, end: Date): Promise<void>;
   /** Zeile an die Beschreibung anhängen, zum Beispiel die Empfehlung. */
   appendDescription(eventId: string, line: string): Promise<void>;
   /** Einträge aus „Palo Skin Termine“ für den nächtlichen Export als Kalenderdatei. */

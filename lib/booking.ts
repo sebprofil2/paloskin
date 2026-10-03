@@ -2,7 +2,10 @@ import { buildDescription, buildTitle, serviceCode } from "./booking-description
 import { getEngine, SlotsUnavailableError, type BookingEngine } from "./engine";
 import { errorClass, logEvent } from "./log";
 import { getMailer, mailErrorClass, type Mailer } from "./mail";
-import { confirmationMail, reminderMail } from "./mail-content";
+import { calendarLinks, CANCEL_LEAD_MS, confirmationMail, reminderMail } from "./mail-content";
+import { isBookableStart } from "./slots";
+import { notifyStudio } from "./studio-mail";
+import { terminUrl } from "./links";
 import { bookingRefFor } from "./ref";
 import type { Customer } from "./schema";
 import { getStore, type BookingRow, type Store } from "./store";
@@ -25,6 +28,11 @@ export interface BookingSummary {
   durationMinutes: number;
   /** verbindlich gebucht (confirmed) oder Terminanfrage (requested) */
   binding: boolean;
+  /** Links für die Bestätigungsseite: Terminseite und drei Kalender-Knöpfe */
+  manageUrl: string;
+  calendar: { google: string; ics: string; outlook: string };
+  /** mehr als 24 Stunden bis zum Termin: Verschieben und Absagen über den Link möglich */
+  canManage: boolean;
 }
 
 export type BookResult = { status: "booked"; booking: BookingSummary } | { status: "conflict" };
@@ -52,13 +60,28 @@ export interface Deps {
 
 const defaultDeps = (): Deps => ({ store: getStore(), engine: getEngine(), mailer: getMailer() });
 
-/** Absage über den Link nur bis 48 Stunden vor dem Termin. */
-export const CANCEL_LEAD_MS = 48 * 3600000;
-export function canCancelOnline(b: BookingRow, now = new Date()): boolean {
-  return b.status !== "cancelled" && !b.deleted_at && Date.parse(b.starts_at) - now.getTime() >= CANCEL_LEAD_MS;
+/** Verschieben und Absagen über den Link bis 8 Stunden vor dem Termin; kommuniziert werden 24 Stunden. */
+export const SHORT_NOTICE_MS = 8 * 3600000;
+export { CANCEL_LEAD_MS };
+
+export type TerminWindow = "open" | "short" | "closed" | "past" | "cancelled";
+
+/** Was die Terminseite anbietet: open (mehr als 24 Stunden), short (24 bis 8 Stunden), closed (unter 8), past, cancelled. */
+export function terminWindow(b: BookingRow, now = new Date()): TerminWindow {
+  if (b.status === "cancelled" || b.deleted_at) return "cancelled";
+  if (Date.parse(b.ends_at) <= now.getTime()) return "past";
+  const left = Date.parse(b.starts_at) - now.getTime();
+  if (left >= CANCEL_LEAD_MS) return "open";
+  if (left >= SHORT_NOTICE_MS) return "short";
+  return "closed";
 }
 
-export function summarize(b: BookingRow, requestId: string): BookingSummary {
+export function canCancelOnline(b: BookingRow, now = new Date()): boolean {
+  const w = terminWindow(b, now);
+  return w === "open" || w === "short";
+}
+
+export function summarize(b: BookingRow, requestId: string, now = new Date()): BookingSummary {
   return {
     ref: b.reference,
     requestId,
@@ -66,6 +89,9 @@ export function summarize(b: BookingRow, requestId: string): BookingSummary {
     end: toBerlinIso(new Date(b.ends_at)),
     durationMinutes: b.duration_minutes,
     binding: b.status === "confirmed",
+    manageUrl: terminUrl(b.id),
+    calendar: calendarLinks(b, b.language),
+    canManage: Date.parse(b.starts_at) - now.getTime() >= CANCEL_LEAD_MS,
   };
 }
 
@@ -101,7 +127,7 @@ export async function placeBooking(i: PlaceInput, deps: Deps = defaultDeps()): P
   if (r.outcome === "conflict") return { status: "conflict" };
   if (r.outcome === "created") {
     logEvent("info", "reserved", { bookingRef: reference, status: r.booking.status, engine: engine.name });
-    await Promise.all([writeCalendar(r.booking, deps, false), sendConfirmation(r.booking, deps)]);
+    await Promise.all([writeCalendar(r.booking, deps, false), sendConfirmation(r.booking, deps), notifyStudio("booked", r.booking, deps)]);
   }
   return { status: "booked", booking: summarize(r.booking, i.requestId) };
 }
@@ -135,6 +161,7 @@ export async function writeCalendar(b: BookingRow, deps: Deps = defaultDeps(), l
   const { store, engine } = deps;
   try {
     let eventId = lookupFirst ? await engine.findEventIdByRef(b.reference) : null;
+    if (eventId) await engine.moveEvent(eventId, new Date(b.starts_at), new Date(b.ends_at)); // nach einem Verschieben: Zeiten angleichen, kein zweiter Eintrag
     if (!eventId) eventId = await engine.createEvent(calendarInput(b));
     store.calendarWritten(b.id, eventId);
     logEvent("info", "calendar_written", { bookingRef: b.reference, engine: engine.name });
@@ -180,11 +207,44 @@ export async function sendReminder(b: BookingRow, deps: Deps = defaultDeps(), no
 /** Absage: Datenbank zuerst (Belegung frei), dann Kalendereintrag löschen; scheitert das, räumt der Hintergrundlauf nach. */
 export async function cancelBooking(id: string, reason: string, deps: Deps = defaultDeps(), now = new Date()): Promise<BookingRow | null> {
   const { store } = deps;
+  const before = store.findById(id);
+  const shortNotice = before ? terminWindow(before, now) === "short" : false;
   const row = store.cancel(id, reason, now);
   if (!row) return null;
   logEvent("info", "cancelled", { bookingRef: row.reference, reason });
   await removeCalendarEvent(row, deps);
+  if (reason.startsWith("customer")) await notifyStudio(shortNotice ? "cancelled_short" : "cancelled", row, deps, now);
   return row;
+}
+
+export type RescheduleResult = { status: "rescheduled"; booking: BookingRow } | { status: "conflict" } | { status: "invalid" } | { status: "missing" };
+
+/**
+ * Verschieben (bis 8 Stunden vor dem alten Termin, beliebig oft): neue Zeit nach denselben Regeln wie bei der Buchung,
+ * dieselbe Dauer; erst neue Belegung, dann Freigabe der alten (eine Transaktion). Kalendereintrag wird verschoben,
+ * neue Bestätigung geht raus, Erinnerung nach den normalen Regeln, Studio-Mail.
+ */
+export async function rescheduleBooking(id: string, newStart: Date, deps: Deps = defaultDeps(), now = new Date()): Promise<RescheduleResult> {
+  const { store, engine } = deps;
+  const current = store.findById(id);
+  if (!current || current.deleted_at || current.status === "cancelled") return { status: "missing" };
+  const w = terminWindow(current, now);
+  if (w !== "open" && w !== "short") return { status: "invalid" };
+  if (newStart.getTime() % 600000 !== 0 || !isBookableStart(newStart, now)) return { status: "invalid" };
+  let free: boolean | null = null;
+  try {
+    free = await engine.isStartFree({ start: newStart, durationMinutes: current.duration_minutes, now });
+  } catch (e) {
+    if (!(e instanceof SlotsUnavailableError)) throw e;
+    logEvent("warn", "calendar_check_unavailable", { bookingRef: current.reference, engine: engine.name, errorClass: errorClass(e) });
+  }
+  if (free === false) return { status: "conflict" };
+  const r = store.reschedule(id, newStart, now);
+  if (r.outcome !== "rescheduled") return r.outcome === "conflict" ? { status: "conflict" } : { status: "missing" };
+  const b = r.booking!;
+  logEvent("info", "rescheduled", { bookingRef: b.reference });
+  await Promise.all([writeCalendar(b, deps, true), sendConfirmation(b, deps, now), notifyStudio("rescheduled", b, deps, now)]);
+  return { status: "rescheduled", booking: store.findById(id)! };
 }
 
 async function removeCalendarEvent(b: BookingRow, deps: Deps): Promise<boolean> {

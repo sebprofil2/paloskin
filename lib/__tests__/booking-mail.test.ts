@@ -116,7 +116,7 @@ describe("Bestätigungsmail, Zusage, Absage, Erinnerung", () => {
     expect(mailer.sent).toHaveLength(1);
   });
 
-  it("Zusage und Absage über den Link: Belegung frei, Ereignisse, Kalendereintrag weg, 48-Stunden-Regel", async () => {
+  it("Zusage und Absage über den Link: Belegung frei, Ereignisse, Kalendereintrag weg, Fristen 24 und 8 Stunden", async () => {
     const start = await freeStart();
     await placeBooking(input("44444444-4444-4444-8444-444444444444", start), deps());
     const row = store.findByRequestId("44444444-4444-4444-8444-444444444444")!;
@@ -127,8 +127,9 @@ describe("Bestätigungsmail, Zusage, Absage, Erinnerung", () => {
     expect(confirmAttendance(row.id, deps())?.attendance_confirmed_at).toBe(yes?.attendance_confirmed_at);
     expect(store.eventsForBooking(row.id).map((e) => e.type)).toEqual(["created", "attendance_confirmed"]);
 
-    expect(canCancelOnline(row, new Date(Date.parse(row.starts_at) - 49 * 3600000))).toBe(true);
-    expect(canCancelOnline(row, new Date(Date.parse(row.starts_at) - 47 * 3600000))).toBe(false);
+    expect(canCancelOnline(row, new Date(Date.parse(row.starts_at) - 25 * 3600000))).toBe(true);
+    expect(canCancelOnline(row, new Date(Date.parse(row.starts_at) - 23 * 3600000))).toBe(true); // 24 bis 8 Stunden: „Leider verhindert“
+    expect(canCancelOnline(row, new Date(Date.parse(row.starts_at) - 7 * 3600000))).toBe(false);
 
     const cancelled = await cancelBooking(row.id, "customer_link", deps());
     expect(cancelled?.status).toBe("cancelled");
@@ -184,7 +185,7 @@ describe("Bestätigungsmail, Zusage, Absage, Erinnerung", () => {
     r = await sendRemindersIfDue(deps(), berlin(10, 5));
     expect(r).toMatchObject({ sent: 1, skipped: 0, failed: 0 });
     expect(mailer.sent).toHaveLength(1);
-    expect(mailer.sent[0].subject).toMatch(/^Bis morgen um /);
+    expect(mailer.sent[0].subject).toMatch(/^Bitte kurz bestätigen: morgen, /);
     expect(mailer.sent[0].ics).toBeUndefined();
     expect(await sendRemindersIfDue(deps(), berlin(10, 10))).toBeNull();
     expect(mailer.sent).toHaveLength(1);

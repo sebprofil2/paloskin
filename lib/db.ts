@@ -49,7 +49,9 @@ CREATE TABLE IF NOT EXISTS bookings (
   mail_confirmation_attempted_at TEXT,
   mail_reminder_sent_at TEXT,
   mail_reminder_attempts INTEGER NOT NULL DEFAULT 0,
-  mail_reminder_skipped INTEGER NOT NULL DEFAULT 0
+  mail_reminder_skipped INTEGER NOT NULL DEFAULT 0,
+  previous_starts_at TEXT,
+  rescheduled_at TEXT
 );
 CREATE INDEX IF NOT EXISTS bookings_starts_at ON bookings (starts_at);
 CREATE INDEX IF NOT EXISTS bookings_reference ON bookings (reference);
@@ -87,6 +89,16 @@ CREATE TABLE IF NOT EXISTS meta (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS studio_mails (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  subject TEXT NOT NULL,
+  body TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  sent_at TEXT,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  attempted_at TEXT
+);
 `;
 
 export function openDatabase(path: string): DatabaseSync {
@@ -119,6 +131,14 @@ function migrate(db: DatabaseSync): void {
       ALTER TABLE bookings ADD COLUMN mail_reminder_sent_at TEXT;
       ALTER TABLE bookings ADD COLUMN mail_reminder_attempts INTEGER NOT NULL DEFAULT 0;
       ALTER TABLE bookings ADD COLUMN mail_reminder_skipped INTEGER NOT NULL DEFAULT 0;
+      COMMIT;
+    `);
+  }
+  if (!columns.has("rescheduled_at")) {
+    db.exec(`
+      BEGIN;
+      ALTER TABLE bookings ADD COLUMN previous_starts_at TEXT;
+      ALTER TABLE bookings ADD COLUMN rescheduled_at TEXT;
       COMMIT;
     `);
   }

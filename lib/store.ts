@@ -64,6 +64,8 @@ export interface BookingRow {
   mail_reminder_sent_at: string | null;
   mail_reminder_attempts: number;
   mail_reminder_skipped: number;
+  previous_starts_at: string | null;
+  rescheduled_at: string | null;
 }
 
 /**
@@ -475,6 +477,70 @@ export class Store {
       .prepare("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_confirmation_sent_at IS NULL AND starts_at > ? AND created_at < ?")
       .get(iso(now), limit) as { n: number };
     return r.n;
+  }
+
+  /**
+   * Verschieben: alte Belegung freigeben und neue belegen in einer Transaktion. Scheitert die neue Zeit, bleibt die
+   * alte stehen (Rollback). Zusage, Erinnerung und Bestätigungsmail werden zurückgesetzt, Ereignis rescheduled.
+   */
+  reschedule(id: string, newStart: Date, now = new Date()): { outcome: "rescheduled" | "conflict" | "missing"; booking: BookingRow | null } {
+    const startMs = newStart.getTime();
+    if (startMs % UNIT_MS !== 0) throw new Error("Beginn liegt nicht im 10-Minuten-Raster");
+    const at = iso(now);
+    this.db.exec("BEGIN IMMEDIATE");
+    try {
+      const row = this.get(id);
+      if (!row || row.deleted_at || row.status === "cancelled") {
+        this.db.exec("COMMIT");
+        return { outcome: "missing", booking: null };
+      }
+      this.db.prepare("DELETE FROM slot_locks WHERE booking_id = ?").run(id);
+      const insertLock = this.db.prepare("INSERT INTO slot_locks (slot_start, booking_id) VALUES (?, ?)");
+      const firstUnit = startMs / 60000;
+      const units = Math.ceil(row.duration_minutes / UNIT_MINUTES);
+      for (let u = 0; u < units; u++) insertLock.run(firstUnit + u * UNIT_MINUTES, id);
+      const endMs = startMs + row.duration_minutes * 60000;
+      this.db
+        .prepare(
+          `UPDATE bookings SET previous_starts_at = starts_at, starts_at = ?, ends_at = ?, rescheduled_at = ?, attendance_confirmed_at = NULL,
+           mail_reminder_sent_at = NULL, mail_reminder_skipped = 0, mail_reminder_attempts = 0,
+           mail_confirmation_sent_at = NULL, mail_confirmation_attempts = 0, mail_confirmation_attempted_at = NULL, updated_at = ? WHERE id = ?`,
+        )
+        .run(iso(newStart), iso(new Date(endMs)), at, at, id);
+      const updated = this.get(id)!;
+      this.appendEvent(updated, "rescheduled", at);
+      this.db.exec("COMMIT");
+      return { outcome: "rescheduled", booking: updated };
+    } catch (e) {
+      try {
+        this.db.exec("ROLLBACK");
+      } catch {
+        /* schon beendet */
+      }
+      if (isUniqueViolation(e)) return { outcome: "conflict", booking: null };
+      throw e;
+    }
+  }
+
+  /** Studio-Mails: Warteschlange, damit ein Versandfehler nie eine Buchung verhindert. */
+  enqueueStudioMail(subject: string, body: string, now = new Date()): number {
+    const r = this.db.prepare("INSERT INTO studio_mails (subject, body, created_at) VALUES (?, ?, ?)").run(subject, body, iso(now));
+    return Number(r.lastInsertRowid);
+  }
+
+  studioMailsPending(now = new Date(), limit = 50): { id: number; subject: string; body: string; attempts: number }[] {
+    const retryBefore = iso(new Date(now.getTime() - 4 * 60000));
+    return this.db
+      .prepare("SELECT id, subject, body, attempts FROM studio_mails WHERE sent_at IS NULL AND attempts < 20 AND (attempted_at IS NULL OR attempted_at < ?) ORDER BY id LIMIT ?")
+      .all(retryBefore, limit) as { id: number; subject: string; body: string; attempts: number }[];
+  }
+
+  studioMailSent(id: number, now = new Date()): void {
+    this.db.prepare("UPDATE studio_mails SET sent_at = ?, attempts = attempts + 1, attempted_at = ? WHERE id = ?").run(iso(now), iso(now), id);
+  }
+
+  studioMailFailed(id: number, now = new Date()): void {
+    this.db.prepare("UPDATE studio_mails SET attempts = attempts + 1, attempted_at = ? WHERE id = ?").run(iso(now), id);
   }
 
   /** Bestätigung durch das Kundensystem: requested wird confirmed, Ereignis confirmed; sonst unverändert. */

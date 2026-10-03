@@ -148,6 +148,14 @@ export class MockEngine implements BookingEngine {
       .map(([id, e]) => ({ id, summary: e.title, description: e.description, start: e.start, end: e.end }));
   }
 
+  async moveEvent(eventId: string, start: Date, end: Date): Promise<void> {
+    failIfDown();
+    const e = events.get(eventId);
+    if (!e) throw new Error("Eintrag nicht gefunden");
+    e.start = start;
+    e.end = end;
+  }
+
   async appendDescription(eventId: string, line: string): Promise<void> {
     failIfDown();
     const e = events.get(eventId);

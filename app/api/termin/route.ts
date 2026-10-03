@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { canCancelOnline, cancelBooking, confirmAttendance } from "@/lib/booking";
+import { cancelBooking, confirmAttendance, terminWindow } from "@/lib/booking";
 import { verifyTerminToken } from "@/lib/links";
 import { errorClass, logEvent } from "@/lib/log";
 import { allow, clientKey, LIMITS } from "@/lib/ratelimit";
@@ -9,8 +9,8 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /*
- * Zusage oder Absage über den signierten Link aus der Mail (Formular, POST). Antwort ist immer eine Weiterleitung
- * zurück auf die Terminseite mit einer Meldung; der Link selbst bleibt der einzige Schlüssel.
+ * Zusage oder Absage über den signierten Link aus der Mail (Formular, POST). Die Fristen gelten auch hier:
+ * Absage bis 8 Stunden vor dem Termin (ja: jederzeit vor dem Termin). Antwort ist eine Weiterleitung auf die Terminseite.
  */
 export async function POST(req: Request) {
   const back = (token: string, m: string) =>
@@ -25,14 +25,15 @@ export async function POST(req: Request) {
     const booking = getStore().findById(id);
     if (!booking || booking.deleted_at) return NextResponse.json({ error: "invalid" }, { status: 404 });
     const now = new Date();
-    if (booking.status === "cancelled") return back(token, "abgesagt");
-    if (Date.parse(booking.ends_at) <= now.getTime()) return back(token, "vorbei");
+    const w = terminWindow(booking, now);
+    if (w === "cancelled") return back(token, "abgesagt");
+    if (w === "past") return back(token, "vorbei");
     if (action === "ja") {
       confirmAttendance(id, undefined, now);
       return back(token, "ja");
     }
-    if (!canCancelOnline(booking, now)) return back(token, "zuspaet");
-    await cancelBooking(id, "customer_link", undefined, now);
+    if (w === "closed") return back(token, "zuspaet");
+    await cancelBooking(id, w === "short" ? "customer_link_short" : "customer_link", undefined, now);
     return back(token, "absage");
   } catch (e) {
     logEvent("error", "termin_failed", { route: "termin", errorClass: errorClass(e) });
