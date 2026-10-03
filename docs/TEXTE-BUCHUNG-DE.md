@@ -29,7 +29,7 @@ Stelle, dann aktueller Text. Zeilen mit „Altbestand“ sind im Code noch vorha
 23. **Kontrolltermin-Link, Bezeichnung** (checkupLbl): Kontrolltermin
 24. **Schritt 1, Überschrift Behandlung** (treatQ): Wofür interessieren Sie sich?
 25. **Schritt 1, Karte Beratung, Titel** (unsureT): Ich lasse mich erst beraten
-26. **Schritt 1, Karte Beratung, Untertitel** (unsureD): Wir nehmen uns Zeit und finden gemeinsam, was zu Ihnen passt.
+26. **Schritt 1, Karte Beratung, Untertitel** (unsureD): Wir nehmen uns Zeit und entscheiden gemeinsam, was zu Ihnen passt.
 27. **Schritt 1, Aufklappbereich Botox, Titel** (botGroup): Botox-Behandlung
 28. **Schritt 1, Zwischentitel weitere Behandlungen** (moreGroup): Weitere Behandlungen
 29. **Schritt 1, Karte Kaumuskel, Titel** (kaumuskel): Kaumuskel (Masseter)
