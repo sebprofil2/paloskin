@@ -2,6 +2,7 @@ import { retryCalendar, runMailJobs } from "./booking";
 import { errorClass, logEvent } from "./log";
 import { runDailyIfDue } from "./retention";
 import { sendReminderListIfDue, sendRemindersIfDue } from "./reminder-list";
+import { runStudioMailQueue } from "./studio-mail";
 import { getEngine } from "./engine";
 import { getMailer } from "./mail";
 import { getStore } from "./store";
@@ -42,6 +43,11 @@ export function startBackgroundJobs(): void {
       await sendReminderListIfDue({ store: getStore(), engine: getEngine(), mailer: getMailer() });
     } catch (e) {
       logEvent("error", "job_failed", { route: "reminder_list", errorClass: errorClass(e) });
+    }
+    try {
+      await runStudioMailQueue({ store: getStore(), engine: getEngine(), mailer: getMailer() });
+    } catch (e) {
+      logEvent("error", "job_failed", { route: "studio_mails", errorClass: errorClass(e) });
     }
     try {
       const m = await runMailJobs();
