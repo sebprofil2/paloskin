@@ -147,6 +147,7 @@ export class GoogleCalendarEngine implements BookingEngine {
         stepMinutes: env.stepMinutes,
         from,
         to,
+        now: input.now ?? new Date(),
       });
       return { days, from: toBerlinIso(from), to: toBerlinIso(to) };
     } catch (e) {
@@ -164,7 +165,7 @@ export class GoogleCalendarEngine implements BookingEngine {
     const dayAfter = new Date(endMs + 86400000);
     try {
       const [windows, busy] = await Promise.all([this.openWindows(dayBefore, dayAfter), this.busyTimes(dayBefore, dayAfter)]);
-      return isStartFree(input.start, { windows, busy, durationMinutes: input.durationMinutes, bufferMinutes: env.bufferMinutes, from, to });
+      return isStartFree(input.start, { windows, busy, durationMinutes: input.durationMinutes, bufferMinutes: env.bufferMinutes, from, to, now: input.now ?? new Date() });
     } catch (e) {
       logEvent("error", "google_check_failed", { engine: "google", errorClass: errorClass(e), httpStatus: e instanceof GoogleError ? (e.status ?? 0) : 0 });
       throw new SlotsUnavailableError("Kalender nicht lesbar");

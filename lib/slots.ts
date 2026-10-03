@@ -1,4 +1,4 @@
-import { berlinDateKey, berlinTimeLabel, dateKeysBetween, fromBerlinKey, toBerlinIso } from "./time";
+import { addDaysKey, berlinDateKey, berlinParts, berlinTimeLabel, dateKeysBetween, fromBerlinKey, toBerlinIso } from "./time";
 
 /* Zeitspannen in Millisekunden seit 1970 (Weltzeit) */
 export interface Interval {
@@ -23,15 +23,33 @@ export interface SlotDay {
   holiday?: "unity";
 }
 
-export const LEAD_HOURS = 12;
+export const LEAD_HOURS = 2;
 export const RANGE_DAYS = 42; // 6 Wochen
+/** Nachtregel: Termine vor dieser Uhrzeit sind nur bis zum Abend davor buchbar */
+export const EARLY_HOUR = 10;
+export const EVENING_CUTOFF = "23:00";
 
-/** Buchbarer Zeitraum: ab jetzt plus 12 Stunden Vorlauf bis 6 Wochen voraus. Nur der Server legt das fest. */
+/** Buchbarer Zeitraum: ab jetzt plus 2 Stunden Vorlauf bis 6 Wochen voraus. Nur der Server legt das fest. */
 export function bookingRange(now: Date = new Date()): { from: Date; to: Date } {
   return {
     from: new Date(now.getTime() + LEAD_HOURS * 3600000),
     to: new Date(now.getTime() + RANGE_DAYS * 86400000),
   };
+}
+
+/**
+ * Darf ein Termin mit diesem Beginn jetzt noch gebucht werden? Vorlauf 2 Stunden, Horizont 6 Wochen, Nachtregel:
+ * Beginn vor 10:00 Uhr Berliner Zeit nur bis 23:00 Uhr am Vorabend, danach nicht mehr, auch nicht am selben Morgen.
+ * Alles in Europe/Berlin, auch über die Zeitumstellung.
+ */
+export function isBookableStart(start: Date, now: Date = new Date()): boolean {
+  const { from, to } = bookingRange(now);
+  if (start.getTime() < from.getTime() || start.getTime() > to.getTime()) return false;
+  if (berlinParts(start).hour < EARLY_HOUR) {
+    const cutoff = fromBerlinKey(addDaysKey(berlinDateKey(start), -1), EVENING_CUTOFF);
+    if (now.getTime() >= cutoff.getTime()) return false;
+  }
+  return true;
 }
 
 export function mergeIntervals(list: Interval[]): Interval[] {
@@ -57,6 +75,8 @@ export interface SlotInput {
   stepMinutes: number;
   from: Date;
   to: Date;
+  /** Jetzt, für Vorlauf und Nachtregel; ohne Angabe die Systemzeit */
+  now?: Date;
 }
 
 /**
@@ -68,6 +88,7 @@ export function isStartFree(start: Date, input: Omit<SlotInput, "stepMinutes">):
   const need = (input.durationMinutes + input.bufferMinutes) * 60000;
   const e = s + need;
   if (s < input.from.getTime() || e > input.to.getTime()) return false;
+  if (!isBookableStart(start, input.now ?? new Date(input.from.getTime() - LEAD_HOURS * 3600000))) return false;
   const inWindow = mergeIntervals(input.windows).some((w) => s >= w.start && e <= w.end);
   if (!inWindow) return false;
   const block: Interval = { start: s, end: e };
@@ -82,6 +103,7 @@ export function computeSlots(input: SlotInput): SlotDay[] {
   const busy = mergeIntervals(input.busy);
   const fromMs = input.from.getTime();
   const toMs = input.to.getTime();
+  const now = input.now ?? new Date(fromMs - LEAD_HOURS * 3600000);
 
   const byDay = new Map<string, Slot[]>();
   const daysWithWindows = new Set<string>();
@@ -98,6 +120,7 @@ export function computeSlots(input: SlotInput): SlotDay[] {
       const block: Interval = { start: t, end: t + needMs };
       if (busy.some((b) => overlaps(block, b))) continue;
       const d = new Date(t);
+      if (!isBookableStart(d, now)) continue;
       const key = berlinDateKey(d);
       const list = byDay.get(key) ?? [];
       list.push({ start: toBerlinIso(d), time: berlinTimeLabel(d) });

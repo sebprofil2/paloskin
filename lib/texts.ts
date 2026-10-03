@@ -213,6 +213,11 @@ pt:{
 export interface ExtraTexts {
   testBanner: string;
   afterCancelReal: string;
+  /** unter der Uhrzeitauswahl, immer sichtbar; „per WhatsApp“ wird verlinkt */
+  noSlotHint: string;
+  noSlotLink: string;
+  /** Knopf unter der Konfliktmeldung */
+  otherTime: string;
   /** Bestätigungsseite bei verbindlicher Buchung (BOOKING_BINDING) */
   doneBindingH: string;
   /** Unterzeile der Bestätigungsseite bei verbindlicher Buchung */
@@ -252,10 +257,11 @@ const X: Record<Lang, ExtraTexts> = {
   de: {
     testBanner: "Testversion. Bitte nur erfundene Namen und keine echten Behandlungswünsche eintragen. Die Buchung landet wirklich im Kalender.",
     afterCancelReal: "Absagen oder verschieben bitte per WhatsApp unter +49 151 58872566, mindestens 48 Stunden vorher.",
+    noSlotHint: "Kein passender Termin dabei? Schreiben Sie uns gern per WhatsApp.", noSlotLink: "per WhatsApp", otherTime: "Andere Zeit wählen",
     doneBindingH: "Gebucht! Wir freuen uns auf Sie.", doneBindingP: "Alle Details bekommen Sie gleich per E-Mail.",
     cancelP2: "Falls etwas dazwischenkommt: Bis 48 Stunden vorher können Sie über den Link in Ihrer Bestätigung absagen. Danach schreiben Sie uns bitte per WhatsApp an +49 151 58872566.",
     pendingT: "Wir prüfen Ihre Buchung.", pendingP: "Bitte nicht erneut buchen, wir melden uns.",
-    conflict: "Da war jemand schneller. Wählen Sie bitte eine andere Uhrzeit.",
+    conflict: "Dieser Termin ist online leider nicht mehr buchbar. Bitte wählen Sie eine andere Zeit oder schreiben Sie uns per WhatsApp.",
     bookErr: "Das hat gerade nicht geklappt. Versuchen Sie es bitte noch einmal oder schreiben Sie uns per WhatsApp.",
     loading: "Einen Moment, wir schauen in den Kalender.",
     noneFree: "Online ist gerade nichts frei. Schreiben Sie uns per WhatsApp, wir finden einen Termin für Sie.",
@@ -271,10 +277,11 @@ const X: Record<Lang, ExtraTexts> = {
   en: {
     testBanner: "Test version. Please enter invented names only and no real treatment wishes. The booking really does go into the calendar.",
     afterCancelReal: "To cancel or reschedule, please send us a WhatsApp message or call +49 151 58872566, at least 48 hours in advance.",
+    noSlotHint: "No suitable time? Feel free to message us on WhatsApp.", noSlotLink: "on WhatsApp", otherTime: "Choose another time",
     doneBindingH: "Booked! We look forward to seeing you.", doneBindingP: "All the details will reach you by email in a moment.",
     cancelP2: "If something comes up: up to 48 hours in advance you can cancel via the link in your confirmation. After that, please message us on WhatsApp at +49 151 58872566.",
     pendingT: "We are checking your booking.", pendingP: "Please do not book again, we will get in touch.",
-    conflict: "Someone was quicker. Please choose another time.",
+    conflict: "Unfortunately this appointment can no longer be booked online. Please choose another time or message us on WhatsApp.",
     bookErr: "That didn’t work just now. Please try again or message us on WhatsApp.",
     loading: "One moment, we’re checking the calendar.",
     noneFree: "Nothing is free online right now. Message us on WhatsApp and we’ll find you a time.",
@@ -290,10 +297,11 @@ const X: Record<Lang, ExtraTexts> = {
   es: {
     testBanner: "Versión de prueba. Introduzca solo nombres inventados y ningún deseo de tratamiento real. La reserva se registra de verdad en el calendario.",
     afterCancelReal: "Para cancelar o cambiar la cita, escríbanos por WhatsApp o llámenos al +49 151 58872566, con al menos 48 horas de antelación.",
+    noSlotHint: "¿Ninguna hora le viene bien? Escríbanos con gusto por WhatsApp.", noSlotLink: "por WhatsApp", otherTime: "Elegir otra hora",
     doneBindingH: "¡Reservado! Le esperamos.", doneBindingP: "Todos los detalles le llegan enseguida por correo electrónico.",
     cancelP2: "Si le surge algo: hasta 48 horas antes puede cancelar a través del enlace de su confirmación. Después, escríbanos por WhatsApp al +49 151 58872566.",
     pendingT: "Estamos comprobando su reserva.", pendingP: "Por favor, no vuelva a reservar. Nos pondremos en contacto con usted.",
-    conflict: "Alguien ha sido más rápido. Elija otra hora, por favor.",
+    conflict: "Lamentablemente esta cita ya no se puede reservar en línea. Elija otra hora o escríbanos por WhatsApp.",
     bookErr: "Eso no ha funcionado. Inténtelo de nuevo o escríbanos por WhatsApp.",
     loading: "Un momento, estamos mirando la agenda.",
     noneFree: "Ahora mismo no hay citas libres online. Escríbanos por WhatsApp y le encontramos una.",
@@ -309,10 +317,11 @@ const X: Record<Lang, ExtraTexts> = {
   fr: {
     testBanner: "Version de test. Merci de n’indiquer que des noms inventés et aucun souhait de soin réel. La réservation est réellement inscrite dans l’agenda.",
     afterCancelReal: "Pour annuler ou déplacer le rendez-vous, écrivez-nous sur WhatsApp ou appelez le +49 151 58872566, au moins 48 heures à l’avance.",
+    noSlotHint: "Aucun créneau ne vous convient ? Écrivez-nous volontiers sur WhatsApp.", noSlotLink: "sur WhatsApp", otherTime: "Choisir un autre créneau",
     doneBindingH: "Réservé ! Nous avons hâte de vous accueillir.", doneBindingP: "Tous les détails vous parviennent dans un instant par e-mail.",
     cancelP2: "En cas d’imprévu : jusqu’à 48 heures avant, vous pouvez annuler via le lien de votre confirmation. Ensuite, écrivez-nous sur WhatsApp au +49 151 58872566.",
     pendingT: "Nous vérifions votre réservation.", pendingP: "Merci de ne pas réserver à nouveau, nous vous recontactons.",
-    conflict: "Quelqu’un a été plus rapide. Choisissez une autre heure, s’il vous plaît.",
+    conflict: "Ce rendez-vous ne peut malheureusement plus être réservé en ligne. Choisissez un autre créneau ou écrivez-nous sur WhatsApp.",
     bookErr: "Cela n’a pas fonctionné. Réessayez ou écrivez-nous sur WhatsApp.",
     loading: "Un instant, nous consultons l’agenda.",
     noneFree: "Aucun créneau libre en ligne pour le moment. Écrivez-nous sur WhatsApp, nous vous trouvons un rendez-vous.",
@@ -328,10 +337,11 @@ const X: Record<Lang, ExtraTexts> = {
   pt: {
     testBanner: "Versão de teste. Use apenas nomes inventados e nenhum desejo real de tratamento. A reserva é registrada de verdade no calendário.",
     afterCancelReal: "Para cancelar ou remarcar, mande uma mensagem pelo WhatsApp ou ligue para +49 151 58872566, com pelo menos 48 horas de antecedência.",
+    noSlotHint: "Nenhum horário serve? Fale conosco pelo WhatsApp.", noSlotLink: "pelo WhatsApp", otherTime: "Escolher outro horário",
     doneBindingH: "Marcado! Esperamos por você.", doneBindingP: "Todos os detalhes chegam já por e-mail.",
     cancelP2: "Se surgir um imprevisto: até 48 horas antes você pode cancelar pelo link da sua confirmação. Depois disso, fale conosco pelo WhatsApp no +49 151 58872566.",
     pendingT: "Estamos verificando a sua reserva.", pendingP: "Por favor, não reserve de novo, nós entramos em contato.",
-    conflict: "Alguém foi mais rápido. Escolha outro horário, por favor.",
+    conflict: "Infelizmente, esta consulta não pode mais ser marcada online. Escolha outro horário ou fale conosco pelo WhatsApp.",
     bookErr: "Não deu certo agora. Tente de novo ou mande uma mensagem no WhatsApp.",
     loading: "Um momento, estamos olhando a agenda.",
     noneFree: "No momento não há horários livres online. Mande uma mensagem no WhatsApp e encontramos um para você.",

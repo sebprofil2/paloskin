@@ -9,7 +9,7 @@ import { notifyOwner } from "@/lib/notify";
 import { allow, clientKey, contactKey, LIMITS } from "@/lib/ratelimit";
 import { bookingRefFor } from "@/lib/ref";
 import { bookRequestSchema } from "@/lib/schema";
-import { bookingRange } from "@/lib/slots";
+import { isBookableStart } from "@/lib/slots";
 import { getStore } from "@/lib/store";
 
 export const runtime = "nodejs";
@@ -35,9 +35,9 @@ export async function POST(req: Request) {
   const env = readEnv();
   const minutes = durationMinutes(body.selection);
   const start = new Date(body.start);
-  const { from, to } = bookingRange();
+  // Raster, Vorlauf, Horizont und Nachtregel gelten beim Absenden, nicht beim Laden der Seite
   const onGrid = start.getTime() % (env.stepMinutes * 60000) === 0;
-  if (!onGrid || start < from || start > to) return json({ status: "conflict" }, 409);
+  if (!onGrid || !isBookableStart(start, new Date())) return json({ status: "conflict" }, 409);
 
   const ref = bookingRefFor(body.requestId);
   try {

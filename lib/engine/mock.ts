@@ -104,6 +104,7 @@ export class MockEngine implements BookingEngine {
       stepMinutes: env.stepMinutes,
       from,
       to,
+      now: input.now ?? new Date(),
     });
     // Der 3. Oktober erscheint wie im Entwurf als geschlossener Tag
     const toKey = berlinDateKey(to);
@@ -119,7 +120,7 @@ export class MockEngine implements BookingEngine {
     failIfDown();
     const { from, to } = bookingRange(input.now);
     const { windows, busy } = windowsFor(from, to);
-    return isStartFree(input.start, { windows, busy, durationMinutes: input.durationMinutes, bufferMinutes: env.bufferMinutes, from, to });
+    return isStartFree(input.start, { windows, busy, durationMinutes: input.durationMinutes, bufferMinutes: env.bufferMinutes, from, to, now: input.now ?? new Date() });
   }
 
   async createEvent(input: CalendarEventInput): Promise<string> {

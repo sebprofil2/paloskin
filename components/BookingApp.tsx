@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { SlotDay } from "@/lib/slots";
 import { FLAGS, LANGS, TEXTS, isLang, type Texts } from "@/lib/texts";
+import { normalizePhoneE164 } from "@/lib/phone";
 import { PRICES, ZONE_IDS, hasBotulinum, hasTreatment, zoneCount, zonePrice, type Lachs, type Lang, type Selection, type Visit, type ZoneId } from "@/lib/treatments";
 
 /* ---------- Feste Angaben ---------- */
@@ -118,13 +119,6 @@ function durationKey(sel: Selection): string {
   return JSON.stringify([sel.checkup, sel.visit, sel.beratung, hasBotulinum(sel), !!sel.lachs, sel.persons]);
 }
 
-function normPhone(v: string): string {
-  let d = v.replace(/[^\d+]/g, "");
-  if (d.startsWith("00")) d = "+" + d.slice(2);
-  else if (d.startsWith("0")) d = "+49" + d.slice(1);
-  else if (d && !d.startsWith("+")) d = "+49" + d;
-  return d;
-}
 
 /* Sprache: Adresse, dann gespeicherte Wahl, dann Sprache des Geräts, sonst Deutsch (wie lang.js) */
 function detectLang(fromUrl: Lang | null): Lang {
@@ -141,6 +135,19 @@ function detectLang(fromUrl: Lang | null): Lang {
 const pad = (n: number) => String(n).padStart(2, "0");
 const keyToNoon = (key: string) => new Date(`${key}T12:00:00Z`);
 const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+
+/** Teilsatz als Link, zum Beispiel „per WhatsApp“ */
+function withLink(text: string, part: string, href: string): React.ReactNode {
+  const i = text.indexOf(part);
+  if (i < 0) return text;
+  return (
+    <>
+      {text.slice(0, i)}
+      <a href={href} target="_blank" rel="noopener">{part}</a>
+      {text.slice(i + part.length)}
+    </>
+  );
+}
 
 async function fetchJson(url: string, init: RequestInit, timeoutMs: number): Promise<{ res: Response; data: Record<string, unknown> }> {
   const ctrl = new AbortController();
@@ -384,7 +391,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     if (n === 3) {
       if (!f.vorname.trim()) e.vorname = "eVorname";
       if (!f.nachname.trim()) e.nachname = "eNachname";
-      if (normPhone(f.handy).replace(/\D/g, "").length < 10) e.handy = "eHandy";
+      if (!normalizePhoneE164(f.handy)) e.handy = "eHandy";
       if (!/^\S+@\S+\.\S+$/.test(f.email.trim())) e.email = "eEmail";
       if (!f.consent) e.consent = "eConsent";
     }
@@ -715,9 +722,15 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
       <section className="sec" id="sec-slot">
         {chk}
         <h2>{title}</h2>
-        {book.status === "conflict" ? <div className="missing">{l.conflict}</div> : null}
+        {book.status === "conflict" ? (
+          <div className="missing">
+            {l.conflict}
+            <div style={{ marginTop: 10 }}><button type="button" className="btn-ghost" onClick={() => setBook({ status: "idle" })}>{l.otherTime}</button></div>
+          </div>
+        ) : null}
         {miss("slot")}
         {body}
+        <p className="hint">{withLink(l.noSlotHint, l.noSlotLink, WA)}</p>
       </section>
     );
   };
