@@ -123,7 +123,7 @@ Für später, nicht gebaut: Nach einer Buchung für 1 Person soll die Bestätigu
 ## Buchung Stufe 2, Schritt 2: Bestätigungsmail, Terminlinks, Erinnerung (2. Oktober 2026)
 
 - Relay: `smtp-relay.gmail.com:587` STARTTLS ohne Anmeldung, Freigabe nur für IPv4 2.31.2.192 (Container spricht IPv4). Mailer `lib/mail.ts` (Betriebsarten relay, file, off), Inhalte `lib/mail-content.ts`, Texte `lib/texts-mail.ts`, Links `lib/links.ts` (HMAC mit `LINK_SECRET`), Seite `app/termin/[token]`, Route `app/api/termin`.
-- Zusage und Absage über den Link (Absage bis 48 Stunden vorher), Erinnerung 24 Stunden vorher, `BOOKING_BINDING` vorbereitet und aus. Lokal `MAIL_MODE=file` schreibt Mails nach `.data/mail`.
+- Zusage und Absage über den Link (heute: Fristen 24 und 8 Stunden, Verschieben möglich), Erinnerung am Vortag 10:00 Uhr, `BOOKING_BINDING` vorbereitet und aus. Lokal `MAIL_MODE=file` schreibt Mails nach `.data/mail`.
 
 ## Buchung Stufe 2, Schritt 3: Ereignisse und Endpunkt (2. Oktober 2026)
 
@@ -138,3 +138,8 @@ Für später, nicht gebaut: Nach einer Buchung für 1 Person soll die Bestätigu
 ## Öffentlich seit 3. Oktober 2026
 
 - www läuft ohne Testcode (`TEST_MODE=false`), Mails und verbindliche Buchung an, Handliste der WhatsApp-Erinnerungen täglich 18:00 Uhr an `OWNER_MAIL`. Testinstanz neu.paloskin.de bleibt im Testbetrieb (Compose-Umgebung für app-test). Keine Tabellenziffern mehr in Textzeilen (Schriftmacke).
+
+## Gesamtauftrag 3. Oktober 2026 abends (Stand nach den Blöcken 1 bis 10)
+
+- Fristen: Vorlauf 2 Stunden, Nachtregel 23:00 Uhr für Termine vor 10:00 Uhr, Horizont 6 Wochen (`lib/slots.ts`, `isBookableStart`). Terminseite: Verschieben und Absagen bis 24 Stunden kommuniziert, technisch bis 8 Stunden (`terminWindow` in `lib/booking.ts`). Erinnerung am Vortag 10:00 Uhr nur für vorher gebuchte Termine. Studio-Mails an `OWNER_MAIL` über `studio_mails`.
+- Texte: `lib/texts-mail.ts` (Mails, Terminseite, Verschieben), `lib/texts.ts` (Buchung), `public/assets/home-text.js` (Startseite); Liste `docs/TEXTE-MAILS.md` über `scripts/texte-mails.mts`.
