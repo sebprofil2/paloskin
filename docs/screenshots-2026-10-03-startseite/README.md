@@ -1,0 +1,1 @@
+Screenshots der Startseite, zweite Textrunde (Freigabe Dr. Vogel, 3. Oktober 2026), Handybreite 375 Pixel, iPhone-Darstellung über `scripts/screenshot-375.mjs` vom lokalen Stand. Abschnitte: Einstieg, Behandlungen und Preise, Ablauf, Studio, Häufige Fragen.

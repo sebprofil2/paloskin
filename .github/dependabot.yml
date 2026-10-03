@@ -1,0 +1,22 @@
+# Wöchentliche Vorschläge für Abhängigkeiten, Basis-Image und Actions; Zusammenfassung je Gruppe
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Berlin
+    groups:
+      abhaengigkeiten:
+        patterns: ["*"]
+    open-pull-requests-limit: 3
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
