@@ -1,363 +1,458 @@
-# Texte: Bestätigungsmail, Erinnerungsmail, Terminseite (fünf Sprachen)
+# Kundentexte: Bestätigungsmail, Erinnerungsmail, Kalenderdatei, Terminseite, Bestätigungsseite (fünf Sprachen)
 
-Stand: 3. Oktober 2026. Deutsch ist die Freigabe von Dr. Vogel; EN, ES, FR, PT sind freigegeben (Feinschliff folgt), Wochentage in ES, FR, PT mitten im Satz klein. Erzeugt aus `lib/texts-mail.ts` mit `scripts/texte-mails.mts`, Beispieltermin Donnerstag, 8. Oktober 2026, 08:00 Uhr, Vorname Verena, zu zweit.
+Stand: 3. Oktober 2026, endgültige Fassung (Freigabe Dr. Vogel). Deutsch wörtlich, die anderen Sprachen sinngemäß im selben Ton; Betreffzeilen höchstens 40 Zeichen mit Datum und Uhrzeit vorn. Erzeugt aus `lib/texts-mail.ts` und `lib/texts.ts` mit `scripts/texte-mails.mts`. Beispieltermin Mittwoch, 7. Oktober 2026, 08:00 Uhr, Vorname Verena, zu zweit.
 
 ## Deutsch (de)
 
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff: Ihr Termin bei PALO SKIN am Donnerstag, 8. Oktober um 08:00 Uhr
+Betreff (35 Zeichen): Gebucht: Mittwoch, 7.10., 08:00 Uhr
 
 ```
-Guten Tag Verena,
+Hallo Verena,
 
-schön, dass Sie kommen. Ihr Termin steht:
+schön, dass Sie zu uns kommen! Wir freuen uns auf Sie:
 
-Donnerstag, 8. Oktober 2026, 08:00 Uhr
-PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin (Karte öffnen)
+Mittwoch, 7. Oktober, 08:00 Uhr (fett)
+PALO SKIN by Dr. Vogel
+Hagenauer Straße 14, 10435 Berlin
+[So finden Sie uns] (https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8)
 
-Wir haben für Sie beide Zeit eingeplant. [nur bei zu zweit]
+Ihre Zeit ist uns wichtig: Bei PALO SKIN beginnt Ihr Termin pünktlich, ohne Wartezeit. Kommen Sie bitte zur vereinbarten Zeit oder höchstens fünf Minuten vorher. Falls Sie später kommen, bleibt entsprechend weniger Zeit für Ihren Termin, damit auch die nächsten Kunden pünktlich starten.
 
-Einen Tag vorher erinnern wir Sie noch einmal kurz.
+Für Sie beide haben wir Zeit eingeplant. (nur bei zu zweit)
 
-Kommt etwas dazwischen? Termin absagen oder verschieben [Link]. Bitte mindestens 48 Stunden vorher, dann freut sich jemand anderes über die Zeit. Kurzfristig erreichen Sie uns per WhatsApp unter +49 151 58872566.
+Möchten Sie den Termin gleich im Kalender speichern?
+[Google Kalender] [iPhone-Kalender] [Outlook]
 
-Die Kalenderdatei für Ihr Handy hängt an.
+Am Tag vorher erinnern wir Sie noch einmal.
 
-Bis bald
-Dr. med. Sebastian Vogel
-PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-WhatsApp +49 151 58872566
-```
+Falls etwas dazwischenkommt, können Sie Ihren Termin bis 48 Stunden vorher über den Link absagen. Danach schreiben Sie uns bitte per WhatsApp an +49 151 58872566.
+[Termin ansehen oder absagen]
 
-Ohne Schalter (Terminanfrage), nur bis zum Ausrollen: Betreff „Ihre Terminanfrage bei PALO SKIN am Donnerstag, 8. Oktober um 08:00 Uhr“, Einstieg „schön, dass Sie kommen möchten. Wir haben die Zeit für Sie vorgemerkt und melden uns kurz per WhatsApp:“
-
-### Erinnerungsmail
-
-Betreff: Morgen um 08:00 Uhr bei PALO SKIN
-
-```
-Guten Tag Verena,
-
-morgen ist es so weit: Donnerstag, 8. Oktober, 08:00 Uhr, bei uns in der Hagenauer Straße 14. Wir freuen uns auf Sie.
-
-Ein Klick genügt: Ja, ich komme [Knopf]
-
-Falls es doch nicht passt, schreiben Sie uns bitte kurz per WhatsApp unter +49 151 58872566, dann finden wir eine neue Zeit.
-
-Bis morgen
+Bis bald!
 Dr. med. Sebastian Vogel
 PALO SKIN by Dr. Vogel
 ```
 
-### Kalenderdatei
+### Erinnerungsmail (Vortag 10:00 Uhr)
+
+Betreff (24 Zeichen): Bis morgen um 08:00 Uhr!
+
+```
+Hallo Verena,
+
+morgen sehen wir uns bei PALO SKIN. Wir freuen uns auf Sie!
+
+Mittwoch, 7. Oktober, 08:00 Uhr (fett)
+Hagenauer Straße 14, 10435 Berlin
+[So finden Sie uns]
+
+Ihr Termin beginnt pünktlich, ohne Wartezeit. Kommen Sie bitte zur vereinbarten Zeit oder höchstens fünf Minuten vorher.
+
+Wenn Sie möchten, geben Sie uns kurz ein Zeichen:
+[Ja, ich komme]
+Ihr Termin bleibt auch ohne Klick für Sie reserviert.
+
+Falls etwas dazwischenkommt, schreiben Sie uns bitte per WhatsApp an +49 151 58872566.
+[Per WhatsApp schreiben] (https://wa.me/4915158872566)
+
+Bis morgen!
+Dr. med. Sebastian Vogel
+PALO SKIN by Dr. Vogel
+```
+
+### Kalenderdatei und Kalender-Knöpfe
 
 Titel: Termin bei PALO SKIN
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Absagen oder verschieben bitte mindestens 48 Stunden vorher. Kurzfristig per WhatsApp unter +49 151 58872566.
+Beschreibung: Absagen bis 48 Stunden vorher über den Link in Ihrer Bestätigung, danach per WhatsApp an +49 151 58872566. So finden Sie uns: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
 
 ### Terminseite
 
 - Überschrift: Ihr Termin
-- Knöpfe: Ja, ich komme / Termin absagen
-- Rückfrage vor der Absage: Möchten Sie den Termin am Donnerstag, 8. Oktober 2026 um 08:00 Uhr wirklich absagen? / Ja, Termin absagen / Nein, Termin behalten
-- Weniger als 48 Stunden: Für eine Absage ist es jetzt zu kurzfristig für einen Klick. Schreiben Sie uns bitte kurz per WhatsApp, wir finden gemeinsam eine Lösung. [Knopf: Per WhatsApp schreiben]
-- Nach Zusage: Danke, wir freuen uns auf Sie. Bis Donnerstag um 08:00 Uhr.
-- Nach Absage: Schade, aber kein Problem. Die Zeit ist wieder frei. Wenn Sie möchten, buchen Sie gleich eine neue. [Knopf: Neuen Termin buchen]
-- Bereits abgesagt: Dieser Termin wurde abgesagt. Wenn Sie möchten, buchen Sie gleich einen neuen.
-- Vergangen: Dieser Termin liegt in der Vergangenheit.
-- Ungültiger Link: Dieser Link funktioniert nicht mehr. Schreiben Sie uns gern per WhatsApp. [Knopf: Per WhatsApp schreiben]
+- Anrede: Hallo Verena, hier finden Sie Ihren Termin bei PALO SKIN:
+- Kasten: Mittwoch, 7. Oktober 2026, 08:00 Uhr, PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin, [So finden Sie uns]
+- Hinweis: Ihr Termin beginnt pünktlich, ohne Wartezeit. Kommen Sie bitte zur vereinbarten Zeit oder höchstens fünf Minuten vorher.
+- Offen, mehr als 48 Stunden: Wenn Sie möchten, sagen Sie uns kurz Bescheid, dass Sie dabei sind. Ihr Termin bleibt auch ohne Bestätigung für Sie reserviert. [Ja, ich komme] [Termin absagen]
+- Rückfrage vor Absage: Möchten Sie Ihren Termin absagen? Mittwoch, 7. Oktober 2026, 08:00 Uhr [Termin absagen] [Termin behalten]
+- Offen, weniger als 48 Stunden: [Ja, ich komme] Möchten Sie absagen? Da Ihr Termin in weniger als 48 Stunden beginnt, schreiben Sie uns bitte kurz per WhatsApp. [Per WhatsApp schreiben]
+- Nach Zusage: Danke! Wir freuen uns auf Sie am Mittwoch, 7. Oktober, um 08:00 Uhr.
+- Nach Absage: Ihr Termin ist abgesagt. Wir freuen uns, Sie ein anderes Mal zu sehen. [Neuen Termin buchen]
+- Bereits abgesagt: Ihr Termin ist bereits abgesagt. Möchten Sie einen neuen Termin finden? [Neuen Termin buchen]
+- Termin vorbei: Der Termin war am Mittwoch, 7. Oktober, um 08:00 Uhr. Möchten Sie einen neuen Termin vereinbaren? [Neuen Termin buchen]
+- Ungültiger Link: Dieser Link lässt sich nicht öffnen. Schreiben Sie uns kurz per WhatsApp, wir helfen Ihnen gern weiter. [Per WhatsApp schreiben]
 - Testbetrieb (Mails): Testbetrieb: Diese Nachricht gehört zu einer Testbuchung.
 
-### Bestätigungsseite der Website (Schalter an)
+### Bestätigungsseite der Buchung
 
-Schön, Ihr Termin steht. Die Bestätigung ist per E-Mail unterwegs.
+Gebucht! Wir freuen uns auf Sie. / Alle Details bekommen Sie gleich per E-Mail.
+
+### Hinweiskasten im letzten Buchungsschritt
+
+Zeit für Sie: Ihr Termin beginnt pünktlich, ohne Wartezeit. Kommen Sie bitte zur vereinbarten Zeit oder höchstens fünf Minuten vorher. Falls etwas dazwischenkommt: Bis 48 Stunden vorher können Sie über den Link in Ihrer Bestätigung absagen. Danach schreiben Sie uns bitte per WhatsApp an +49 151 58872566.
 
 ## English (en)
 
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff: Your appointment at PALO SKIN on Thursday 8 October at 08:00
+Betreff (24 Zeichen): Booked: Wed 7 Oct, 08:00
 
 ```
 Hello Verena,
 
-lovely that you’re coming. Your appointment is set:
+lovely that you’re coming to see us! We look forward to seeing you:
 
-Thursday 8 October 2026, 08:00
-PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin (Open map)
+Wednesday 7 October, 08:00 (fett)
+PALO SKIN by Dr. Vogel
+Hagenauer Straße 14, 10435 Berlin
+[How to find us] (https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8)
 
-We have planned time for both of you. [nur bei zu zweit]
+Your time matters to us: at PALO SKIN, your appointment starts on time, with no waiting. Please arrive at the agreed time or at most five minutes early. If you arrive later, there is correspondingly less time for your appointment, so the next clients can also start on time.
 
-We’ll send you a short reminder the day before.
+We have planned time for both of you. (nur bei zu zweit)
 
-Something come up? Cancel or reschedule appointment [Link]. Please give us at least 48 hours’ notice, so someone else can enjoy the time. At short notice, reach us on WhatsApp at +49 151 58872566.
+Would you like to save the appointment to your calendar right away?
+[Google Calendar] [iPhone Calendar] [Outlook]
 
-The calendar file for your phone is attached.
+We’ll remind you once more the day before.
 
-See you soon
-Dr. med. Sebastian Vogel
-PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-WhatsApp +49 151 58872566
-```
+If something comes up, you can cancel your appointment via the link up to 48 hours in advance. After that, please message us on WhatsApp at +49 151 58872566.
+[View or cancel appointment]
 
-Ohne Schalter (Terminanfrage), nur bis zum Ausrollen: Betreff „Your appointment request at PALO SKIN for Thursday 8 October at 08:00“, Einstieg „lovely that you’d like to come. We have reserved the time for you and will be in touch shortly on WhatsApp:“
-
-### Erinnerungsmail
-
-Betreff: Tomorrow at 08:00 at PALO SKIN
-
-```
-Hello Verena,
-
-tomorrow is the day: Thursday 8 October, 08:00, at our studio at Hagenauer Straße 14. We look forward to seeing you.
-
-One click is all it takes: Yes, I’ll be there [Knopf]
-
-If it doesn’t work out after all, please send us a quick WhatsApp message at +49 151 58872566 and we’ll find a new time.
-
-See you tomorrow
+See you soon!
 Dr. med. Sebastian Vogel
 PALO SKIN by Dr. Vogel
 ```
 
-### Kalenderdatei
+### Erinnerungsmail (Vortag 10:00 Uhr)
+
+Betreff (26 Zeichen): See you tomorrow at 08:00!
+
+```
+Hello Verena,
+
+we’ll see you tomorrow at PALO SKIN. We look forward to seeing you!
+
+Wednesday 7 October, 08:00 (fett)
+Hagenauer Straße 14, 10435 Berlin
+[How to find us]
+
+Your appointment starts on time, with no waiting. Please arrive at the agreed time or at most five minutes early.
+
+If you like, give us a quick sign:
+[Yes, I’ll be there]
+Your appointment stays reserved for you even without a click.
+
+If something comes up, please message us on WhatsApp at +49 151 58872566.
+[Message us on WhatsApp] (https://wa.me/4915158872566)
+
+See you tomorrow!
+Dr. med. Sebastian Vogel
+PALO SKIN by Dr. Vogel
+```
+
+### Kalenderdatei und Kalender-Knöpfe
 
 Titel: Appointment at PALO SKIN
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Please cancel or reschedule at least 48 hours in advance. At short notice via WhatsApp at +49 151 58872566.
+Beschreibung: Cancel up to 48 hours in advance via the link in your confirmation, after that on WhatsApp at +49 151 58872566. How to find us: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
 
 ### Terminseite
 
 - Überschrift: Your appointment
-- Knöpfe: Yes, I’ll be there / Cancel appointment
-- Rückfrage vor der Absage: Do you really want to cancel the appointment on Thursday 8 October 2026 at 08:00? / Yes, cancel appointment / No, keep appointment
-- Weniger als 48 Stunden: It’s too short notice now to cancel with a click. Please send us a quick WhatsApp message and we’ll find a solution together. [Knopf: Message us on WhatsApp]
-- Nach Zusage: Thank you, we look forward to seeing you. See you Thursday at 08:00.
-- Nach Absage: What a pity, but no problem. The time is free again. If you like, book a new one right away. [Knopf: Book a new appointment]
-- Bereits abgesagt: This appointment has been cancelled. If you like, book a new one right away.
-- Vergangen: This appointment is in the past.
-- Ungültiger Link: This link no longer works. Feel free to message us on WhatsApp. [Knopf: Message us on WhatsApp]
+- Anrede: Hello Verena, here is your appointment at PALO SKIN:
+- Kasten: Wednesday, 7 October 2026, 08:00, PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin, [How to find us]
+- Hinweis: Your appointment starts on time, with no waiting. Please arrive at the agreed time or at most five minutes early.
+- Offen, mehr als 48 Stunden: If you like, let us know briefly that you’ll be there. Your appointment stays reserved for you even without confirmation. [Yes, I’ll be there] [Cancel appointment]
+- Rückfrage vor Absage: Would you like to cancel your appointment? Wednesday, 7 October 2026, 08:00 [Cancel appointment] [Keep appointment]
+- Offen, weniger als 48 Stunden: [Yes, I’ll be there] Would you like to cancel? As your appointment starts in less than 48 hours, please send us a quick WhatsApp message. [Message us on WhatsApp]
+- Nach Zusage: Thank you! We look forward to seeing you on Wednesday 7 October at 08:00.
+- Nach Absage: Your appointment is cancelled. We look forward to seeing you another time. [Book a new appointment]
+- Bereits abgesagt: Your appointment has already been cancelled. Would you like to find a new one? [Book a new appointment]
+- Termin vorbei: The appointment was on Wednesday 7 October at 08:00. Would you like to arrange a new one? [Book a new appointment]
+- Ungültiger Link: This link cannot be opened. Send us a quick WhatsApp message and we’ll be happy to help. [Message us on WhatsApp]
 - Testbetrieb (Mails): Test mode: this message belongs to a test booking.
 
-### Bestätigungsseite der Website (Schalter an)
+### Bestätigungsseite der Buchung
 
-Lovely, your appointment is set. The confirmation is on its way by email.
+Booked! We look forward to seeing you. / All the details will reach you by email in a moment.
+
+### Hinweiskasten im letzten Buchungsschritt
+
+Time for you: Your appointment starts on time, with no waiting. Please arrive at the agreed time or at most five minutes early. If something comes up: up to 48 hours in advance you can cancel via the link in your confirmation. After that, please message us on WhatsApp at +49 151 58872566.
 
 ## Español (es)
 
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff: Su cita en PALO SKIN el jueves, 8 de octubre a las 08:00 h
+Betreff (28 Zeichen): Reservado: mié 7/10, 08:00 h
 
 ```
 Hola Verena,
 
-qué bien que venga. Su cita está confirmada:
+¡qué bien que venga a vernos! Le esperamos:
 
-Jueves, 8 de octubre de 2026, 08:00 h
-PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin (Abrir mapa)
+Miércoles, 7 de octubre, 08:00 h (fett)
+PALO SKIN by Dr. Vogel
+Hagenauer Straße 14, 10435 Berlin
+[Cómo llegar] (https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8)
 
-Hemos reservado tiempo para los dos. [nur bei zu zweit]
+Su tiempo es importante para nosotros: en PALO SKIN su cita empieza puntual, sin espera. Venga, por favor, a la hora acordada o como máximo cinco minutos antes. Si llega más tarde, quedará menos tiempo para su cita, para que los siguientes clientes también empiecen puntuales.
 
-Un día antes le enviaremos un breve recordatorio.
+Hemos reservado tiempo para los dos. (nur bei zu zweit)
 
-¿Le surge algo? Cancelar o cambiar la cita [Link]. Por favor, con al menos 48 horas de antelación; así otra persona podrá aprovechar la hora. Con poco margen, escríbanos por WhatsApp al +49 151 58872566.
+¿Quiere guardar la cita en su calendario ahora mismo?
+[Google Calendar] [Calendario del iPhone] [Outlook]
 
-Adjuntamos el archivo de calendario para su móvil.
+El día anterior se lo recordamos una vez más.
 
-Hasta pronto
-Dr. med. Sebastian Vogel
-PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-WhatsApp +49 151 58872566
-```
+Si le surge algo, puede cancelar su cita a través del enlace hasta 48 horas antes. Después, escríbanos por WhatsApp al +49 151 58872566.
+[Ver o cancelar la cita]
 
-Ohne Schalter (Terminanfrage), nur bis zum Ausrollen: Betreff „Su solicitud de cita en PALO SKIN para el jueves, 8 de octubre a las 08:00 h“, Einstieg „qué bien que quiera venir. Hemos reservado la hora para usted y le escribimos en breve por WhatsApp:“
-
-### Erinnerungsmail
-
-Betreff: Mañana a las 08:00 h en PALO SKIN
-
-```
-Hola Verena,
-
-mañana es el día: jueves, 8 de octubre, 08:00 h, en nuestro estudio en Hagenauer Straße 14. Le esperamos.
-
-Basta un clic: Sí, voy a ir [Knopf]
-
-Si al final no le viene bien, escríbanos un momento por WhatsApp al +49 151 58872566 y buscamos una nueva hora.
-
-Hasta mañana
+¡Hasta pronto!
 Dr. med. Sebastian Vogel
 PALO SKIN by Dr. Vogel
 ```
 
-### Kalenderdatei
+### Erinnerungsmail (Vortag 10:00 Uhr)
+
+Betreff (28 Zeichen): ¡Hasta mañana a las 08:00 h!
+
+```
+Hola Verena,
+
+mañana nos vemos en PALO SKIN. ¡Le esperamos!
+
+Miércoles, 7 de octubre, 08:00 h (fett)
+Hagenauer Straße 14, 10435 Berlin
+[Cómo llegar]
+
+Su cita empieza puntual, sin espera. Venga, por favor, a la hora acordada o como máximo cinco minutos antes.
+
+Si quiere, díganos brevemente que viene:
+[Sí, voy a ir]
+Su cita queda reservada para usted aunque no haga clic.
+
+Si le surge algo, escríbanos por WhatsApp al +49 151 58872566.
+[Escribir por WhatsApp] (https://wa.me/4915158872566)
+
+¡Hasta mañana!
+Dr. med. Sebastian Vogel
+PALO SKIN by Dr. Vogel
+```
+
+### Kalenderdatei und Kalender-Knöpfe
 
 Titel: Cita en PALO SKIN
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Para cancelar o cambiar la cita, avísenos con al menos 48 horas de antelación. Con poco margen, por WhatsApp al +49 151 58872566.
+Beschreibung: Cancele hasta 48 horas antes a través del enlace de su confirmación, después por WhatsApp al +49 151 58872566. Cómo llegar: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
 
 ### Terminseite
 
 - Überschrift: Su cita
-- Knöpfe: Sí, voy a ir / Cancelar cita
-- Rückfrage vor der Absage: ¿Quiere cancelar realmente la cita del jueves, 8 de octubre de 2026 a las 08:00 h? / Sí, cancelar cita / No, mantener cita
-- Weniger als 48 Stunden: Ya es demasiado tarde para cancelar con un clic. Escríbanos un momento por WhatsApp y encontramos juntos una solución. [Knopf: Escribir por WhatsApp]
-- Nach Zusage: Gracias, le esperamos. Hasta el jueves a las 08:00 h.
-- Nach Absage: Qué pena, pero no pasa nada. La hora vuelve a estar libre. Si quiere, reserve una nueva ahora mismo. [Knopf: Reservar una nueva cita]
-- Bereits abgesagt: Esta cita ha sido cancelada. Si quiere, reserve una nueva ahora mismo.
-- Vergangen: Esta cita ya ha pasado.
-- Ungültiger Link: Este enlace ya no funciona. Escríbanos por WhatsApp cuando quiera. [Knopf: Escribir por WhatsApp]
+- Anrede: Hola Verena, aquí tiene su cita en PALO SKIN:
+- Kasten: Miércoles, 7 de octubre de 2026, 08:00 h, PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin, [Cómo llegar]
+- Hinweis: Su cita empieza puntual, sin espera. Venga, por favor, a la hora acordada o como máximo cinco minutos antes.
+- Offen, mehr als 48 Stunden: Si quiere, díganos brevemente que viene. Su cita queda reservada para usted aunque no confirme. [Sí, voy a ir] [Cancelar cita]
+- Rückfrage vor Absage: ¿Quiere cancelar su cita? Miércoles, 7 de octubre de 2026, 08:00 h [Cancelar cita] [Mantener cita]
+- Offen, weniger als 48 Stunden: [Sí, voy a ir] ¿Quiere cancelar? Como su cita empieza en menos de 48 horas, escríbanos un momento por WhatsApp. [Escribir por WhatsApp]
+- Nach Zusage: ¡Gracias! Le esperamos el miércoles, 7 de octubre a las 08:00 h.
+- Nach Absage: Su cita queda cancelada. Nos alegrará verle en otra ocasión. [Reservar una nueva cita]
+- Bereits abgesagt: Su cita ya está cancelada. ¿Quiere buscar una nueva? [Reservar una nueva cita]
+- Termin vorbei: La cita fue el miércoles, 7 de octubre a las 08:00 h. ¿Quiere concertar una nueva? [Reservar una nueva cita]
+- Ungültiger Link: Este enlace no se puede abrir. Escríbanos un momento por WhatsApp, le ayudamos con gusto. [Escribir por WhatsApp]
 - Testbetrieb (Mails): Modo de prueba: este mensaje pertenece a una reserva de prueba.
 
-### Bestätigungsseite der Website (Schalter an)
+### Bestätigungsseite der Buchung
 
-Qué bien, su cita está confirmada. La confirmación va de camino por correo electrónico.
+¡Reservado! Le esperamos. / Todos los detalles le llegan enseguida por correo electrónico.
+
+### Hinweiskasten im letzten Buchungsschritt
+
+Tiempo para usted: Su cita empieza puntual, sin espera. Venga, por favor, a la hora acordada o como máximo cinco minutos antes. Si le surge algo: hasta 48 horas antes puede cancelar a través del enlace de su confirmación. Después, escríbanos por WhatsApp al +49 151 58872566.
 
 ## Français (fr)
 
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff: Votre rendez-vous chez PALO SKIN le jeudi 8 octobre à 08 h 00
+Betreff (28 Zeichen): Réservé : mer. 7/10, 08 h 00
 
 ```
 Bonjour Verena,
 
-quel plaisir de vous accueillir. Votre rendez-vous est fixé :
+quel plaisir de vous accueillir ! Nous avons hâte de vous voir :
 
-Jeudi 8 octobre 2026, 08 h 00
-PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin (Ouvrir la carte)
+Mercredi 7 octobre, 08 h 00 (fett)
+PALO SKIN by Dr. Vogel
+Hagenauer Straße 14, 10435 Berlin
+[Comment nous trouver] (https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8)
 
-Nous avons prévu du temps pour vous deux. [nur bei zu zweit]
+Votre temps nous est précieux : chez PALO SKIN, votre rendez-vous commence à l’heure, sans attente. Merci de venir à l’heure convenue ou au plus cinq minutes avant. Si vous arrivez plus tard, il restera d’autant moins de temps pour votre rendez-vous, afin que les clients suivants commencent eux aussi à l’heure.
 
-La veille, nous vous enverrons un petit rappel.
+Nous avons prévu du temps pour vous deux. (nur bei zu zweit)
 
-Un imprévu ? Annuler ou déplacer le rendez-vous [Link]. Merci de nous prévenir au moins 48 heures à l’avance, pour que quelqu’un d’autre profite du créneau. En cas d’urgence, écrivez-nous sur WhatsApp au +49 151 58872566.
+Souhaitez-vous enregistrer le rendez-vous tout de suite dans votre agenda ?
+[Google Agenda] [Calendrier iPhone] [Outlook]
 
-Le fichier de calendrier pour votre téléphone est joint.
+La veille, nous vous enverrons un rappel.
 
-À bientôt
-Dr. med. Sebastian Vogel
-PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-WhatsApp +49 151 58872566
-```
+En cas d’imprévu, vous pouvez annuler votre rendez-vous via le lien jusqu’à 48 heures avant. Ensuite, écrivez-nous sur WhatsApp au +49 151 58872566.
+[Voir ou annuler le rendez-vous]
 
-Ohne Schalter (Terminanfrage), nur bis zum Ausrollen: Betreff „Votre demande de rendez-vous chez PALO SKIN pour le jeudi 8 octobre à 08 h 00“, Einstieg „quel plaisir que vous souhaitiez venir. Nous avons réservé le créneau pour vous et vous écrivons rapidement sur WhatsApp :“
-
-### Erinnerungsmail
-
-Betreff: Demain à 08 h 00 chez PALO SKIN
-
-```
-Bonjour Verena,
-
-c’est demain : jeudi 8 octobre, 08 h 00, chez nous au 14 Hagenauer Straße. Nous avons hâte de vous accueillir.
-
-Un clic suffit : Oui, je viens [Knopf]
-
-Si cela ne vous convient finalement pas, écrivez-nous un petit mot sur WhatsApp au +49 151 58872566 et nous trouverons un nouveau créneau.
-
-À demain
+À bientôt !
 Dr. med. Sebastian Vogel
 PALO SKIN by Dr. Vogel
 ```
 
-### Kalenderdatei
+### Erinnerungsmail (Vortag 10:00 Uhr)
+
+Betreff (20 Zeichen): À demain à 08 h 00 !
+
+```
+Bonjour Verena,
+
+nous nous voyons demain chez PALO SKIN. Nous avons hâte de vous accueillir !
+
+Mercredi 7 octobre, 08 h 00 (fett)
+Hagenauer Straße 14, 10435 Berlin
+[Comment nous trouver]
+
+Votre rendez-vous commence à l’heure, sans attente. Merci de venir à l’heure convenue ou au plus cinq minutes avant.
+
+Si vous le souhaitez, faites-nous un petit signe :
+[Oui, je viens]
+Votre rendez-vous reste réservé pour vous, même sans clic.
+
+En cas d’imprévu, écrivez-nous sur WhatsApp au +49 151 58872566.
+[Écrire sur WhatsApp] (https://wa.me/4915158872566)
+
+À demain !
+Dr. med. Sebastian Vogel
+PALO SKIN by Dr. Vogel
+```
+
+### Kalenderdatei und Kalender-Knöpfe
 
 Titel: Rendez-vous chez PALO SKIN
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Pour annuler ou déplacer, merci de nous prévenir au moins 48 heures à l’avance. En cas d’urgence, sur WhatsApp au +49 151 58872566.
+Beschreibung: Annulation jusqu’à 48 heures avant via le lien de votre confirmation, ensuite sur WhatsApp au +49 151 58872566. Comment nous trouver : https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
 
 ### Terminseite
 
 - Überschrift: Votre rendez-vous
-- Knöpfe: Oui, je viens / Annuler le rendez-vous
-- Rückfrage vor der Absage: Voulez-vous vraiment annuler le rendez-vous du jeudi 8 octobre 2026 à 08 h 00 ? / Oui, annuler le rendez-vous / Non, garder le rendez-vous
-- Weniger als 48 Stunden: Il est maintenant trop tard pour annuler d’un clic. Écrivez-nous un petit mot sur WhatsApp, nous trouverons une solution ensemble. [Knopf: Écrire sur WhatsApp]
-- Nach Zusage: Merci, nous avons hâte de vous accueillir. À jeudi à 08 h 00.
-- Nach Absage: Dommage, mais aucun problème. Le créneau est de nouveau libre. Si vous le souhaitez, réservez tout de suite un nouveau rendez-vous. [Knopf: Réserver un nouveau rendez-vous]
-- Bereits abgesagt: Ce rendez-vous a été annulé. Si vous le souhaitez, réservez tout de suite un nouveau rendez-vous.
-- Vergangen: Ce rendez-vous est passé.
-- Ungültiger Link: Ce lien ne fonctionne plus. Écrivez-nous volontiers sur WhatsApp. [Knopf: Écrire sur WhatsApp]
+- Anrede: Bonjour Verena, voici votre rendez-vous chez PALO SKIN :
+- Kasten: Mercredi 7 octobre 2026, 08 h 00, PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin, [Comment nous trouver]
+- Hinweis: Votre rendez-vous commence à l’heure, sans attente. Merci de venir à l’heure convenue ou au plus cinq minutes avant.
+- Offen, mehr als 48 Stunden: Si vous le souhaitez, dites-nous en un mot que vous serez là. Votre rendez-vous reste réservé pour vous, même sans confirmation. [Oui, je viens] [Annuler le rendez-vous]
+- Rückfrage vor Absage: Souhaitez-vous annuler votre rendez-vous ? Mercredi 7 octobre 2026, 08 h 00 [Annuler le rendez-vous] [Garder le rendez-vous]
+- Offen, weniger als 48 Stunden: [Oui, je viens] Souhaitez-vous annuler ? Comme votre rendez-vous commence dans moins de 48 heures, écrivez-nous un petit mot sur WhatsApp. [Écrire sur WhatsApp]
+- Nach Zusage: Merci ! Nous avons hâte de vous accueillir le mercredi 7 octobre à 08 h 00.
+- Nach Absage: Votre rendez-vous est annulé. Au plaisir de vous voir une autre fois. [Réserver un nouveau rendez-vous]
+- Bereits abgesagt: Votre rendez-vous est déjà annulé. Souhaitez-vous en trouver un nouveau ? [Réserver un nouveau rendez-vous]
+- Termin vorbei: Le rendez-vous était le mercredi 7 octobre à 08 h 00. Souhaitez-vous en convenir un nouveau ? [Réserver un nouveau rendez-vous]
+- Ungültiger Link: Ce lien ne peut pas être ouvert. Écrivez-nous un petit mot sur WhatsApp, nous vous aiderons volontiers. [Écrire sur WhatsApp]
 - Testbetrieb (Mails): Mode test : ce message concerne une réservation de test.
 
-### Bestätigungsseite der Website (Schalter an)
+### Bestätigungsseite der Buchung
 
-Parfait, votre rendez-vous est fixé. La confirmation arrive par e-mail.
+Réservé ! Nous avons hâte de vous accueillir. / Tous les détails vous parviennent dans un instant par e-mail.
+
+### Hinweiskasten im letzten Buchungsschritt
+
+Du temps pour vous: Votre rendez-vous commence à l’heure, sans attente. Merci de venir à l’heure convenue ou au plus cinq minutes avant. En cas d’imprévu : jusqu’à 48 heures avant, vous pouvez annuler via le lien de votre confirmation. Ensuite, écrivez-nous sur WhatsApp au +49 151 58872566.
 
 ## Português (pt)
 
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff: Sua consulta na PALO SKIN em quinta-feira, 8 de outubro às 08:00
+Betreff (25 Zeichen): Marcado: qua. 7/10, 08:00
 
 ```
 Olá Verena,
 
-que bom que você vem. Sua consulta está marcada:
+que bom que você vem nos ver! Esperamos por você:
 
-Quinta-feira, 8 de outubro de 2026, 08:00
-PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin (Abrir mapa)
+Quarta-feira, 7 de outubro, 08:00 (fett)
+PALO SKIN by Dr. Vogel
+Hagenauer Straße 14, 10435 Berlin
+[Como chegar] (https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8)
 
-Reservamos tempo para vocês dois. [nur bei zu zweit]
+Seu tempo é importante para nós: na PALO SKIN, sua consulta começa pontualmente, sem espera. Por favor, chegue na hora combinada ou no máximo cinco minutos antes. Se chegar mais tarde, sobra menos tempo para a sua consulta, para que os próximos clientes também comecem no horário.
 
-Um dia antes, mandamos um lembrete rápido.
+Reservamos tempo para vocês dois. (nur bei zu zweit)
 
-Surgiu um imprevisto? Cancelar ou remarcar a consulta [Link]. Por favor, com pelo menos 48 horas de antecedência, assim outra pessoa aproveita o horário. Em cima da hora, fale conosco pelo WhatsApp no +49 151 58872566.
+Quer salvar a consulta no seu calendário agora mesmo?
+[Google Agenda] [Calendário do iPhone] [Outlook]
 
-O arquivo de calendário para o seu celular está em anexo.
+No dia anterior, lembramos você mais uma vez.
 
-Até breve
-Dr. med. Sebastian Vogel
-PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-WhatsApp +49 151 58872566
-```
+Se surgir um imprevisto, você pode cancelar a consulta pelo link até 48 horas antes. Depois disso, fale conosco pelo WhatsApp no +49 151 58872566.
+[Ver ou cancelar a consulta]
 
-Ohne Schalter (Terminanfrage), nur bis zum Ausrollen: Betreff „Seu pedido de horário na PALO SKIN para quinta-feira, 8 de outubro às 08:00“, Einstieg „que bom que você quer vir. Reservamos o horário para você e falamos em breve pelo WhatsApp:“
-
-### Erinnerungsmail
-
-Betreff: Amanhã às 08:00 na PALO SKIN
-
-```
-Olá Verena,
-
-amanhã é o dia: quinta-feira, 8 de outubro, 08:00, aqui no estúdio na Hagenauer Straße 14. Esperamos por você.
-
-Basta um clique: Sim, eu vou [Knopf]
-
-Se no fim não der certo, mande uma mensagem rápida pelo WhatsApp no +49 151 58872566 e encontramos um novo horário.
-
-Até amanhã
+Até breve!
 Dr. med. Sebastian Vogel
 PALO SKIN by Dr. Vogel
 ```
 
-### Kalenderdatei
+### Erinnerungsmail (Vortag 10:00 Uhr)
+
+Betreff (20 Zeichen): Até amanhã às 08:00!
+
+```
+Olá Verena,
+
+amanhã nos vemos na PALO SKIN. Esperamos por você!
+
+Quarta-feira, 7 de outubro, 08:00 (fett)
+Hagenauer Straße 14, 10435 Berlin
+[Como chegar]
+
+Sua consulta começa pontualmente, sem espera. Por favor, chegue na hora combinada ou no máximo cinco minutos antes.
+
+Se quiser, dê um sinal rápido:
+[Sim, eu vou]
+Sua consulta continua reservada para você mesmo sem clicar.
+
+Se surgir um imprevisto, fale conosco pelo WhatsApp no +49 151 58872566.
+[Escrever pelo WhatsApp] (https://wa.me/4915158872566)
+
+Até amanhã!
+Dr. med. Sebastian Vogel
+PALO SKIN by Dr. Vogel
+```
+
+### Kalenderdatei und Kalender-Knöpfe
 
 Titel: Consulta na PALO SKIN
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Para cancelar ou remarcar, avise com pelo menos 48 horas de antecedência. Em cima da hora, pelo WhatsApp no +49 151 58872566.
+Beschreibung: Cancelamento até 48 horas antes pelo link da sua confirmação, depois pelo WhatsApp no +49 151 58872566. Como chegar: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
 
 ### Terminseite
 
 - Überschrift: Sua consulta
-- Knöpfe: Sim, eu vou / Cancelar consulta
-- Rückfrage vor der Absage: Deseja realmente cancelar a consulta de quinta-feira, 8 de outubro de 2026 às 08:00? / Sim, cancelar consulta / Não, manter consulta
-- Weniger als 48 Stunden: Agora está em cima da hora para cancelar com um clique. Mande uma mensagem rápida pelo WhatsApp e encontramos uma solução juntos. [Knopf: Escrever pelo WhatsApp]
-- Nach Zusage: Obrigado, esperamos por você. Até quinta-feira às 08:00.
-- Nach Absage: Que pena, mas sem problema. O horário está livre novamente. Se quiser, marque um novo agora mesmo. [Knopf: Marcar uma nova consulta]
-- Bereits abgesagt: Esta consulta foi cancelada. Se quiser, marque uma nova agora mesmo.
-- Vergangen: Esta consulta já passou.
-- Ungültiger Link: Este link não funciona mais. Fale conosco pelo WhatsApp quando quiser. [Knopf: Escrever pelo WhatsApp]
+- Anrede: Olá Verena, aqui está a sua consulta na PALO SKIN:
+- Kasten: Quarta-feira, 7 de outubro de 2026, 08:00, PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin, [Como chegar]
+- Hinweis: Sua consulta começa pontualmente, sem espera. Por favor, chegue na hora combinada ou no máximo cinco minutos antes.
+- Offen, mehr als 48 Stunden: Se quiser, avise rapidamente que você vem. Sua consulta continua reservada para você mesmo sem confirmação. [Sim, eu vou] [Cancelar consulta]
+- Rückfrage vor Absage: Quer cancelar a sua consulta? Quarta-feira, 7 de outubro de 2026, 08:00 [Cancelar consulta] [Manter consulta]
+- Offen, weniger als 48 Stunden: [Sim, eu vou] Quer cancelar? Como a sua consulta começa em menos de 48 horas, mande uma mensagem rápida pelo WhatsApp. [Escrever pelo WhatsApp]
+- Nach Zusage: Obrigado! Esperamos por você em quarta-feira, 7 de outubro, às 08:00.
+- Nach Absage: Sua consulta foi cancelada. Será um prazer ver você em outra ocasião. [Marcar uma nova consulta]
+- Bereits abgesagt: Sua consulta já foi cancelada. Quer encontrar um novo horário? [Marcar uma nova consulta]
+- Termin vorbei: A consulta foi em quarta-feira, 7 de outubro, às 08:00. Quer marcar uma nova? [Marcar uma nova consulta]
+- Ungültiger Link: Este link não pode ser aberto. Mande uma mensagem rápida pelo WhatsApp, ajudamos com prazer. [Escrever pelo WhatsApp]
 - Testbetrieb (Mails): Modo de teste: esta mensagem pertence a uma reserva de teste.
 
-### Bestätigungsseite der Website (Schalter an)
+### Bestätigungsseite der Buchung
 
-Que bom, sua consulta está marcada. A confirmação está a caminho por e-mail.
+Marcado! Esperamos por você. / Todos os detalhes chegam já por e-mail.
+
+### Hinweiskasten im letzten Buchungsschritt
+
+Tempo para você: Sua consulta começa pontualmente, sem espera. Por favor, chegue na hora combinada ou no máximo cinco minutos antes. Se surgir um imprevisto: até 48 horas antes você pode cancelar pelo link da sua confirmação. Depois disso, fale conosco pelo WhatsApp no +49 151 58872566.

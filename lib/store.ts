@@ -449,16 +449,11 @@ export class Store {
       .all(iso(now), stale, limit) as unknown as BookingRow[];
   }
 
-  /** Buchungen, deren Termin in 2 bis 24 Stunden beginnt und die noch keine Erinnerung bekommen haben. */
-  reminderCandidates(now = new Date(), limit = 50): BookingRow[] {
-    const from = iso(new Date(now.getTime() + 2 * 3600000));
-    const to = iso(new Date(now.getTime() + 24 * 3600000));
+  /** Nicht abgesagte Termine im Zeitraum, nach Beginn sortiert (Erinnerung, Handliste). */
+  bookingsBetween(from: Date, to: Date): BookingRow[] {
     return this.db
-      .prepare(
-        `SELECT * FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_reminder_sent_at IS NULL AND mail_reminder_skipped = 0
-         AND starts_at > ? AND starts_at <= ? ORDER BY starts_at LIMIT ?`,
-      )
-      .all(from, to, limit) as unknown as BookingRow[];
+      .prepare("SELECT * FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND starts_at >= ? AND starts_at < ? ORDER BY starts_at")
+      .all(iso(from), iso(to)) as unknown as BookingRow[];
   }
 
   /** Abgesagte Buchungen, deren Kalendereintrag noch steht. */
@@ -554,16 +549,6 @@ export class Store {
       .prepare("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_confirmation_sent_at IS NULL AND starts_at > ?")
       .get(iso(now)) as { n: number };
     return r.n;
-  }
-
-  /** Termine mit WhatsApp-Haken im Zeitraum, nicht abgesagt (Handliste). */
-  remindersBetween(from: Date, to: Date): BookingRow[] {
-    return this.db
-      .prepare(
-        `SELECT * FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND reminder_whatsapp = 1
-         AND starts_at >= ? AND starts_at < ? ORDER BY starts_at`,
-      )
-      .all(iso(from), iso(to)) as unknown as BookingRow[];
   }
 
   getMeta(key: string): string | null {

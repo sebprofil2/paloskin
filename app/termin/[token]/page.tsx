@@ -19,8 +19,9 @@ type Params = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
 /*
- * Terminseite aus den Mails: Kasten nur mit Datum, Uhrzeit, Adresse. Zusagen oder absagen (Absage bis 48 Stunden
- * vorher, sonst WhatsApp). Keine Buchungsnummer, keine Behandlung. Änderungen nur per POST an /api/termin.
+ * Terminseite aus den Mails (endgültige Texte vom 3. Oktober 2026): Anrede, blauer Kasten mit Datum, Uhrzeit, Adresse und
+ * Kartenlink, Pünktlichkeitshinweis, dann je nach Zustand Zusage, Absage (bis 48 Stunden vorher) oder WhatsApp.
+ * Keine Buchungsnummer, keine Behandlung. Änderungen nur per POST an /api/termin.
  */
 export default async function TerminPage({ params, searchParams }: { params: Promise<{ token: string }>; searchParams: Promise<Params> }) {
   const { token } = await params;
@@ -53,53 +54,64 @@ export default async function TerminPage({ params, searchParams }: { params: Pro
   const past = Date.parse(booking.ends_at) <= now.getTime();
   const cancelled = booking.status === "cancelled";
   const canCancel = !past && canCancelOnline(booking, now);
-  const bookingLink = `/booking?lang=${lang}`;
   const confirmed = !!booking.attendance_confirmed_at;
+  const bookingLink = `/booking?lang=${lang}`;
+  const open = !cancelled && !past;
 
   let status: string | null = null;
-  if (message === "ja" || (confirmed && !cancelled && !past)) status = l.doneYes(when.weekdayIn, when.time);
   if (message === "absage") status = l.doneCancel;
   else if (cancelled) status = l.cancelledInfo;
-  else if (past) status = l.past;
+  else if (past) status = l.past(when.dateIn, when.time);
+  else if (message === "ja" || confirmed) status = l.doneYes(when.dateIn, when.time);
 
   return (
     <Shell title={l.pageTitle}>
+      <div className="page" style={{ gap: 6, paddingTop: 0, paddingBottom: 16 }}>
+        <p style={{ margin: 0, fontSize: 17 }}>{l.greeting(booking.first_name)}</p>
+        <p style={{ margin: 0, fontSize: 17 }}>{l.pageIntro}</p>
+      </div>
       <div className="confirm" style={{ padding: "28px 24px" }}>
         <p style={{ fontSize: 22, lineHeight: 1.3 }}>{when.dateYear}, {when.time}</p>
-        <p><a href={MAPS_LINK} target="_blank" rel="noopener" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: 3 }}>{`${STUDIO}, ${ADDRESS}`}</a></p>
+        <p style={{ margin: 0 }}>{STUDIO}<br />{ADDRESS}</p>
+        <p style={{ margin: 0 }}><a href={MAPS_LINK} target="_blank" rel="noopener" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: 3 }}>{l.mapL}</a></p>
       </div>
       <div className="after" style={{ gap: 16 }}>
+        {open ? <p className="hint" style={{ margin: 0, color: "var(--ink-2)" }}>{l.punctualShort}</p> : null}
         {status ? <p style={{ margin: 0, fontSize: 17 }}>{status}</p> : null}
-        {!cancelled && !past ? (
+        {open ? (
           action === "absagen" && canCancel ? (
             <form method="post" action="/api/termin" style={{ display: "grid", gap: 10 }}>
               <input type="hidden" name="token" value={token} />
               <input type="hidden" name="action" value="absagen" />
-              <p style={{ margin: 0, fontSize: 17 }}>{l.cancelQ(when.dateYearIn, when.time)}</p>
+              <p style={{ margin: 0, fontSize: 17 }}>{l.cancelQ}<br /><strong>{when.dateYear}, {when.time}</strong></p>
               <button type="submit" className="primary">{l.cancelYes}</button>
               <a className="btn-ghost" href={`/termin/${token}`} style={{ textAlign: "center" }}>{l.cancelNo}</a>
             </form>
           ) : (
             <div style={{ display: "grid", gap: 10 }}>
               {!confirmed ? (
-                <form method="post" action="/api/termin" style={{ display: "grid" }}>
-                  <input type="hidden" name="token" value={token} />
-                  <input type="hidden" name="action" value="ja" />
-                  <button type="submit" className="primary">{l.yes}</button>
-                </form>
+                <>
+                  <p style={{ margin: 0, fontSize: 17 }}>{l.askOpen}</p>
+                  <form method="post" action="/api/termin" style={{ display: "grid" }}>
+                    <input type="hidden" name="token" value={token} />
+                    <input type="hidden" name="action" value="ja" />
+                    <button type="submit" className="primary">{l.yes}</button>
+                  </form>
+                </>
               ) : null}
               {canCancel ? (
                 <a className="btn-ghost" href={`/termin/${token}?a=absagen`} style={{ textAlign: "center" }}>{l.cancel}</a>
               ) : (
                 <>
-                  <p className="hint" style={{ margin: 0 }}>{l.tooLate}</p>
+                  <p style={{ margin: 0, fontSize: 17 }}>{l.tooLate}</p>
                   <a className="btn-ghost" href={WA_LINK} target="_blank" rel="noopener" style={{ textAlign: "center" }}>{l.waButton}</a>
                 </>
               )}
             </div>
           )
-        ) : null}
-        {cancelled || past ? <a className="btn-ghost" href={bookingLink} style={{ textAlign: "center" }}>{l.newBooking}</a> : null}
+        ) : (
+          <a className="btn-ghost" href={bookingLink} style={{ textAlign: "center" }}>{l.newBooking}</a>
+        )}
         <Footer />
       </div>
     </Shell>

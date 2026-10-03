@@ -1,7 +1,7 @@
 import { retryCalendar, runMailJobs } from "./booking";
 import { errorClass, logEvent } from "./log";
 import { runDailyIfDue } from "./retention";
-import { sendReminderListIfDue } from "./reminder-list";
+import { sendReminderListIfDue, sendRemindersIfDue } from "./reminder-list";
 import { getEngine } from "./engine";
 import { getMailer } from "./mail";
 import { getStore } from "./store";
@@ -10,7 +10,7 @@ import { getStore } from "./store";
  * Hintergrundläufe im Serverprozess, gestartet aus instrumentation.ts.
  * Alle 5 Minuten: Kalendereinträge nachholen, Bestätigungsmails nachholen, Erinnerungen senden.
  * Einmal täglich ab 03:30 Uhr Berliner Zeit: Löschlauf und Kalenderexport (lib/retention.ts).
- * Einmal täglich ab 18:00 Uhr: Handliste der WhatsApp-Erinnerungen für morgen (lib/reminder-list.ts).
+ * Einmal täglich ab 10:00 Uhr: Erinnerungsmails für morgen; ab 18:00 Uhr: Handliste für morgen (lib/reminder-list.ts).
  * Einmal je Prozess, auch bei Neuladen in der Entwicklung.
  */
 const KEY = Symbol.for("paloskin.jobs");
@@ -34,13 +34,18 @@ export function startBackgroundJobs(): void {
       logEvent("error", "job_failed", { route: "daily", errorClass: errorClass(e) });
     }
     try {
+      await sendRemindersIfDue({ store: getStore(), engine: getEngine(), mailer: getMailer() });
+    } catch (e) {
+      logEvent("error", "job_failed", { route: "reminders", errorClass: errorClass(e) });
+    }
+    try {
       await sendReminderListIfDue({ store: getStore(), engine: getEngine(), mailer: getMailer() });
     } catch (e) {
       logEvent("error", "job_failed", { route: "reminder_list", errorClass: errorClass(e) });
     }
     try {
       const m = await runMailJobs();
-      if (m.confirmations || m.reminders) logEvent("info", "mail_jobs", { count: m.confirmations + m.reminders, status: `${m.confirmations} Bestätigungen, ${m.reminders} Erinnerungen` });
+      if (m.confirmations) logEvent("info", "mail_jobs", { count: m.confirmations, status: `${m.confirmations} Bestätigungen nachgeholt` });
     } catch (e) {
       logEvent("error", "job_failed", { route: "mail_jobs", errorClass: errorClass(e) });
     }

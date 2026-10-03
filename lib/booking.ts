@@ -162,13 +162,9 @@ export async function sendConfirmation(b: BookingRow, deps: Deps = defaultDeps()
   }
 }
 
-/** Erinnerung etwa 24 Stunden vorher; nur, wenn die Buchung mindestens 30 Stunden vor dem Termin entstand. */
-export async function sendReminder(b: BookingRow, deps: Deps = defaultDeps(), now = new Date()): Promise<"sent" | "skipped" | "failed"> {
+/** Erinnerungsmail an eine Buchung; Fälligkeit entscheidet lib/reminder-list.ts (Vortag 10:00 Uhr). */
+export async function sendReminder(b: BookingRow, deps: Deps = defaultDeps(), now = new Date()): Promise<"sent" | "failed"> {
   const { store, mailer } = deps;
-  if (Date.parse(b.starts_at) - Date.parse(b.created_at) < 30 * 3600000) {
-    store.mailReminderSkipped(b.id, now);
-    return "skipped";
-  }
   try {
     await mailer.send(reminderMail(b));
     store.mailReminderSent(b.id, now);
@@ -225,15 +221,13 @@ export async function retryCalendar(deps: Deps = defaultDeps(), now = new Date()
   return { retried: backlog.length, written, overdue };
 }
 
-/** Hintergrundlauf: Bestätigungsmails nachholen, Erinnerungen senden, nach 24 Stunden Alarm. */
-export async function runMailJobs(deps: Deps = defaultDeps(), now = new Date()): Promise<{ confirmations: number; reminders: number; overdue: number }> {
+/** Hintergrundlauf: Bestätigungsmails nachholen, nach 24 Stunden Alarm. Erinnerungen: lib/reminder-list.ts. */
+export async function runMailJobs(deps: Deps = defaultDeps(), now = new Date()): Promise<{ confirmations: number; overdue: number }> {
   const { store, mailer } = deps;
-  if (!mailer.enabled) return { confirmations: 0, reminders: 0, overdue: 0 };
+  if (!mailer.enabled) return { confirmations: 0, overdue: 0 };
   let confirmations = 0;
   for (const b of store.confirmationMailBacklog(now)) if (await sendConfirmation(b, deps, now)) confirmations++;
-  let reminders = 0;
-  for (const b of store.reminderCandidates(now)) if ((await sendReminder(b, deps, now)) === "sent") reminders++;
   const overdue = store.countMailOverdue(now);
   if (overdue > 0) logEvent("error", "ALARM Bestätigungsmail seit 24 Stunden nicht zugestellt", { count: overdue });
-  return { confirmations, reminders, overdue };
+  return { confirmations, overdue };
 }

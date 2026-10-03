@@ -1,22 +1,36 @@
-/* Erzeugt docs/TEXTE-MAILS.md aus den Texten in lib/texts-mail.ts: node --experimental-strip-types scripts/texte-mails.mts */
+/* Erzeugt docs/TEXTE-MAILS.md aus lib/texts-mail.ts und lib/texts.ts: node --experimental-strip-types scripts/texte-mails.mts */
 import { writeFileSync } from "node:fs";
-import { MAIL_TEXTS, ADDRESS, STUDIO, SIGNER, STREET } from "../lib/texts-mail.ts";
+import { MAIL_TEXTS, ADDRESS, STUDIO, SIGNER, MAPS_LINK, WA_LINK } from "../lib/texts-mail.ts";
 import { TEXTS, LANGS } from "../lib/texts.ts";
 import type { Lang } from "../lib/treatments.ts";
 
-/* [mitten im Satz ohne Jahr, allein stehend mit Jahr, mitten im Satz mit Jahr, Wochentag mitten im Satz, Uhrzeit] */
-const DATE: Record<Lang, [string, string, string, string, string]> = {
-  de: ["Donnerstag, 8. Oktober", "Donnerstag, 8. Oktober 2026", "Donnerstag, 8. Oktober 2026", "Donnerstag", "08:00 Uhr"],
-  en: ["Thursday 8 October", "Thursday 8 October 2026", "Thursday 8 October 2026", "Thursday", "08:00"],
-  es: ["jueves, 8 de octubre", "Jueves, 8 de octubre de 2026", "jueves, 8 de octubre de 2026", "jueves", "08:00 h"],
-  fr: ["jeudi 8 octobre", "Jeudi 8 octobre 2026", "jeudi 8 octobre 2026", "jeudi", "08 h 00"],
-  pt: ["quinta-feira, 8 de outubro", "Quinta-feira, 8 de outubro de 2026", "quinta-feira, 8 de outubro de 2026", "quinta-feira", "08:00"],
-};
-const out: string[] = ["# Texte: Bestätigungsmail, Erinnerungsmail, Terminseite (fünf Sprachen)", "", "Stand: 3. Oktober 2026. Deutsch ist die Freigabe von Dr. Vogel; EN, ES, FR, PT sind freigegeben (Feinschliff folgt), Wochentage in ES, FR, PT mitten im Satz klein. Erzeugt aus `lib/texts-mail.ts` mit `scripts/texte-mails.mts`, Beispieltermin Donnerstag, 8. Oktober 2026, 08:00 Uhr, Vorname Verena, zu zweit.", ""];
+const start = new Date("2026-10-07T06:00:00Z"); // Mittwoch, 7. Oktober 2026, 08:00 Berliner Zeit
+const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
+/* Gleiche Darstellung wie whenLabels in lib/mail-content.ts (dort nicht direkt importierbar ohne Bundler) */
+function whenLabels(d: Date, lang: Lang) {
+  const loc = LANGS.find((x) => x.id === lang)?.loc ?? "de-DE";
+  const raw = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(loc, { timeZone: "Europe/Berlin", ...o }).format(d);
+  const date = raw({ weekday: "long", day: "numeric", month: "long" });
+  const short = lang === "de" ? `${cap(raw({ weekday: "long" }))}, 7.10.` : lang === "en" ? `${raw({ weekday: "short" })} 7 ${raw({ month: "short" })}` : `${raw({ weekday: "short" })} 7/10`;
+  return { date: cap(date), dateYear: cap(raw({ weekday: "long", day: "numeric", month: "long", year: "numeric" })), dateIn: date, short, time: TEXTS[lang].at("08:00") };
+}
+const out: string[] = [
+  "# Kundentexte: Bestätigungsmail, Erinnerungsmail, Kalenderdatei, Terminseite, Bestätigungsseite (fünf Sprachen)",
+  "",
+  "Stand: 3. Oktober 2026, endgültige Fassung (Freigabe Dr. Vogel). Deutsch wörtlich, die anderen Sprachen sinngemäß im selben Ton; Betreffzeilen höchstens 40 Zeichen mit Datum und Uhrzeit vorn. Erzeugt aus `lib/texts-mail.ts` und `lib/texts.ts` mit `scripts/texte-mails.mts`. Beispieltermin Mittwoch, 7. Oktober 2026, 08:00 Uhr, Vorname Verena, zu zweit.",
+  "",
+];
 for (const { id, name } of LANGS) {
   const m = MAIL_TEXTS[id];
-  const [d, dy, dyIn, w, t] = DATE[id];
-  out.push(`## ${name} (${id})`, "", "### Bestätigungsmail", "", `Absender: ${STUDIO} <bookings@paloskin.de>, Antwort an bookings@paloskin.de`, `Betreff: ${m.subjectBinding(d, t)}`, "", "```", m.greeting("Verena"), "", m.introBinding, "", `${dy}, ${t}`, `${STUDIO}, ${ADDRESS} (${m.mapL})`, "", `${m.both} [nur bei zu zweit]`, "", m.reminderNote, "", `${m.cancelLead} ${m.cancelLink} [Link]. ${m.cancelRule}`, "", m.icsNote, "", m.closing, SIGNER, `${STUDIO}, ${ADDRESS}`, "WhatsApp +49 151 58872566", "```", "", `Ohne Schalter (Terminanfrage), nur bis zum Ausrollen: Betreff „${m.subjectRequest(d, t)}“, Einstieg „${m.introRequest}“`, "", "### Erinnerungsmail", "", `Betreff: ${m.subjectReminder(t)}`, "", "```", m.greeting("Verena"), "", m.introReminder(d, t), "", `${m.oneClick} ${m.yes} [Knopf]`, "", m.reminderCancel, "", m.closingReminder, SIGNER, STUDIO, "```", "", "### Kalenderdatei", "", `Titel: ${m.icsTitle}`, `Ort: ${STUDIO}, ${ADDRESS}`, `Beschreibung: ${m.icsDescription}`, "", "### Terminseite", "", `- Überschrift: ${m.pageTitle}`, `- Knöpfe: ${m.yes} / ${m.cancel}`, `- Rückfrage vor der Absage: ${m.cancelQ(dyIn, t)} / ${m.cancelYes} / ${m.cancelNo}`, `- Weniger als 48 Stunden: ${m.tooLate} [Knopf: ${m.waButton}]`, `- Nach Zusage: ${m.doneYes(w, t)}`, `- Nach Absage: ${m.doneCancel} [Knopf: ${m.newBooking}]`, `- Bereits abgesagt: ${m.cancelledInfo}`, `- Vergangen: ${m.past}`, `- Ungültiger Link: ${m.invalid} [Knopf: ${m.waButton}]`, `- Testbetrieb (Mails): ${m.testNote}`, "", "### Bestätigungsseite der Website (Schalter an)", "", `${TEXTS[id].doneBindingH}`, "");
+  const t = TEXTS[id];
+  const w = whenLabels(start, id);
+  out.push(`## ${name} (${id})`, "", "### Bestätigungsmail", "", `Absender: ${STUDIO} <bookings@paloskin.de>, Antwort an bookings@paloskin.de`, `Betreff (${m.subjectBooked(w.short, w.time).length} Zeichen): ${m.subjectBooked(w.short, w.time)}`, "", "```",
+    m.greeting("Verena"), "", m.introBooked, "", `${w.date}, ${w.time} (fett)`, STUDIO, ADDRESS, `[${m.mapL}] (${MAPS_LINK})`, "", m.punctual, "", `${m.both} (nur bei zu zweit)`, "", m.saveQ, `[${m.gcal}] [${m.ical}] [${m.ocal}]`, "", m.reminderNote, "", m.cancelInfo, `[${m.manageLink}]`, "", m.closing, SIGNER, STUDIO, "```", "",
+    "### Erinnerungsmail (Vortag 10:00 Uhr)", "", `Betreff (${m.subjectReminder(w.time).length} Zeichen): ${m.subjectReminder(w.time)}`, "", "```",
+    m.greeting("Verena"), "", m.introReminder, "", `${w.date}, ${w.time} (fett)`, ADDRESS, `[${m.mapL}]`, "", m.punctualShort, "", m.signQ, `[${m.yes}]`, m.reservedNote, "", m.reminderCancel, `[${m.waButton}] (${WA_LINK})`, "", m.closingReminder, SIGNER, STUDIO, "```", "",
+    "### Kalenderdatei und Kalender-Knöpfe", "", `Titel: ${m.icsTitle}`, `Ort: ${STUDIO}, ${ADDRESS}`, `Beschreibung: ${m.icsDescription}`, "",
+    "### Terminseite", "", `- Überschrift: ${m.pageTitle}`, `- Anrede: ${m.greeting("Verena")} ${m.pageIntro}`, `- Kasten: ${w.dateYear}, ${w.time}, ${STUDIO}, ${ADDRESS}, [${m.mapL}]`, `- Hinweis: ${m.punctualShort}`, `- Offen, mehr als 48 Stunden: ${m.askOpen} [${m.yes}] [${m.cancel}]`, `- Rückfrage vor Absage: ${m.cancelQ} ${w.dateYear}, ${w.time} [${m.cancelYes}] [${m.cancelNo}]`, `- Offen, weniger als 48 Stunden: [${m.yes}] ${m.tooLate} [${m.waButton}]`, `- Nach Zusage: ${m.doneYes(w.dateIn, w.time)}`, `- Nach Absage: ${m.doneCancel} [${m.newBooking}]`, `- Bereits abgesagt: ${m.cancelledInfo} [${m.newBooking}]`, `- Termin vorbei: ${m.past(w.dateIn, w.time)} [${m.newBooking}]`, `- Ungültiger Link: ${m.invalid} [${m.waButton}]`, `- Testbetrieb (Mails): ${m.testNote}`, "",
+    "### Bestätigungsseite der Buchung", "", `${t.doneBindingH} / ${t.doneBindingP}`, "", "### Hinweiskasten im letzten Buchungsschritt", "", `${t.cancelT}: ${t.cancelP} ${t.cancelP2}`, "");
 }
 writeFileSync("docs/TEXTE-MAILS.md", out.join("\n"));
-console.log("geschrieben", out.length, "Zeilen", STREET);
+console.log("geschrieben", out.length, "Zeilen");

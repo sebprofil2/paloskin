@@ -158,3 +158,11 @@ Kurzfassung der „Entscheidungen Schnittstelle Buchung und Kundensystem, Antwor
 
 - Löschlauf löscht mit der Buchung auch den Kalendereintrag in „Palo Skin Termine“ (über `calendar_event_id`); ein schon fehlender Eintrag ist kein Fehler, bei nicht erreichbarem Kalender bleibt die Buchung bis zum nächsten Lauf. Protokoll nur mit Anzahlen.
 - Kalendereintrag verschlankt: Titel „Palo Skin: Vorname N.“, Buchungsnummer, Besuch, zu zweit, Vorauswahl mit Preisen, Sprache, gegebenenfalls Empfehlung, bei WhatsApp-Haken „WhatsApp-Erinnerung: ja, <Nummer>“. E-Mail-Adresse, Einwilligungszeitpunkt und Dauer stehen nur noch in der Datenbank. Ziffer 4 der Datenschutzerklärung entsprechend gekürzt.
+
+### Gesamtauftrag Kundentexte, Kartenlink, Kalender-Knöpfe, Erinnerung, Liste (3. Oktober 2026, abends)
+
+- Kartenlink überall auf das Google-Unternehmensprofil (`https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8`): Mails, Terminseite, Bestätigungsseite, Startseite, Beschreibung der Kalenderdatei. Das Impressum enthielt keinen Kartenlink.
+- Bestätigungsmail mit drei Kalender-Knöpfen: Google (Vorlagenlink), iPhone (Kalenderdatei vom Server unter `/termin/<token>/kalender.ics`, Content-Type text/calendar), Outlook (Deeplink). Inhalt überall: Titel „Termin bei PALO SKIN“, Ort, Beschreibung nur Absagehinweis mit WhatsApp-Nummer und Kartenlink. Anhang termin.ics bleibt.
+- Erinnerung am Vortag ab 10:00 Uhr Berliner Zeit an alle nicht abgesagten Termine des nächsten Tages, die vor 10:00 Uhr gebucht wurden; später Gebuchte bekommen keine. Gescheiterte Sendungen werden alle 5 Minuten wiederholt. Die alte 24- und 30-Stunden-Regel ist entfernt.
+- Liste um 18:00 Uhr: Betreff „Morgen: N Termine, davon M noch nicht bestätigt“, je Termin Uhrzeit, Name, Stand; bei noch offenen mit WhatsApp-Haken ein wa.me-Link, ohne Haken ein tel-Link; bei bestätigten keine Nummer.
+- Endgültige Kundentexte in `lib/texts-mail.ts` und `lib/texts.ts` (Bestätigungsseite „Gebucht! Wir freuen uns auf Sie.“, Hinweiskasten „Zeit für Sie“), Liste in `docs/TEXTE-MAILS.md`. Datenschutzerklärung Ziffer 4 angepasst (Liste mit Bestätigungsstand, Link auf das Unternehmensprofil).

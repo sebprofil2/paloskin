@@ -9,7 +9,8 @@ import { PRICES, ZONE_IDS, hasBotulinum, hasTreatment, zoneCount, zonePrice, typ
 const PHONE = "+49 151 58872566";
 const PHONE_TEL = "tel:+4915158872566";
 const ADDRESS = "Hagenauer Straße 14, 10435 Berlin";
-const MAPS = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(ADDRESS);
+/* Google-Unternehmensprofil (Ersatz: https://maps.google.com/?cid=16946433859280785681) */
+const MAPS = "https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8";
 const WA = "https://wa.me/4915158872566";
 const TZ = "Europe/Berlin";
 /* Notizfeld erst mit der eigenen Ablage (Stufe 2): im Kalender steht keine Notiz */
@@ -794,7 +795,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
         </label>
         {s.errors.consent ? <div className="missing">{l.eConsent}</div> : null}
         {book.status === "error" ? <div className="missing">{l.bookErr}</div> : null}
-        <div className="note"><strong>{l.cancelT}</strong>{l.cancelP}</div>
+        <div className="note"><strong>{l.cancelT}</strong>{l.cancelP}<br />{l.cancelP2}</div>
       </section>
     );
   };
@@ -810,6 +811,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
         <div className="band" />
         <div className="confirm">
           <h1>{b.binding ? l.doneBindingH : l.doneH}</h1>
+          {b.binding ? <p>{l.doneBindingP}</p> : null}
           <p>{dayLabel(dayKey)}, {l.at(time)}.</p>
           <dl>
             <dt>{l.addrL}</dt><dd className="addr"><a href={MAPS} target="_blank" rel="noopener">{ADDRESS}</a></dd>

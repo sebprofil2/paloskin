@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { MockEngine } from "../engine/mock";
 import type { MailMessage } from "../mail";
-import { isListDue, listMail, sendReminderListIfDue } from "../reminder-list";
+import { isDueAt, LIST_HOUR, listMail, sendReminderListIfDue } from "../reminder-list";
 import { openStore, type ReserveInput, type Store } from "../store";
 import { emptySelection } from "../treatments";
 
@@ -42,12 +42,12 @@ describe("Handliste für WhatsApp-Erinnerungen", () => {
   });
 
   it("ist ab 18:00 Uhr Berliner Zeit einmal täglich fällig", () => {
-    expect(isListDue(new Date("2026-10-03T15:59:00Z"), null)).toBe(false); // 17:59 Berlin
-    expect(isListDue(new Date("2026-10-03T16:00:00Z"), null)).toBe(true); // 18:00 Berlin
-    expect(isListDue(new Date("2026-10-03T16:00:00Z"), "2026-10-03")).toBe(false);
+    expect(isDueAt(LIST_HOUR, new Date("2026-10-03T15:59:00Z"), null)).toBe(false); // 17:59 Berlin
+    expect(isDueAt(LIST_HOUR, new Date("2026-10-03T16:00:00Z"), null)).toBe(true); // 18:00 Berlin
+    expect(isDueAt(LIST_HOUR, new Date("2026-10-03T16:00:00Z"), "2026-10-03")).toBe(false);
   });
 
-  it("listet nur Termine von morgen mit Haken, nicht abgesagt; keine Mail ohne Termine", async () => {
+  it("listet alle Termine von morgen mit Bestätigungsstand, Nummer nur bei offenen; keine Mail ohne Termine", async () => {
     const now = new Date("2026-10-03T16:05:00Z"); // 3. Oktober 18:05 Berlin
     const a = reserve(store, "aaaaaaaa-1111-4111-8111-111111111111", new Date("2026-10-04T08:00:00Z")); // morgen 10:00
     reserve(store, "bbbbbbbb-1111-4111-8111-111111111111", new Date("2026-10-04T12:00:00Z"), { reminder: false }); // ohne Haken
@@ -57,12 +57,15 @@ describe("Handliste für WhatsApp-Erinnerungen", () => {
     store.cancel(e, "customer_link", now);
     expect(a && c).toBeTruthy();
 
-    expect(await sendReminderListIfDue({ store, engine, mailer }, now)).toBe(2);
+    store.confirmAttendance(c, now);
+    expect(await sendReminderListIfDue({ store, engine, mailer }, now)).toBe(3);
     expect(sent).toHaveLength(1);
     expect(sent[0].to).toBe("sebastian@example.com");
-    expect(sent[0].subject).toBe("Morgen erinnern: 2 Termine");
-    expect(sent[0].text).toContain("Erika Muster, 10:00 Uhr, https://wa.me/491511234567");
-    expect(sent[0].text).toContain("Max Beispiel, 16:30 Uhr, https://wa.me/491527654321");
+    expect(sent[0].subject).toBe("Morgen: 3 Termine, davon 2 noch nicht bestätigt");
+    expect(sent[0].text).toContain("10:00 Uhr, Erika Muster, noch offen, https://wa.me/491511234567");
+    expect(sent[0].text).toContain("14:00 Uhr, Erika Muster, noch offen, tel:+491511234567");
+    expect(sent[0].text).toContain("16:30 Uhr, Max Beispiel, bestätigt\n");
+    expect(sent[0].text).not.toContain("491527654321");
     expect(sent[0].text).not.toContain("Botox");
     expect(sent[0].text).not.toContain("PS-");
     // am selben Tag nicht noch einmal
@@ -71,7 +74,7 @@ describe("Handliste für WhatsApp-Erinnerungen", () => {
     // am nächsten Tag ohne Termine keine Mail
     expect(await sendReminderListIfDue({ store, engine, mailer }, new Date("2026-10-05T16:05:00Z"))).toBe(0);
     expect(sent).toHaveLength(1);
-    expect(listMail([store.findById(a)!], now).subject).toBe("Morgen erinnern: 1 Termin");
+    expect(listMail([store.findById(a)!], now).subject).toBe("Morgen: 1 Termin, davon 1 noch nicht bestätigt");
   });
 
   it("ohne Empfänger keine Liste; Versandfehler wird am nächsten Tick wiederholt", async () => {

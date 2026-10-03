@@ -3,6 +3,7 @@ import { canCancelOnline, cancelBooking, confirmAttendance, placeBooking, runMai
 import { MockEngine, mockInternals } from "../engine/mock";
 import type { MailMessage, Mailer } from "../mail";
 import { openStore, type Store } from "../store";
+import { berlinDateKey, fromBerlinKey } from "../time";
 import { emptySelection } from "../treatments";
 
 class FakeMailer implements Mailer {
@@ -72,7 +73,7 @@ describe("Bestätigungsmail, Zusage, Absage, Erinnerung", () => {
     expect(mailer.sent).toHaveLength(1);
     const m = mailer.sent[0];
     expect(m.to).toBe("erika@example.com");
-    expect(m.subject).toContain("Terminanfrage bei PALO SKIN");
+    expect(m.subject).toMatch(/^Angefragt: /);
     expect(m.ics?.content).toContain("BEGIN:VEVENT");
     expect(m.text).not.toContain("Nur für die Datenbank");
     const row = store.findByRequestId("11111111-1111-4111-8111-111111111111")!;
@@ -88,7 +89,7 @@ describe("Bestätigungsmail, Zusage, Absage, Erinnerung", () => {
     const start = await freeStart();
     const a = await placeBooking(input("22222222-2222-4222-8222-222222222222", start, { binding: true }), deps());
     expect(a.status === "booked" && a.booking.binding).toBe(true);
-    expect(mailer.sent[0].subject).toMatch(/^Ihr Termin bei PALO SKIN am /);
+    expect(mailer.sent[0].subject).toMatch(/^Gebucht: /);
   });
 
   it("Versand scheitert: Buchung bleibt, Hintergrundlauf holt die Mail nach, Protokoll nur mit Nummer", async () => {
@@ -107,7 +108,7 @@ describe("Bestätigungsmail, Zusage, Absage, Erinnerung", () => {
     expect(r.overdue).toBe(1);
     mailer.fail = false;
     r = await runMailJobs(deps());
-    expect(r).toEqual({ confirmations: 1, reminders: 0, overdue: 0 });
+    expect(r).toEqual({ confirmations: 1, overdue: 0 });
     expect(mailer.sent).toHaveLength(1);
     expect(store.findById(row.id)!.mail_confirmation_sent_at).not.toBeNull();
     // ein weiterer Lauf schickt nichts doppelt
@@ -161,27 +162,41 @@ describe("Bestätigungsmail, Zusage, Absage, Erinnerung", () => {
     expect(mockInternals.events.size).toBe(0);
   });
 
-  it("Erinnerung etwa 24 Stunden vorher, nicht bei kurzfristiger Buchung, nicht doppelt", async () => {
+  it("Erinnerung am Vortag ab 10:00 Uhr, nicht für später Gebuchte, nicht doppelt, Fehler werden wiederholt", async () => {
+    const { sendRemindersIfDue } = await import("../reminder-list");
     const start = await freeStart();
     await placeBooking(input("77777777-7777-4777-8777-777777777777", start), deps());
     const row = store.findByRequestId("77777777-7777-4777-8777-777777777777")!;
     mailer.sent = [];
     const startMs = Date.parse(row.starts_at);
-    // 30 Stunden vorher: noch nichts
-    expect((await runMailJobs(deps(), new Date(startMs - 30 * 3600000))).reminders).toBe(0);
-    // 23 Stunden vorher: Erinnerung
-    expect((await runMailJobs(deps(), new Date(startMs - 23 * 3600000))).reminders).toBe(1);
+    // Vortag 09:59 Berliner Zeit: noch nichts; der Termin liegt am Folgetag
+    const dayBefore = new Date(startMs - 86400000);
+    const berlin = (h: number, m: number) => fromBerlinKey(berlinDateKey(dayBefore), `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+    expect(await sendRemindersIfDue(deps(), berlin(9, 59))).toBeNull();
+    // gebucht erst um 10:00 Uhr des Vortags: keine Erinnerung
+    store.db.prepare("UPDATE bookings SET created_at = ? WHERE id = ?").run(berlin(10, 0).toISOString(), row.id);
+    let r = await sendRemindersIfDue(deps(), berlin(10, 1));
+    expect(r).toMatchObject({ sent: 0, skipped: 1, failed: 0 });
+    expect(mailer.sent).toHaveLength(0);
+    // Buchung vor der Frist: Erinnerung geht raus, genau einmal
+    store.db.prepare("UPDATE bookings SET created_at = ?, mail_reminder_skipped = 0 WHERE id = ?").run(new Date(startMs - 3 * 86400000).toISOString(), row.id);
+    store.db.prepare("DELETE FROM meta").run();
+    r = await sendRemindersIfDue(deps(), berlin(10, 5));
+    expect(r).toMatchObject({ sent: 1, skipped: 0, failed: 0 });
     expect(mailer.sent).toHaveLength(1);
-    expect(mailer.sent[0].subject).toMatch(/^Morgen um /);
+    expect(mailer.sent[0].subject).toMatch(/^Bis morgen um /);
     expect(mailer.sent[0].ics).toBeUndefined();
-    expect((await runMailJobs(deps(), new Date(startMs - 22 * 3600000))).reminders).toBe(0);
+    expect(await sendRemindersIfDue(deps(), berlin(10, 10))).toBeNull();
     expect(mailer.sent).toHaveLength(1);
-
-    // Kurzfristig gebucht (Buchung weniger als 30 Stunden vor dem Termin): keine Erinnerung
-    store.db.prepare("UPDATE bookings SET created_at = ? WHERE id = ?").run(new Date(startMs - 20 * 3600000).toISOString(), row.id);
+    // Versandfehler: Lauf gilt nicht als erledigt, nächster Tick wiederholt
     store.db.prepare("UPDATE bookings SET mail_reminder_sent_at = NULL WHERE id = ?").run(row.id);
-    expect((await runMailJobs(deps(), new Date(startMs - 10 * 3600000))).reminders).toBe(0);
-    expect(store.findById(row.id)!.mail_reminder_skipped).toBe(1);
-    expect(mailer.sent).toHaveLength(1);
+    store.db.prepare("DELETE FROM meta").run();
+    mailer.fail = true;
+    r = await sendRemindersIfDue(deps(), berlin(10, 15));
+    expect(r).toMatchObject({ sent: 0, failed: 1 });
+    mailer.fail = false;
+    r = await sendRemindersIfDue(deps(), berlin(10, 20));
+    expect(r).toMatchObject({ sent: 1, failed: 0 });
+    expect(mailer.sent).toHaveLength(2);
   });
 });
