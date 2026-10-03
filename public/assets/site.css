@@ -42,6 +42,8 @@ a{color:inherit}
 .nav .links a{text-decoration:none;color:var(--ink-2)}
 .nav .links a:hover{color:var(--ink)}
 @media (min-width:860px){.nav .links{display:flex}}
+/* Auf schmalen Handys reicht der feste Knopf unten; der Kopf bleibt einzeilig */
+@media (max-width:479px){.nav .btn{display:none}}
 
 /* Knöpfe */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:0;padding:14px 22px;font-weight:500;font-size:16px;text-decoration:none;cursor:pointer;line-height:1.2;white-space:nowrap}
@@ -105,7 +107,7 @@ p{margin:0}
 .prow + .prow{border-top:1px dashed var(--line)}
 .prow .n{flex:1}
 .prow .n small{display:block;color:var(--ink-3);font-size:14px}
-.prow .p{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:500}
+.prow .p{white-space:nowrap;font-weight:500}
 .prow .p small{font-weight:400;color:var(--ink-3);font-size:14px}
 .pnote{margin-top:16px}
 
