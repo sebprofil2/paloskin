@@ -3,7 +3,7 @@ import { ZONE_IDS, ZONE_NAMES_DE, type Selection, type ZoneId } from "./treatmen
 /*
  * Gemeinsame Codes mit dem Kundensystem (Fassung 4 des Bauauftrags, 2. Oktober 2026).
  * Intern bleiben BER, BOT, KAU, NEF, HYP, LDN, LDN4 und die deutschen Zonenkennungen; übersetzt wird nur beim
- * Schreiben eines Ereignisses. Alle Codes sind verbindlich (Bestätigung von Dr. Vogel am 3. Oktober 2026);
+ * Schreiben eines Ereignisses. Alle Codes sind verbindlich (Bestätigung von Dr. Vogel am 3. Oktober 2026, Gegenprüfung des CRM-Projekts: upper_lip_lines);
  * die Zuordnungstabelle steht in docs/SCHNITTSTELLE-KUNDENSYSTEM.md.
  */
 export interface CodeEntry {
@@ -33,7 +33,7 @@ export const ZONE_CODE_TABLE: (CodeEntry & { internal: ZoneId })[] = [
   { internal: "mundwinkel", shared: "mouth_corners", nameDe: ZONE_NAMES_DE.mundwinkel },
   { internal: "erdbeerkinn", shared: "chin", nameDe: ZONE_NAMES_DE.erdbeerkinn },
   { internal: "gummysmile", shared: "gummy_smile", nameDe: ZONE_NAMES_DE.gummysmile },
-  { internal: "oberlippe", shared: "upper_lip", nameDe: ZONE_NAMES_DE.oberlippe },
+  { internal: "oberlippe", shared: "upper_lip_lines", nameDe: ZONE_NAMES_DE.oberlippe },
   { internal: "nase", shared: "nose", nameDe: ZONE_NAMES_DE.nase },
 ];
 

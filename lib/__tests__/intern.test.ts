@@ -14,7 +14,7 @@ describe("Gemeinsame Codes", () => {
     expect(new Set(toSharedZones([...ZONE_IDS])).size).toBe(ZONE_IDS.length);
     expect(toSharedZones(["zornesfalte", "stirn", "kraehenfuesse"])).toEqual(["glabella", "forehead", "crows_feet"]);
     expect(SERVICE_CODE_TABLE.map((e) => e.shared)).toContain("botulinum");
-    expect(ZONE_CODE_TABLE.map((e) => e.shared)).toEqual(["glabella", "forehead", "crows_feet", "brow_lift", "lip_flip", "bunny_lines", "mouth_corners", "chin", "gummy_smile", "upper_lip", "nose"]);
+    expect(ZONE_CODE_TABLE.map((e) => e.shared)).toEqual(["glabella", "forehead", "crows_feet", "brow_lift", "lip_flip", "bunny_lines", "mouth_corners", "chin", "gummy_smile", "upper_lip_lines", "nose"]);
     expect(appointmentType({ checkup: true, firstVisit: true })).toBe("control");
     expect(appointmentType({ checkup: false, firstVisit: true })).toBe("first");
     expect(appointmentType({ checkup: false, firstVisit: false })).toBe("follow_up");
@@ -88,7 +88,7 @@ describe("Endpunkt: Ereignisse, Bestätigung, Rückweg", () => {
     expect(store.confirmByCrm(row.id).outcome).toBe("unchanged");
     expect(store.findById(row.id)!.status).toBe("confirmed");
     expect(store.eventsForBooking(row.id).map((e) => e.type)).toEqual(["created", "confirmed"]);
-    const cancelled = await cancelBooking(row.id, "crm:no_show_risk", deps());
+    const cancelled = await cancelBooking(row.id, "studio_cancelled", deps());
     expect(cancelled?.status).toBe("cancelled");
     expect(store.confirmByCrm(row.id).outcome).toBe("cancelled");
     expect(mockInternals.events.size).toBe(0);

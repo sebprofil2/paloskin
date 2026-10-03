@@ -1,11 +1,11 @@
 # Schnittstelle Buchung zu Kundensystem (Studio OS)
 
-Stand: 3. Oktober 2026, Fassung 4 des Bauauftrags Stufe 2, Codes verbindlich. Dieses Dokument ist die verbindliche Beschreibung des Endpunkts auf paloskin-1; bei Abweichungen zwischen Attrappe und Dokument gilt das Dokument.
+Stand: 3. Oktober 2026, Fassung 4 des Bauauftrags Stufe 2, Codes verbindlich, Gegenprüfung des CRM-Projekts eingearbeitet. Dieses Dokument ist die verbindliche Beschreibung des Endpunkts auf paloskin-1; bei Abweichungen zwischen Attrappe und Dokument gilt das Dokument.
 
 ## 1. Zugang
 
-- Adresse: `https://10.0.0.2:8443` im privaten Hetzner-Netz `paloskin-intern` (10.0.0.0/24). Der Name `buchung.intern` steht ebenfalls im Zertifikat; dafür auf paloskin-2 in `/etc/hosts` eintragen: `10.0.0.2 buchung.intern`.
-- Zertifikat: ausgestellt von Caddys interner Zertifizierungsstelle auf paloskin-1. Das Wurzelzertifikat (`root.crt`) wird dem Kundensystem per `scp` über das private Netz übergeben und dort fest eingepinnt (nur diese CA akzeptieren). Weg in `deploy/UMZUG-HETZNER.md`, Abschnitt 18.
+- Adresse: `https://10.0.0.2:8443` im privaten Hetzner-Netz `paloskin-intern` (10.0.0.0/24). Der Name `buchung.intern` steht ebenfalls im Zertifikat; ein Hosts-Eintrag auf paloskin-2 ist optional, der Client prüft den Namen über eine Einstellung.
+- Zertifikat: ausgestellt von Caddys interner Zertifizierungsstelle auf paloskin-1. Das Wurzelzertifikat (`root.crt`) wird per `scp` über das private Netz in das Home-Verzeichnis des Nutzers auf paloskin-2 gelegt; die Übernahme in den Zielordner macht das CRM-Projekt (dort `docs/BETRIEB.md`, Abschnitt 7). Das Kundensystem akzeptiert nur diese CA. Weg in `deploy/UMZUG-HETZNER.md`, Abschnitt 18.
 - Authentifizierung: `Authorization: Bearer <INTERN_TOKEN>` bei jeder Anfrage. Ohne oder mit falschem Token 401. Das Token wird nur im Terminal übergeben.
 - Begrenzung: 120 Anfragen pro Minute je Absender, danach 429. Keine Weiterleitungen. Alle Antworten `Cache-Control: no-store`, JSON in UTF-8.
 - Von der öffentlichen Adresse (2.31.2.192, www.paloskin.de) existiert der Pfad nicht (Verbindung abgewiesen beziehungsweise 404).
@@ -37,9 +37,9 @@ Vorgehen des Kundensystems: abholen, verarbeiten, bestätigen (Abschnitt 3), mit
 
 ## 4. Rückweg: Status setzen
 
-`POST /intern/v1/bookings/{id}/status` mit `{ "status": "confirmed", "reason": "crm_review" }` oder `{ "status": "cancelled", "reason": "customer_called" }`
+`POST /intern/v1/bookings/{id}/status` mit `{ "status": "confirmed", "reason": "studio_confirmed" }` oder `{ "status": "cancelled", "reason": "studio_cancelled" }`
 
-- `{id}` ist die ULID der Buchung (Feld `id`). `reason` ist ein fester, kurzer Text (höchstens 80 Zeichen), er landet als `cancel_reason` mit dem Präfix `crm:` in der Buchung.
+- `{id}` ist die ULID der Buchung (Feld `id`). `reason` ist einer der festen Bezeichner `studio_confirmed` oder `studio_cancelled` (kein Freitext, andere Werte ergeben 400). Bei Absage wird er unverändert als `cancel_reason` gespeichert.
 - `confirmed`: eine Terminanfrage (`requested`) wird `confirmed`, Ereignis `confirmed`, Kalendereintrag unverändert. Ist die Buchung schon `confirmed`, passiert nichts (`changed: false`). Ist sie abgesagt, 409 `already_cancelled`.
 - `cancelled`: Status `cancelled`, Belegung frei, Ereignis `cancelled`, Kalendereintrag gelöscht. Mehrfach aufrufbar (`changed: false` ab dem zweiten Mal).
 - Antwort: `{ "booking": { vollständiger Stand }, "changed": true }`. Unbekannte Kennung 404. Nichts anderes ist über den Rückweg änderbar.
@@ -84,7 +84,7 @@ Felder von `booking` (alle Zeiten UTC mit `Z`):
 | `test` | bool | Testbuchung (Testbetrieb der Seite); im Kundensystem gesondert behandeln |
 | `calendar_event_id`, `calendar_state` | Text, `pending`/`written`/`failed` | Kalendereintrag des Arztes |
 | `attendance_confirmed_at` | Zeit oder null | Zusage des Kunden über den Mail-Link |
-| `cancelled_at`, `cancel_reason` | Zeit, Text | Absage; `customer_link` oder `crm:<reason>` |
+| `cancelled_at`, `cancel_reason` | Zeit, Text | Absage; `customer_link` (Kunde über den Mail-Link) oder `studio_cancelled` (Kundensystem) |
 | `updated_at` | Zeit | letzte Änderung |
 
 ## 7. Ereignistypen mit Beispielen
@@ -157,7 +157,7 @@ Wie `created`, mit `"type": "confirmed"`, `"status": "confirmed"` und neuem `upd
 { "seq": 4, "event_id": "01M3Z2C4D5E6F7G8H9J0K1M2N3", "type": "cancelled", "occurred_at": "2026-10-02T19:44:54.230Z", "booking": { "id": "01M3Z293MN1KK9BTG42T2BZBJG", "reference": "PS-FFL87G", "status": "cancelled", "cancelled_at": "2026-10-02T19:44:54.230Z", "cancel_reason": "customer_link", "calendar_event_id": "g9lgojcpqbtal5is5ljv4f0rrg", "updated_at": "2026-10-02T19:44:54.230Z", "...": "übrige Felder wie bei created" } }
 ```
 
-`cancel_reason` ist `customer_link` (Kunde) oder `crm:<reason>` (Kundensystem). `calendar_event_id` kann im Ereignis noch gesetzt sein; der Kalendereintrag wird direkt danach gelöscht.
+`cancel_reason` ist `customer_link` (Kunde) oder `studio_cancelled` (Kundensystem). `calendar_event_id` kann im Ereignis noch gesetzt sein; der Kalendereintrag wird direkt danach gelöscht.
 
 ### rescheduled: reserviert
 
@@ -209,7 +209,7 @@ Zonen (`zones`):
 | mundwinkel | `mouth_corners` | Mundwinkel |
 | erdbeerkinn | `chin` | Erdbeerkinn |
 | gummysmile | `gummy_smile` | Gummy Smile |
-| oberlippe | `upper_lip` | Oberlippe |
+| oberlippe | `upper_lip_lines` | Oberlippe |
 | nase | `nose` | Nase |
 
 Eine frei eingetragene Zone steht nur in `other_zone`, „weiß ich noch nicht“ nur in `zones_unknown`; beide erzeugen keinen Code.

@@ -8,10 +8,11 @@ import { ULID_PATTERN } from "@/lib/ulid";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const schema = z.object({ status: z.enum(["confirmed", "cancelled"]), reason: z.string().trim().min(1).max(80) }).strict();
+const schema = z.object({ status: z.enum(["confirmed", "cancelled"]), reason: z.enum(["studio_confirmed", "studio_cancelled"]) }).strict();
 
 /*
- * POST /intern/v1/bookings/{id}/status { status, reason }: einziger Rückweg des Kundensystems.
+ * POST /intern/v1/bookings/{id}/status { status, reason }: einziger Rückweg des Kundensystems. reason ist ein fester
+ * Bezeichner (studio_confirmed, studio_cancelled) und wird bei Absage unverändert als cancel_reason gespeichert.
  * confirmed: requested wird confirmed (Ereignis confirmed, Kalendereintrag unverändert).
  * cancelled: Belegung frei, Ereignis cancelled, Kalendereintrag gelöscht. Beides mehrfach aufrufbar.
  */
@@ -32,7 +33,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       if (r.outcome === "confirmed") logEvent("info", "intern_confirmed", { route: "intern", bookingRef: r.booking!.reference, reason: parsed.data.reason });
       return internJson({ booking: toPayload(r.booking!), changed: r.outcome === "confirmed" });
     }
-    const cancelled = await cancelBooking(id, `crm:${parsed.data.reason}`);
+    const cancelled = await cancelBooking(id, parsed.data.reason);
     const row = cancelled ?? store.findById(id)!;
     return internJson({ booking: toPayload(row), changed: cancelled !== null });
   } catch (e) {

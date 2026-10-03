@@ -356,11 +356,13 @@ printf 'LINK_SECRET=%s\n' "$(openssl rand -base64 32)" >> /etc/paloskin/paloskin
 printf 'INTERN_TOKEN=%s\n' "$(openssl rand -base64 32)" >> /etc/paloskin/paloskin.env
 ```
 
-- **Caddy** lauscht nach `docker compose up -d` auch an 10.0.0.2:8443 mit einem Zertifikat der internen Zertifizierungsstelle für 10.0.0.2 und `buchung.intern`. Wurzelzertifikat exportieren und an paloskin-2 geben (nur über das private Netz):
+- **Caddy** lauscht nach `docker compose up -d` auch an 10.0.0.2:8443 mit einem Zertifikat der internen Zertifizierungsstelle für 10.0.0.2 und `buchung.intern`. Wurzelzertifikat exportieren und an paloskin-2 geben (nur über das private Netz, in das Home-Verzeichnis des dortigen Nutzers; die Übernahme in den Zielordner macht das CRM-Projekt, dort `docs/BETRIEB.md` Abschnitt 7; `<nutzername>` durch den Nutzer auf paloskin-2 ersetzen):
 
 ```bash
-cd /opt/paloskin && docker compose -f deploy/docker-compose.yml cp caddy:/data/caddy/pki/authorities/local/root.crt /home/deploy/paloskin-intern-root.crt && scp /home/deploy/paloskin-intern-root.crt deploy@10.0.0.3:/etc/ssl/certs/paloskin-intern-root.crt
+cd /opt/paloskin && docker compose -f deploy/docker-compose.yml cp caddy:/data/caddy/pki/authorities/local/root.crt /home/deploy/paloskin-intern-root.crt && scp /home/deploy/paloskin-intern-root.crt <nutzername>@10.0.0.3:/home/<nutzername>/paloskin-intern-root.crt
 ```
+
+- Ein Hosts-Eintrag `10.0.0.2 buchung.intern` auf paloskin-2 ist optional; der Client des Kundensystems prüft den Namen über eine Einstellung.
 
 - **Prüfung vom Server selbst** (Quelladresse 10.0.0.2 liegt im privaten Netz); das Token nur aus der Datei lesen:
 

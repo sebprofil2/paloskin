@@ -137,3 +137,10 @@ Kurzfassung der „Entscheidungen Schnittstelle Buchung und Kundensystem, Antwor
 - Kalenderexport: „Palo Skin Termine“ 7 Tage zurück bis 90 Tage voraus als `palo-skin-termine-JJJJ-MM-TT.ics` unter `/var/lib/paloskin/export` (0700, Dateien 0600), 30 Tage aufbewahrt.
 - Sicherung: `deploy/backup.sh` als root per Cron um 03:45 Uhr: `sqlite3 .backup` nach `/var/backups/paloskin/buchung-JJJJ-MM-TT.sqlite.gz` mit Integritätsprüfung, 14 Tage, dazu der jüngste Kalenderexport. Der Heartbeat bleibt aus, wenn die jüngste Sicherung älter als 26 Stunden ist. restic zum Sicherungsserver folgt, sobald er existiert (10.0.0.4).
 - Wiederherstellungstest: Anleitung Abschnitt 19, durchgeführt auf der Testinstanz.
+
+### Gegenprüfung des CRM-Projekts (3. Oktober 2026)
+
+- Zonencode `upper_lip` heißt in der gemeinsamen Liste `upper_lip_lines` (geändert in `lib/service-codes.ts` und im Schema).
+- Rückweg: `reason` sind die festen Bezeichner `studio_confirmed` und `studio_cancelled`, gespeichert als `cancel_reason` ohne Präfix.
+- Kopierweg des Wurzelzertifikats in das Home-Verzeichnis des Nutzers auf paloskin-2, Hosts-Eintrag optional.
+- Maßstab: fünf bis zehn Buchungen am Tag, keine weitere Arbeit für Gleichzeitigkeit oder Hochlast.
