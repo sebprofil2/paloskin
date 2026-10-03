@@ -103,7 +103,7 @@ const blank = (checkup: boolean): State => ({
 
 function toSelection(s: State, checkup: boolean): Selection {
   return {
-    persons: s.persons,
+    persons: checkup ? 1 : s.persons, // Kontrolltermin nur allein
     visit: s.visit,
     checkup,
     beratung: s.beratung,

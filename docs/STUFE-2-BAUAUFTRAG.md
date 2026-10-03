@@ -179,3 +179,15 @@ Kurzfassung der „Entscheidungen Schnittstelle Buchung und Kundensystem, Antwor
 - Block 8: Studio-Mails über die Warteschlange `studio_mails` (sofort, sonst alle 5 Minuten), nur Deutsch, ohne Behandlung, Nummer, Adresse, Buchungsnummer, „[TEST]“ bei Testbuchungen.
 - Block 9: Datenschutzerklärung Ziffer 4, zwei Sätze.
 - Block 10: Löscht das Studio einen Eintrag direkt im Kalender, merkt die Buchung nichts davon: Status bleibt, Belegung bleibt (die Zeit ist online weiter blockiert), keine Mail. Absagen gehören über den Rückweg des Kundensystems oder den Link.
+
+## Dauer der Termine (Entscheidung Dr. Vogel, 3. Oktober 2026)
+
+Folgebesuche dauern so lang wie erste Besuche; Termine von 20 Minuten gibt es nicht mehr. Die Frage „Waren Sie schon einmal bei uns?“ bleibt im Formular und im Ereignis (`appointment_type`), ändert aber die Dauer nicht mehr. Der Kontrolltermin (nur über den Link `/booking?kontrolle`) ist nur allein buchbar; der Server weist „zu zweit“ dort ab. Die Tabelle ist als Test in `lib/__tests__/duration.test.ts` festgeschrieben.
+
+| Auswahl | allein | zu zweit |
+|---|---|---|
+| Beratung („Ich bin noch unsicher“) | 30 Minuten | 50 Minuten |
+| Botox (Zonen, andere Zone, Kaumuskel, Nefertiti-Lift, Schwitzen) | 30 Minuten | 50 Minuten |
+| Nur Lachs-DNA | 30 Minuten | 50 Minuten |
+| Botox und Lachs-DNA | 50 Minuten | 70 Minuten |
+| Kontrolltermin | 15 Minuten | nicht wählbar |

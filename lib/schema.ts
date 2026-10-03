@@ -22,7 +22,10 @@ export const selectionSchema = z
   .superRefine((s, ctx) => {
     const sel = s as Selection;
     if (new Set(s.zones).size !== s.zones.length) ctx.addIssue({ code: "custom", message: "Zonen doppelt" });
-    if (sel.checkup) return;
+    if (sel.checkup) {
+      if (s.persons !== 1) ctx.addIssue({ code: "custom", message: "Kontrolltermin nur allein" });
+      return;
+    }
     if (!sel.visit) ctx.addIssue({ code: "custom", message: "Besuch fehlt" });
     if (sel.beratung && hasTreatment(sel)) ctx.addIssue({ code: "custom", message: "Beratung und Behandlung zugleich" });
     if (!sel.beratung && !hasTreatment(sel)) ctx.addIssue({ code: "custom", message: "Keine Behandlung gewählt" });
