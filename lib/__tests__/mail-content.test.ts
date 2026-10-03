@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { buildIcs, confirmationMail, reminderMail, whenLabels } from "../mail-content";
+import { buildIcs, calendarLinks, confirmationMail, reminderMail, whenLabels } from "../mail-content";
 import type { BookingRow } from "../store";
 import { emptySelection, type Lang, type Selection } from "../treatments";
 
@@ -75,9 +75,9 @@ describe("Bestätigungsmail nach Freigabe", () => {
     expect(t).toContain("Hallo Verena,\n\nschön, dass Sie zu uns kommen! Wir freuen uns auf Sie:\n\nDonnerstag, 8. Oktober, 08:00 Uhr\nPALO SKIN by Dr. Vogel\nHagenauer Straße 14, 10435 Berlin\nSo finden Sie uns: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8\n");
     expect(t).toContain("Ihre Zeit ist uns wichtig: Bei PALO SKIN beginnt Ihr Termin pünktlich, in der Regel ganz ohne Wartezeit.");
     expect(t).toContain("\nFür Sie beide haben wir Zeit eingeplant.\n");
-    expect(t).toContain("Möchten Sie den Termin gleich im Kalender speichern?\nGoogle Kalender: https://calendar.google.com/calendar/render?action=TEMPLATE&text=Termin+bei+PALO+SKIN&dates=20261008T060000Z%2F20261008T065000Z&location=");
+    expect(t).toContain("Möchten Sie den Termin gleich im Kalender speichern?\nGoogle Kalender: https://calendar.google.com/calendar/render?action=TEMPLATE&text=Goodbye+Wrinkles%3A+Verena+Muster+%C2%B7+PALO+SKIN+by+Dr.+Vogel&dates=20261008T060000Z%2F20261008T065000Z&location=");
     expect(t).toMatch(/iPhone-Kalender: https:\/\/www\.paloskin\.de\/termin\/01M3YWQ51D0EPJ4VSS2B2MQT7H\.[A-Za-z0-9_-]{27}\/kalender\.ics\n/);
-    expect(t).toContain("Outlook: https://outlook.live.com/calendar/0/deeplink/compose?subject=Termin+bei+PALO+SKIN&startdt=2026-10-08T06%3A00%3A00.000Z");
+    expect(t).toContain("Outlook: https://outlook.live.com/calendar/0/deeplink/compose?subject=Goodbye+Wrinkles%3A+Verena+Muster+%C2%B7+PALO+SKIN+by+Dr.+Vogel&startdt=2026-10-08T06%3A00%3A00.000Z");
     expect(t).toContain("Am Tag vorher erinnern wir Sie noch einmal.");
     expect(t).toMatch(/Den Termin verschieben oder absagen können Sie bis 24 Stunden vorher über diesen Link\.\nTermin verschieben oder absagen: https:\/\/www\.paloskin\.de\/termin\/01M3YWQ51D0EPJ4VSS2B2MQT7H\.[A-Za-z0-9_-]{27}\n/);
     expect(t).toContain("Bis bald!\nDr. med. Sebastian Vogel\nPALO SKIN by Dr. Vogel");
@@ -140,14 +140,16 @@ describe("Bestätigungsmail nach Freigabe", () => {
   it("Kalenderdatei: Titel, Ort, persönlicher Link und Kartenlink, kein WhatsApp, Erinnerung 1 Stunde vorher, Weltzeit mit Endzeit, Winterzeit", () => {
     const ics = buildIcs(row(), "de", new Date("2026-10-01T10:00:00Z"));
     const flat = ics.replace(/\r\n /g, "");
-    expect(ics).toContain("SUMMARY:Termin bei PALO SKIN");
+    expect(flat).toContain("SUMMARY:Goodbye Wrinkles: Verena Muster · PALO SKIN by Dr. Vogel\r\n");
     expect(ics).toContain("LOCATION:PALO SKIN by Dr. Vogel\\, Hagenauer Straße 14\\, 10435 Berlin");
-    expect(flat).toMatch(/DESCRIPTION:Termin ansehen\\, verschieben oder absagen \(bis 24 Stunden vorher\):\\nhttps:\/\/www\.paloskin\.de\/termin\/[A-Za-z0-9._-]+\\nSo finden Sie uns: https:\/\/maps\.app\.goo\.gl\/c3KoXo6d9YU5P2wy8\r\n/);
+    expect(flat).toMatch(/\r\nDESCRIPTION:Termin ansehen\\, verschieben oder absagen \(bis 24 Stunden vorher\):\\nhttps:\/\/www\.paloskin\.de\/termin\/[A-Za-z0-9._-]+\\n\\nSo finden Sie uns:\\nhttps:\/\/maps\.app\.goo\.gl\/c3KoXo6d9YU5P2wy8\r\n/);
+    expect(flat).toMatch(/\r\nX-ALT-DESC;FMTTYPE=text\/html:<html><body><a href="https:\/\/www\.paloskin\.de\/termin\/[A-Za-z0-9._-]+">Termin ansehen\\, verschieben oder absagen<\/a> \(bis 24 Stunden vorher\)<br><br><a href="https:\/\/maps\.app\.goo\.gl\/c3KoXo6d9YU5P2wy8">So finden Sie uns<\/a><\/body><\/html>\r\n/);
     expect(flat).not.toContain("WhatsApp");
-    expect(flat).toContain("BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:Termin bei PALO SKIN\r\nTRIGGER:-PT1H\r\nEND:VALARM\r\nEND:VEVENT");
+    expect(flat).toContain("BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:Goodbye Wrinkles: Verena Muster · PALO SKIN by Dr. Vogel\r\nTRIGGER:-PT1H\r\nEND:VALARM\r\nEND:VEVENT");
     for (const lang of ["en", "es", "fr", "pt"] as const) {
       const other = buildIcs(row(), lang).replace(/\r\n /g, "");
-      expect(other).toMatch(/DESCRIPTION:[^\r]*\\nhttps:\/\/www\.paloskin\.de\/termin\/[^\r]*maps\.app\.goo\.gl/);
+      expect(other).toMatch(/\r\nDESCRIPTION:[^\r]*\\nhttps:\/\/www\.paloskin\.de\/termin\/[^\r]*\\n\\n[^\r]*\\nhttps:\/\/maps\.app\.goo\.gl/);
+      expect(other).toContain("SUMMARY:Goodbye Wrinkles: Verena Muster · PALO SKIN by Dr. Vogel");
       expect(other).not.toContain("WhatsApp");
     }
     expect(ics).toContain("DTSTART:20261008T060000Z");
@@ -158,6 +160,21 @@ describe("Bestätigungsmail nach Freigabe", () => {
     expect(winter).toMatchObject({ date: "Montag, 26. Oktober", short: "Montag, 26.10.", time: "10:00 Uhr" });
     expect(whenLabels(new Date("2026-10-26T09:00:00Z"), "es")).toMatchObject({ dateIn: "lunes, 26 de octubre" });
     expect(buildIcs(row({ starts_at: "2026-10-26T09:00:00.000Z", ends_at: "2026-10-26T09:30:00.000Z" }), "de")).toContain("DTSTART:20261026T090000Z");
+  });
+
+  it("Google und Outlook: Titel mit Namen, Google-Beschreibung als HTML mit verlinkten Wörtern, Outlook als Klartext mit Leerzeile", () => {
+    const c = calendarLinks(row(), "de");
+    const g = new URL(c.google).searchParams;
+    expect(g.get("text")).toBe("Goodbye Wrinkles: Verena Muster · PALO SKIN by Dr. Vogel");
+    expect(g.get("details")).toMatch(/^<a href="https:\/\/www\.paloskin\.de\/termin\/[A-Za-z0-9._-]+">Termin ansehen, verschieben oder absagen<\/a> \(bis 24 Stunden vorher\)<br><br><a href="https:\/\/maps\.app\.goo\.gl\/c3KoXo6d9YU5P2wy8">So finden Sie uns<\/a>$/);
+    const o = new URL(c.outlook).searchParams;
+    expect(o.get("subject")).toBe("Goodbye Wrinkles: Verena Muster · PALO SKIN by Dr. Vogel");
+    expect(o.get("body")).toMatch(/^Termin ansehen, verschieben oder absagen \(bis 24 Stunden vorher\):\nhttps:\/\/www\.paloskin\.de\/termin\/[A-Za-z0-9._-]+\n\nSo finden Sie uns:\nhttps:\/\/maps\.app\.goo\.gl\/c3KoXo6d9YU5P2wy8$/);
+    for (const lang of ["en", "es", "fr", "pt"] as const) {
+      const l = new URL(calendarLinks(row(), lang).google).searchParams;
+      expect(l.get("text")).toBe("Goodbye Wrinkles: Verena Muster · PALO SKIN by Dr. Vogel");
+      expect(l.get("details")).toContain('<a href="https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8">');
+    }
   });
 
   it("Erinnerung wörtlich: bestätigen mit einem Klick, sonst verschieben; ohne Kalender-Knöpfe, ohne WhatsApp-Absatz", () => {

@@ -68,10 +68,11 @@ PALO SKIN by Dr. Vogel
 
 ### Kalenderdatei und Kalender-Knöpfe
 
-Titel: Termin bei PALO SKIN
+Titel (alle Sprachen gleich): Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Termin ansehen, verschieben oder absagen (bis 24 Stunden vorher): / <persönlicher Link https://www.paloskin.de/termin/...> / So finden Sie uns: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
-Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die eigene Standarderinnerung)
+Beschreibung Google (HTML): <a href="<persönlicher Link>">Termin ansehen, verschieben oder absagen</a> (bis 24 Stunden vorher)<br><br><a href="https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8">So finden Sie uns</a>
+Beschreibung Outlook und Kalenderdatei (Klartext): Termin ansehen, verschieben oder absagen (bis 24 Stunden vorher): / <persönlicher Link https://www.paloskin.de/termin/...> / (Leerzeile) / So finden Sie uns: / https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Kalenderdatei zusätzlich mit HTML-Fassung (X-ALT-DESC) und Erinnerung 1 Stunde vorher
 
 ### Terminseite
 
@@ -177,10 +178,11 @@ PALO SKIN by Dr. Vogel
 
 ### Kalenderdatei und Kalender-Knöpfe
 
-Titel: Appointment at PALO SKIN
+Titel (alle Sprachen gleich): Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: View, reschedule or cancel your appointment (up to 24 hours in advance): / <persönlicher Link https://www.paloskin.de/termin/...> / How to find us: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
-Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die eigene Standarderinnerung)
+Beschreibung Google (HTML): <a href="<persönlicher Link>">View, reschedule or cancel your appointment</a> (up to 24 hours in advance)<br><br><a href="https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8">How to find us</a>
+Beschreibung Outlook und Kalenderdatei (Klartext): View, reschedule or cancel your appointment (up to 24 hours in advance): / <persönlicher Link https://www.paloskin.de/termin/...> / (Leerzeile) / How to find us: / https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Kalenderdatei zusätzlich mit HTML-Fassung (X-ALT-DESC) und Erinnerung 1 Stunde vorher
 
 ### Terminseite
 
@@ -286,10 +288,11 @@ PALO SKIN by Dr. Vogel
 
 ### Kalenderdatei und Kalender-Knöpfe
 
-Titel: Cita en PALO SKIN
+Titel (alle Sprachen gleich): Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Ver, cambiar o cancelar su cita (hasta 24 horas antes): / <persönlicher Link https://www.paloskin.de/termin/...> / Cómo llegar: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
-Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die eigene Standarderinnerung)
+Beschreibung Google (HTML): <a href="<persönlicher Link>">Ver, cambiar o cancelar su cita</a> (hasta 24 horas antes)<br><br><a href="https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8">Cómo llegar</a>
+Beschreibung Outlook und Kalenderdatei (Klartext): Ver, cambiar o cancelar su cita (hasta 24 horas antes): / <persönlicher Link https://www.paloskin.de/termin/...> / (Leerzeile) / Cómo llegar: / https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Kalenderdatei zusätzlich mit HTML-Fassung (X-ALT-DESC) und Erinnerung 1 Stunde vorher
 
 ### Terminseite
 
@@ -395,10 +398,11 @@ PALO SKIN by Dr. Vogel
 
 ### Kalenderdatei und Kalender-Knöpfe
 
-Titel: Rendez-vous chez PALO SKIN
+Titel (alle Sprachen gleich): Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Voir, déplacer ou annuler votre rendez-vous (jusqu’à 24 heures avant) : / <persönlicher Link https://www.paloskin.de/termin/...> / Comment nous trouver : https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
-Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die eigene Standarderinnerung)
+Beschreibung Google (HTML): <a href="<persönlicher Link>">Voir, déplacer ou annuler votre rendez-vous</a> (jusqu’à 24 heures avant)<br><br><a href="https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8">Comment nous trouver</a>
+Beschreibung Outlook und Kalenderdatei (Klartext): Voir, déplacer ou annuler votre rendez-vous (jusqu’à 24 heures avant): / <persönlicher Link https://www.paloskin.de/termin/...> / (Leerzeile) / Comment nous trouver: / https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Kalenderdatei zusätzlich mit HTML-Fassung (X-ALT-DESC) und Erinnerung 1 Stunde vorher
 
 ### Terminseite
 
@@ -504,10 +508,11 @@ PALO SKIN by Dr. Vogel
 
 ### Kalenderdatei und Kalender-Knöpfe
 
-Titel: Consulta na PALO SKIN
+Titel (alle Sprachen gleich): Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
-Beschreibung: Ver, remarcar ou cancelar sua consulta (até 24 horas antes): / <persönlicher Link https://www.paloskin.de/termin/...> / Como chegar: https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
-Erinnerung: 1 Stunde vorher (nur Kalenderdatei; Google und Outlook nehmen die eigene Standarderinnerung)
+Beschreibung Google (HTML): <a href="<persönlicher Link>">Ver, remarcar ou cancelar sua consulta</a> (até 24 horas antes)<br><br><a href="https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8">Como chegar</a>
+Beschreibung Outlook und Kalenderdatei (Klartext): Ver, remarcar ou cancelar sua consulta (até 24 horas antes): / <persönlicher Link https://www.paloskin.de/termin/...> / (Leerzeile) / Como chegar: / https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
+Kalenderdatei zusätzlich mit HTML-Fassung (X-ALT-DESC) und Erinnerung 1 Stunde vorher
 
 ### Terminseite
 

@@ -3,7 +3,7 @@ import type { MailMessage } from "./mail";
 import { readEnv } from "./env";
 import type { BookingRow } from "./store";
 import { LANGS, TEXTS } from "./texts";
-import { ADDRESS, MAIL_TEXTS, MAPS_LINK, SIGNER, STUDIO } from "./texts-mail";
+import { ADDRESS, MAIL_TEXTS, MAPS_LINK, NB, SIGNER, STUDIO } from "./texts-mail";
 import { addDaysKey, berlinDateKey, berlinParts, berlinTimeLabel, fromBerlinKey, TZ } from "./time";
 import type { Lang } from "./treatments";
 
@@ -74,9 +74,29 @@ function icsFold(line: string): string {
   return out.join("\r\n ");
 }
 
-/** Kalenderdatei: Titel „Termin bei PALO SKIN“, Ort, Beschreibung mit persönlichem Link zur Terminseite und Kartenlink, Erinnerung 1 Stunde vorher. */
-export function buildIcs(b: BookingRow, lang: Lang, now = new Date()): string {
+/*
+ * Kalendereintrag des Kunden (Entscheidung Dr. Vogel, 3. Oktober 2026), gleich für Google, Outlook und Kalenderdatei:
+ *   Titel „Goodbye Wrinkles: Vorname Nachname · PALO SKIN by Dr. Vogel“, in allen Sprachen gleich
+ *   Google: Beschreibung als HTML mit verlinkten Wörtern; Outlook und Kalenderdatei: Klartext mit Leerzeile,
+ *   die Kalenderdatei zusätzlich mit X-ALT-DESC (HTML) für Outlook am Computer. Erinnerung 1 Stunde vorher nur in der Datei.
+ */
+export function calendarTitle(b: BookingRow): string {
+  return `Goodbye Wrinkles: ${b.first_name.trim()} ${b.last_name.trim()} · ${STUDIO}`;
+}
+
+export function calendarDescriptionText(b: BookingRow, lang: Lang): string {
   const m = MAIL_TEXTS[lang];
+  const colon = lang === "fr" ? `${NB}:` : ":";
+  return `${m.icsManage} ${m.icsWindow}${colon}\n${terminUrl(b.id)}\n\n${m.mapL}${colon}\n${MAPS_LINK}`;
+}
+
+export function calendarDescriptionHtml(b: BookingRow, lang: Lang): string {
+  const m = MAIL_TEXTS[lang];
+  return `<a href="${escapeHtml(terminUrl(b.id))}">${escapeHtml(m.icsManage)}</a> ${escapeHtml(m.icsWindow)}<br><br><a href="${escapeHtml(MAPS_LINK)}">${escapeHtml(m.mapL)}</a>`;
+}
+
+/** Kalenderdatei: Titel, Ort, Beschreibung als Klartext und als HTML, Erinnerung 1 Stunde vorher. */
+export function buildIcs(b: BookingRow, lang: Lang, now = new Date()): string {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -88,13 +108,14 @@ export function buildIcs(b: BookingRow, lang: Lang, now = new Date()): string {
     `DTSTAMP:${icsStamp(now)}`,
     `DTSTART:${icsStamp(new Date(b.starts_at))}`,
     `DTEND:${icsStamp(new Date(b.ends_at))}`,
-    `SUMMARY:${icsEscape(m.icsTitle)}`,
+    `SUMMARY:${icsEscape(calendarTitle(b))}`,
     `LOCATION:${icsEscape(`${STUDIO}, ${ADDRESS}`)}`,
-    `DESCRIPTION:${icsEscape(m.icsDescription(terminUrl(b.id)))}`,
+    `DESCRIPTION:${icsEscape(calendarDescriptionText(b, lang))}`,
+    `X-ALT-DESC;FMTTYPE=text/html:${icsEscape(`<html><body>${calendarDescriptionHtml(b, lang)}</body></html>`)}`,
     `STATUS:${b.status === "confirmed" ? "CONFIRMED" : "TENTATIVE"}`,
     "BEGIN:VALARM",
     "ACTION:DISPLAY",
-    `DESCRIPTION:${icsEscape(m.icsTitle)}`,
+    `DESCRIPTION:${icsEscape(calendarTitle(b))}`,
     "TRIGGER:-PT1H",
     "END:VALARM",
     "END:VEVENT",
@@ -111,13 +132,12 @@ export interface CalendarLinks {
 
 /** Drei Kalender-Knöpfe: Google, iPhone (Datei vom Server), Outlook. Ohne Namen, Buchungsnummer oder Behandlung. */
 export function calendarLinks(b: BookingRow, lang: Lang): CalendarLinks {
-  const m = MAIL_TEXTS[lang];
   const start = new Date(b.starts_at);
   const end = new Date(b.ends_at);
   const location = `${STUDIO}, ${ADDRESS}`;
-  const details = m.icsDescription(terminUrl(b.id));
-  const google = new URLSearchParams({ action: "TEMPLATE", text: m.icsTitle, dates: `${icsStamp(start)}/${icsStamp(end)}`, location, details });
-  const outlook = new URLSearchParams({ subject: m.icsTitle, startdt: start.toISOString(), enddt: end.toISOString(), location, body: details, path: "/calendar/action/compose", rru: "addevent" });
+  const title = calendarTitle(b);
+  const google = new URLSearchParams({ action: "TEMPLATE", text: title, dates: `${icsStamp(start)}/${icsStamp(end)}`, location, details: calendarDescriptionHtml(b, lang) });
+  const outlook = new URLSearchParams({ subject: title, startdt: start.toISOString(), enddt: end.toISOString(), location, body: calendarDescriptionText(b, lang), path: "/calendar/action/compose", rru: "addevent" });
   return {
     google: `https://calendar.google.com/calendar/render?${google}`,
     ics: `${readEnv().publicBaseUrl}/termin/${terminToken(b.id)}/kalender.ics`,

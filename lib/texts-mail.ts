@@ -48,9 +48,9 @@ export interface MailTexts {
   rescheduleLink: string;
   closingReminder: string;
   /* Kalenderdatei */
-  icsTitle: string;
-  /** Beschreibung des Kalendereintrags (Datei, Google, Outlook): persönlicher Link zur Terminseite und Kartenlink */
-  icsDescription: (link: string) => string;
+  /** Kalendereintrag des Kunden (Datei, Google, Outlook): verlinkte Wörter zur Terminseite und der Hinweis auf die 24 Stunden */
+  icsManage: string;
+  icsWindow: string;
   /* Terminseite */
   pageTitle: string;
   pageIntro: string;
@@ -83,7 +83,7 @@ export interface MailTexts {
   rescheduleDown: string;
 }
 
-const NB = " ";
+export const NB = " ";
 
 export const MAIL_TEXTS: Record<Lang, MailTexts> = {
   de: {
@@ -114,8 +114,8 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     notFit: "Passt es doch nicht? Dann verschieben Sie den Termin hier:",
     rescheduleLink: "Termin verschieben",
     closingReminder: "Bis morgen!",
-    icsTitle: `Termin bei ${BRAND}`,
-    icsDescription: (link) => `Termin ansehen, verschieben oder absagen (bis 24 Stunden vorher):\n${link}\nSo finden Sie uns: ${MAPS_LINK}`,
+    icsManage: "Termin ansehen, verschieben oder absagen",
+    icsWindow: "(bis 24 Stunden vorher)",
     pageTitle: "Ihr Termin",
     pageIntro: `hier finden Sie Ihren Termin bei ${BRAND}:`,
     windowOpen: "Den Termin verschieben oder absagen können Sie bis 24 Stunden vorher.",
@@ -173,8 +173,8 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     notFit: "Doesn’t suit you after all? Then reschedule the appointment here:",
     rescheduleLink: "Reschedule appointment",
     closingReminder: "See you tomorrow!",
-    icsTitle: `Appointment at ${BRAND}`,
-    icsDescription: (link) => `View, reschedule or cancel your appointment (up to 24 hours in advance):\n${link}\nHow to find us: ${MAPS_LINK}`,
+    icsManage: "View, reschedule or cancel your appointment",
+    icsWindow: "(up to 24 hours in advance)",
     pageTitle: "Your appointment",
     pageIntro: `here is your appointment at ${BRAND}:`,
     windowOpen: "You can reschedule or cancel the appointment up to 24 hours in advance.",
@@ -232,8 +232,8 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     notFit: "¿Al final no le viene bien? Cambie la cita aquí:",
     rescheduleLink: "Cambiar la cita",
     closingReminder: "¡Hasta mañana!",
-    icsTitle: `Cita en ${BRAND}`,
-    icsDescription: (link) => `Ver, cambiar o cancelar su cita (hasta 24 horas antes):\n${link}\nCómo llegar: ${MAPS_LINK}`,
+    icsManage: "Ver, cambiar o cancelar su cita",
+    icsWindow: "(hasta 24 horas antes)",
     pageTitle: "Su cita",
     pageIntro: `aquí tiene su cita en ${BRAND}:`,
     windowOpen: "Puede cambiar o cancelar la cita hasta 24 horas antes.",
@@ -291,8 +291,8 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     notFit: `Cela ne convient finalement pas${NB}? Déplacez le rendez-vous ici${NB}:`,
     rescheduleLink: "Déplacer le rendez-vous",
     closingReminder: `À demain${NB}!`,
-    icsTitle: `Rendez-vous chez ${BRAND}`,
-    icsDescription: (link) => `Voir, déplacer ou annuler votre rendez-vous (jusqu’à 24 heures avant)${NB}:\n${link}\nComment nous trouver${NB}: ${MAPS_LINK}`,
+    icsManage: "Voir, déplacer ou annuler votre rendez-vous",
+    icsWindow: "(jusqu’à 24 heures avant)",
     pageTitle: "Votre rendez-vous",
     pageIntro: `voici votre rendez-vous chez ${BRAND}${NB}:`,
     windowOpen: "Vous pouvez déplacer ou annuler le rendez-vous jusqu’à 24 heures avant.",
@@ -350,8 +350,8 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     notFit: "No fim não dá certo? Então remarque a consulta aqui:",
     rescheduleLink: "Remarcar a consulta",
     closingReminder: "Até amanhã!",
-    icsTitle: `Consulta na ${BRAND}`,
-    icsDescription: (link) => `Ver, remarcar ou cancelar sua consulta (até 24 horas antes):\n${link}\nComo chegar: ${MAPS_LINK}`,
+    icsManage: "Ver, remarcar ou cancelar sua consulta",
+    icsWindow: "(até 24 horas antes)",
     pageTitle: "Sua consulta",
     pageIntro: `aqui está a sua consulta na ${BRAND}:`,
     windowOpen: "Você pode remarcar ou cancelar a consulta até 24 horas antes.",
