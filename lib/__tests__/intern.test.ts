@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { cancelBooking, placeBooking, type PlaceInput } from "../booking";
+import { crmCancelReason } from "../cancel-reasons";
 import { MockEngine, mockInternals } from "../engine/mock";
 import { internGuard } from "../intern";
 import { appointmentType, SERVICE_CODE_TABLE, toSharedServiceCodes, toSharedZones, ZONE_CODE_TABLE } from "../service-codes";
@@ -88,7 +89,9 @@ describe("Endpunkt: Ereignisse, Bestätigung, Rückweg", () => {
     expect(store.confirmByCrm(row.id).outcome).toBe("unchanged");
     expect(store.findById(row.id)!.status).toBe("confirmed");
     expect(store.eventsForBooking(row.id).map((e) => e.type)).toEqual(["created", "confirmed"]);
-    const cancelled = await cancelBooking(row.id, "studio_cancelled", deps());
+    const cancelled = await cancelBooking(row.id, crmCancelReason("studio_cancelled"), deps());
+    expect(cancelled?.cancel_reason).toBe("crm:studio_cancelled");
+    expect((store.eventsAfter(0, 10).at(-1)!.booking as { cancel_reason?: string | null }).cancel_reason).toBe("crm:studio_cancelled");
     expect(cancelled?.status).toBe("cancelled");
     expect(store.confirmByCrm(row.id).outcome).toBe("cancelled");
     expect(mockInternals.events.size).toBe(0);

@@ -162,7 +162,7 @@ describe("Verschieben, Fristen, Studio-Mails (Block 6 und 8)", () => {
     expect(studioMailFor("cancelled_short", b).subject).toMatch(/^\[TEST\] Kurzfristig abgesagt: /);
     // Absage über die Route 24 bis 2 Stunden vorher ergibt „Kurzfristig abgesagt“
     mailer.sent = [];
-    await cancelBooking(b.id, "customer_link_short", deps(), new Date(Date.parse(b.starts_at) - 10 * 3600000));
+    await cancelBooking(b.id, "customer_short_notice", deps(), new Date(Date.parse(b.starts_at) - 10 * 3600000));
     expect(mailer.sent.find((x) => x.to === "studio@example.com")!.subject).toMatch(/^\[TEST\] Kurzfristig abgesagt: /);
   });
 });

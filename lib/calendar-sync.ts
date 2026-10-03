@@ -1,4 +1,5 @@
 import { cancelBooking, sendConfirmation, type Deps } from "./booking";
+import { CANCEL_REASON } from "./cancel-reasons";
 import type { ChangedEvent } from "./engine/types";
 import { errorClass, logEvent } from "./log";
 import type { BookingRow } from "./store";
@@ -18,7 +19,7 @@ import { notifyStudio } from "./studio-mail";
  * vergangene Termine, Einträge ohne Buchung und Änderungen nur an Titel oder Beschreibung.
  * Ist der Kalender nicht lesbar, ändert sich nichts; die Marke bleibt stehen und der nächste Lauf holt nach.
  */
-export const CANCEL_REASON_CALENDAR = "studio_calendar";
+export const CANCEL_REASON_CALENDAR = CANCEL_REASON.studioCalendar;
 const META_KEY = "calendar_sync_since";
 /* Überlappung der Abfrage, damit keine Änderung zwischen zwei Läufen verloren geht; doppelt gesehene Änderungen sind folgenlos */
 const OVERLAP_MS = 60000;

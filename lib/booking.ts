@@ -5,6 +5,7 @@ import { getMailer, mailErrorClass, type Mailer } from "./mail";
 import { calendarLinks, CANCEL_LEAD_MS, confirmationMail, reminderMail } from "./mail-content";
 import { isBookableStart } from "./slots";
 import { notifyStudio } from "./studio-mail";
+import { isCustomerCancel } from "./cancel-reasons";
 import { terminUrl } from "./links";
 import { bookingRefFor } from "./ref";
 import type { Customer } from "./schema";
@@ -213,7 +214,7 @@ export async function cancelBooking(id: string, reason: string, deps: Deps = def
   if (!row) return null;
   logEvent("info", "cancelled", { bookingRef: row.reference, reason });
   await removeCalendarEvent(row, deps);
-  if (reason.startsWith("customer")) await notifyStudio(shortNotice ? "cancelled_short" : "cancelled", row, deps, now);
+  if (isCustomerCancel(reason)) await notifyStudio(shortNotice ? "cancelled_short" : "cancelled", row, deps, now);
   return row;
 }
 

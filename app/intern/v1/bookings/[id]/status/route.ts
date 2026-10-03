@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { cancelBooking } from "@/lib/booking";
+import { crmCancelReason } from "@/lib/cancel-reasons";
 import { internGuard, internJson } from "@/lib/intern";
 import { errorClass, logEvent } from "@/lib/log";
 import { getStore, toPayload } from "@/lib/store";
@@ -12,7 +13,7 @@ const schema = z.object({ status: z.enum(["confirmed", "cancelled"]), reason: z.
 
 /*
  * POST /intern/v1/bookings/{id}/status { status, reason }: einziger Rückweg des Kundensystems. reason ist ein fester
- * Bezeichner (studio_confirmed, studio_cancelled) und wird bei Absage unverändert als cancel_reason gespeichert.
+ * Bezeichner (studio_confirmed, studio_cancelled); bei Absage wird cancel_reason „crm:studio_cancelled“ (lib/cancel-reasons.ts).
  * confirmed: requested wird confirmed (Ereignis confirmed, Kalendereintrag unverändert).
  * cancelled: Belegung frei, Ereignis cancelled, Kalendereintrag gelöscht. Beides mehrfach aufrufbar.
  */
@@ -33,7 +34,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       if (r.outcome === "confirmed") logEvent("info", "intern_confirmed", { route: "intern", bookingRef: r.booking!.reference, reason: parsed.data.reason });
       return internJson({ booking: toPayload(r.booking!), changed: r.outcome === "confirmed" });
     }
-    const cancelled = await cancelBooking(id, parsed.data.reason);
+    const cancelled = await cancelBooking(id, crmCancelReason(parsed.data.reason as "studio_cancelled"));
     const row = cancelled ?? store.findById(id)!;
     return internJson({ booking: toPayload(row), changed: cancelled !== null });
   } catch (e) {

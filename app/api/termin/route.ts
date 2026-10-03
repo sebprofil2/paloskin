@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cancelBooking, confirmAttendance, terminWindow } from "@/lib/booking";
+import { linkCancelReason } from "@/lib/cancel-reasons";
 import { verifyTerminToken } from "@/lib/links";
 import { errorClass, logEvent } from "@/lib/log";
 import { allow, clientKey, LIMITS } from "@/lib/ratelimit";
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
       return back(token, "ja");
     }
     if (w === "closed") return back(token, "zuspaet");
-    await cancelBooking(id, w === "short" ? "customer_link_short" : "customer_link", undefined, now);
+    await cancelBooking(id, linkCancelReason(w), undefined, now);
     return back(token, "absage");
   } catch (e) {
     logEvent("error", "termin_failed", { route: "termin", errorClass: errorClass(e) });

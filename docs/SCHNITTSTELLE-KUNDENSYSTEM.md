@@ -39,7 +39,7 @@ Vorgehen des Kundensystems: abholen, verarbeiten, bestätigen (Abschnitt 3), mit
 
 `POST /intern/v1/bookings/{id}/status` mit `{ "status": "confirmed", "reason": "studio_confirmed" }` oder `{ "status": "cancelled", "reason": "studio_cancelled" }`
 
-- `{id}` ist die ULID der Buchung (Feld `id`). `reason` ist einer der festen Bezeichner `studio_confirmed` oder `studio_cancelled` (kein Freitext, andere Werte ergeben 400). Bei Absage wird er unverändert als `cancel_reason` gespeichert.
+- `{id}` ist die ULID der Buchung (Feld `id`). `reason` ist einer der festen Bezeichner `studio_confirmed` oder `studio_cancelled` (kein Freitext, andere Werte ergeben 400). Bei Absage speichert die Buchung `cancel_reason` als `crm:studio_cancelled` (Präfix `crm:` plus Bezeichner).
 - `confirmed`: eine Terminanfrage (`requested`) wird `confirmed`, Ereignis `confirmed`, Kalendereintrag unverändert. Ist die Buchung schon `confirmed`, passiert nichts (`changed: false`). Ist sie abgesagt, 409 `already_cancelled`.
 - `cancelled`: Status `cancelled`, Belegung frei, Ereignis `cancelled`, Kalendereintrag gelöscht. Mehrfach aufrufbar (`changed: false` ab dem zweiten Mal).
 - Antwort: `{ "booking": { vollständiger Stand }, "changed": true }`. Unbekannte Kennung 404. Nichts anderes ist über den Rückweg änderbar.
@@ -84,8 +84,25 @@ Felder von `booking` (alle Zeiten UTC mit `Z`):
 | `test` | bool | Testbuchung (Testbetrieb der Seite); im Kundensystem gesondert behandeln |
 | `calendar_event_id`, `calendar_state` | Text, `pending`/`written`/`failed` | Kalendereintrag des Arztes |
 | `attendance_confirmed_at` | Zeit oder null | Zusage des Kunden über den Mail-Link |
-| `cancelled_at`, `cancel_reason` | Zeit, Text | Absage; `customer_link` (Kunde über den Link, mehr als 24 Stunden vorher), `customer_link_short` (Kunde, 24 bis 2 Stunden vorher), `studio_calendar` (Studio hat den Eintrag im Kalender gelöscht) oder `studio_cancelled` (Kundensystem) |
+| `cancelled_at`, `cancel_reason` | Zeit, Text | Absage; Werte und Bedeutung in Abschnitt 6.1 |
 | `updated_at` | Zeit | letzte Änderung |
+
+### 6.1 Werte von `cancel_reason`
+
+Vollständige Liste, Stand 3. Oktober 2026. Andere Werte schreibt die Buchung nicht. Bei nicht abgesagten Buchungen ist `cancel_reason` `null`.
+
+| Wert | Bedeutung |
+|---|---|
+| `customer_link` | Der Kunde hat über die Terminseite abgesagt, mehr als 24 Stunden vor dem Termin („Termin absagen“). Sofort-Mail an das Studio „Abgesagt“. |
+| `customer_short_notice` | Der Kunde hat über die Terminseite abgesagt, 24 bis 2 Stunden vor dem Termin („Leider verhindert“). Sofort-Mail an das Studio „Kurzfristig abgesagt“. Unter 2 Stunden ist online keine Absage möglich. |
+| `studio_calendar` | Das Studio hat den Eintrag im Kalender „Palo Skin Termine“ gelöscht. Keine Mail an den Kunden, Studio-Mail „Im Kalender abgesagt“. |
+| `crm:studio_cancelled` | Das Kundensystem hat über `POST /intern/v1/bookings/{id}/status` mit `reason: "studio_cancelled"` abgesagt. Präfix `crm:` plus Bezeichner; andere Bezeichner nimmt der Endpunkt nicht an (400). |
+
+Bis zum 3. Oktober 2026 hieß die kurzfristige Absage `customer_link_short`. Die Buchung hat diesen Wert beim Start der neuen Fassung in Buchungen und Ereignissen auf `customer_short_notice` umgestellt; zu diesem Zeitpunkt hatte noch kein Verbraucher Ereignisse abgeholt. Die Absage des Kundensystems wurde bis dahin als `studio_cancelled` ohne Präfix gespeichert; in der Datenbank gab es keinen solchen Fall.
+
+### 6.2 Vollständige Nutzlast, `null` statt Weglassen
+
+Jedes Ereignis außer `deleted` trägt in `booking` immer alle Felder aus Abschnitt 6. Ein Feld ohne Wert steht ausdrücklich als `null` in der Nutzlast und wird nie weggelassen. Das gilt besonders beim Verschieben (Kunde über die Terminseite oder Studio im Kalender): `attendance_confirmed_at` ist danach `null`, weil eine Zusage nur für den Termin gilt, für den sie gegeben wurde.
 
 ## 7. Ereignistypen mit Beispielen
 
@@ -157,7 +174,7 @@ Wie `created`, mit `"type": "confirmed"`, `"status": "confirmed"` und neuem `upd
 { "seq": 4, "event_id": "01M3Z2C4D5E6F7G8H9J0K1M2N3", "type": "cancelled", "occurred_at": "2026-10-02T19:44:54.230Z", "booking": { "id": "01M3Z293MN1KK9BTG42T2BZBJG", "reference": "PS-FFL87G", "status": "cancelled", "cancelled_at": "2026-10-02T19:44:54.230Z", "cancel_reason": "customer_link", "calendar_event_id": "g9lgojcpqbtal5is5ljv4f0rrg", "updated_at": "2026-10-02T19:44:54.230Z", "...": "übrige Felder wie bei created" } }
 ```
 
-`cancel_reason` ist `customer_link` oder `customer_link_short` (Kunde), `studio_calendar` (Studio im Kalender) oder `studio_cancelled` (Kundensystem). `calendar_event_id` kann im Ereignis noch gesetzt sein; der Kalendereintrag wird direkt danach gelöscht.
+`cancel_reason` ist einer der Werte aus Abschnitt 6.1. `calendar_event_id` kann im Ereignis noch gesetzt sein; der Kalendereintrag wird direkt danach gelöscht.
 
 ### rescheduled: Termin verschoben (Kunde über die Terminseite oder Studio im Kalender)
 

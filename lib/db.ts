@@ -163,6 +163,15 @@ function migrate(db: DatabaseSync): void {
       COMMIT;
     `);
   }
+  // 3. Oktober 2026: kurzfristige Absage heißt customer_short_notice statt customer_link_short (Rückfrage des Kundensystems).
+  // Zum Zeitpunkt der Umstellung hatte kein Verbraucher Ereignisse abgeholt; deshalb werden auch die Nutzlasten angeglichen.
+  db.exec(`
+    BEGIN;
+    UPDATE bookings SET cancel_reason = 'customer_short_notice' WHERE cancel_reason = 'customer_link_short';
+    UPDATE booking_events SET payload = json_set(payload, '$.cancel_reason', 'customer_short_notice')
+      WHERE json_extract(payload, '$.cancel_reason') = 'customer_link_short';
+    COMMIT;
+  `);
 }
 
 /** Verletzung einer Eindeutigkeit (PRIMARY KEY oder UNIQUE): „Da war jemand schneller“. */
