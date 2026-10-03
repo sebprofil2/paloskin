@@ -15,7 +15,7 @@
   --white:#FFFFFF;
   --error:#A3392A;
   --font:"Schibsted Grotesk",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  --max:1120px;
+  --max:1328px; /* 1200 Pixel Inhalt plus zweimal 64 Pixel Rand */
   color-scheme:light;
 }
 *{box-sizing:border-box}
@@ -30,8 +30,10 @@ a{color:inherit}
 
 .band{height:10px;background:var(--ultramarin)}
 /* Seitenrand: 20 Pixel, auf dem iPhone mindestens der sichere Bereich; gilt für Kopfzeile, Inhalt und Fußzeile gleich */
-.wrap{width:100%;max-width:var(--max);margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
-@media (min-width:720px){.wrap{padding-left:max(32px,env(safe-area-inset-left,0px));padding-right:max(32px,env(safe-area-inset-right,0px))}}
+/* Rand 20 Pixel (Handy), 40 (Tablet), 64 (Computer); Inhalt höchstens 1200 Pixel, auf großen Bildschirmen mittig */
+.wrap{--pad:20px;width:100%;max-width:var(--max);margin:0 auto;padding-left:max(var(--pad),env(safe-area-inset-left,0px));padding-right:max(var(--pad),env(safe-area-inset-right,0px))}
+@media (min-width:720px){.wrap{--pad:40px}}
+@media (min-width:1024px){.wrap{--pad:64px}}
 
 /* Kopf */
 .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:18px}
@@ -68,8 +70,12 @@ a{color:inherit}
 .lang-item[aria-checked="true"]{box-shadow:inset 2px 0 0 var(--ultramarin);font-weight:500}
 
 /* Abschnitte */
-section{padding-block:56px}
-@media (min-width:860px){section{padding-block:84px}}
+/* Abschnittsübergang zusammen etwa 80 Pixel (Handy) und 112 Pixel (Computer) */
+section{padding-block:40px}
+@media (min-width:860px){section{padding-block:56px}}
+.sechead{max-width:42em;margin-bottom:24px}
+.sechead p{margin-top:10px;color:var(--ink-2)}
+@media (min-width:860px){.sechead{margin-bottom:32px}}
 h1,h2,h3{font-weight:400;margin:0;text-wrap:balance;letter-spacing:.005em}
 h1{font-size:clamp(38px,7vw,72px);line-height:1.02}
 h2{font-size:clamp(28px,4vw,40px);line-height:1.15}
@@ -81,13 +87,17 @@ p{margin:0}
 .rule{border:0;border-top:1px solid var(--line);margin:0}
 
 /* Hero */
-.hero{padding-block:40px 64px}
-@media (min-width:860px){.hero{padding-block:72px 96px}}
+.hero{padding-block:32px 40px}
+@media (min-width:860px){.hero{padding-block:64px 56px}}
 .hero .grid{display:grid;gap:28px}
-@media (min-width:860px){.hero .grid{grid-template-columns:minmax(0,7fr) minmax(0,5fr);align-items:end;gap:48px}}
-.hero .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
-.hero .facts{display:grid;gap:14px;border-top:1px solid var(--line);padding-top:20px;font-size:15px}
-.hero .facts div{display:grid;grid-template-columns:120px 1fr;gap:12px}
+/* Rechts die Infobox auf Höhe der Überschrift; später steht dort zuerst ein Porträt oder Studiofoto (.hero-side img) */
+@media (min-width:860px){.hero .grid{grid-template-columns:minmax(0,7fr) minmax(0,4fr);align-items:start;gap:48px}.hero-side{padding-top:14px}}
+.hero-side img{width:100%;height:auto;margin-bottom:16px}
+.hero .actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;margin-top:28px}
+.tlink{font-size:16px;font-weight:500;color:var(--ink);text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--ultramarin);padding-block:6px}
+.tlink:hover{color:var(--ultramarin)}
+.hero .facts{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:16px;margin:0;font-size:15px}
+.hero .facts div{display:grid;grid-template-columns:96px 1fr;gap:12px}
 .hero .facts dt{color:var(--ink-3)}
 .hero .facts dd{margin:0}
 .hero .facts a{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ultramarin)}
@@ -95,13 +105,13 @@ p{margin:0}
 /* Zweispaltig: Überschrift links, Inhalt rechts */
 .cols{display:grid;gap:24px}
 @media (min-width:860px){.cols{grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:48px}}
+.faq{max-width:52em}
 .cols .intro{max-width:30em}
 .cols .intro p{margin-top:14px;color:var(--ink-2)}
 
 /* Preise */
 .pricelist{display:grid;gap:0}
 .pgroup{padding:22px 0;border-top:1px solid var(--line)}
-.pgroup:last-child{border-bottom:1px solid var(--line)}
 .pgroup h3{margin-bottom:8px}
 .pgroup .d{color:var(--ink-2);font-size:15px;margin-bottom:12px;max-width:38em}
 .prow{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:9px 0;font-size:17px}
@@ -111,10 +121,16 @@ p{margin:0}
 .prow .p{white-space:nowrap;font-weight:500}
 .prow .p small{font-weight:400;color:var(--ink-3);font-size:14px}
 .pnote{margin-top:16px}
+/* Preise in zwei Spalten ab Computerbreite, Fußnote über die volle Breite */
+.pricegrid{display:grid;gap:0}
+@media (min-width:860px){.pricegrid{grid-template-columns:1fr 1fr;gap:48px;align-items:start}}
+.pricecol @media (max-width:859px){.pricecol:first-child .pgroup:last-child{border-bottom:0}}
 
 /* Ablauf */
-.steps3{display:grid;gap:22px;counter-reset:s}
-@media (min-width:720px){.steps3{grid-template-columns:repeat(3,1fr);gap:28px}}
+.steps3{display:grid;gap:22px;counter-reset:s;margin-top:28px}
+/* Gemeinsame Zeilen für Nummer, Überschrift und Text: die Texte beginnen auf derselben Höhe */
+@media (min-width:720px){.steps3{grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto 1fr;column-gap:40px;row-gap:0}.steps3>div{display:grid;grid-row:span 3;grid-template-rows:subgrid}}
+.after-steps{margin-top:32px}
 .steps3 div{border-top:2px solid var(--ultramarin);padding-top:14px}
 .steps3 div::before{counter-increment:s;content:counter(s);display:block;font-size:14px;color:var(--ultramarin);font-weight:500;margin-bottom:8px;font-variant-numeric:tabular-nums}
 .steps3 h3{margin-bottom:6px}
@@ -132,11 +148,16 @@ p{margin:0}
 .blue .btn.primary{background:var(--white);color:var(--ultramarin)}
 .blue .btn.primary:hover{background:var(--kalk)}
 .zlink{display:inline-block;margin-top:12px;font-size:15px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ultramarin)}
-.quote{margin:0;padding-left:18px;border-left:2px solid var(--ultramarin)}
+.quote{margin:0;padding-left:18px;border-left:2px solid var(--ultramarin);max-width:36em}
+/* Studio: Zitat links, Angaben rechts; später ein Porträt ganz links (.studio-grid .portrait) */
+.studio-grid{display:grid;gap:28px}
+@media (min-width:860px){.studio-grid{grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:48px;align-items:start}.studio-grid:has(.portrait){grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,4fr)}}
+.studio-grid .portrait{width:100%;height:auto}
 .quote p{font-size:19px;line-height:1.5;margin:0}
 .quote p+p{margin-top:12px}
 .quote .by{margin-top:14px;font-size:15px;color:rgba(244,241,234,.6)}
-.studio .where{margin-top:28px}
+.studio .where{margin-top:0}
+.studio .where p:first-child{margin-top:0}
 .studio .where p{margin-top:8px;font-size:17px}
 .studio .where a{text-decoration:underline;text-underline-offset:3px}
 .studio .where .contact{margin-top:16px;font-size:15px;color:rgba(244,241,234,.78)}

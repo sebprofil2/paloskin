@@ -37,30 +37,33 @@
 <main>
   <section class="hero wrap">
     <div class="grid">
-      <div>
+      <div class="hero-main">
         <h1 data-i18n="h1">Goodbye wrinkles.</h1>
         <p class="lead" style="margin-top:22px" data-i18n="lead">Botulinum und Skin Booster in Berlin Prenzlauer Berg. Unser Ziel: Sie sehen erholt aus, nicht verändert. Persönlich beraten und behandelt von Dr. med. Sebastian Vogel.</p>
         <div class="actions">
           <a class="btn primary" href="/booking" data-i18n="bookNow">Termin online buchen</a>
-          <a class="btn ghost" href="https://wa.me/4915158872566" target="_blank" rel="noopener" data-i18n="whatsapp">Eine Frage? Schreiben Sie uns</a>
+          <a class="tlink" href="https://wa.me/4915158872566" target="_blank" rel="noopener" data-i18n="whatsapp">Eine Frage? Schreiben Sie uns</a>
         </div>
       </div>
+      <!-- Platz für ein Porträt von Dr. Vogel oder ein Studiofoto: Bild als erstes Kind von .hero-side, die Infozeilen bleiben darunter -->
+      <div class="hero-side">
       <dl class="facts">
         <div><dt data-i18n="fAddress">Adresse</dt><dd><a href="https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8" target="_blank" rel="noopener">Hagenauer Straße 14, 10435 Berlin</a></dd></div>
         <div><dt data-i18n="fDoctor">Ihr Arzt</dt><dd>Dr. med. Sebastian Vogel</dd></div>
         <div><dt data-i18n="fLang">Sprachen</dt><dd data-i18n="langs">Deutsch, Englisch, Spanisch, Französisch, Portugiesisch</dd></div>
         <div><dt data-i18n="fHours">Termine</dt><dd data-i18n="hours">Online buchbar, auch kurzfristig</dd></div>
       </dl>
+      </div>
     </div>
   </section>
 
   <section id="preise" class="wrap">
-    <div class="cols">
-      <div class="intro">
-        <h2 data-i18n="pricesH">Behandlungen und Preise</h2>
-        <p data-i18n="pricesP">Ob Stirn, Zornesfalte oder Krähenfüße: Welche Bereiche für Sie sinnvoll sind, besprechen wir gemeinsam vor Ort.</p>
-      </div>
-      <div class="pricelist">
+    <div class="sechead">
+      <h2 data-i18n="pricesH">Behandlungen und Preise</h2>
+      <p data-i18n="pricesP">Ob Stirn, Zornesfalte oder Krähenfüße: Welche Bereiche für Sie sinnvoll sind, besprechen wir gemeinsam vor Ort.</p>
+    </div>
+    <div class="pricegrid">
+      <div class="pricecol">
         <div class="pgroup">
           <h3 data-i18n="botH">Botulinum-Behandlung</h3>
           <div class="prow"><span class="n" data-i18n="z1">1 Zone</span><span class="p">120 €*</span></div>
@@ -73,6 +76,8 @@
           <h3 data-i18n="kauH">Kaumuskel (Masseter)</h3>
           <div class="prow"><span class="n" data-i18n="kauR">Facial Slimming, Entspannung bei Zähneknirschen</span><span class="p">280 €*</span></div>
         </div>
+      </div>
+      <div class="pricecol">
         <div class="pgroup">
           <h3 data-i18n="nefH">Nefertiti-Lift</h3>
           <div class="prow"><span class="n" data-i18n="nefR">Hals und Kieferkontur</span><span class="p">280 €*</span></div>
@@ -86,29 +91,30 @@
           <div class="prow"><span class="n"><span data-i18n="lachs">Lachs-DNA, eine Behandlung</span><small data-i18n="lachsS">Dunkle Augenringe, Augenpartie</small></span><span class="p">280 €*</span></div>
           <div class="prow"><span class="n"><span data-i18n="lachs4">Lachs-DNA, vier Behandlungen</span><small data-i18n="lachs4S">Dunkle Augenringe, Augenpartie</small></span><span class="p" data-i18n="pLachs4">1.000 €*</span></div>
         </div>
-        <p class="small pnote" data-i18n="pnote">* Richtwerte. Abrechnung nach der Gebührenordnung für Ärzte. Preise inklusive Mehrwertsteuer.</p>
       </div>
     </div>
+    <p class="small pnote" data-i18n="pnote">* Richtwerte. Abrechnung nach der Gebührenordnung für Ärzte. Preise inklusive Mehrwertsteuer.</p>
   </section>
 
   <section id="ablauf" class="blue">
     <div class="wrap">
       <h2 data-i18n="howH">Ihr Termin bei PALO SKIN</h2>
-      <div class="steps3" style="margin-top:36px">
+      <div class="steps3">
         <div><h3 data-i18n="s1H">Finden Sie Ihre Zeit.</h3><p data-i18n="s1P">Wählen Sie Ihren Termin online, die Bestätigung kommt sofort per E-Mail. Ihr Termin beginnt pünktlich, in der Regel ganz ohne Wartezeit.</p></div>
         <div><h3 data-i18n="s2H">Erst sprechen wir über Ihre Wünsche.</h3><p data-i18n="s2P">Was möchten Sie verändern? Welche Fragen haben Sie? Gemeinsam besprechen wir Möglichkeiten, Grenzen und Kosten.</p></div>
         <div><h3 data-i18n="s3H">Dann entscheiden Sie.</h3><p data-i18n="s3P">Wenn die Behandlung für Sie geeignet ist und Sie sich dafür entscheiden, behandelt Dr. Vogel Sie persönlich.</p></div>
       </div>
-      <div style="margin-top:40px"><a class="btn primary" href="/booking" data-i18n="bookNow">Termin online buchen</a></div>
+      <div class="after-steps"><a class="btn primary" href="/booking" data-i18n="bookNow">Termin online buchen</a></div>
     </div>
   </section>
 
   <section id="studio" class="dark studio">
-    <div class="wrap cols">
-      <div class="intro">
+    <div class="wrap">
+      <div class="sechead">
         <h2 data-i18n="studioH">Ein Studio. Ihr Arzt.</h2>
       </div>
-      <div>
+      <div class="studio-grid">
+        <!-- Platz für ein Porträt von Dr. Vogel: als erstes Kind von .studio-grid mit class="portrait"; Zitat und Angaben rücken dann nach rechts -->
         <blockquote class="quote">
           <p data-i18n="quote1">„Ich bin Sebastian Vogel. Bei PALO SKIN berate und behandle ich Sie persönlich. Wir besprechen, was Sie sich wünschen, was medizinisch sinnvoll ist und wo die Grenzen liegen.</p>
           <!-- Platz für einen persönlichen Satz von Dr. Vogel: <p data-i18n="quote2">…</p> -->
