@@ -265,6 +265,22 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   const [slots, setSlots] = useState<SlotsState>({ status: "idle", days: [], durationMinutes: null, key: "" });
   const [book, setBook] = useState<BookState>({ status: "idle" });
   const [requestId, setRequestId] = useState<string | null>(null);
+
+  /*
+   * Die Buchung startet immer leer. Holt Safari die Seite aus dem Seitenspeicher zurück (Zurück-Taste, Tabwechsel),
+   * bleibt sonst die alte Auswahl samt eingeklappter Zusatzbehandlung stehen; deshalb wird dann alles außer der Sprache
+   * zurückgesetzt. Im Browser wird keine Auswahl gespeichert, nur die Sprache.
+   */
+  useEffect(() => {
+    const onShow = (e: PageTransitionEvent) => {
+      if (!e.persisted) return;
+      setS(blank(checkup));
+      setBook({ status: "idle" });
+      setRequestId(null);
+    };
+    window.addEventListener("pageshow", onShow);
+    return () => window.removeEventListener("pageshow", onShow);
+  }, [checkup]);
   const [copyLabel, setCopyLabel] = useState<"copy" | "copied" | "marked">("copy");
   const appRef = useRef<HTMLElement>(null);
   const numRef = useRef<HTMLDivElement>(null);
@@ -438,6 +454,8 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
       const { res, data } = await fetchJson("/api/book", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) }, 30000);
       if (res.ok && data.status === "booked") {
         setBook({ status: "done", booking: data.booking as Booking });
+        // Auswahl löschen, nur Name für die Empfehlungsfrage behalten
+        setS((p) => ({ ...blank(checkup), f: { ...blank(checkup).f, vorname: p.f.vorname, nachname: p.f.nachname } }));
         setTimeout(toTop, 0);
         return;
       }
