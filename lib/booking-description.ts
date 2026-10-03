@@ -1,6 +1,5 @@
 import type { Customer } from "./schema";
 import { lineItemsDe, totalPrice, hasTreatment, type Lang, type Selection } from "./treatments";
-import { formatBerlinDe } from "./time";
 
 export const LANG_NAMES: Record<Lang, string> = {
   de: "Deutsch",
@@ -29,8 +28,9 @@ export interface DescriptionInput {
 }
 
 /*
- * Beschreibung des Kalendereintrags: Buchungsnummer, Besuch, Behandlungswünsche, Dauer, E-Mail-Adresse, Sprache,
- * Einwilligung; die Handynummer nur bei gewünschter WhatsApp-Erinnerung (Handliste bis zum Kundensystem). Nie die Notiz.
+ * Beschreibung des Kalendereintrags, nur was Dr. Vogel zum Planen braucht: Buchungsnummer, Besuch, zu zweit,
+ * Vorauswahl, Sprache, Empfehlung (hängt lib/booking.ts an), bei WhatsApp-Haken die Handynummer. E-Mail-Adresse,
+ * Einwilligung und Dauer stehen nur in der Datenbank. Nie die Notiz.
  */
 export function buildDescription(i: DescriptionInput): string {
   const s = i.selection;
@@ -45,12 +45,9 @@ export function buildDescription(i: DescriptionInput): string {
     for (const it of items) rows.push(`- ${it.label} (${it.price} Euro brutto)`);
     if (hasTreatment(s) && totalPrice(s) > 0) rows.push(`Summe voraussichtlich: ${totalPrice(s)} Euro brutto`);
   }
-  rows.push(`Dauer: ${i.durationMinutes} Minuten`);
+  rows.push(`Sprache: ${LANG_NAMES[i.lang]}`);
   // Handliste für die WhatsApp-Erinnerung: die Nummer steht nur im Kalender, wenn der Kunde die Erinnerung möchte
   if (i.reminder) rows.push(`WhatsApp-Erinnerung: ja, ${normalizePhone(i.customer.handy)}`);
-  rows.push(`E-Mail-Adresse: ${i.customer.email.trim()}`);
-  rows.push(`Sprache: ${LANG_NAMES[i.lang]}`);
-  rows.push(`Einwilligung: ${formatBerlinDe(i.consentAt)} (Berliner Zeit)`);
   return rows.join("\n");
 }
 

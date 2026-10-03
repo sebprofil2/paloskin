@@ -153,3 +153,8 @@ Kurzfassung der „Entscheidungen Schnittstelle Buchung und Kundensystem, Antwor
 - Handliste für WhatsApp-Erinnerungen bis zum Kundensystem: Kalendereintrag mit „WhatsApp-Erinnerung: ja, <Nummer>“ nur bei Haken, sonst keine Nummer im Kalender. Täglich ab 18:00 Uhr Berliner Zeit Mail an `OWNER_MAIL` mit den Terminen des nächsten Tages (Vorname, Nachname, Uhrzeit, wa.me-Link), Betreff „Morgen erinnern: N Termine“, keine Mail ohne Termine, Protokoll nur mit Anzahl (`lib/reminder-list.ts`).
 - Caddy-Zugriffsprotokolle (mit IP-Adresse) höchstens 14 Tage (`roll_keep_for 336h`); die Protokolle der Anwendung enthalten keine personenbezogenen Daten (Feldliste in `lib/log.ts`).
 - Offen: neue Datenschutzerklärung (Text aus dem Cowork-Projekt liegt nicht vor).
+
+### Nacharbeiten Datenschutzerklärung (3. Oktober 2026, abends)
+
+- Löschlauf löscht mit der Buchung auch den Kalendereintrag in „Palo Skin Termine“ (über `calendar_event_id`); ein schon fehlender Eintrag ist kein Fehler, bei nicht erreichbarem Kalender bleibt die Buchung bis zum nächsten Lauf. Protokoll nur mit Anzahlen.
+- Kalendereintrag verschlankt: Titel „Palo Skin: Vorname N.“, Buchungsnummer, Besuch, zu zweit, Vorauswahl mit Preisen, Sprache, gegebenenfalls Empfehlung, bei WhatsApp-Haken „WhatsApp-Erinnerung: ja, <Nummer>“. E-Mail-Adresse, Einwilligungszeitpunkt und Dauer stehen nur noch in der Datenbank. Ziffer 4 der Datenschutzerklärung entsprechend gekürzt.

@@ -33,20 +33,27 @@ function reserve(store: Store, requestId: string, start: Date, now: Date): strin
 
 describe("Löschlauf", () => {
   let store: Store;
+  const engine = new MockEngine();
   beforeEach(() => {
     store = openStore(":memory:");
+    mockInternals.reset();
+    delete process.env.BOOKING_MOCK_DOWN;
   });
   afterEach(() => store.close());
 
-  it("löscht bestätigte Buchungen nach 90 Tagen, unbestätigte erst nach 120, Ereignis deleted nur mit Kennung", () => {
+  it("löscht bestätigte Buchungen nach 90 Tagen, unbestätigte erst nach 120, Ereignis deleted nur mit Kennung, Kalendereintrag mit", async () => {
     const now = new Date("2027-02-01T10:00:00Z");
     const grid = (d: Date) => new Date(Math.floor(d.getTime() / 600000) * 600000);
     const old = reserve(store, "aaaaaaaa-1111-4111-8111-111111111111", grid(new Date(now.getTime() - 100 * DAY)), new Date(now.getTime() - 110 * DAY));
     const veryOld = reserve(store, "bbbbbbbb-1111-4111-8111-111111111111", grid(new Date(now.getTime() - 130 * DAY)), new Date(now.getTime() - 140 * DAY));
     const fresh = reserve(store, "cccccccc-1111-4111-8111-111111111111", grid(new Date(now.getTime() - 10 * DAY)), new Date(now.getTime() - 20 * DAY));
+    // Kalendereinträge wie im Betrieb; einer fehlt schon (von Hand gelöscht), das darf kein Fehler sein
+    const evOld = await engine.createEvent({ reference: "PS-AAAAAA", title: "t", description: "d", start: now, end: now, serviceCode: "BOT", reminder: false });
+    store.calendarWritten(old, evOld);
+    store.calendarWritten(veryOld, "mock-schon-weg");
     // Noch kein Kundensystem angemeldet: nur die 120-Tage-Regel greift
-    let r = runRetention({ store }, now);
-    expect(r).toMatchObject({ deleted: 0, deletedForced: 1 });
+    let r = await runRetention({ store, engine }, now);
+    expect(r).toMatchObject({ deleted: 0, deletedForced: 1, calendarRemoved: 1 });
     expect(store.findById(veryOld)).toBeNull();
     expect(store.findById(old)).not.toBeNull();
     const deletedEvent = store.eventsAfter(0, 100).find((e) => e.type === "deleted")!;
@@ -55,25 +62,32 @@ describe("Löschlauf", () => {
     expect(store.db.prepare("SELECT COUNT(*) AS n FROM idempotency WHERE booking_id = ?").get(veryOld)).toEqual({ n: 0 });
     // Kundensystem bestätigt alles: jetzt auch die 100 Tage alte Buchung
     store.acknowledge("studio-os", store.lastSeq());
-    r = runRetention({ store }, now);
-    expect(r).toMatchObject({ deleted: 1, deletedForced: 0 });
+    // Kalender nicht erreichbar: die Buchung bleibt bis zum nächsten Lauf
+    process.env.BOOKING_MOCK_DOWN = "true";
+    r = await runRetention({ store, engine }, now);
+    expect(r).toMatchObject({ deleted: 0 });
+    expect(store.findById(old)).not.toBeNull();
+    delete process.env.BOOKING_MOCK_DOWN;
+    r = await runRetention({ store, engine }, now);
+    expect(r).toMatchObject({ deleted: 1, deletedForced: 0, calendarRemoved: 1 });
+    expect(mockInternals.events.has(evOld)).toBe(false);
     expect(store.findById(old)).toBeNull();
     expect(store.findById(fresh)).not.toBeNull();
     // Das neue Ereignis deleted ist noch nicht bestätigt und bleibt; ein nochmaliger Lauf löscht nichts mehr
-    expect(runRetention({ store }, now)).toMatchObject({ deleted: 0, deletedForced: 0 });
+    expect(await runRetention({ store, engine }, now)).toMatchObject({ deleted: 0, deletedForced: 0 });
     expect(store.eventsAfter(0, 100).filter((e) => e.type === "deleted")).toHaveLength(2);
   });
 
-  it("löscht Ereignisse nach 90 Tagen nur bestätigt, nach 120 Tagen auch unbestätigt", () => {
+  it("löscht Ereignisse nach 90 Tagen nur bestätigt, nach 120 Tagen auch unbestätigt", async () => {
     const now = new Date("2027-02-01T10:00:00Z");
     const grid = (d: Date) => new Date(Math.floor(d.getTime() / 600000) * 600000);
     reserve(store, "dddddddd-1111-4111-8111-111111111111", grid(new Date(now.getTime() + 5 * DAY)), new Date(now.getTime() - 100 * DAY));
     reserve(store, "eeeeeeee-1111-4111-8111-111111111111", grid(new Date(now.getTime() + 6 * DAY)), new Date(now.getTime() - 130 * DAY));
     reserve(store, "ffffffff-1111-4111-8111-111111111111", grid(new Date(now.getTime() + 7 * DAY)), new Date(now.getTime() - 1 * DAY));
-    let r = runRetention({ store }, now);
+    let r = await runRetention({ store, engine }, now);
     expect(r).toMatchObject({ eventsPurged: 0, eventsPurgedForced: 1 });
     store.acknowledge("studio-os", 1);
-    r = runRetention({ store }, now);
+    r = await runRetention({ store, engine }, now);
     expect(r).toMatchObject({ eventsPurged: 1, eventsPurgedForced: 0 });
     expect(store.eventsAfter(0, 100).map((e) => e.seq)).toEqual([3]);
     expect(store.lastSeq()).toBe(3);

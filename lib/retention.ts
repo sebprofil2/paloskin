@@ -3,6 +3,7 @@ import { dirname, join } from "node:path";
 import type { Deps } from "./booking";
 import { readEnv } from "./env";
 import { errorClass, logEvent } from "./log";
+import type { BookingRow } from "./store";
 import { berlinDateKey, berlinParts } from "./time";
 
 /*
@@ -31,29 +32,53 @@ export function isDailyDue(now: Date, lastRunDate: string | null): boolean {
 export interface RetentionResult {
   deleted: number;
   deletedForced: number;
+  calendarRemoved: number;
   eventsPurged: number;
   eventsPurgedForced: number;
 }
 
-export function runRetention(deps: Pick<Deps, "store">, now = new Date()): RetentionResult {
+/**
+ * Zuerst den Kalendereintrag löschen (ein schon fehlender Eintrag ist kein Fehler), dann die Buchung.
+ * Ist der Kalender nicht erreichbar, bleibt die Buchung bis zum nächsten Lauf stehen.
+ */
+async function removeBooking(deps: Pick<Deps, "store" | "engine">, b: BookingRow, now: Date): Promise<"deleted" | "calendar_failed" | "missing"> {
+  if (b.calendar_event_id) {
+    try {
+      await deps.engine.deleteEvent(b.calendar_event_id);
+    } catch (e) {
+      logEvent("warn", "retention_calendar_failed", { bookingRef: b.reference, errorClass: errorClass(e) });
+      return "calendar_failed";
+    }
+  }
+  return deps.store.deleteBooking(b.id, now) ? "deleted" : "missing";
+}
+
+export async function runRetention(deps: Pick<Deps, "store" | "engine">, now = new Date()): Promise<RetentionResult> {
   const { store } = deps;
   const ackMin = store.acknowledgedMin();
   let deleted = 0;
   let deletedForced = 0;
+  let calendarRemoved = 0;
   // Bestätigte Buchungen nach 90 Tagen
-  for (const b of store.bookingsForDeletion(now, DELETE_AFTER_DAYS, ackMin ?? -1)) if (store.deleteBooking(b.id, now)) deleted++;
+  for (const b of store.bookingsForDeletion(now, DELETE_AFTER_DAYS, ackMin ?? -1)) {
+    if ((await removeBooking(deps, b, now)) === "deleted") {
+      deleted++;
+      if (b.calendar_event_id) calendarRemoved++;
+    }
+  }
   // Unbestätigte nach 120 Tagen, auch ohne angeschlossenes Kundensystem
   for (const b of store.bookingsForDeletion(now, FORCE_AFTER_DAYS, null)) {
-    if (store.deleteBooking(b.id, now)) {
+    if ((await removeBooking(deps, b, now)) === "deleted") {
       deletedForced++;
+      if (b.calendar_event_id) calendarRemoved++;
       logEvent("warn", "retention_forced_delete", { bookingRef: b.reference, forced: true });
     }
   }
   const eventsPurged = store.purgeEvents(now, DELETE_AFTER_DAYS, ackMin);
   const eventsPurgedForced = store.purgeEventsForced(now, FORCE_AFTER_DAYS);
   if (eventsPurgedForced > 0) logEvent("warn", "retention_forced_events", { count: eventsPurgedForced, forced: true });
-  logEvent("info", "retention_run", { count: deleted + deletedForced, status: `${deleted} gelöscht, ${deletedForced} erzwungen, ${eventsPurged + eventsPurgedForced} Ereignisse` });
-  return { deleted, deletedForced, eventsPurged, eventsPurgedForced };
+  logEvent("info", "retention_run", { count: deleted + deletedForced, status: `${deleted} gelöscht, ${deletedForced} erzwungen, ${calendarRemoved} Kalendereinträge, ${eventsPurged + eventsPurgedForced} Ereignisse` });
+  return { deleted, deletedForced, calendarRemoved, eventsPurged, eventsPurgedForced };
 }
 
 function exportDir(): string {
@@ -94,7 +119,7 @@ export async function runDailyIfDue(deps: Deps, now = new Date()): Promise<boole
   if (!isDailyDue(now, store.getMeta(META_KEY))) return false;
   store.setMeta(META_KEY, berlinDateKey(now));
   try {
-    runRetention(deps, now);
+    await runRetention(deps, now);
   } catch (e) {
     logEvent("error", "retention_failed", { errorClass: errorClass(e) });
   }
