@@ -2,7 +2,7 @@ import { readEnv } from "../env";
 import { bookingRange, computeSlots, isStartFree, windowFromBerlin, type Interval, type SlotDay } from "../slots";
 import { addDaysKey, berlinDateKey, berlinWeekday, dateKeysBetween, fromBerlinKey, toBerlinIso } from "../time";
 import { ulid } from "../ulid";
-import { SlotsUnavailableError, type BookingEngine, type CalendarEventInput, type SlotsResult } from "./types";
+import { SlotsUnavailableError, type BookingEngine, type CalendarEventInput, type ExportedEvent, type SlotsResult } from "./types";
 
 /*
  * Testmotor mit erfundenen freien Zeiten. Nichts wird in Google eingetragen.
@@ -34,6 +34,8 @@ interface MockEvent {
   reference: string;
   title: string;
   description: string;
+  start: Date;
+  end: Date;
 }
 
 const events = new Map<string, MockEvent>();
@@ -123,7 +125,7 @@ export class MockEngine implements BookingEngine {
   async createEvent(input: CalendarEventInput): Promise<string> {
     failIfDown();
     const id = `mock-${ulid()}`;
-    events.set(id, { reference: input.reference, title: input.title, description: input.description });
+    events.set(id, { reference: input.reference, title: input.title, description: input.description, start: input.start, end: input.end });
     return id;
   }
 
@@ -136,6 +138,13 @@ export class MockEngine implements BookingEngine {
   async deleteEvent(eventId: string): Promise<void> {
     failIfDown();
     events.delete(eventId);
+  }
+
+  async exportEvents(from: Date, to: Date): Promise<ExportedEvent[]> {
+    failIfDown();
+    return [...events.entries()]
+      .filter(([, e]) => e.end > from && e.start < to)
+      .map(([id, e]) => ({ id, summary: e.title, description: e.description, start: e.start, end: e.end }));
   }
 
   async appendDescription(eventId: string, line: string): Promise<void> {

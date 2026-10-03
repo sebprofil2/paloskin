@@ -3,7 +3,7 @@ import { readEnv } from "../env";
 import { errorClass, logEvent } from "../log";
 import { bookingRange, computeSlots, isStartFree, type Interval } from "../slots";
 import { toBerlinIso } from "../time";
-import { SlotsUnavailableError, type BookingEngine, type CalendarEventInput, type SlotsResult } from "./types";
+import { SlotsUnavailableError, type BookingEngine, type CalendarEventInput, type ExportedEvent, type SlotsResult } from "./types";
 
 /*
  * Echter Motor: Google Calendar API über ein Dienstkonto. Alle Zugriffe nur hier, auf dem Server.
@@ -200,6 +200,13 @@ export class GoogleCalendarEngine implements BookingEngine {
       if (e instanceof GoogleError && (e.status === 404 || e.status === 410)) return;
       throw e;
     }
+  }
+
+  async exportEvents(from: Date, to: Date): Promise<ExportedEvent[]> {
+    const events = await this.listEvents(readEnv().google.calendarBookingsId, from, to);
+    return events
+      .filter((e) => e.start?.dateTime && e.end?.dateTime)
+      .map((e) => ({ id: e.id, summary: e.summary ?? "", description: e.description ?? "", start: new Date(e.start!.dateTime!), end: new Date(e.end!.dateTime!) }));
   }
 
   async appendDescription(eventId: string, line: string): Promise<void> {

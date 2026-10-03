@@ -82,6 +82,11 @@ CREATE TABLE IF NOT EXISTS idempotency (
   booking_id TEXT NOT NULL,
   created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS meta (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
 `;
 
 export function openDatabase(path: string): DatabaseSync {

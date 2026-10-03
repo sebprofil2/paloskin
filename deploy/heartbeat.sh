@@ -23,7 +23,13 @@ APP_LOG=$($COMPOSE logs --since 10m app 2>/dev/null)
 ERRORS=$(printf '%s\n' "$APP_LOG" | grep -c '"level":"error"')
 [ "${ERRORS:-0}" -ge 5 ] && PROBLEMS+=("${ERRORS} Fehler in 10 Minuten")
 
-# 4. Dauerhafter Alarm der Anwendung (zum Beispiel Kalendereintrag seit 24 Stunden offen): kein Heartbeat, bis er behoben ist
+# 4. Nächtliche Sicherung vorhanden und jünger als 26 Stunden (sobald die erste Sicherung lief)
+if [ -d /var/backups/paloskin ] && ls /var/backups/paloskin/buchung-*.sqlite.gz >/dev/null 2>&1; then
+  FRESH=$(find /var/backups/paloskin -name 'buchung-*.sqlite.gz' -mmin -1560 | wc -l)
+  [ "${FRESH:-0}" -ge 1 ] || PROBLEMS+=("Sicherung älter als 26 Stunden")
+fi
+
+# 5. Dauerhafter Alarm der Anwendung (zum Beispiel Kalendereintrag seit 24 Stunden offen): kein Heartbeat, bis er behoben ist
 ALARMS=$(printf '%s\n' "$APP_LOG" | grep -c '"event":"ALARM')
 [ "${ALARMS:-0}" -ge 1 ] && PROBLEMS+=("Alarm der Anwendung")
 

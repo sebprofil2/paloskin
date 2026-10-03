@@ -129,3 +129,8 @@ Für später, nicht gebaut: Nach einer Buchung für 1 Person soll die Bestätigu
 
 - Fassung 4 des Bauauftrags am Ende von `docs/STUFE-2-BAUAUFTRAG.md`; Schema für das CRM-Projekt in `docs/SCHNITTSTELLE-KUNDENSYSTEM.md` (Codes ohne Vorgabe sind als Vorschlag markiert).
 - Endpunkt `/intern/v1` (`app/intern`, `lib/intern.ts`), nur über den Caddy-Block an 10.0.0.2:8443 (tls internal) mit Kopfzeile `X-Palo-Intern` und `INTERN_TOKEN`. Öffentliche Blöcke liefern für `/intern/*` 404. Ziel des Blocks über `PALOSKIN_INTERN_UPSTREAM` in `deploy/.env`.
+
+## Buchung Stufe 2, Schritt 4: Löschlauf und Sicherung (3. Oktober 2026)
+
+- Täglicher Lauf in `lib/retention.ts` (90/120 Tage, Ereignis `deleted` nur mit Kennung, Kalenderexport nach `/var/lib/paloskin/export`), Sicherung per Cron `deploy/backup.sh` (03:45 Uhr, `/var/backups/paloskin`, 14 Tage), Heartbeat prüft das Alter der Sicherung. Wiederherstellung in Anleitung Abschnitt 19.
+- Stand nach dem Ausrollen am 3. Oktober 2026: www bucht verbindlich mit Bestätigungsmail (freigegebene Texte, fünf Sprachen), Endpunkt im privaten Netz zeigt auf die Produktivinstanz, Testinstanz weiter auf `stufe2` mit Umleitung der Mails.

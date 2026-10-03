@@ -41,4 +41,14 @@ export interface BookingEngine {
   deleteEvent(eventId: string): Promise<void>;
   /** Zeile an die Beschreibung anhängen, zum Beispiel die Empfehlung. */
   appendDescription(eventId: string, line: string): Promise<void>;
+  /** Einträge aus „Palo Skin Termine“ für den nächtlichen Export als Kalenderdatei. */
+  exportEvents(from: Date, to: Date): Promise<ExportedEvent[]>;
+}
+
+export interface ExportedEvent {
+  id: string;
+  summary: string;
+  description: string;
+  start: Date;
+  end: Date;
 }

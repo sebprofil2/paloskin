@@ -371,3 +371,22 @@ TOKEN=$(grep '^INTERN_TOKEN=' /etc/paloskin/paloskin.env | cut -d= -f2-); curl -
 - Erwartung: ohne Token 401, mit falschem Zertifikat lehnt curl ab (`--cacert` auf eine andere CA), von außen `curl https://2.31.2.192:8443` Verbindung abgewiesen, `https://www.paloskin.de/intern/v1/health` 404.
 - **Testphase:** `PALOSKIN_INTERN_UPSTREAM=app-test:3000` in `deploy/.env` leitet den internen Block auf die Testinstanz; für den Betrieb die Zeile entfernen und Caddy neu erstellen (`up -d --force-recreate --no-deps caddy`).
 - **Schema** für das CRM-Projekt: `docs/SCHNITTSTELLE-KUNDENSYSTEM.md`.
+
+## 19. Stufe 2, Schritt 4: Löschlauf, Sicherung, Wiederherstellung (3. Oktober 2026)
+
+- **Löschlauf und Kalenderexport** laufen in der App (ab 03:30 Uhr Berliner Zeit, Protokollzeilen `retention_run`, `calendar_exported`, `daily_run`). Exporte liegen unter `/var/lib/paloskin/export` (nur für den Benutzer 10001 lesbar; als root: `sudo ls /var/lib/paloskin/export`).
+- **Sicherung einrichten** (einmalig, als deploy mit sudo):
+
+```bash
+sudo apt-get install -y sqlite3 && sudo install -d -m 700 -o root -g root /var/backups/paloskin && sudo install -m 755 /opt/paloskin/deploy/backup.sh /usr/local/bin/paloskin-backup && echo '45 3 * * * root /usr/local/bin/paloskin-backup' | sudo tee /etc/cron.d/paloskin-backup && sudo /usr/local/bin/paloskin-backup && sudo ls -l /var/backups/paloskin && journalctl -t paloskin-backup --since today --no-pager
+```
+
+- Nach jeder Änderung an `deploy/backup.sh` oder `deploy/heartbeat.sh`: `sudo install -m 755 … /usr/local/bin/…` wiederholen (Abschnitt 14).
+- **Wiederherstellung** (Beispiel auf der Testinstanz; für www `app` statt `app-test` und `/var/lib/paloskin`):
+
+```bash
+cd /opt/paloskin && docker compose -f deploy/docker-compose.yml --profile test stop app-test && sudo sh -c 'gunzip -c /var/backups/paloskin/buchung-$(date +%F).sqlite.gz > /var/lib/paloskin-test/buchung.sqlite && rm -f /var/lib/paloskin-test/buchung.sqlite-wal /var/lib/paloskin-test/buchung.sqlite-shm && chown 10001:10001 /var/lib/paloskin-test/buchung.sqlite && chmod 644 /var/lib/paloskin-test/buchung.sqlite' && docker compose -f deploy/docker-compose.yml --profile test start app-test
+```
+
+- Danach Zahlen prüfen (Buchungen, letzte Ereignisnummer) mit dem Befehl aus Abschnitt 16; sie müssen dem Stand der Sicherung entsprechen. Die Datei `-wal` muss vor dem Start gelöscht sein, sonst mischt SQLite alte Schreibvorgänge hinein.
+- **Hetzner-Server-Backup** enthält `/var/backups/paloskin` und `/var/lib/paloskin`; eine Wiederherstellung des ganzen Servers ist in Abschnitt 8 beschrieben.

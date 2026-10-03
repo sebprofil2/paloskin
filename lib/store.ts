@@ -556,6 +556,76 @@ export class Store {
     return r.n;
   }
 
+  getMeta(key: string): string | null {
+    const r = this.db.prepare("SELECT value FROM meta WHERE key = ?").get(key) as { value: string } | undefined;
+    return r?.value ?? null;
+  }
+
+  setMeta(key: string, value: string): void {
+    this.db.prepare("INSERT INTO meta (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(key, value);
+  }
+
+  /** Kleinste bestätigte Nummer über alle Abnehmer; null, wenn noch kein Abnehmer angemeldet ist. */
+  acknowledgedMin(): number | null {
+    const r = this.db.prepare("SELECT MIN(acknowledged_seq) AS n, COUNT(*) AS c FROM consumers").get() as { n: number | null; c: number };
+    return r.c === 0 ? null : (r.n ?? 0);
+  }
+
+  /**
+   * Buchungen für den Löschlauf: Termin länger als days Tage vorbei. Mit requireAck nur solche, deren letztes Ereignis
+   * vom Kundensystem bestätigt wurde (seq kleiner oder gleich ackMin).
+   */
+  bookingsForDeletion(now: Date, days: number, ackMin: number | null, limit = 500): BookingRow[] {
+    const limitAt = iso(new Date(now.getTime() - days * 86400000));
+    if (ackMin === null) {
+      return this.db.prepare("SELECT * FROM bookings WHERE ends_at < ? ORDER BY ends_at LIMIT ?").all(limitAt, limit) as unknown as BookingRow[];
+    }
+    return this.db
+      .prepare(
+        `SELECT b.* FROM bookings b WHERE b.ends_at < ? AND NOT EXISTS (SELECT 1 FROM booking_events e WHERE e.booking_id = b.id AND e.seq > ?)
+         ORDER BY b.ends_at LIMIT ?`,
+      )
+      .all(limitAt, ackMin, limit) as unknown as BookingRow[];
+  }
+
+  /** Buchung endgültig löschen: Zeile, Belegung und Idempotenz entfernen, Ereignis deleted nur mit Kennung und Nummer. */
+  deleteBooking(id: string, now = new Date()): boolean {
+    const at = iso(now);
+    this.db.exec("BEGIN IMMEDIATE");
+    try {
+      const row = this.get(id);
+      if (!row) {
+        this.db.exec("COMMIT");
+        return false;
+      }
+      this.db.prepare("DELETE FROM slot_locks WHERE booking_id = ?").run(id);
+      this.db.prepare("DELETE FROM idempotency WHERE booking_id = ?").run(id);
+      this.db.prepare("DELETE FROM bookings WHERE id = ?").run(id);
+      this.appendEvent(row, "deleted", at, { id: row.id, reference: row.reference });
+      this.db.exec("COMMIT");
+      return true;
+    } catch (e) {
+      try {
+        this.db.exec("ROLLBACK");
+      } catch {
+        /* schon beendet */
+      }
+      throw e;
+    }
+  }
+
+  /** Ereignisse löschen, die älter als days Tage sind; mit ackMin nur bestätigte (seq kleiner oder gleich ackMin). */
+  purgeEvents(now: Date, days: number, ackMin: number | null): number {
+    const limitAt = iso(new Date(now.getTime() - days * 86400000));
+    if (ackMin === null) return 0;
+    return Number(this.db.prepare("DELETE FROM booking_events WHERE occurred_at < ? AND seq <= ?").run(limitAt, ackMin).changes);
+  }
+
+  purgeEventsForced(now: Date, days: number): number {
+    const limitAt = iso(new Date(now.getTime() - days * 86400000));
+    return Number(this.db.prepare("DELETE FROM booking_events WHERE occurred_at < ?").run(limitAt).changes);
+  }
+
   /** Nur für Tests und Prüfungen. */
   eventsForBooking(id: string): { seq: number; type: EventType; payload: BookingPayload; occurred_at: string }[] {
     const rows = this.db.prepare("SELECT seq, type, payload, occurred_at FROM booking_events WHERE booking_id = ? ORDER BY seq").all(id) as {

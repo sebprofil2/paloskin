@@ -128,3 +128,12 @@ Kurzfassung der „Entscheidungen Schnittstelle Buchung und Kundensystem, Antwor
 
 - Die ersten Mailtexte von Schritt 2 waren nicht freigegeben; www lief damit vom 2. Oktober 22:06 Uhr bis 22:14 Uhr mit Schalter an, ohne eine einzige Buchung. Seitdem auf www: `BOOKING_BINDING=false` und `MAIL_MODE=off`, Reservierung an. Die Testinstanz sendet weiter (Compose: `MAIL_MODE` relay und `BOOKING_BINDING` true nur für app-test, umgeleitet an die Testadresse).
 - Neue Texte nach „Texte Bestätigungsmail, Erinnerungsmail und Terminseite freigegeben“: Marke „PALO SKIN by Dr. Vogel“, Antwort an bookings@paloskin.de, keine Buchungsnummer und keine Behandlung in Mails, Kalenderdatei und Terminseite; Bestätigungsmail nur mit „Termin absagen oder verschieben“, „Ja, ich komme“ nur in der Erinnerung; Terminseite mit Kasten aus Datum, Uhrzeit, Adresse. Deutsch wörtlich, Übersetzungen zur Freigabe in `docs/TEXTE-MAILS.md`. Ausrollen auf www mit Schalter an erst nach Freigabe der Übersetzungen.
+
+### Schritt 4: Löschlauf, Sicherung, Kalenderexport (3. Oktober 2026)
+
+- Täglicher Lauf im Serverprozess (`lib/retention.ts`), fällig ab 03:30 Uhr Berliner Zeit, einmal je Tag; ein verpasster Lauf (Neustart) wird beim nächsten Tick nachgeholt, der Tag steht in der Tabelle `meta`.
+- Buchungen, deren Termin mehr als 90 Tage zurückliegt und deren Ereignisse alle vom Kundensystem bestätigt sind (seq kleiner oder gleich der kleinsten bestätigten Nummer aller Abnehmer), werden gelöscht: Zeile, Belegung und Idempotenzschlüssel weg, Ereignis `deleted` nur mit `id` und `reference`. Nach 120 Tagen auch unbestätigt, mit Protokollzeile `retention_forced_delete` (nur Buchungsnummer). Solange kein Abnehmer angemeldet ist, greift nur die 120-Tage-Regel.
+- Ereignisse werden gelöscht, sobald sie bestätigt und älter als 90 Tage sind, nach 120 Tagen auch unbestätigt (`retention_forced_events`). Nummern werden nie wiederverwendet.
+- Kalenderexport: „Palo Skin Termine“ 7 Tage zurück bis 90 Tage voraus als `palo-skin-termine-JJJJ-MM-TT.ics` unter `/var/lib/paloskin/export` (0700, Dateien 0600), 30 Tage aufbewahrt.
+- Sicherung: `deploy/backup.sh` als root per Cron um 03:45 Uhr: `sqlite3 .backup` nach `/var/backups/paloskin/buchung-JJJJ-MM-TT.sqlite.gz` mit Integritätsprüfung, 14 Tage, dazu der jüngste Kalenderexport. Der Heartbeat bleibt aus, wenn die jüngste Sicherung älter als 26 Stunden ist. restic zum Sicherungsserver folgt, sobald er existiert (10.0.0.4).
+- Wiederherstellungstest: Anleitung Abschnitt 19, durchgeführt auf der Testinstanz.

@@ -22,6 +22,8 @@ export interface Env {
   trustProxy: boolean;
   /** SQLite-Datei der Buchung (Stufe 2), auf dem Server /var/lib/paloskin/buchung.sqlite */
   dbPath: string;
+  /** Ordner für den nächtlichen Kalenderexport; leer heißt Unterordner export neben der Datenbank */
+  exportDir: string;
   /** Verbindliche Buchung (confirmed) statt Terminanfrage (requested); erst nach der Abnahme einschalten */
   bookingBinding: boolean;
   /** Öffentliche Adresse der Seite für Links in Mails, ohne Schrägstrich am Ende */
@@ -111,6 +113,7 @@ export function readEnv(): Env {
     ownerWebhookUrl: (process.env.OWNER_WEBHOOK_URL ?? "").trim(),
     trustProxy: process.env.TRUST_PROXY === "true",
     dbPath: (process.env.BOOKING_DB_PATH ?? "").trim() || ".data/buchung.sqlite",
+    exportDir: (process.env.CALENDAR_EXPORT_DIR ?? "").trim(),
     bookingBinding: process.env.BOOKING_BINDING === "true",
     publicBaseUrl: ((process.env.PUBLIC_BASE_URL ?? "").trim() || "https://www.paloskin.de").replace(/\/+$/, ""),
     linkSecret: (process.env.LINK_SECRET ?? "").trim(),
