@@ -1,6 +1,6 @@
 # Texte: Bestätigungsmail, Erinnerungsmail, Terminseite (fünf Sprachen)
 
-Stand: 2. Oktober 2026. Deutsch ist die Freigabe von Dr. Vogel; EN, ES, FR, PT sind Übersetzungen nach demselben Muster und warten auf Freigabe. Erzeugt aus `lib/texts-mail.ts` mit `scripts/texte-mails.mts`, Beispieltermin Donnerstag, 8. Oktober 2026, 08:00 Uhr, Vorname Verena, zu zweit.
+Stand: 3. Oktober 2026. Deutsch ist die Freigabe von Dr. Vogel; EN, ES, FR, PT sind freigegeben (Feinschliff folgt), Wochentage in ES, FR, PT mitten im Satz klein. Erzeugt aus `lib/texts-mail.ts` mit `scripts/texte-mails.mts`, Beispieltermin Donnerstag, 8. Oktober 2026, 08:00 Uhr, Vorname Verena, zu zweit.
 
 ## Deutsch (de)
 
@@ -151,7 +151,7 @@ Lovely, your appointment is set. The confirmation is on its way by email.
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff: Su cita en PALO SKIN el Jueves, 8 de octubre a las 08:00 h
+Betreff: Su cita en PALO SKIN el jueves, 8 de octubre a las 08:00 h
 
 ```
 Hola Verena,
@@ -175,7 +175,7 @@ PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
 WhatsApp +49 151 58872566
 ```
 
-Ohne Schalter (Terminanfrage), nur bis zum Ausrollen: Betreff „Su solicitud de cita en PALO SKIN para el Jueves, 8 de octubre a las 08:00 h“, Einstieg „qué bien que quiera venir. Hemos reservado la hora para usted y le escribimos en breve por WhatsApp:“
+Ohne Schalter (Terminanfrage), nur bis zum Ausrollen: Betreff „Su solicitud de cita en PALO SKIN para el jueves, 8 de octubre a las 08:00 h“, Einstieg „qué bien que quiera venir. Hemos reservado la hora para usted y le escribimos en breve por WhatsApp:“
 
 ### Erinnerungsmail
 
@@ -184,7 +184,7 @@ Betreff: Mañana a las 08:00 h en PALO SKIN
 ```
 Hola Verena,
 
-mañana es el día: Jueves, 8 de octubre, 08:00 h, en nuestro estudio en Hagenauer Straße 14. Le esperamos.
+mañana es el día: jueves, 8 de octubre, 08:00 h, en nuestro estudio en Hagenauer Straße 14. Le esperamos.
 
 Basta un clic: Sí, voy a ir [Knopf]
 
@@ -205,7 +205,7 @@ Beschreibung: Para cancelar o cambiar la cita, avísenos con al menos 48 horas d
 
 - Überschrift: Su cita
 - Knöpfe: Sí, voy a ir / Cancelar cita
-- Rückfrage vor der Absage: ¿Quiere cancelar realmente la cita del Jueves, 8 de octubre de 2026 a las 08:00 h? / Sí, cancelar cita / No, mantener cita
+- Rückfrage vor der Absage: ¿Quiere cancelar realmente la cita del jueves, 8 de octubre de 2026 a las 08:00 h? / Sí, cancelar cita / No, mantener cita
 - Weniger als 48 Stunden: Ya es demasiado tarde para cancelar con un clic. Escríbanos un momento por WhatsApp y encontramos juntos una solución. [Knopf: Escribir por WhatsApp]
 - Nach Zusage: Gracias, le esperamos. Hasta el jueves a las 08:00 h.
 - Nach Absage: Qué pena, pero no pasa nada. La hora vuelve a estar libre. Si quiere, reserve una nueva ahora mismo. [Knopf: Reservar una nueva cita]
@@ -223,7 +223,7 @@ Qué bien, su cita está confirmada. La confirmación va de camino por correo el
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff: Votre rendez-vous chez PALO SKIN le Jeudi 8 octobre à 08 h 00
+Betreff: Votre rendez-vous chez PALO SKIN le jeudi 8 octobre à 08 h 00
 
 ```
 Bonjour Verena,
@@ -247,7 +247,7 @@ PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
 WhatsApp +49 151 58872566
 ```
 
-Ohne Schalter (Terminanfrage), nur bis zum Ausrollen: Betreff „Votre demande de rendez-vous chez PALO SKIN pour le Jeudi 8 octobre à 08 h 00“, Einstieg „quel plaisir que vous souhaitiez venir. Nous avons réservé le créneau pour vous et vous écrivons rapidement sur WhatsApp :“
+Ohne Schalter (Terminanfrage), nur bis zum Ausrollen: Betreff „Votre demande de rendez-vous chez PALO SKIN pour le jeudi 8 octobre à 08 h 00“, Einstieg „quel plaisir que vous souhaitiez venir. Nous avons réservé le créneau pour vous et vous écrivons rapidement sur WhatsApp :“
 
 ### Erinnerungsmail
 
@@ -256,7 +256,7 @@ Betreff: Demain à 08 h 00 chez PALO SKIN
 ```
 Bonjour Verena,
 
-c’est demain : Jeudi 8 octobre, 08 h 00, chez nous au Hagenauer Straße 14. Nous avons hâte de vous accueillir.
+c’est demain : jeudi 8 octobre, 08 h 00, chez nous au 14 Hagenauer Straße. Nous avons hâte de vous accueillir.
 
 Un clic suffit : Oui, je viens [Knopf]
 
@@ -277,7 +277,7 @@ Beschreibung: Pour annuler ou déplacer, merci de nous prévenir au moins 48 heu
 
 - Überschrift: Votre rendez-vous
 - Knöpfe: Oui, je viens / Annuler le rendez-vous
-- Rückfrage vor der Absage: Voulez-vous vraiment annuler le rendez-vous du Jeudi 8 octobre 2026 à 08 h 00 ? / Oui, annuler le rendez-vous / Non, garder le rendez-vous
+- Rückfrage vor der Absage: Voulez-vous vraiment annuler le rendez-vous du jeudi 8 octobre 2026 à 08 h 00 ? / Oui, annuler le rendez-vous / Non, garder le rendez-vous
 - Weniger als 48 Stunden: Il est maintenant trop tard pour annuler d’un clic. Écrivez-nous un petit mot sur WhatsApp, nous trouverons une solution ensemble. [Knopf: Écrire sur WhatsApp]
 - Nach Zusage: Merci, nous avons hâte de vous accueillir. À jeudi à 08 h 00.
 - Nach Absage: Dommage, mais aucun problème. Le créneau est de nouveau libre. Si vous le souhaitez, réservez tout de suite un nouveau rendez-vous. [Knopf: Réserver un nouveau rendez-vous]
@@ -295,7 +295,7 @@ Parfait, votre rendez-vous est fixé. La confirmation arrive par e-mail.
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff: Sua consulta na PALO SKIN em Quinta-feira, 8 de outubro às 08:00
+Betreff: Sua consulta na PALO SKIN em quinta-feira, 8 de outubro às 08:00
 
 ```
 Olá Verena,
@@ -319,7 +319,7 @@ PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
 WhatsApp +49 151 58872566
 ```
 
-Ohne Schalter (Terminanfrage), nur bis zum Ausrollen: Betreff „Seu pedido de horário na PALO SKIN para Quinta-feira, 8 de outubro às 08:00“, Einstieg „que bom que você quer vir. Reservamos o horário para você e falamos em breve pelo WhatsApp:“
+Ohne Schalter (Terminanfrage), nur bis zum Ausrollen: Betreff „Seu pedido de horário na PALO SKIN para quinta-feira, 8 de outubro às 08:00“, Einstieg „que bom que você quer vir. Reservamos o horário para você e falamos em breve pelo WhatsApp:“
 
 ### Erinnerungsmail
 
@@ -328,7 +328,7 @@ Betreff: Amanhã às 08:00 na PALO SKIN
 ```
 Olá Verena,
 
-amanhã é o dia: Quinta-feira, 8 de outubro, 08:00, aqui no estúdio na Hagenauer Straße 14. Esperamos por você.
+amanhã é o dia: quinta-feira, 8 de outubro, 08:00, aqui no estúdio na Hagenauer Straße 14. Esperamos por você.
 
 Basta um clique: Sim, eu vou [Knopf]
 
@@ -349,7 +349,7 @@ Beschreibung: Para cancelar ou remarcar, avise com pelo menos 48 horas de antece
 
 - Überschrift: Sua consulta
 - Knöpfe: Sim, eu vou / Cancelar consulta
-- Rückfrage vor der Absage: Deseja realmente cancelar a consulta de Quinta-feira, 8 de outubro de 2026 às 08:00? / Sim, cancelar consulta / Não, manter consulta
+- Rückfrage vor der Absage: Deseja realmente cancelar a consulta de quinta-feira, 8 de outubro de 2026 às 08:00? / Sim, cancelar consulta / Não, manter consulta
 - Weniger als 48 Stunden: Agora está em cima da hora para cancelar com um clique. Mande uma mensagem rápida pelo WhatsApp e encontramos uma solução juntos. [Knopf: Escrever pelo WhatsApp]
 - Nach Zusage: Obrigado, esperamos por você. Até quinta-feira às 08:00.
 - Nach Absage: Que pena, mas sem problema. O horário está livre novamente. Se quiser, marque um novo agora mesmo. [Knopf: Marcar uma nova consulta]

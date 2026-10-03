@@ -57,7 +57,7 @@ export default async function TerminPage({ params, searchParams }: { params: Pro
   const confirmed = !!booking.attendance_confirmed_at;
 
   let status: string | null = null;
-  if (message === "ja" || (confirmed && !cancelled && !past)) status = l.doneYes(when.weekday, when.time);
+  if (message === "ja" || (confirmed && !cancelled && !past)) status = l.doneYes(when.weekdayIn, when.time);
   if (message === "absage") status = l.doneCancel;
   else if (cancelled) status = l.cancelledInfo;
   else if (past) status = l.past;
@@ -75,7 +75,7 @@ export default async function TerminPage({ params, searchParams }: { params: Pro
             <form method="post" action="/api/termin" style={{ display: "grid", gap: 10 }}>
               <input type="hidden" name="token" value={token} />
               <input type="hidden" name="action" value="absagen" />
-              <p style={{ margin: 0, fontSize: 17 }}>{l.cancelQ(when.dateYear, when.time)}</p>
+              <p style={{ margin: 0, fontSize: 17 }}>{l.cancelQ(when.dateYearIn, when.time)}</p>
               <button type="submit" className="primary">{l.cancelYes}</button>
               <a className="btn-ghost" href={`/termin/${token}`} style={{ textAlign: "center" }}>{l.cancelNo}</a>
             </form>

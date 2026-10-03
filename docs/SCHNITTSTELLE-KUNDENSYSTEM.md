@@ -1,6 +1,6 @@
 # Schnittstelle Buchung zu Kundensystem (Studio OS)
 
-Stand: 2. Oktober 2026, Fassung 4 des Bauauftrags Stufe 2. Dieses Dokument ist die verbindliche Beschreibung des Endpunkts auf paloskin-1; bei Abweichungen zwischen Attrappe und Dokument gilt das Dokument.
+Stand: 3. Oktober 2026, Fassung 4 des Bauauftrags Stufe 2, Codes verbindlich. Dieses Dokument ist die verbindliche Beschreibung des Endpunkts auf paloskin-1; bei Abweichungen zwischen Attrappe und Dokument gilt das Dokument.
 
 ## 1. Zugang
 
@@ -179,38 +179,38 @@ Das Erscheinen eines Kunden entscheidet nur das Kundensystem. Die Buchung sendet
 
 ## 8. Zuordnung der Codes
 
-Intern bleiben die Codes unverändert; übersetzt wird beim Schreiben jedes Ereignisses (`lib/service-codes.ts`). Zeilen mit „Vorschlag“ nennt die Vorgabe nicht; sie gelten, bis das CRM-Projekt andere Namen festlegt.
+Intern bleiben die Codes unverändert; übersetzt wird beim Schreiben jedes Ereignisses (`lib/service-codes.ts`). Alle Codes sind verbindlich (bestätigt von Dr. Vogel am 3. Oktober 2026), ebenso die Felder `other_zone` und `zones_unknown`.
 
 Behandlungen (`service_codes`):
 
-| Intern | Gemeinsam | Deutsch | |
-| --- | --- | --- | --- |
-| BER | `consultation` | Beratung | |
-| BOT | `botulinum` | Botox-Behandlung, Zonen in `zones` | Vorschlag |
-| KAU | `masseter` | Kaumuskel | |
-| NEF | `nefertiti` | Nefertiti-Lift | |
-| HYP | `hyperhidrosis_axilla` | Übermäßiges Schwitzen (Achseln) | |
-| LDN | `polynucleotides_eye` | Lachs-DNA, eine Behandlung | |
-| LDN4 | `polynucleotides_eye_4` | Lachs-DNA Viererpaket | |
-| KON | `control` | Kontrolltermin, als `appointment_type` | |
+| Intern | Gemeinsam | Deutsch |
+| --- | --- | --- |
+| BER | `consultation` | Beratung |
+| BOT | `botulinum` | Botox-Behandlung, Zonen in `zones` |
+| KAU | `masseter` | Kaumuskel |
+| NEF | `nefertiti` | Nefertiti-Lift |
+| HYP | `hyperhidrosis_axilla` | Übermäßiges Schwitzen (Achseln) |
+| LDN | `polynucleotides_eye` | Lachs-DNA, eine Behandlung |
+| LDN4 | `polynucleotides_eye_4` | Lachs-DNA Viererpaket |
+| KON | `control` | Kontrolltermin, als `appointment_type` |
 
 Personenzahl (intern P2) ist das Feld `persons`, kein Code.
 
 Zonen (`zones`):
 
-| Intern | Gemeinsam | Deutsch | |
-| --- | --- | --- | --- |
-| zornesfalte | `glabella` | Zornesfalte | |
-| stirn | `forehead` | Stirn | |
-| kraehenfuesse | `crows_feet` | Krähenfüße | |
-| browlift | `brow_lift` | Browlift | Vorschlag |
-| lipflip | `lip_flip` | Lip Flip | Vorschlag |
-| bunnylines | `bunny_lines` | Bunny Lines | Vorschlag |
-| mundwinkel | `mouth_corners` | Mundwinkel | Vorschlag |
-| erdbeerkinn | `chin` | Erdbeerkinn | Vorschlag |
-| gummysmile | `gummy_smile` | Gummy Smile | Vorschlag |
-| oberlippe | `upper_lip` | Oberlippe | Vorschlag |
-| nase | `nose` | Nase | Vorschlag |
+| Intern | Gemeinsam | Deutsch |
+| --- | --- | --- |
+| zornesfalte | `glabella` | Zornesfalte |
+| stirn | `forehead` | Stirn |
+| kraehenfuesse | `crows_feet` | Krähenfüße |
+| browlift | `brow_lift` | Browlift |
+| lipflip | `lip_flip` | Lip Flip |
+| bunnylines | `bunny_lines` | Bunny Lines |
+| mundwinkel | `mouth_corners` | Mundwinkel |
+| erdbeerkinn | `chin` | Erdbeerkinn |
+| gummysmile | `gummy_smile` | Gummy Smile |
+| oberlippe | `upper_lip` | Oberlippe |
+| nase | `nose` | Nase |
 
 Eine frei eingetragene Zone steht nur in `other_zone`, „weiß ich noch nicht“ nur in `zones_unknown`; beide erzeugen keinen Code.
 

@@ -109,7 +109,8 @@ describe("Bestätigungsmail nach Freigabe", () => {
     expect(ics).not.toContain("URL:");
     expect(ics.split("\r\n").every((l) => Buffer.byteLength(l) <= 75)).toBe(true);
     const winter = whenLabels(new Date("2026-10-26T09:00:00Z"), "de");
-    expect(winter).toEqual({ date: "Montag, 26. Oktober", dateYear: "Montag, 26. Oktober 2026", weekday: "Montag", time: "10:00 Uhr" });
+    expect(winter).toMatchObject({ date: "Montag, 26. Oktober", dateYear: "Montag, 26. Oktober 2026", weekday: "Montag", time: "10:00 Uhr" });
+    expect(whenLabels(new Date("2026-10-26T09:00:00Z"), "es")).toMatchObject({ weekday: "Lunes", weekdayIn: "lunes" });
     expect(buildIcs(row({ starts_at: "2026-10-26T09:00:00.000Z", ends_at: "2026-10-26T09:30:00.000Z" }), "de")).toContain("DTSTART:20261026T090000Z");
   });
 
@@ -128,9 +129,9 @@ describe("Bestätigungsmail nach Freigabe", () => {
     const expected: Record<Lang, [RegExp, string, RegExp]> = {
       de: [/^Ihr Termin bei PALO SKIN am Donnerstag, 8\. Oktober um 08:00 Uhr$/, "Guten Tag Verena,", /^Morgen um 08:00 Uhr bei PALO SKIN$/],
       en: [/^Your appointment at PALO SKIN on Thursday,? 8 October at 08:00$/, "Hello Verena,", /^Tomorrow at 08:00 at PALO SKIN$/],
-      es: [/^Su cita en PALO SKIN el Jueves,? 8 de octubre a las 08:00 h$/, "Hola Verena,", /^Mañana a las 08:00 h en PALO SKIN$/],
-      fr: [/^Votre rendez-vous chez PALO SKIN le Jeudi 8 octobre à 08 h 00$/, "Bonjour Verena,", /^Demain à 08 h 00 chez PALO SKIN$/],
-      pt: [/^Sua consulta na PALO SKIN em Quinta-feira,? 8 de outubro às 08:00$/, "Olá Verena,", /^Amanhã às 08:00 na PALO SKIN$/],
+      es: [/^Su cita en PALO SKIN el jueves,? 8 de octubre a las 08:00 h$/, "Hola Verena,", /^Mañana a las 08:00 h en PALO SKIN$/],
+      fr: [/^Votre rendez-vous chez PALO SKIN le jeudi 8 octobre à 08 h 00$/, "Bonjour Verena,", /^Demain à 08 h 00 chez PALO SKIN$/],
+      pt: [/^Sua consulta na PALO SKIN em quinta-feira,? 8 de outubro às 08:00$/, "Olá Verena,", /^Amanhã às 08:00 na PALO SKIN$/],
     };
     for (const lang of Object.keys(expected) as Lang[]) {
       const m = confirmationMail(row({ language: lang }));

@@ -186,7 +186,7 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     icsNote: "Le fichier de calendrier pour votre téléphone est joint.",
     closing: "À bientôt",
     subjectReminder: (t) => `Demain à ${t} chez ${BRAND}`,
-    introReminder: (d, t) => `c’est demain${NB}: ${d}, ${t}, chez nous au ${STREET}. Nous avons hâte de vous accueillir.`,
+    introReminder: (d, t) => `c’est demain${NB}: ${d}, ${t}, chez nous au 14 Hagenauer Straße. Nous avons hâte de vous accueillir.`,
     oneClick: `Un clic suffit${NB}:`,
     yes: "Oui, je viens",
     reminderCancel: `Si cela ne vous convient finalement pas, écrivez-nous un petit mot sur WhatsApp au ${PHONE} et nous trouverons un nouveau créneau.`,

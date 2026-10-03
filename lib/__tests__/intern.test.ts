@@ -13,8 +13,8 @@ describe("Gemeinsame Codes", () => {
     expect(toSharedZones([...ZONE_IDS])).toHaveLength(ZONE_IDS.length);
     expect(new Set(toSharedZones([...ZONE_IDS])).size).toBe(ZONE_IDS.length);
     expect(toSharedZones(["zornesfalte", "stirn", "kraehenfuesse"])).toEqual(["glabella", "forehead", "crows_feet"]);
-    expect(SERVICE_CODE_TABLE.filter((e) => e.proposed).map((e) => e.shared)).toEqual(["botulinum"]);
-    expect(ZONE_CODE_TABLE.filter((e) => !e.proposed).map((e) => e.shared)).toEqual(["glabella", "forehead", "crows_feet"]);
+    expect(SERVICE_CODE_TABLE.map((e) => e.shared)).toContain("botulinum");
+    expect(ZONE_CODE_TABLE.map((e) => e.shared)).toEqual(["glabella", "forehead", "crows_feet", "brow_lift", "lip_flip", "bunny_lines", "mouth_corners", "chin", "gummy_smile", "upper_lip", "nose"]);
     expect(appointmentType({ checkup: true, firstVisit: true })).toBe("control");
     expect(appointmentType({ checkup: false, firstVisit: true })).toBe("first");
     expect(appointmentType({ checkup: false, firstVisit: false })).toBe("follow_up");

@@ -15,23 +15,33 @@ import type { Lang } from "./treatments";
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export interface WhenLabels {
-  /** zum Beispiel „Donnerstag, 8. Oktober“ */
+  /** am Satzanfang oder allein stehend, zum Beispiel „Donnerstag, 8. Oktober“ */
   date: string;
   /** mit Jahr, zum Beispiel „Donnerstag, 8. Oktober 2026“ */
   dateYear: string;
   /** nur der Wochentag, zum Beispiel „Donnerstag“ */
   weekday: string;
+  /** mitten im Satz: Spanisch, Französisch und Portugiesisch schreiben den Wochentag klein („el jueves“) */
+  dateIn: string;
+  dateYearIn: string;
+  weekdayIn: string;
   /** in der Schreibweise der Sprache, zum Beispiel „08:00 Uhr“ */
   time: string;
 }
 
 export function whenLabels(start: Date, lang: Lang): WhenLabels {
   const loc = LANGS.find((x) => x.id === lang)?.loc ?? "de-DE";
-  const fmt = (o: Intl.DateTimeFormatOptions) => cap(new Intl.DateTimeFormat(loc, { timeZone: TZ, ...o }).format(start));
+  const raw = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(loc, { timeZone: TZ, ...o }).format(start);
+  const date = raw({ weekday: "long", day: "numeric", month: "long" });
+  const dateYear = raw({ weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const weekday = raw({ weekday: "long" });
   return {
-    date: fmt({ weekday: "long", day: "numeric", month: "long" }),
-    dateYear: fmt({ weekday: "long", day: "numeric", month: "long", year: "numeric" }),
-    weekday: fmt({ weekday: "long" }),
+    date: cap(date),
+    dateYear: cap(dateYear),
+    weekday: cap(weekday),
+    dateIn: date,
+    dateYearIn: dateYear,
+    weekdayIn: weekday,
     time: TEXTS[lang].at(berlinTimeLabel(start)),
   };
 }
@@ -128,7 +138,7 @@ export function confirmationMail(b: BookingRow, now = new Date()): MailMessage {
 
   return {
     to: b.email,
-    subject: `${test ? "TEST: " : ""}${binding ? m.subjectBinding(when.date, when.time) : m.subjectRequest(when.date, when.time)}`,
+    subject: `${test ? "TEST: " : ""}${binding ? m.subjectBinding(when.dateIn, when.time) : m.subjectRequest(when.dateIn, when.time)}`,
     text: text.join("\n"),
     html,
     ics: { filename: "termin.ics", content: buildIcs(b, lang, now) },
@@ -145,11 +155,11 @@ export function reminderMail(b: BookingRow): MailMessage {
 
   const text: string[] = [];
   if (test) text.push(m.testNote, "");
-  text.push(m.greeting(b.first_name), "", m.introReminder(when.date, when.time), "", `${m.oneClick} ${m.yes}: ${yesUrl}`, "", m.reminderCancel, "", m.closingReminder, SIGNER, STUDIO);
+  text.push(m.greeting(b.first_name), "", m.introReminder(when.dateIn, when.time), "", `${m.oneClick} ${m.yes}: ${yesUrl}`, "", m.reminderCancel, "", m.closingReminder, SIGNER, STUDIO);
 
   const html = wrap(lang, test, [
     p(m.greeting(b.first_name)),
-    p(m.introReminder(when.date, when.time)),
+    p(m.introReminder(when.dateIn, when.time)),
     `<p style="margin:0 0 16px">${escapeHtml(m.oneClick)}<br><br>${button(yesUrl, m.yes)}</p>`,
     `<p style="margin:0 0 14px">${escapeHtml(m.reminderCancel).replace(escapeHtml(PHONE), a(WA_LINK, PHONE))}</p>`,
     `<p style="margin:16px 0 0">${escapeHtml(m.closingReminder)}<br>${escapeHtml(SIGNER)}<br>${escapeHtml(STUDIO)}</p>`,
