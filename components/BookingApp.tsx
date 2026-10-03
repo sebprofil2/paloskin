@@ -68,6 +68,10 @@ interface Booking {
   durationMinutes: number;
   /** verbindlich gebucht (Schalter BOOKING_BINDING) oder Terminanfrage */
   binding?: boolean;
+  manageUrl?: string;
+  calendar?: { google: string; ics: string; outlook: string };
+  /** mehr als 24 Stunden bis zum Termin: Verschieben und Absagen über den Link */
+  canManage?: boolean;
 }
 
 type SlotsState = { status: "idle" | "loading" | "ready" | "down"; days: SlotDay[]; durationMinutes: number | null; key: string };
@@ -162,60 +166,6 @@ async function fetchJson(url: string, init: RequestInit, timeoutMs: number): Pro
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-/* ---------- Kalenderdateien und Links ---------- */
-function icsText(b: Booking, name: string, cancelShort: string): string {
-  const f = (iso: string) => {
-    const d = new Date(iso);
-    return `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
-  };
-  const esc = (t: string) => t.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
-  const desc = `Palo Skin by Dr. Vogel\n${ADDRESS}\nGoogle Maps: ${MAPS}\n\n${cancelShort}\nWhatsApp: ${WA}\nBuchungsnummer: ${b.ref}`;
-  return [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//Palo Skin by Dr. Vogel//Buchung//DE",
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
-    "BEGIN:VEVENT",
-    `UID:${b.requestId}@paloskin.de`,
-    `DTSTAMP:${f(new Date().toISOString())}`,
-    `DTSTART:${f(b.start)}`,
-    `DTEND:${f(b.end)}`,
-    `SUMMARY:${esc(`Goodbye Wrinkles: ${name} · Palo Skin by Dr. Vogel`)}`,
-    `LOCATION:${esc(ADDRESS)}`,
-    `DESCRIPTION:${esc(desc)}`,
-    "STATUS:CONFIRMED",
-    "END:VEVENT",
-    "END:VCALENDAR",
-  ].join("\r\n");
-}
-
-function calLinks(b: Booking, name: string, cancelShort: string): { g: string; o: string } {
-  const gFmt = (iso: string) => {
-    const d = new Date(iso);
-    return `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
-  };
-  const oFmt = (iso: string) => new Date(iso).toISOString().replace(/\.\d{3}Z$/, "Z");
-  const title = `Goodbye Wrinkles: ${name} · Palo Skin by Dr. Vogel`;
-  const detailsG = `Palo Skin by Dr. Vogel<br><a href="${MAPS}">${ADDRESS}</a><br><br>${cancelShort}<br>WhatsApp: <a href="${WA}">${PHONE}</a><br>Buchungsnummer: ${b.ref}`;
-  const detailsO = `Palo Skin by Dr. Vogel\n${ADDRESS}\nGoogle Maps: ${MAPS}\n\n${cancelShort}\nWhatsApp: ${WA}\nBuchungsnummer: ${b.ref}`;
-  const g =
-    "https://calendar.google.com/calendar/render?action=TEMPLATE" +
-    "&text=" + encodeURIComponent(title) +
-    "&dates=" + gFmt(b.start) + "/" + gFmt(b.end) +
-    "&location=" + encodeURIComponent(ADDRESS) +
-    "&details=" + encodeURIComponent(detailsG);
-  const o =
-    "https://outlook.live.com/calendar/0/action/compose?allday=false" +
-    "&subject=" + encodeURIComponent(title) +
-    "&startdt=" + encodeURIComponent(oFmt(b.start)) +
-    "&enddt=" + encodeURIComponent(oFmt(b.end)) +
-    "&location=" + encodeURIComponent(ADDRESS) +
-    "&body=" + encodeURIComponent(detailsO) +
-    "&path=%2Fcalendar%2Faction%2Fcompose&rru=addevent";
-  return { g, o };
-}
 
 /* ---------- Bausteine (außerhalb der Komponente, damit Eingabefelder beim Tippen nicht neu entstehen) ---------- */
 function Opt({ t, d, p, on, kind = "radio", onClick }: { t: string; d?: string; p?: string; on: boolean; kind?: "radio" | "checkbox"; onClick: () => void }) {
@@ -498,18 +448,6 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     } catch {}
   }
 
-  function downloadIcs(b: Booking) {
-    const name = `${s.f.vorname.trim()} ${s.f.nachname.trim()}`.trim();
-    const blob = new Blob([icsText(b, name, l.cancelShort)], { type: "text/calendar;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "palo-skin-termin.ics";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 10000);
-  }
 
   function copyNumber() {
     const done = () => setCopyLabel("copied");
@@ -831,10 +769,8 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     );
   };
 
-  /* ---------- Bestätigung ---------- */
+  /* ---------- Bestätigung (Block 3): keine Buchungsnummer, keine Behandlung, keine Dauer ---------- */
   const screenDone = (b: Booking) => {
-    const name = `${s.f.vorname.trim()} ${s.f.nachname.trim()}`.trim();
-    const { g, o } = calLinks(b, name, l.cancelShort);
     const dayKey = b.start.slice(0, 10);
     const time = b.start.slice(11, 16);
     return (
@@ -843,20 +779,26 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
         <div className="confirm">
           <h1>{b.binding ? l.doneBindingH : l.doneH}</h1>
           {b.binding ? <p>{l.doneBindingP}</p> : null}
-          <p>{dayLabel(dayKey)}, {l.at(time)}.</p>
-          <dl>
-            <dt>{l.addrL}</dt><dd className="addr"><a href={MAPS} target="_blank" rel="noopener">{ADDRESS}</a></dd>
-            <dt>{l.refL}</dt><dd>{b.ref}</dd>
-          </dl>
-          <div className="cal">
-            <a href={g} target="_blank" rel="noopener">{l.gcal} <span aria-hidden="true">↗</span></a>
-            <a href={o} target="_blank" rel="noopener">{l.ocal} <span aria-hidden="true">↗</span></a>
-            <button type="button" onClick={() => downloadIcs(b)}>{l.ical} <span aria-hidden="true">↓</span></button>
-          </div>
+          <p style={{ fontWeight: 500, fontSize: 20 }}>{dayLabel(dayKey)}, {l.at(time)}</p>
+          <p style={{ margin: 0, lineHeight: 1.2 }}>
+            <span style={{ display: "block", fontSize: 22, letterSpacing: ".09em" }}>PALO SKIN</span>
+            <span style={{ display: "block", fontSize: 14, letterSpacing: ".04em", opacity: 0.85 }}>by Dr. Vogel</span>
+          </p>
+          <p style={{ margin: 0 }}>{ADDRESS}</p>
+          <p style={{ margin: 0 }}><a href={MAPS} target="_blank" rel="noopener" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: 3 }}>{l.mapL}</a></p>
+          {b.calendar ? (
+            <>
+              <p style={{ marginTop: 10 }}>{l.saveQ}</p>
+              <div className="cal" style={{ marginTop: 0 }}>
+                <a href={b.calendar.google} target="_blank" rel="noopener">{l.gcal} <span aria-hidden="true">↗</span></a>
+                <a href={b.calendar.ics}>{l.ical} <span aria-hidden="true">↓</span></a>
+                <a href={b.calendar.outlook} target="_blank" rel="noopener">{l.ocal} <span aria-hidden="true">↗</span></a>
+              </div>
+            </>
+          ) : null}
         </div>
         <div className="after">
-          <div className="note"><strong>Palo Skin</strong><a href={MAPS} target="_blank" rel="noopener">{ADDRESS}</a><br />WhatsApp <a href={WA} target="_blank" rel="noopener">{PHONE}</a></div>
-          <p className="hint" style={{ margin: 0 }}>{l.afterCancelReal}</p>
+          <div className="note"><strong>{l.cancelT}</strong>{l.cancelP}{b.canManage !== false ? <><br />{l.cancelP2}</> : null}</div>
           {s.refSent ? (
             <p className="hint" style={{ margin: 0 }}>{l.refThanks}</p>
           ) : (

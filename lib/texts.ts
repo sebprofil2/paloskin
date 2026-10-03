@@ -67,7 +67,7 @@ de:{
   phoneReturn:"Am besten dieselbe Nummer wie beim letzten Mal, dann erkennen wir Sie gleich wieder.",
   refQ:"Hat Ihnen jemand PALO SKIN empfohlen?", refPh:"Name oder Empfehlungscode",
   consent:"Ich bin einverstanden, dass PALO SKIN meine Angaben für meinen Termin verarbeitet. Mehr in der Datenschutzerklärung.", cancelT:"Zeit für Sie", cancelP:"Ihr Termin beginnt pünktlich, in der Regel ganz ohne Wartezeit. Kommen Sie bitte zur vereinbarten Zeit oder höchstens fünf Minuten vorher.",
-  sumHead:"Ihr Termin", beratungRow:"Beratung, Behandlung noch offen", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Schön, Ihre Terminanfrage ist da. Wir bestätigen sie kurz per WhatsApp.", gcal:"In Google Kalender eintragen", ocal:"In Outlook-Kalender eintragen", ical:"In iPhone-Kalender eintragen",
+  sumHead:"Ihr Termin", beratungRow:"Beratung, Behandlung noch offen", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Schön, Ihre Terminanfrage ist da. Wir bestätigen sie kurz per WhatsApp.", gcal:"Google Kalender", ocal:"Outlook", ical:"iPhone-Kalender",
   addrL:"Adresse", book:"Termin buchen",
   checkupP:"Sie wurden zu einem kurzen Kontrolltermin eingeladen.",
   cancelShort:"Absagen bitte mindestens 48 Stunden vorher.",
@@ -100,7 +100,7 @@ en:{
   phoneReturn:"Ideally the same number as last time, so we recognise you straight away.",
   refQ:"Did someone recommend PALO SKIN to you?", refPh:"Name or referral code",
   consent:"I agree that PALO SKIN processes my details for my appointment. More in the privacy policy.", cancelT:"Time for you", cancelP:"Your appointment starts on time, usually with no waiting at all. Please arrive at the agreed time or at most five minutes early.",
-  sumHead:"Your appointment", beratungRow:"Consultation, treatment to be decided", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Lovely, your request has arrived. We’ll confirm it shortly on WhatsApp.", gcal:"Add to Google Calendar", ocal:"Add to Outlook Calendar", ical:"Add to iPhone Calendar",
+  sumHead:"Your appointment", beratungRow:"Consultation, treatment to be decided", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Lovely, your request has arrived. We’ll confirm it shortly on WhatsApp.", gcal:"Google Calendar", ocal:"Outlook", ical:"iPhone Calendar",
   addrL:"Address", book:"Book appointment",
   checkupP:"You have been invited to a short follow-up appointment.",
   cancelShort:"Please cancel at least 48 hours in advance.",
@@ -133,7 +133,7 @@ es:{
   phoneReturn:"Mejor el mismo número que la última vez, así le reconocemos enseguida.",
   refQ:"¿Alguien le ha recomendado PALO SKIN?", refPh:"Nombre o código de recomendación",
   consent:"Acepto que PALO SKIN trate mis datos para mi cita. Más información en la política de privacidad.", cancelT:"Tiempo para usted", cancelP:"Su cita empieza puntual, por lo general sin ninguna espera. Venga, por favor, a la hora acordada o como máximo cinco minutos antes.",
-  sumHead:"Su cita", beratungRow:"Consulta, tratamiento por decidir", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Perfecto, hemos recibido su solicitud. Se la confirmamos en breve por WhatsApp.", gcal:"Añadir a Google Calendar", ocal:"Añadir al calendario de Outlook", ical:"Añadir al calendario del iPhone",
+  sumHead:"Su cita", beratungRow:"Consulta, tratamiento por decidir", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Perfecto, hemos recibido su solicitud. Se la confirmamos en breve por WhatsApp.", gcal:"Google Calendar", ocal:"Outlook", ical:"Calendario del iPhone",
   addrL:"Dirección", book:"Reservar cita",
   checkupP:"Le hemos invitado a una breve cita de revisión.",
   cancelShort:"Por favor, cancele con al menos 48 horas de antelación.",
@@ -166,7 +166,7 @@ fr:{
   phoneReturn:"Idéalement le même numéro que la dernière fois, ainsi nous vous reconnaissons tout de suite.",
   refQ:"Quelqu’un vous a-t-il recommandé PALO SKIN ?", refPh:"Nom ou code de parrainage",
   consent:"J’accepte que PALO SKIN traite mes données pour mon rendez-vous. Plus d’informations dans la politique de confidentialité.", cancelT:"Du temps pour vous", cancelP:"Votre rendez-vous commence à l’heure, en général sans aucune attente. Merci de venir à l’heure convenue ou au plus cinq minutes avant.",
-  sumHead:"Votre rendez-vous", beratungRow:"Consultation, soin à définir", botRow:"Botox : ", boostRow:"Skin Booster : ", doneH:"Parfait, votre demande est bien arrivée. Nous la confirmons rapidement par WhatsApp.", gcal:"Ajouter à Google Agenda", ocal:"Ajouter au calendrier Outlook", ical:"Ajouter au calendrier de l’iPhone",
+  sumHead:"Votre rendez-vous", beratungRow:"Consultation, soin à définir", botRow:"Botox : ", boostRow:"Skin Booster : ", doneH:"Parfait, votre demande est bien arrivée. Nous la confirmons rapidement par WhatsApp.", gcal:"Google Agenda", ocal:"Outlook", ical:"Calendrier iPhone",
   addrL:"Adresse", book:"Réserver le rendez-vous",
   checkupP:"Vous avez été invité(e) à un court rendez-vous de contrôle.",
   cancelShort:"Merci d’annuler au moins 48 heures à l’avance.",
@@ -199,7 +199,7 @@ pt:{
   phoneReturn:"De preferência o mesmo número da última vez, assim reconhecemos você na hora.",
   refQ:"Alguém recomendou a PALO SKIN para você?", refPh:"Nome ou código de indicação",
   consent:"Concordo que a PALO SKIN trate meus dados para o meu horário. Mais detalhes na política de privacidade.", cancelT:"Tempo para você", cancelP:"Sua consulta começa pontualmente, em geral sem nenhuma espera. Por favor, chegue na hora combinada ou no máximo cinco minutos antes.",
-  sumHead:"Sua consulta", beratungRow:"Avaliação, tratamento a definir", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Que bom, recebemos seu pedido. Confirmamos em breve pelo WhatsApp.", gcal:"Adicionar ao Google Agenda", ocal:"Adicionar ao calendário do Outlook", ical:"Adicionar ao calendário do iPhone",
+  sumHead:"Sua consulta", beratungRow:"Avaliação, tratamento a definir", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Que bom, recebemos seu pedido. Confirmamos em breve pelo WhatsApp.", gcal:"Google Agenda", ocal:"Outlook", ical:"Calendário do iPhone",
   addrL:"Endereço", book:"Marcar horário",
   checkupP:"Você foi convidado(a) para uma breve consulta de revisão.",
   cancelShort:"Por favor, cancele com pelo menos 48 horas de antecedência.",
@@ -222,6 +222,9 @@ export interface ExtraTexts {
   doneBindingH: string;
   /** Unterzeile der Bestätigungsseite bei verbindlicher Buchung */
   doneBindingP: string;
+  /** Bestätigungsseite: Kartenlink und Kalenderfrage */
+  mapL: string;
+  saveQ: string;
   /** zweiter Absatz des Hinweiskastens im letzten Schritt */
   cancelP2: string;
   pendingT: string;
@@ -258,6 +261,7 @@ const X: Record<Lang, ExtraTexts> = {
     testBanner: "Testversion. Bitte nur erfundene Namen und keine echten Behandlungswünsche eintragen. Die Buchung landet wirklich im Kalender.",
     afterCancelReal: "Absagen oder verschieben bitte per WhatsApp unter +49 151 58872566, mindestens 48 Stunden vorher.",
     noSlotHint: "Kein passender Termin dabei? Schreiben Sie uns gern per WhatsApp.", noSlotLink: "per WhatsApp", otherTime: "Andere Zeit wählen",
+    mapL: "So finden Sie uns", saveQ: "Möchten Sie den Termin gleich im Kalender speichern?",
     doneBindingH: "Gebucht! Wir freuen uns auf Sie.", doneBindingP: "Alle Details bekommen Sie gleich per E-Mail.",
     cancelP2: "Den Termin verschieben oder absagen können Sie bis 24 Stunden vorher über den Link in Ihrer Terminbestätigung.",
     pendingT: "Wir prüfen Ihre Buchung.", pendingP: "Bitte nicht erneut buchen, wir melden uns.",
@@ -278,6 +282,7 @@ const X: Record<Lang, ExtraTexts> = {
     testBanner: "Test version. Please enter invented names only and no real treatment wishes. The booking really does go into the calendar.",
     afterCancelReal: "To cancel or reschedule, please send us a WhatsApp message or call +49 151 58872566, at least 48 hours in advance.",
     noSlotHint: "No suitable time? Feel free to message us on WhatsApp.", noSlotLink: "on WhatsApp", otherTime: "Choose another time",
+    mapL: "How to find us", saveQ: "Would you like to save the appointment to your calendar right away?",
     doneBindingH: "Booked! We look forward to seeing you.", doneBindingP: "All the details will reach you by email in a moment.",
     cancelP2: "You can reschedule or cancel the appointment up to 24 hours in advance via the link in your confirmation.",
     pendingT: "We are checking your booking.", pendingP: "Please do not book again, we will get in touch.",
@@ -298,6 +303,7 @@ const X: Record<Lang, ExtraTexts> = {
     testBanner: "Versión de prueba. Introduzca solo nombres inventados y ningún deseo de tratamiento real. La reserva se registra de verdad en el calendario.",
     afterCancelReal: "Para cancelar o cambiar la cita, escríbanos por WhatsApp o llámenos al +49 151 58872566, con al menos 48 horas de antelación.",
     noSlotHint: "¿Ninguna hora le viene bien? Escríbanos con gusto por WhatsApp.", noSlotLink: "por WhatsApp", otherTime: "Elegir otra hora",
+    mapL: "Cómo llegar", saveQ: "¿Quiere guardar la cita en su calendario ahora mismo?",
     doneBindingH: "¡Reservado! Le esperamos.", doneBindingP: "Todos los detalles le llegan enseguida por correo electrónico.",
     cancelP2: "Puede cambiar o cancelar la cita hasta 24 horas antes a través del enlace de su confirmación.",
     pendingT: "Estamos comprobando su reserva.", pendingP: "Por favor, no vuelva a reservar. Nos pondremos en contacto con usted.",
@@ -318,6 +324,7 @@ const X: Record<Lang, ExtraTexts> = {
     testBanner: "Version de test. Merci de n’indiquer que des noms inventés et aucun souhait de soin réel. La réservation est réellement inscrite dans l’agenda.",
     afterCancelReal: "Pour annuler ou déplacer le rendez-vous, écrivez-nous sur WhatsApp ou appelez le +49 151 58872566, au moins 48 heures à l’avance.",
     noSlotHint: "Aucun créneau ne vous convient ? Écrivez-nous volontiers sur WhatsApp.", noSlotLink: "sur WhatsApp", otherTime: "Choisir un autre créneau",
+    mapL: "Comment nous trouver", saveQ: "Souhaitez-vous enregistrer le rendez-vous tout de suite dans votre agenda ?",
     doneBindingH: "Réservé ! Nous avons hâte de vous accueillir.", doneBindingP: "Tous les détails vous parviennent dans un instant par e-mail.",
     cancelP2: "Vous pouvez déplacer ou annuler le rendez-vous jusqu’à 24 heures avant via le lien de votre confirmation.",
     pendingT: "Nous vérifions votre réservation.", pendingP: "Merci de ne pas réserver à nouveau, nous vous recontactons.",
@@ -338,6 +345,7 @@ const X: Record<Lang, ExtraTexts> = {
     testBanner: "Versão de teste. Use apenas nomes inventados e nenhum desejo real de tratamento. A reserva é registrada de verdade no calendário.",
     afterCancelReal: "Para cancelar ou remarcar, mande uma mensagem pelo WhatsApp ou ligue para +49 151 58872566, com pelo menos 48 horas de antecedência.",
     noSlotHint: "Nenhum horário serve? Fale conosco pelo WhatsApp.", noSlotLink: "pelo WhatsApp", otherTime: "Escolher outro horário",
+    mapL: "Como chegar", saveQ: "Quer salvar a consulta no seu calendário agora mesmo?",
     doneBindingH: "Marcado! Esperamos por você.", doneBindingP: "Todos os detalhes chegam já por e-mail.",
     cancelP2: "Você pode remarcar ou cancelar a consulta até 24 horas antes pelo link da sua confirmação.",
     pendingT: "Estamos verificando a sua reserva.", pendingP: "Por favor, não reserve de novo, nós entramos em contato.",
