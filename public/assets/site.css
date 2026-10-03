@@ -1,4 +1,4 @@
-/* Palo Skin by Dr. Vogel, paloskin.de */
+/* PALO SKIN by Dr. Vogel, paloskin.de */
 @font-face{font-family:"Schibsted Grotesk";src:url("/assets/fonts/SchibstedGrotesk-Variable.woff2") format("woff2");font-weight:400 900;font-style:normal;font-display:swap}
 @font-face{font-family:"Schibsted Grotesk";src:url("/assets/fonts/SchibstedGrotesk-Italic-Variable.woff2") format("woff2");font-weight:400 900;font-style:italic;font-display:swap}
 
@@ -65,8 +65,8 @@ a{color:inherit}
 .lang-item[aria-checked="true"]{box-shadow:inset 2px 0 0 var(--ultramarin);font-weight:500}
 
 /* Abschnitte */
-section{padding:56px 0}
-@media (min-width:860px){section{padding:84px 0}}
+section{padding-block:56px}
+@media (min-width:860px){section{padding-block:84px}}
 h1,h2,h3{font-weight:400;margin:0;text-wrap:balance;letter-spacing:.005em}
 h1{font-size:clamp(38px,7vw,72px);line-height:1.02}
 h2{font-size:clamp(28px,4vw,40px);line-height:1.15}
@@ -78,8 +78,8 @@ p{margin:0}
 .rule{border:0;border-top:1px solid var(--line);margin:0}
 
 /* Hero */
-.hero{padding:40px 0 64px}
-@media (min-width:860px){.hero{padding:72px 0 96px}}
+.hero{padding-block:40px 64px}
+@media (min-width:860px){.hero{padding-block:72px 96px}}
 .hero .grid{display:grid;gap:28px}
 @media (min-width:860px){.hero .grid{grid-template-columns:minmax(0,7fr) minmax(0,5fr);align-items:end;gap:48px}}
 .hero .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
@@ -146,7 +146,7 @@ p{margin:0}
 .faq .a{padding:0 0 20px;color:var(--ink-2);max-width:42em}
 
 /* Fuß */
-footer{padding:36px 0 44px;font-size:14px;color:var(--ink-3)}
+footer{padding-block:36px 44px;font-size:14px;color:var(--ink-3)}
 footer .row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px;border-top:1px solid var(--line);padding-top:24px}
 footer a{color:inherit;text-decoration:none}
 footer a:hover{color:var(--ink);text-decoration:underline}
