@@ -6,11 +6,12 @@ import { whenLabels } from "./mail-content";
 import type { BookingRow } from "./store";
 
 /*
- * Sofort-Mails an das Studio (Block 8): neue Buchung, Absage, kurzfristige Absage, Verschiebung. Nur Deutsch, ohne
+ * Sofort-Mails an das Studio (Block 8): neue Buchung, Absage, kurzfristige Absage, Verschiebung; dazu die Rückmeldungen
+ * des Kalenderabgleichs („Im Kalender abgesagt“, „Im Kalender verschoben“, lib/calendar-sync.ts). Nur Deutsch, ohne
  * Behandlung, Nummer, Adresse oder Buchungsnummer. Testbuchungen mit „[TEST]“ vorn. Jede Mail landet erst in der
  * Warteschlange der Datenbank und wird sofort versucht; scheitert der Versand, wiederholt der Hintergrundlauf.
  */
-export type StudioMailKind = "booked" | "cancelled" | "cancelled_short" | "rescheduled";
+export type StudioMailKind = "booked" | "cancelled" | "cancelled_short" | "rescheduled" | "cancelled_calendar" | "rescheduled_calendar";
 
 function who(b: BookingRow): string {
   const initial = b.last_name.trim().charAt(0).toUpperCase();
@@ -24,11 +25,11 @@ export function studioMailFor(kind: StudioMailKind, b: BookingRow): { subject: s
   if (kind === "booked") return { subject: `${prefix}Neue Buchung: ${w.short}, ${w.time}`, body: `${when}\n${who(b)}\nDetails im Kalender „Palo Skin Termine“.` };
   if (kind === "cancelled") return { subject: `${prefix}Abgesagt: ${w.short}, ${w.time}`, body: `${when}\n${who(b)}\nDie Zeit ist wieder frei.` };
   if (kind === "cancelled_short") return { subject: `${prefix}Kurzfristig abgesagt: ${w.short}, ${w.time}`, body: `${when}\n${who(b)}\nDie Zeit ist wieder frei.` };
+  if (kind === "cancelled_calendar") return { subject: `${prefix}Im Kalender abgesagt: ${w.short}, ${w.time}`, body: `${when}\n${who(b)}\nDer Eintrag wurde im Kalender gelöscht. Die Zeit ist wieder frei, die Buchung gilt als abgesagt. Der Kunde hat keine Nachricht erhalten.` };
   const prev = b.previous_starts_at ? whenLabels(new Date(b.previous_starts_at), "de") : null;
-  return {
-    subject: `${prefix}Verschoben: ${w.short}, ${w.time}`,
-    body: `${who(b)}\nBisher: ${prev ? `${prev.date}, ${prev.time}` : "unbekannt"}\nNeu: ${when}`,
-  };
+  const bisherNeu = `${who(b)}\nBisher: ${prev ? `${prev.date}, ${prev.time}` : "unbekannt"}\nNeu: ${when}`;
+  if (kind === "rescheduled_calendar") return { subject: `${prefix}Im Kalender verschoben: ${w.short}, ${w.time}`, body: `${bisherNeu}\nDer Eintrag wurde im Kalender verschoben. Der Kunde hat die neue Bestätigung erhalten.` };
+  return { subject: `${prefix}Verschoben: ${w.short}, ${w.time}`, body: bisherNeu };
 }
 
 /** In die Warteschlange legen und sofort versuchen. Nie werfen. */

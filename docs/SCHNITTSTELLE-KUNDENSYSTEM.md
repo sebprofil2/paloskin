@@ -151,7 +151,7 @@ Wie `created`, mit `"type": "confirmed"`, `"status": "confirmed"` und neuem `upd
 { "seq": 3, "event_id": "01M3Z2B3C8D9E0F1G2H3J4K5M6", "type": "attendance_confirmed", "occurred_at": "2026-10-02T19:44:53.668Z", "booking": { "id": "01M3Z293MN1KK9BTG42T2BZBJG", "reference": "PS-FFL87G", "status": "confirmed", "attendance_confirmed_at": "2026-10-02T19:44:53.668Z", "updated_at": "2026-10-02T19:44:53.668Z", "...": "übrige Felder wie bei created" } }
 ```
 
-### cancelled: Absage durch Kunde (Link) oder Kundensystem (Rückweg)
+### cancelled: Absage durch Kunde (Link), Studio (Eintrag im Kalender gelöscht) oder Kundensystem (Rückweg)
 
 ```json
 { "seq": 4, "event_id": "01M3Z2C4D5E6F7G8H9J0K1M2N3", "type": "cancelled", "occurred_at": "2026-10-02T19:44:54.230Z", "booking": { "id": "01M3Z293MN1KK9BTG42T2BZBJG", "reference": "PS-FFL87G", "status": "cancelled", "cancelled_at": "2026-10-02T19:44:54.230Z", "cancel_reason": "customer_link", "calendar_event_id": "g9lgojcpqbtal5is5ljv4f0rrg", "updated_at": "2026-10-02T19:44:54.230Z", "...": "übrige Felder wie bei created" } }

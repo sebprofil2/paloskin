@@ -2,7 +2,7 @@ import { readEnv } from "../env";
 import { bookingRange, computeSlots, isStartFree, windowFromBerlin, type Interval, type SlotDay } from "../slots";
 import { addDaysKey, berlinDateKey, berlinWeekday, dateKeysBetween, fromBerlinKey, toBerlinIso } from "../time";
 import { ulid } from "../ulid";
-import { SlotsUnavailableError, type BookingEngine, type CalendarEventInput, type ExportedEvent, type SlotsResult } from "./types";
+import { SlotsUnavailableError, type BookingEngine, type CalendarEventInput, type ChangedEvent, type ExportedEvent, type SlotsResult } from "./types";
 
 /*
  * Testmotor mit erfundenen freien Zeiten. Nichts wird in Google eingetragen.
@@ -39,6 +39,13 @@ interface MockEvent {
 }
 
 const events = new Map<string, MockEvent>();
+/* Änderungsverlauf wie ihn Google mit updatedMin liefert: jede Anlage, Verschiebung und Löschung, auch die der Buchung selbst */
+const changes: ChangedEvent[] = [];
+
+function recordChange(id: string, deleted: boolean, at = new Date()): void {
+  const e = events.get(id);
+  changes.push({ id, deleted, bookingRef: e?.reference ?? changes.find((c) => c.id === id)?.bookingRef ?? null, start: e?.start ?? null, end: e?.end ?? null, updated: at });
+}
 
 function hash(s: string): number {
   let h = 2166136261;
@@ -127,6 +134,7 @@ export class MockEngine implements BookingEngine {
     failIfDown();
     const id = `mock-${ulid()}`;
     events.set(id, { reference: input.reference, title: input.title, description: input.description, start: input.start, end: input.end });
+    recordChange(id, false);
     return id;
   }
 
@@ -138,7 +146,18 @@ export class MockEngine implements BookingEngine {
 
   async deleteEvent(eventId: string): Promise<void> {
     failIfDown();
-    events.delete(eventId);
+    if (events.has(eventId)) {
+      recordChange(eventId, true);
+      events.delete(eventId);
+    }
+  }
+
+  async changedEvents(since: Date): Promise<ChangedEvent[]> {
+    failIfDown();
+    // je Eintrag nur der letzte Stand
+    const latest = new Map<string, ChangedEvent>();
+    for (const c of changes) if (c.updated >= since) latest.set(c.id, c);
+    return [...latest.values()];
   }
 
   async exportEvents(from: Date, to: Date): Promise<ExportedEvent[]> {
@@ -154,6 +173,7 @@ export class MockEngine implements BookingEngine {
     if (!e) throw new Error("Eintrag nicht gefunden");
     e.start = start;
     e.end = end;
+    recordChange(eventId, false);
   }
 
   async appendDescription(eventId: string, line: string): Promise<void> {
@@ -164,10 +184,34 @@ export class MockEngine implements BookingEngine {
   }
 }
 
-/** Nur für Tests: Speicher leeren und Zeitpunkt für Fenster prüfen. */
+/** Nur für Tests: Speicher leeren, Änderungen des Studios im Kalender nachstellen, Zeitpunkt für Fenster prüfen. */
 export const mockInternals = {
-  reset: () => events.clear(),
+  reset: () => {
+    events.clear();
+    changes.length = 0;
+  },
   events,
+  changes,
+  /** Das Studio löscht den Eintrag im Kalender. */
+  studioDelete: (id: string, at = new Date()) => {
+    recordChange(id, true, at);
+    events.delete(id);
+  },
+  /** Das Studio zieht den Eintrag im Kalender auf andere Zeiten. */
+  studioMove: (id: string, start: Date, end: Date, at = new Date()) => {
+    const e = events.get(id);
+    if (!e) throw new Error("Eintrag nicht gefunden");
+    e.start = start;
+    e.end = end;
+    recordChange(id, false, at);
+  },
+  /** Das Studio ändert nur Titel oder Beschreibung. */
+  studioRetitle: (id: string, title: string, at = new Date()) => {
+    const e = events.get(id);
+    if (!e) throw new Error("Eintrag nicht gefunden");
+    e.title = title;
+    recordChange(id, false, at);
+  },
   windowsFor,
   fromBerlinKey,
 };

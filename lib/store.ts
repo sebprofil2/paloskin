@@ -206,6 +206,11 @@ export class Store {
     return row ?? null;
   }
 
+  findByCalendarEventId(eventId: string): BookingRow | null {
+    const row = this.db.prepare("SELECT * FROM bookings WHERE calendar_event_id = ? AND deleted_at IS NULL LIMIT 1").get(eventId) as BookingRow | undefined;
+    return row ?? null;
+  }
+
   findByReference(reference: string): BookingRow | null {
     const row = this.db
       .prepare("SELECT * FROM bookings WHERE reference = ? AND deleted_at IS NULL ORDER BY created_at DESC LIMIT 1")
@@ -518,6 +523,56 @@ export class Store {
         /* schon beendet */
       }
       if (isUniqueViolation(e)) return { outcome: "conflict", booking: null };
+      throw e;
+    }
+  }
+
+  /**
+   * Zeiten aus dem Kalender übernehmen (Abgleich, lib/calendar-sync.ts). Was das Studio im Kalender macht, gilt immer:
+   * kein Raster, keine Fenster, kein Vorlauf; liegt eine Einheit schon bei einer anderen Buchung, bleibt sie dort (der
+   * Kalender selbst blockt die Zeit online über frei/belegt). „moved“: wie Verschieben (Bisher, Zusage und Mails zurück).
+   * „resized“: nur Ende und Dauer, sonst nichts. Beide schreiben das Ereignis rescheduled.
+   */
+  applyCalendarTimes(id: string, start: Date, end: Date, kind: "moved" | "resized", now = new Date()): { outcome: "applied" | "missing"; booking: BookingRow | null; overlap: boolean } {
+    const startMs = start.getTime();
+    const endMs = end.getTime();
+    if (!(endMs > startMs)) throw new Error("Ende liegt nicht nach dem Beginn");
+    const at = iso(now);
+    this.db.exec("BEGIN IMMEDIATE");
+    try {
+      const row = this.get(id);
+      if (!row || row.deleted_at || row.status === "cancelled") {
+        this.db.exec("COMMIT");
+        return { outcome: "missing", booking: null, overlap: false };
+      }
+      this.db.prepare("DELETE FROM slot_locks WHERE booking_id = ?").run(id);
+      const insertLock = this.db.prepare("INSERT OR IGNORE INTO slot_locks (slot_start, booking_id) VALUES (?, ?)");
+      const firstUnit = Math.floor(startMs / UNIT_MS) * UNIT_MINUTES;
+      const lastUnit = Math.ceil(endMs / UNIT_MS) * UNIT_MINUTES;
+      let overlap = false;
+      for (let u = firstUnit; u < lastUnit; u += UNIT_MINUTES) if (insertLock.run(u, id).changes === 0) overlap = true;
+      const minutes = Math.max(1, Math.round((endMs - startMs) / 60000));
+      if (kind === "moved") {
+        this.db
+          .prepare(
+            `UPDATE bookings SET previous_starts_at = starts_at, starts_at = ?, ends_at = ?, duration_minutes = ?, rescheduled_at = ?, attendance_confirmed_at = NULL,
+             mail_reminder_sent_at = NULL, mail_reminder_skipped = 0, mail_reminder_attempts = 0,
+             mail_confirmation_sent_at = NULL, mail_confirmation_attempts = 0, mail_confirmation_attempted_at = NULL, updated_at = ? WHERE id = ?`,
+          )
+          .run(iso(start), iso(end), minutes, at, at, id);
+      } else {
+        this.db.prepare("UPDATE bookings SET ends_at = ?, duration_minutes = ?, updated_at = ? WHERE id = ?").run(iso(end), minutes, at, id);
+      }
+      const updated = this.get(id)!;
+      this.appendEvent(updated, "rescheduled", at);
+      this.db.exec("COMMIT");
+      return { outcome: "applied", booking: updated, overlap };
+    } catch (e) {
+      try {
+        this.db.exec("ROLLBACK");
+      } catch {
+        /* schon beendet */
+      }
       throw e;
     }
   }

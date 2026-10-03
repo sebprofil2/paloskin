@@ -3,7 +3,7 @@ import { readEnv } from "../env";
 import { errorClass, logEvent } from "../log";
 import { bookingRange, computeSlots, isStartFree, type Interval } from "../slots";
 import { toBerlinIso } from "../time";
-import { SlotsUnavailableError, type BookingEngine, type CalendarEventInput, type ExportedEvent, type SlotsResult } from "./types";
+import { SlotsUnavailableError, type BookingEngine, type CalendarEventInput, type ChangedEvent, type ExportedEvent, type SlotsResult } from "./types";
 
 /*
  * Echter Motor: Google Calendar API über ein Dienstkonto. Alle Zugriffe nur hier, auf dem Server.
@@ -23,6 +23,7 @@ interface GEvent {
   summary?: string;
   description?: string;
   created?: string;
+  updated?: string;
   start?: { dateTime?: string; date?: string };
   end?: { dateTime?: string; date?: string };
   transparency?: string;
@@ -208,6 +209,34 @@ export class GoogleCalendarEngine implements BookingEngine {
     return events
       .filter((e) => e.start?.dateTime && e.end?.dateTime)
       .map((e) => ({ id: e.id, summary: e.summary ?? "", description: e.description ?? "", start: new Date(e.start!.dateTime!), end: new Date(e.end!.dateTime!) }));
+  }
+
+  /**
+   * Änderungen des Studios im Kalender „Palo Skin Termine“: events.list mit updatedMin und showDeleted, nur Einzeltermine.
+   * Gelöschte Einträge kommen mit status cancelled. Zeitfenster gibt es hier nicht; der Abgleich sortiert vergangene Termine selbst aus.
+   */
+  async changedEvents(since: Date): Promise<ChangedEvent[]> {
+    const items: GEvent[] = [];
+    let pageToken: string | undefined;
+    do {
+      const q = new URLSearchParams({ updatedMin: since.toISOString(), showDeleted: "true", singleEvents: "true", maxResults: "250" });
+      if (pageToken) q.set("pageToken", pageToken);
+      const page = await this.call<{ items?: GEvent[]; nextPageToken?: string }>("GET", this.bookingsPath(`?${q}`));
+      items.push(...(page.items ?? []));
+      pageToken = page.nextPageToken;
+    } while (pageToken);
+    const time = (v?: { dateTime?: string }) => {
+      const ms = v?.dateTime ? Date.parse(v.dateTime) : NaN;
+      return Number.isFinite(ms) ? new Date(ms) : null;
+    };
+    return items.map((e) => ({
+      id: e.id,
+      deleted: e.status === "cancelled",
+      bookingRef: e.extendedProperties?.private?.bookingRef ?? null,
+      start: time(e.start),
+      end: time(e.end),
+      updated: e.updated && Number.isFinite(Date.parse(e.updated)) ? new Date(e.updated) : since,
+    }));
   }
 
   async moveEvent(eventId: string, start: Date, end: Date): Promise<void> {

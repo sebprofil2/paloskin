@@ -45,6 +45,21 @@ export interface BookingEngine {
   appendDescription(eventId: string, line: string): Promise<void>;
   /** Einträge aus „Palo Skin Termine“ für den nächtlichen Export als Kalenderdatei. */
   exportEvents(from: Date, to: Date): Promise<ExportedEvent[]>;
+  /**
+   * Einträge aus „Palo Skin Termine“, die seit `since` geändert oder gelöscht wurden (Abgleich alle 5 Minuten, lib/calendar-sync.ts).
+   * Wirft, wenn der Kalender nicht lesbar ist; der Aufrufer ändert dann nichts und holt beim nächsten Lauf nach.
+   */
+  changedEvents(since: Date): Promise<ChangedEvent[]>;
+}
+
+/** Geänderter Eintrag im Kalender „Palo Skin Termine“; start und end fehlen bei ganztägigen oder unvollständigen Einträgen. */
+export interface ChangedEvent {
+  id: string;
+  deleted: boolean;
+  bookingRef: string | null;
+  start: Date | null;
+  end: Date | null;
+  updated: Date;
 }
 
 export interface ExportedEvent {

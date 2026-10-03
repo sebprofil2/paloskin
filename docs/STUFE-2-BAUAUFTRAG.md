@@ -191,3 +191,15 @@ Folgebesuche dauern so lang wie erste Besuche; Termine von 20 Minuten gibt es ni
 | Nur Lachs-DNA | 30 Minuten | 50 Minuten |
 | Botox und Lachs-DNA | 50 Minuten | 70 Minuten |
 | Kontrolltermin | 15 Minuten | nicht wählbar |
+
+## Kalender als Werkzeug des Studios (3. Oktober 2026, abends)
+
+Alle 5 Minuten gleicht `lib/calendar-sync.ts` Änderungen im Kalender „Palo Skin Termine“ mit den Buchungen ab (Google `events.list` mit `updatedMin` und `showDeleted`, Marke `calendar_sync_since` in `meta`, eine Minute Überlappung).
+
+- Eintrag gelöscht: Buchung abgesagt mit `cancel_reason studio_calendar`, Zeit frei, Erinnerung entfällt, Ereignis `cancelled`, keine Kundenmail, Studio-Mail „Im Kalender abgesagt: Mittwoch, 7.10., 07:30 Uhr“.
+- Beginn verschoben: Ereignis `rescheduled` (Status bleibt `confirmed`), Kunde bekommt Mail C „Verschoben“, Studio-Mail „Im Kalender verschoben“ mit Bisher und Neu, Zusage zurückgesetzt, Erinnerung nach den normalen Regeln. Der Kalender wird dabei nicht angefasst.
+- Nur Ende geändert: Buchung übernimmt Ende und Dauer, Belegung angepasst, keine Mail; Ereignis `rescheduled` mit unverändertem `starts_at` und neuem `ends_at`.
+- Was das Studio im Kalender macht, gilt immer: keine Fenster, kein Vorlauf, keine Nachtregel, kein Raster. Belegt das Studio eine Zeit, die online schon eine andere Buchung hält, bleibt deren Einheit bei ihr; online blockt der Kalender die Zeit ohnehin über frei/belegt.
+- Ignoriert: eigene Änderungen der Buchung (Anlegen, Verschieben über die Terminseite, Löschlauf um 03:30 Uhr), vergangene Termine, Einträge ohne Buchung, Änderungen nur an Titel oder Beschreibung. Erkennung über die Buchungsdaten selbst: stimmen die Zeiten schon oder ist die Buchung schon abgesagt, passiert nichts.
+- Kalender nicht lesbar: nichts ändert sich, die Marke bleibt stehen, der nächste Lauf holt nach. Protokoll nur mit Buchungsnummer, Zählern und Fehlerklasse.
+- Tests in `lib/__tests__/calendar-sync.test.ts`.
