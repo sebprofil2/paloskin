@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { normalizePhoneE164 } from "./phone";
 import { hasTreatment, ZONE_IDS, type Selection } from "./treatments";
 
 /* Nur erlaubte Behandlungskennungen und Werte kommen durch. */
@@ -36,7 +37,15 @@ export const slotsRequestSchema = z.object({
 export const customerSchema = z.object({
   vorname: z.string().trim().min(1).max(60),
   nachname: z.string().trim().min(1).max(60),
-  handy: z.string().trim().min(6).max(30),
+  /* Handynummer in E.164; jede übliche Schreibweise wird angenommen, offensichtlich falsche abgewiesen */
+  handy: z.string().trim().max(30).transform((v, ctx) => {
+    const n = normalizePhoneE164(v);
+    if (!n) {
+      ctx.addIssue({ code: "custom", message: "Handynummer ungültig" });
+      return z.NEVER;
+    }
+    return n;
+  }),
   email: z.email().max(120),
 }).strict();
 

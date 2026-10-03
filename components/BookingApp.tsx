@@ -793,7 +793,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
         {field("vorname", l.vorname, "text", { autoComplete: "given-name", maxLength: 60 })}
         {field("nachname", l.nachname, "text", { autoComplete: "family-name", maxLength: 60 })}
         {field("handy", l.handyWhy ? <>{l.handy} <em>{l.handyWhy}</em></> : l.handy, "tel", { autoComplete: "tel", inputMode: "tel", placeholder: "0151 …", maxLength: 30 }, phoneHint)}
-        {field("email", <>{l.email} <em>{l.emailWhy}</em></>, "email", { autoComplete: "email", maxLength: 120 })}
+        {field("email", l.emailWhy ? <>{l.email} <em>{l.emailWhy}</em></> : l.email, "email", { autoComplete: "email", maxLength: 120 })}
         <div className="hp" aria-hidden="true">
           <label htmlFor="website">Website</label>
           <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" defaultValue="" />

@@ -1,3 +1,4 @@
+import { normalizePhoneE164 } from "./phone";
 import type { Customer } from "./schema";
 import { lineItemsDe, totalPrice, hasTreatment, type Lang, type Selection } from "./treatments";
 
@@ -10,11 +11,7 @@ export const LANG_NAMES: Record<Lang, string> = {
 };
 
 export function normalizePhone(v: string): string {
-  let d = v.replace(/[^\d+]/g, "");
-  if (d.startsWith("00")) d = "+" + d.slice(2);
-  else if (d.startsWith("0")) d = "+49" + d.slice(1);
-  else if (d && !d.startsWith("+")) d = "+49" + d;
-  return d;
+  return normalizePhoneE164(v) ?? v;
 }
 
 export interface DescriptionInput {

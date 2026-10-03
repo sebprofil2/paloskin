@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
-import { normalizePhone, serviceCode } from "./booking-description";
+import { serviceCode } from "./booking-description";
+import { normalizePhoneE164 } from "./phone";
 import { isUniqueViolation, openDatabase } from "./db";
 import { readEnv } from "./env";
 import type { Customer } from "./schema";
@@ -264,7 +265,7 @@ export class Store {
           iso(i.consentAt),
           i.customer.vorname.trim(),
           i.customer.nachname.trim(),
-          normalizePhone(i.customer.handy),
+          normalizePhoneE164(i.customer.handy) ?? i.customer.handy,
           i.customer.email.trim().toLowerCase(),
           s.note ?? "",
           JSON.stringify(s),
