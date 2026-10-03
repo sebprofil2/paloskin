@@ -244,7 +244,10 @@ export interface ExtraTexts {
   personsQ: string;
   persons1: string;
   persons2: string;
+  /** kurze Fassung für die Übersicht in Schritt 3 */
+  personsSum: string;
   personsMore: string;
+  personsWa: string;
   secondPerson: string;
   /* freiwilliger Erinnerungshaken */
   reminderOpt: string;
@@ -265,7 +268,7 @@ const X: Record<Lang, ExtraTexts> = {
     refL: "Buchungsnummer", durL: "Dauer", minutes: (n) => `${n} Minuten`,
     home: "Zur Startseite", legalImprint: "Impressum", legalPrivacy: "Datenschutzerklärung",
     zoneNames: { zornesfalte: "Zornesfalte", stirn: "Stirn", kraehenfuesse: "Krähenfüße", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Mundwinkel", erdbeerkinn: "Erdbeerkinn", gummysmile: "Gummy Smile", oberlippe: "Oberlippenfältchen", nase: "Nasenverschmälerung" },
-    personsQ: "Kommen Sie allein oder zu zweit?", persons1: "Allein", persons2: "Zu zweit", personsMore: "Zu dritt oder mehr? Schreiben Sie uns kurz per WhatsApp, wir legen die Termine direkt hintereinander.", secondPerson: "Schön, wir planen mehr Zeit ein. Ihre Begleitung entscheidet entspannt vor Ort, was sie möchte.",
+    personsQ: "Für wen buchen Sie?", persons1: "Für mich", persons2: "Für uns zu zweit", personsSum: "Zu zweit", personsMore: "Sie möchten für drei oder mehr Personen buchen? Schreiben Sie uns gern per WhatsApp. Wir planen Ihre Termine direkt hintereinander.", personsWa: "Per WhatsApp schreiben", secondPerson: "Schön, wir planen mehr Zeit ein. Ihre Begleitung entscheidet entspannt vor Ort, was sie möchte.",
     reminderOpt: "Erinnern Sie mich gern per WhatsApp an den Termin.",
     zoneOther: "Sonstiges", zoneUnknown: "Weiß ich noch nicht", zonesOpen: "Zonen noch offen",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "Zone" : "Zonen"}`,
@@ -285,7 +288,7 @@ const X: Record<Lang, ExtraTexts> = {
     refL: "Booking number", durL: "Duration", minutes: (n) => `${n} minutes`,
     home: "Back to the start page", legalImprint: "Legal notice", legalPrivacy: "Privacy policy",
     zoneNames: { zornesfalte: "Frown lines", stirn: "Forehead", kraehenfuesse: "Crow’s feet", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Mouth corners", erdbeerkinn: "Dimpled chin", gummysmile: "Gummy Smile", oberlippe: "Upper lip lines", nase: "Nose slimming" },
-    personsQ: "Coming on your own or with someone?", persons1: "On my own", persons2: "With someone", personsMore: "Three or more? Send us a quick WhatsApp and we’ll book the appointments back to back.", secondPerson: "Lovely, we’ll plan extra time. Your companion can decide on site, at their own pace.",
+    personsQ: "Who are you booking for?", persons1: "For me", persons2: "For the two of us", personsSum: "With someone", personsMore: "Would you like to book for three or more people? Feel free to message us on WhatsApp. We will schedule your appointments back to back.", personsWa: "Message us on WhatsApp", secondPerson: "Lovely, we’ll plan extra time. Your companion can decide on site, at their own pace.",
     reminderOpt: "Please remind me of my appointment on WhatsApp.",
     zoneOther: "Other", zoneUnknown: "Not decided yet", zonesOpen: "Areas not decided yet",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "area" : "areas"}`,
@@ -305,7 +308,7 @@ const X: Record<Lang, ExtraTexts> = {
     refL: "Número de reserva", durL: "Duración", minutes: (n) => `${n} minutos`,
     home: "Volver a la página de inicio", legalImprint: "Aviso legal", legalPrivacy: "Política de privacidad",
     zoneNames: { zornesfalte: "Entrecejo", stirn: "Frente", kraehenfuesse: "Patas de gallo", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Comisuras de la boca", erdbeerkinn: "Mentón en piel de naranja", gummysmile: "Sonrisa gingival", oberlippe: "Arrugas del labio superior", nase: "Afinar la nariz" },
-    personsQ: "¿Viene por su cuenta o con alguien?", persons1: "Por mi cuenta", persons2: "Con alguien", personsMore: "¿Tres o más? Escríbanos por WhatsApp y reservamos las citas seguidas.", secondPerson: "Estupendo, reservamos más tiempo. Su acompañante decide con calma en el estudio.",
+    personsQ: "¿Para quién reserva?", persons1: "Para mí", persons2: "Para nosotros dos", personsSum: "Con alguien", personsMore: "¿Desea reservar para tres o más personas? Escríbanos con gusto por WhatsApp. Programamos sus citas una tras otra.", personsWa: "Escribir por WhatsApp", secondPerson: "Estupendo, reservamos más tiempo. Su acompañante decide con calma en el estudio.",
     reminderOpt: "Recuérdenme la cita por WhatsApp.",
     zoneOther: "Otra", zoneUnknown: "Aún por decidir", zonesOpen: "Zonas por decidir",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "zona" : "zonas"}`,
@@ -325,7 +328,7 @@ const X: Record<Lang, ExtraTexts> = {
     refL: "Numéro de réservation", durL: "Durée", minutes: (n) => `${n} minutes`,
     home: "Retour à la page d’accueil", legalImprint: "Mentions légales", legalPrivacy: "Politique de confidentialité",
     zoneNames: { zornesfalte: "Ride du lion", stirn: "Front", kraehenfuesse: "Pattes d’oie", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Coins de la bouche", erdbeerkinn: "Menton en peau d’orange", gummysmile: "Sourire gingival", oberlippe: "Ridules de la lèvre supérieure", nase: "Affinement du nez" },
-    personsQ: "Vous venez en solo ou à deux ?", persons1: "En solo", persons2: "À deux", personsMore: "À trois ou plus ? Écrivez-nous sur WhatsApp, nous enchaînons les rendez-vous.", secondPerson: "Avec plaisir, nous prévoyons plus de temps. La personne qui vous accompagne choisit tranquillement sur place.",
+    personsQ: "Pour qui réservez-vous ?", persons1: "Pour moi", persons2: "Pour nous deux", personsSum: "À deux", personsMore: "Vous souhaitez réserver pour trois personnes ou plus ? Écrivez-nous volontiers sur WhatsApp. Nous planifions vos rendez-vous les uns après les autres.", personsWa: "Écrire sur WhatsApp", secondPerson: "Avec plaisir, nous prévoyons plus de temps. La personne qui vous accompagne choisit tranquillement sur place.",
     reminderOpt: "Merci de me rappeler le rendez-vous par WhatsApp.",
     zoneOther: "Autre", zoneUnknown: "Pas encore décidé", zonesOpen: "Zones à définir",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "zone" : "zones"}`,
@@ -345,7 +348,7 @@ const X: Record<Lang, ExtraTexts> = {
     refL: "Número da reserva", durL: "Duração", minutes: (n) => `${n} minutos`,
     home: "Voltar à página inicial", legalImprint: "Informações legais", legalPrivacy: "Política de privacidade",
     zoneNames: { zornesfalte: "Entre as sobrancelhas", stirn: "Testa", kraehenfuesse: "Pés de galinha", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Cantos da boca", erdbeerkinn: "Queixo em casca de laranja", gummysmile: "Sorriso gengival", oberlippe: "Rugas do lábio superior", nase: "Afinamento do nariz" },
-    personsQ: "Você vem só ou em dupla?", persons1: "Só eu", persons2: "Em dupla", personsMore: "Três ou mais? Mande uma mensagem no WhatsApp e marcamos os horários em sequência.", secondPerson: "Que ótimo, reservamos mais tempo. Quem vem com você decide com calma no estúdio.",
+    personsQ: "Para quem você está agendando?", persons1: "Para mim", persons2: "Para nós dois", personsSum: "Em dupla", personsMore: "Quer agendar para três ou mais pessoas? Fale conosco pelo WhatsApp. Marcamos os seus horários em sequência.", personsWa: "Escrever pelo WhatsApp", secondPerson: "Que ótimo, reservamos mais tempo. Quem vem com você decide com calma no estúdio.",
     reminderOpt: "Quero receber um lembrete do horário pelo WhatsApp.",
     zoneOther: "Outra", zoneUnknown: "Ainda não decidi", zonesOpen: "Áreas a definir",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "área" : "áreas"}`,

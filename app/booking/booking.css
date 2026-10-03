@@ -43,6 +43,7 @@ h1,h2{font-weight:400;margin:0;text-wrap:balance}
 h2{font-size:26px;line-height:1.25;letter-spacing:.01em}
 .group-label{font-size:15px;font-weight:500;color:var(--ink-2);margin:10px 0 -6px}
 .hint{font-size:14px;letter-spacing:.02em;color:var(--ink-3);line-height:1.5}
+.walink{color:var(--ultramarin);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
 .err{font-size:14px;color:var(--error)}
 .missing{border-left:2px solid var(--error);padding:4px 0 4px 12px;color:var(--error);font-size:15px}
 

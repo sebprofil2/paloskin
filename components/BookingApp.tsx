@@ -539,7 +539,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
             <button type="button" className="segb" role="radio" aria-checked={s.persons === 1} onClick={() => setS((p) => ({ ...p, persons: 1 }))}>{l.persons1}</button>
             <button type="button" className="segb" role="radio" aria-checked={s.persons === 2} onClick={() => setS((p) => ({ ...p, persons: 2 }))}>{l.persons2}</button>
           </div>
-          <p className="hint" style={{ margin: 0 }}>{l.personsMore}</p>
+          <p className="hint" style={{ margin: 0 }}>{l.personsMore} <a className="walink" href={WA} target="_blank" rel="noopener">{l.personsWa}</a></p>
           {s.persons === 2 ? <p className="hint" style={{ margin: 0, color: "var(--ink)" }}>{l.secondPerson}</p> : null}
         </div>
         <div className="block" id="sec-visit">
@@ -695,7 +695,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   /* ---------- Schritt 3: Angaben mit kompakter Übersicht ---------- */
   const overviewItems = (): string[] => {
     const out: string[] = [];
-    if (s.persons === 2) out.push(l.persons2);
+    if (s.persons === 2) out.push(l.personsSum);
     const n = zoneCount({ zones: s.zoneIds, otherZone: s.otherOn ? s.otherText : null });
     const names = [...s.zoneIds.map((z) => l.zoneNames[z]), ...(s.otherOn ? [s.otherText.trim() ? `${l.zoneOther}: ${s.otherText.trim()}` : l.zoneOther] : [])];
     if (n > 0) out.push(`${l.botRow}${l.zoneCountLabel(n)}: ${names.join(", ")}`);

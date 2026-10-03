@@ -108,10 +108,12 @@ Stelle, dann aktueller Text. Zeilen mit „Altbestand“ sind im Code noch vorha
 102. **Fußzeile, Link Impressum** (legalImprint): Impressum
 103. **Fußzeile, Link Datenschutz** (legalPrivacy): Datenschutzerklärung
 104. **Schritt 1, Zonenkacheln** (zoneNames): Zornesfalte | Stirn | Krähenfüße | Brow Lift | Lip Flip | Bunny Lines | Mundwinkel | Erdbeerkinn | Gummy Smile | Oberlippenfältchen | Nasenverschmälerung
-105. **Schritt 1, Personen, Frage** (personsQ): Kommen Sie allein oder zu zweit?
-106. **Schritt 1, Personen, Kachel 1** (persons1): Allein
-107. **Schritt 1, Personen, Kachel 2** (persons2): Zu zweit
-108. **Schritt 1, Personen, Hinweis** (personsMore): Zu dritt oder mehr? Schreiben Sie uns kurz per WhatsApp, wir legen die Termine direkt hintereinander.
+105. **Schritt 1, Personen, Frage** (personsQ): Für wen buchen Sie?
+106. **Schritt 1, Personen, Kachel 1** (persons1): Für mich
+107. **Schritt 1, Personen, Kachel 2** (persons2): Für uns zu zweit
+108. **Schritt 1, Personen, Hinweis** (personsMore): Sie möchten für drei oder mehr Personen buchen? Schreiben Sie uns gern per WhatsApp. Wir planen Ihre Termine direkt hintereinander.
+108a. **Schritt 1, Personen, Link** (personsWa): Per WhatsApp schreiben (wa.me-Link auf +49 151 58872566)
+108b. **Schritt 3, Übersicht, zu zweit** (personsSum): Zu zweit
 109. **Schritt 1, Personen, Hinweis bei Zu zweit** (secondPerson): Schön, wir planen mehr Zeit ein. Ihre Begleitung entscheidet entspannt vor Ort, was sie möchte.
 110. **Schritt 3, freiwilliger Haken Erinnerung** (reminderOpt): Erinnern Sie mich gern per WhatsApp an den Termin.
 111. **Schritt 1, Zonen, Kachel Sonstiges** (zoneOther): Sonstiges
