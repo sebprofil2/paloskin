@@ -90,7 +90,7 @@ Stelle, dann aktueller Text. Zeilen mit „Altbestand“ sind im Code noch vorha
 84. **Fehlermeldung Uhrzeit** (eSlot): Kurz noch: Bitte eine Uhrzeit wählen.
 85. **Fehlermeldung Vorname** (eVorname): Kurz noch: Ihr Vorname fehlt.
 86. **Fehlermeldung Nachname** (eNachname): Kurz noch: Ihr Nachname fehlt.
-87. **Fehlermeldung Handynummer** (eHandy): Kurz noch: Die Handynummer scheint unvollständig.
+87. **Fehlermeldung Handynummer** (eHandy): Die Handynummer scheint nicht zu stimmen. Bitte prüfen Sie sie noch einmal.
 88. **Fehlermeldung E-Mail** (eEmail): Kurz noch: Die E-Mail-Adresse stimmt noch nicht ganz.
 89. **Fehlermeldung Einwilligung** (eConsent): Kurz noch: Ohne Ihr Einverständnis können wir den Termin leider nicht anlegen.
 90. **Testbalken oben** (testBanner): Testversion. Bitte nur erfundene Namen und keine echten Behandlungswünsche eintragen. Die Buchung landet wirklich im Kalender.

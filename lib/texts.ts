@@ -72,7 +72,7 @@ de:{
   checkupP:"Sie wurden zu einem kurzen Kontrolltermin eingeladen.",
   cancelShort:"Absagen bitte mindestens 48 Stunden vorher.",
   eVisit:"Kurz noch: Waren Sie schon einmal bei uns?", eTreat:"Kurz noch: Bitte eine Behandlung wählen oder „Ich lasse mich erst beraten“.", eSlot:"Kurz noch: Bitte eine Uhrzeit wählen.",
-  eVorname:"Kurz noch: Ihr Vorname fehlt.", eNachname:"Kurz noch: Ihr Nachname fehlt.", eHandy:"Kurz noch: Die Handynummer scheint nicht zu stimmen. Bitte prüfen Sie sie einmal.",
+  eVorname:"Kurz noch: Ihr Vorname fehlt.", eNachname:"Kurz noch: Ihr Nachname fehlt.", eHandy:"Die Handynummer scheint nicht zu stimmen. Bitte prüfen Sie sie noch einmal.",
   eEmail:"Kurz noch: Die E-Mail-Adresse stimmt noch nicht ganz.", eConsent:"Kurz noch: Ohne Ihr Einverständnis können wir den Termin leider nicht anlegen.",
   },
 en:{
@@ -105,7 +105,7 @@ en:{
   checkupP:"You have been invited to a short follow-up appointment.",
   cancelShort:"Please cancel at least 48 hours in advance.",
   eVisit:"Just one thing: Have you been with us before?", eTreat:"Just one thing: Please choose a treatment or “I’d like advice first”.", eSlot:"Just one thing: Please choose a time.",
-  eVorname:"Just one thing: Your first name is missing.", eNachname:"Just one thing: Your last name is missing.", eHandy:"One more thing: the mobile number doesn’t look right. Please check it once more.",
+  eVorname:"Just one thing: Your first name is missing.", eNachname:"Just one thing: Your last name is missing.", eHandy:"The mobile number does not seem to be right. Please check it once more.",
   eEmail:"Just one thing: The email address isn’t quite right yet.", eConsent:"Just one thing: Without your consent we unfortunately can’t create the appointment.",
   },
 es:{
@@ -138,7 +138,7 @@ es:{
   checkupP:"Le hemos invitado a una breve cita de revisión.",
   cancelShort:"Por favor, cancele con al menos 48 horas de antelación.",
   eVisit:"Un detalle: ¿Ya ha estado con nosotros?", eTreat:"Un detalle: Elija un tratamiento o «Prefiero que me asesoren primero».", eSlot:"Un detalle: Elija una hora.",
-  eVorname:"Un detalle: Falta su nombre.", eNachname:"Un detalle: Faltan sus apellidos.", eHandy:"Un momento: el número de móvil no parece correcto. Por favor, revíselo.",
+  eVorname:"Un detalle: Falta su nombre.", eNachname:"Un detalle: Faltan sus apellidos.", eHandy:"El número de móvil no parece correcto. Por favor, revíselo otra vez.",
   eEmail:"Un detalle: El correo electrónico aún no es correcto.", eConsent:"Un detalle: Sin su consentimiento no podemos registrar la cita.",
   },
 fr:{
@@ -171,7 +171,7 @@ fr:{
   checkupP:"Vous avez été invité(e) à un court rendez-vous de contrôle.",
   cancelShort:"Merci d’annuler au moins 48 heures à l’avance.",
   eVisit:"Juste une chose : Êtes-vous déjà venu chez nous ?", eTreat:"Juste une chose : Choisissez un soin ou « J’aimerais d’abord un conseil ».", eSlot:"Juste une chose : Choisissez une heure.",
-  eVorname:"Juste une chose : Votre prénom manque.", eNachname:"Juste une chose : Votre nom manque.", eHandy:"Petite vérification : le numéro de portable ne semble pas correct. Merci de le vérifier.",
+  eVorname:"Juste une chose : Votre prénom manque.", eNachname:"Juste une chose : Votre nom manque.", eHandy:"Le numéro de portable ne semble pas correct. Merci de le vérifier encore une fois.",
   eEmail:"Juste une chose : L’adresse e-mail n’est pas encore tout à fait correcte.", eConsent:"Juste une chose : Sans votre accord, nous ne pouvons malheureusement pas enregistrer le rendez-vous.",
   },
 pt:{
@@ -204,7 +204,7 @@ pt:{
   checkupP:"Você foi convidado(a) para uma breve consulta de revisão.",
   cancelShort:"Por favor, cancele com pelo menos 48 horas de antecedência.",
   eVisit:"Só mais uma coisa: Você já esteve com a gente?", eTreat:"Só mais uma coisa: Escolha um tratamento ou “Quero orientação primeiro”.", eSlot:"Só mais uma coisa: Escolha um horário.",
-  eVorname:"Só mais uma coisa: Falta seu nome.", eNachname:"Só mais uma coisa: Falta seu sobrenome.", eHandy:"Só um detalhe: o número de celular não parece correto. Por favor, confira.",
+  eVorname:"Só mais uma coisa: Falta seu nome.", eNachname:"Só mais uma coisa: Falta seu sobrenome.", eHandy:"O número de celular não parece correto. Por favor, confira mais uma vez.",
   eEmail:"Só mais uma coisa: O e-mail ainda não está certinho.", eConsent:"Só mais uma coisa: Sem a sua autorização não conseguimos registrar o horário.",
   }
 };
