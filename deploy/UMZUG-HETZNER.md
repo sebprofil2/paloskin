@@ -392,3 +392,9 @@ cd /opt/paloskin && docker compose -f deploy/docker-compose.yml --profile test s
 
 - Danach Zahlen prüfen (Buchungen, letzte Ereignisnummer) mit dem Befehl aus Abschnitt 16; sie müssen dem Stand der Sicherung entsprechen. Die Datei `-wal` muss vor dem Start gelöscht sein, sonst mischt SQLite alte Schreibvorgänge hinein.
 - **Hetzner-Server-Backup** enthält `/var/backups/paloskin` und `/var/lib/paloskin`; eine Wiederherstellung des ganzen Servers ist in Abschnitt 8 beschrieben.
+
+## 20. Öffentlich schalten (3. Oktober 2026)
+
+- In `/etc/paloskin/paloskin.env`: `TEST_MODE=false` (Buchung ohne Code, kein Testbalken), `OWNER_MAIL=sebastian@paloskin.de` (Handliste 18:00 Uhr), dann `docker compose -f deploy/docker-compose.yml up -d app`. Die Testinstanz bleibt über Compose im Testbetrieb.
+- Wieder in den Testbetrieb: `TEST_MODE=true`, neuen Testcode wie in Abschnitt 6 erzeugen, Container neu starten.
+- Zugriffsprotokolle von Caddy werden nach 14 Tagen gelöscht (Caddyfile `roll_keep_for`); nach Änderung Caddy neu erstellen.

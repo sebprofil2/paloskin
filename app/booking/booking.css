@@ -54,7 +54,7 @@ h2{font-size:26px;line-height:1.25;letter-spacing:.01em}
 .tile:hover{box-shadow:inset 0 0 0 1px var(--ink)}
 .tile .t{font-weight:500;font-size:17px;line-height:1.3}
 .tile .d{grid-column:1;color:var(--ink-2);font-size:14px;line-height:1.4}
-.tile .p{grid-row:1;grid-column:2;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tile .p{grid-row:1;grid-column:2;font-weight:500;white-space:nowrap}
 .tile .p small{font-weight:400;color:var(--ink-3);font-size:13px}
 .tile[aria-pressed="true"]{background:var(--white);box-shadow:inset 0 0 0 2px var(--ultramarin)}
 .tile[aria-pressed="true"]::after{content:"";position:absolute;top:0;right:0;width:10px;height:10px;background:var(--ultramarin)}
@@ -67,7 +67,7 @@ h2{font-size:26px;line-height:1.25;letter-spacing:.01em}
 .addon[aria-disabled="true"] .chips{opacity:.45}
 .addon .top{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
 .addon .top strong{font-weight:500;font-size:17px}
-.addon .top span{font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.addon .top span{font-weight:500;white-space:nowrap}
 .addon .top small{font-weight:400;color:var(--ink-3);font-size:13px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{border:0;box-shadow:inset 0 0 0 1px var(--line);background:var(--kalk-2);border-radius:0;padding:8px 12px;font-size:15px;cursor:pointer;line-height:1.2}
@@ -108,12 +108,12 @@ textarea{min-height:96px;resize:vertical}
 .wait{border-left:2px solid var(--line);padding:2px 0 2px 14px;color:var(--ink-3);font-size:15px}
 .fallback{box-shadow:inset 0 0 0 1px var(--ink);padding:18px}
 .fallback strong{font-weight:500}
-.fallback .num{font-size:22px;font-variant-numeric:tabular-nums;user-select:all;margin:8px 0 12px;letter-spacing:.02em}
+.fallback .num{font-size:22px;user-select:all;margin:8px 0 12px;letter-spacing:.02em}
 .btn-ghost{border:1px solid var(--ink);background:transparent;border-radius:0;padding:12px 18px;cursor:pointer;font-weight:500;font-size:16px}
 
 .summary{border-top:1px solid var(--line)}
 .summary .row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
-.summary .row span:last-child{font-variant-numeric:tabular-nums;text-align:right}
+.summary .row span:last-child{text-align:right}
 .summary .head{font-size:15px;font-weight:500;color:var(--ink)}
 .summary .total{font-weight:500}
 
@@ -123,7 +123,7 @@ textarea{min-height:96px;resize:vertical}
 .bar .prog span{display:block;height:100%;background:var(--ultramarin);transition:width .25s}
 .bar .sum{flex:1;min-width:0}
 .bar .sum .k{font-size:13px;color:var(--ink-2)}
-.bar .sum .v{font-size:17px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .sum .v{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .primary{background:var(--ultramarin);color:var(--white);border:0;border-radius:0;padding:16px 24px;font-weight:500;font-size:17px;cursor:pointer;white-space:nowrap}
 .bar .primary{flex:1}
 .primary:hover{background:var(--ultramarin-hover)}
@@ -201,7 +201,7 @@ h2{font-size:22px;line-height:1.25}
 .opt[aria-checked="true"]{box-shadow:inset 0 0 0 2px var(--ultramarin)}
 .opt .t{font-weight:500;font-size:16px;line-height:1.3;display:block}
 .opt .d{font-size:14px;color:var(--ink-2);line-height:1.35;display:block;margin-top:1px}
-.opt .p{font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:16px}
+.opt .p{font-weight:500;white-space:nowrap;font-size:16px}
 .opt .p small{font-weight:400;color:var(--ink-2);font-size:13px}
 .ind{width:18px;height:18px;flex:none;box-shadow:inset 0 0 0 1.5px var(--ink-3);position:relative}
 .ind.radio{border-radius:50%}
@@ -228,7 +228,7 @@ textarea{min-height:72px}
 .ov-row{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;font-size:15px}
 .ov-row+.ov-row{border-top:1px solid var(--line);padding-top:8px}
 .ov-lines{display:grid;gap:2px;flex:1}
-.ov-line{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.ov-line{display:flex;justify-content:space-between;gap:12px}
 .ov-line.total{font-weight:500;margin-top:4px}
 .chg{border:0;background:transparent;padding:0;color:var(--ultramarin);font-size:14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;flex:none}
 .days{margin-inline:-20px;padding-inline:20px}
@@ -252,7 +252,7 @@ textarea{min-height:72px}
 .opt{grid-template-columns:1fr 20px;align-items:start;padding:13px 14px}
 .opt .t{font-size:16px}
 .opt .d{font-size:14px;color:var(--ink-2);margin-top:2px}
-.opt .pm{display:block;font-size:14px;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums}
+.opt .pm{display:block;font-size:14px;color:var(--ink-3);margin-top:6px}
 .tick{width:20px;height:20px;border-radius:0;box-shadow:inset 0 0 0 1.5px var(--line);margin-top:1px}
 .opt:hover .tick{box-shadow:inset 0 0 0 1.5px var(--ink-3)}
 .opt[aria-checked="true"] .tick{background:var(--ultramarin);box-shadow:none}
@@ -284,14 +284,13 @@ a.btn-ghost{color:inherit;text-decoration:none;display:inline-block}
 .hp{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
 .confirm dl{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;margin:4px 0 0;font-size:17px}
 .confirm dt{opacity:.8}
-.confirm dd{margin:0;font-variant-numeric:tabular-nums}
-/* Adresse ohne Tabellenziffern: die Schrift würde sonst Punkt und Komma auf Ziffernbreite setzen (Abstände vor Satzzeichen) */
-.confirm dd.addr{font-variant-numeric:normal}
+.confirm dd{margin:0}
+/* Keine Tabellenziffern in Textzeilen: Schibsted Grotesk setzt mit tnum auch Punkt und Komma auf Ziffernbreite (Abstände vor Satzzeichen). Nur noch bei Tag und Uhrzeit. */
 .confirm dd a{color:inherit;text-decoration:underline;text-underline-offset:3px}
 .pending{box-shadow:inset 0 0 0 1px var(--ink);padding:18px;display:grid;gap:8px}
 .pending strong{font-weight:500;font-size:18px}
 .pending a{color:inherit;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ultramarin)}
-.note a.num{font-variant-numeric:tabular-nums}
+.note a.num{font-variant-numeric:normal}
 
 /* ---------- Zonenauswahl: alle Zonen gleichwertig, Summe darunter (1. Oktober 2026) ---------- */
 .zones{display:flex;flex-wrap:wrap;gap:8px}
@@ -300,7 +299,7 @@ a.btn-ghost{color:inherit;text-decoration:none;display:inline-block}
 .zones input[type=text]{background:var(--white);font-size:16px;flex-basis:100%}
 .zsum{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:16px;padding:10px 12px;background:var(--kalk-2)}
 .zsum b{font-weight:500}
-.zsum .zp{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:500}
+.zsum .zp{white-space:nowrap;font-weight:500}
 .zsum small{display:block;font-weight:400;color:var(--ink-3);font-size:13px;line-height:1.4;margin-top:2px}
 .check a{color:inherit;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ultramarin)}
 

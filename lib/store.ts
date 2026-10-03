@@ -556,6 +556,16 @@ export class Store {
     return r.n;
   }
 
+  /** Termine mit WhatsApp-Haken im Zeitraum, nicht abgesagt (Handliste). */
+  remindersBetween(from: Date, to: Date): BookingRow[] {
+    return this.db
+      .prepare(
+        `SELECT * FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND reminder_whatsapp = 1
+         AND starts_at >= ? AND starts_at < ? ORDER BY starts_at`,
+      )
+      .all(iso(from), iso(to)) as unknown as BookingRow[];
+  }
+
   getMeta(key: string): string | null {
     const r = this.db.prepare("SELECT value FROM meta WHERE key = ?").get(key) as { value: string } | undefined;
     return r?.value ?? null;

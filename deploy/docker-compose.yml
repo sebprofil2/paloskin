@@ -76,6 +76,8 @@ services:
       # Die Testinstanz sendet und bucht verbindlich, unabhängig vom Stand auf www (überschreibbar in deploy/.env)
       MAIL_MODE: ${PALOSKIN_TEST_MAIL_MODE:-relay}
       BOOKING_BINDING: ${PALOSKIN_TEST_BINDING:-true}
+      # Die Testinstanz bleibt im Testbetrieb (Testcode, Testbalken, test: true), auch wenn www öffentlich ist
+      TEST_MODE: ${PALOSKIN_TEST_MODE:-true}
     secrets:
       - google_service_account
     expose:

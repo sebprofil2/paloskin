@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { readEnv } from "@/lib/env";
 import "../booking.css";
 
@@ -14,6 +15,8 @@ export default async function ZugangPage({ searchParams }: { searchParams: Promi
   const lang = (one(sp.lang) ?? "").replace(/[^a-z]/g, "").slice(0, 2);
   const fehler = one(sp.fehler) === "1";
   const testMode = readEnv().testMode;
+  // Ohne Testbetrieb gibt es keinen Zugangsweg mehr: direkt zur Buchung
+  if (!testMode) redirect(`/booking${lang ? `?lang=${lang}` : ""}`);
   return (
     <div className="shell">
       <main className="app" id="app">

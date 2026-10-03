@@ -31,6 +31,8 @@
 		output file /var/log/caddy/paloskin.log {
 			roll_size 10mb
 			roll_keep 5
+			# Zugriffsprotokolle mit IP-Adresse höchstens 14 Tage (Datenschutzerklärung Ziffer 2)
+			roll_keep_for 336h
 		}
 		format json
 	}
@@ -71,6 +73,7 @@ https://10.0.0.2:8443, https://buchung.intern:8443 {
 		output file /var/log/caddy/intern.log {
 			roll_size 10mb
 			roll_keep 5
+			roll_keep_for 336h
 		}
 		format json
 	}

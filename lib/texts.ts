@@ -36,7 +36,7 @@ export interface DraftTexts {
   noteL: string; optional: string; notePh: string; priceHint: string;
   slotQ: string; slotQCheckup: string; downT: string; downP: string; copy: string; copied: string; marked: string; nextFree: string; orDay: string; dayAria: string; closed: string; closedAria: string; holiday: string; fullT: string; fullP: string;
   at: Fn1;
-  dataH: string; vorname: string; nachname: string; handy: string; handyWhy: string; email: string; phoneReturn: string;
+  dataH: string; vorname: string; nachname: string; handy: string; handyWhy: string; emailWhy: string; email: string; phoneReturn: string;
   refQ: string; refPh: string; consent: string; cancelT: string; cancelP: string; sumHead: string; beratungRow: string; botRow: string; boostRow: string; doneH: string; gcal: string; ocal: string; ical: string; addrL: string; book: string; checkupP: string; cancelShort: string;
   eVisit: string; eTreat: string; eSlot: string; eVorname: string; eNachname: string; eHandy: string; eEmail: string; eConsent: string;
   }
@@ -44,9 +44,9 @@ export interface DraftTexts {
 const T: Record<Lang, DraftTexts> = {
 de:{
   say:"Wir behandeln Sie gerne in Ihrer Sprache",
-  spec:"Spezialisiert auf Faltenbehandlung",
+  spec:"Spezialisiert auf Faltenbehandlungen",
   otherPh:"Welche Zone?",
-  achsel:"Übermäßiges Schwitzen", achselD:"Hyperhidrose",
+  achsel:"Übermäßiges Schwitzen", achselD:"Achseln (Hyperhidrose)",
   interestL:"Ich interessiere mich für:", noCommitTag:"Unverbindliche Vorauswahl", noCommit:"Gerne auch mehreres. Was wir machen, besprechen wir gemeinsam vor Ort.", yesBeen:"Ja", noFirst:"Nein, mein erster Besuch",
   stepTreat:"Behandlung", stepSlot:"Termin", stepData:"Angaben", consultPrice:"", noteAdd:"Notiz hinzufügen",
   next1:"Weiter: Wann passt es Ihnen?", next2:"Weiter: Fast geschafft", back:"Zurück", change:"Ändern", refThanks:"Danke!", refSend:"Senden",
@@ -63,7 +63,7 @@ de:{
   nextFree:"Nächster freier Termin", orDay:"Oder selbst einen Tag wählen", dayAria:"Tag wählen", closed:"An diesem Tag sind wir nicht im Studio.", closedAria:"geschlossen",
   holiday:"Tag der Deutschen Einheit", fullT:"Dieser Tag ist schon ausgebucht.", fullP:"Schauen Sie gern an einem anderen Tag.",
   at:t=>t+" Uhr",
-  dataH:"Wie erreichen wir Sie?", vorname:"Vorname", nachname:"Nachname", handy:"Handynummer", handyWhy:"(für die Terminbestätigung per WhatsApp)", email:"E-Mail-Adresse",
+  dataH:"Wie erreichen wir Sie?", vorname:"Vorname", nachname:"Nachname", handy:"Handynummer", handyWhy:"", email:"E-Mail-Adresse", emailWhy:"(dorthin kommt Ihre Bestätigung mit Kalendereintrag)",
   phoneReturn:"Am besten dieselbe Nummer wie beim letzten Mal, dann erkennen wir Sie gleich wieder.",
   refQ:"Hat Ihnen jemand Palo Skin empfohlen?", refPh:"Name oder Empfehlungscode",
   consent:"Ich bin einverstanden, dass Palo Skin meine Angaben für meinen Termin verarbeitet. Mehr in der Datenschutzerklärung.", cancelT:"Etwas kommt dazwischen?", cancelP:"Sagen Sie uns bitte mindestens 48 Stunden vorher Bescheid, dann freut sich jemand anderes über den Termin.",
@@ -77,9 +77,9 @@ de:{
   },
 en:{
   say:"We are happy to treat you in your language",
-  spec:"Specialised in wrinkle treatment",
+  spec:"Specialised in wrinkle treatments",
   otherPh:"Which area?",
-  achsel:"Excessive sweating", achselD:"Hyperhidrosis",
+  achsel:"Excessive sweating", achselD:"Underarms (hyperhidrosis)",
   interestL:"I am interested in:", noCommitTag:"Non-binding preselection", noCommit:"Several are fine. We decide together at your appointment what we do.", yesBeen:"Yes", noFirst:"No, my first visit",
   stepTreat:"Treatment", stepSlot:"Time", stepData:"Details", consultPrice:"Price to follow", noteAdd:"Add a note",
   next1:"Next: When suits you?", next2:"Next: Almost done", back:"Back", change:"Change", refThanks:"Thank you!", refSend:"Send",
@@ -96,7 +96,7 @@ en:{
   nextFree:"Next available appointment", orDay:"Or choose a day yourself", dayAria:"Choose a day", closed:"We’re not in the studio on this day.", closedAria:"closed",
   holiday:"German Unity Day", fullT:"This day is fully booked.", fullP:"Have a look at another day.",
   at:t=>t,
-  dataH:"How can we reach you?", vorname:"First name", nachname:"Last name", handy:"Mobile number", handyWhy:"(for your appointment confirmation on WhatsApp)", email:"Email address",
+  dataH:"How can we reach you?", vorname:"First name", nachname:"Last name", handy:"Mobile number", handyWhy:"", email:"Email address", emailWhy:"(your confirmation with calendar entry will be sent there)",
   phoneReturn:"Ideally the same number as last time, so we recognise you straight away.",
   refQ:"Did someone recommend Palo Skin to you?", refPh:"Name or referral code",
   consent:"I agree that Palo Skin processes my details for my appointment. More in the privacy policy.", cancelT:"Something came up?", cancelP:"Please let us know at least 48 hours ahead, so someone else can enjoy the appointment.",
@@ -110,9 +110,9 @@ en:{
   },
 es:{
   say:"Le atendemos con gusto en su idioma",
-  spec:"Especializados en el tratamiento de arrugas",
+  spec:"Especializados en tratamientos de arrugas",
   otherPh:"¿Qué zona?",
-  achsel:"Sudoración excesiva", achselD:"Hiperhidrosis",
+  achsel:"Sudoración excesiva", achselD:"Axilas (hiperhidrosis)",
   interestL:"Me interesa:", noCommitTag:"Preselección sin compromiso", noCommit:"Puede elegir varias. Lo que hacemos lo decidimos juntos en la cita.", yesBeen:"Sí", noFirst:"No, es mi primera visita",
   stepTreat:"Tratamiento", stepSlot:"Cita", stepData:"Datos", consultPrice:"Precio por confirmar", noteAdd:"Añadir una nota",
   next1:"Siguiente: ¿Cuándo le viene bien?", next2:"Siguiente: casi listo", back:"Atrás", change:"Cambiar", refThanks:"¡Gracias!", refSend:"Enviar",
@@ -129,7 +129,7 @@ es:{
   nextFree:"Próxima cita disponible", orDay:"O elija usted un día", dayAria:"Elegir día", closed:"Este día no estamos en el estudio.", closedAria:"cerrado",
   holiday:"Día de la Unidad Alemana", fullT:"Este día ya está completo.", fullP:"Eche un vistazo a otro día.",
   at:t=>t+" h",
-  dataH:"¿Cómo podemos contactarle?", vorname:"Nombre", nachname:"Apellidos", handy:"Número de móvil", handyWhy:"(para confirmarle la cita por WhatsApp)", email:"Correo electrónico",
+  dataH:"¿Cómo podemos contactarle?", vorname:"Nombre", nachname:"Apellidos", handy:"Número de móvil", handyWhy:"", email:"Correo electrónico", emailWhy:"(allí le llega su confirmación con la entrada de calendario)",
   phoneReturn:"Mejor el mismo número que la última vez, así le reconocemos enseguida.",
   refQ:"¿Alguien le ha recomendado Palo Skin?", refPh:"Nombre o código de recomendación",
   consent:"Acepto que Palo Skin trate mis datos para mi cita. Más información en la política de privacidad.", cancelT:"¿Le ha surgido algo?", cancelP:"Avísenos al menos 48 horas antes, así otra persona podrá aprovechar la cita.",
@@ -143,9 +143,9 @@ es:{
   },
 fr:{
   say:"Nous vous recevons volontiers dans votre langue",
-  spec:"Spécialisés dans le traitement des rides",
+  spec:"Spécialisés dans les traitements des rides",
   otherPh:"Quelle zone ?",
-  achsel:"Transpiration excessive", achselD:"Hyperhidrose",
+  achsel:"Transpiration excessive", achselD:"Aisselles (hyperhidrose)",
   interestL:"Je m’intéresse à :", noCommitTag:"Présélection sans engagement", noCommit:"Plusieurs choix possibles. Nous décidons ensemble sur place de ce que nous faisons.", yesBeen:"Oui", noFirst:"Non, c’est ma première visite",
   stepTreat:"Soin", stepSlot:"Rendez-vous", stepData:"Coordonnées", consultPrice:"Prix à venir", noteAdd:"Ajouter une note",
   next1:"Suivant : quand vous convient-il ?", next2:"Suivant : presque terminé", back:"Retour", change:"Modifier", refThanks:"Merci !", refSend:"Envoyer",
@@ -162,7 +162,7 @@ fr:{
   nextFree:"Prochain rendez-vous disponible", orDay:"Ou choisissez vous-même un jour", dayAria:"Choisir un jour", closed:"Nous ne sommes pas au studio ce jour-là.", closedAria:"fermé",
   holiday:"Jour de l’Unité allemande", fullT:"Cette journée est déjà complète.", fullP:"Regardez volontiers un autre jour.",
   at:t=>t.replace(":"," h "),
-  dataH:"Comment pouvons-nous vous joindre ?", vorname:"Prénom", nachname:"Nom", handy:"Numéro de portable", handyWhy:"(pour la confirmation du rendez-vous par WhatsApp)", email:"Adresse e-mail",
+  dataH:"Comment pouvons-nous vous joindre ?", vorname:"Prénom", nachname:"Nom", handy:"Numéro de portable", handyWhy:"", email:"Adresse e-mail", emailWhy:"(vous y recevrez votre confirmation avec l’entrée d’agenda)",
   phoneReturn:"Idéalement le même numéro que la dernière fois, ainsi nous vous reconnaissons tout de suite.",
   refQ:"Quelqu’un vous a-t-il recommandé Palo Skin ?", refPh:"Nom ou code de parrainage",
   consent:"J’accepte que Palo Skin traite mes données pour mon rendez-vous. Plus d’informations dans la politique de confidentialité.", cancelT:"Un empêchement ?", cancelP:"Prévenez-nous au moins 48 heures à l’avance, ainsi quelqu’un d’autre pourra profiter du rendez-vous.",
@@ -176,9 +176,9 @@ fr:{
   },
 pt:{
   say:"Atendemos você com prazer no seu idioma",
-  spec:"Especializados no tratamento de rugas",
+  spec:"Especializados em tratamentos de rugas",
   otherPh:"Qual área?",
-  achsel:"Suor excessivo", achselD:"Hiperidrose",
+  achsel:"Suor excessivo", achselD:"Axilas (hiperidrose)",
   interestL:"Tenho interesse em:", noCommitTag:"Pré-seleção sem compromisso", noCommit:"Pode escolher mais de uma. Decidimos juntos na consulta o que vamos fazer.", yesBeen:"Sim", noFirst:"Não, é minha primeira vez",
   stepTreat:"Tratamento", stepSlot:"Horário", stepData:"Dados", consultPrice:"Preço a definir", noteAdd:"Adicionar observação",
   next1:"Próximo: quando fica bom para você?", next2:"Próximo: quase pronto", back:"Voltar", change:"Alterar", refThanks:"Obrigado!", refSend:"Enviar",
@@ -195,7 +195,7 @@ pt:{
   nextFree:"Próximo horário disponível", orDay:"Ou escolha você mesmo um dia", dayAria:"Escolher dia", closed:"Neste dia não estamos no estúdio.", closedAria:"fechado",
   holiday:"Dia da Unidade Alemã", fullT:"Este dia já está lotado.", fullP:"Dê uma olhada em outro dia.",
   at:t=>t,
-  dataH:"Como podemos falar com você?", vorname:"Nome", nachname:"Sobrenome", handy:"Celular", handyWhy:"(para a confirmação do horário pelo WhatsApp)", email:"E-mail",
+  dataH:"Como podemos falar com você?", vorname:"Nome", nachname:"Sobrenome", handy:"Celular", handyWhy:"", email:"E-mail", emailWhy:"(é para lá que vai sua confirmação com a entrada de calendário)",
   phoneReturn:"De preferência o mesmo número da última vez, assim reconhecemos você na hora.",
   refQ:"Alguém recomendou a Palo Skin para você?", refPh:"Nome ou código de indicação",
   consent:"Concordo que a Palo Skin trate meus dados para o meu horário. Mais detalhes na política de privacidade.", cancelT:"Surgiu um imprevisto?", cancelP:"Avise com pelo menos 48 horas de antecedência, assim outra pessoa aproveita o horário.",

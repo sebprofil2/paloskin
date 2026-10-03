@@ -30,6 +30,8 @@ export interface Env {
   publicBaseUrl: string;
   /** Signaturschlüssel der Terminlinks; leer heißt abgeleitet aus dem Cookie-Schlüssel */
   linkSecret: string;
+  /** Empfänger der täglichen Handliste für WhatsApp-Erinnerungen; leer heißt keine Liste */
+  ownerMail: string;
   /** Bearer-Token des Endpunkts für das Kundensystem (privates Netz); leer heißt Endpunkt aus */
   internToken: string;
   mail: {
@@ -118,6 +120,7 @@ export function readEnv(): Env {
     publicBaseUrl: ((process.env.PUBLIC_BASE_URL ?? "").trim() || "https://www.paloskin.de").replace(/\/+$/, ""),
     linkSecret: (process.env.LINK_SECRET ?? "").trim(),
     internToken: (process.env.INTERN_TOKEN ?? "").trim(),
+    ownerMail: (process.env.OWNER_MAIL ?? "").trim(),
     mail: {
       mode: mailMode(),
       host: (process.env.MAIL_RELAY_HOST ?? "").trim(),

@@ -134,3 +134,7 @@ Für später, nicht gebaut: Nach einer Buchung für 1 Person soll die Bestätigu
 
 - Täglicher Lauf in `lib/retention.ts` (90/120 Tage, Ereignis `deleted` nur mit Kennung, Kalenderexport nach `/var/lib/paloskin/export`), Sicherung per Cron `deploy/backup.sh` (03:45 Uhr, `/var/backups/paloskin`, 14 Tage), Heartbeat prüft das Alter der Sicherung. Wiederherstellung in Anleitung Abschnitt 19.
 - Stand nach dem Ausrollen am 3. Oktober 2026: www bucht verbindlich mit Bestätigungsmail (freigegebene Texte, fünf Sprachen), Endpunkt im privaten Netz zeigt auf die Produktivinstanz, Testinstanz weiter auf `stufe2` mit Umleitung der Mails.
+
+## Öffentlich seit 3. Oktober 2026
+
+- www läuft ohne Testcode (`TEST_MODE=false`), Mails und verbindliche Buchung an, Handliste der WhatsApp-Erinnerungen täglich 18:00 Uhr an `OWNER_MAIL`. Testinstanz neu.paloskin.de bleibt im Testbetrieb (Compose-Umgebung für app-test). Keine Tabellenziffern mehr in Textzeilen (Schriftmacke).

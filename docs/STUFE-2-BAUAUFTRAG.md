@@ -144,3 +144,12 @@ Kurzfassung der „Entscheidungen Schnittstelle Buchung und Kundensystem, Antwor
 - Rückweg: `reason` sind die festen Bezeichner `studio_confirmed` und `studio_cancelled`, gespeichert als `cancel_reason` ohne Präfix.
 - Kopierweg des Wurzelzertifikats in das Home-Verzeichnis des Nutzers auf paloskin-2, Hosts-Eintrag optional.
 - Maßstab: fünf bis zehn Buchungen am Tag, keine weitere Arbeit für Gleichzeitigkeit oder Hochlast.
+
+### Öffentlich schalten und Handliste (3. Oktober 2026, Gesamtauftrag)
+
+- Texte: „Spezialisiert auf Faltenbehandlungen“, Kachel „Übermäßiges Schwitzen“ mit Unterzeile „Achseln (Hyperhidrose)“, Feld „Handynummer“ ohne Zusatz, E-Mail-Feld mit „(dorthin kommt Ihre Bestätigung mit Kalendereintrag)“, in fünf Sprachen.
+- Schriftmacke behoben: Ursache war `font-variant-numeric: tabular-nums`; die Schrift Schibsted Grotesk setzt mit dem Merkmal tnum auch Punkt und Komma auf Ziffernbreite („1 . 000 €*“, „Botox : 3 Zonen“, „Dr . Vogel ,“). Tabellenziffern jetzt nur noch bei Tag und Uhrzeit (reine Ziffern).
+- Öffentlich: `TEST_MODE=false` auf www; `/booking` ohne Code, `/booking/zugang` leitet auf `/booking`, Testbalken weg, Buchungen ohne `test`-Kennzeichen und ohne „TEST“ im Kalender. Die Testinstanz bleibt im Testbetrieb (Compose `TEST_MODE` für app-test).
+- Handliste für WhatsApp-Erinnerungen bis zum Kundensystem: Kalendereintrag mit „WhatsApp-Erinnerung: ja, <Nummer>“ nur bei Haken, sonst keine Nummer im Kalender. Täglich ab 18:00 Uhr Berliner Zeit Mail an `OWNER_MAIL` mit den Terminen des nächsten Tages (Vorname, Nachname, Uhrzeit, wa.me-Link), Betreff „Morgen erinnern: N Termine“, keine Mail ohne Termine, Protokoll nur mit Anzahl (`lib/reminder-list.ts`).
+- Caddy-Zugriffsprotokolle (mit IP-Adresse) höchstens 14 Tage (`roll_keep_for 336h`); die Protokolle der Anwendung enthalten keine personenbezogenen Daten (Feldliste in `lib/log.ts`).
+- Offen: neue Datenschutzerklärung (Text aus dem Cowork-Projekt liegt nicht vor).

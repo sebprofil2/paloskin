@@ -29,9 +29,8 @@ export interface DescriptionInput {
 }
 
 /*
- * Beschreibung des Kalendereintrags in Stufe 1. Enthält Kontaktdaten und Behandlungswünsche,
- * vertretbar nur, weil im Test ausschließlich erfundene Daten verwendet werden.
- * In Stufe 2 bleiben hier nur Buchungsnummer, Vorname und Dauer.
+ * Beschreibung des Kalendereintrags: Buchungsnummer, Besuch, Behandlungswünsche, Dauer, E-Mail-Adresse, Sprache,
+ * Einwilligung; die Handynummer nur bei gewünschter WhatsApp-Erinnerung (Handliste bis zum Kundensystem). Nie die Notiz.
  */
 export function buildDescription(i: DescriptionInput): string {
   const s = i.selection;
@@ -47,11 +46,11 @@ export function buildDescription(i: DescriptionInput): string {
     if (hasTreatment(s) && totalPrice(s) > 0) rows.push(`Summe voraussichtlich: ${totalPrice(s)} Euro brutto`);
   }
   rows.push(`Dauer: ${i.durationMinutes} Minuten`);
-  rows.push(`Handynummer: ${normalizePhone(i.customer.handy)}`);
+  // Handliste für die WhatsApp-Erinnerung: die Nummer steht nur im Kalender, wenn der Kunde die Erinnerung möchte
+  if (i.reminder) rows.push(`WhatsApp-Erinnerung: ja, ${normalizePhone(i.customer.handy)}`);
   rows.push(`E-Mail-Adresse: ${i.customer.email.trim()}`);
   rows.push(`Sprache: ${LANG_NAMES[i.lang]}`);
   rows.push(`Einwilligung: ${formatBerlinDe(i.consentAt)} (Berliner Zeit)`);
-  rows.push(`Erinnerung per WhatsApp: ${i.reminder ? "ja" : "nein"}`);
   return rows.join("\n");
 }
 
