@@ -398,3 +398,7 @@ cd /opt/paloskin && docker compose -f deploy/docker-compose.yml --profile test s
 - In `/etc/paloskin/paloskin.env`: `TEST_MODE=false` (Buchung ohne Code, kein Testbalken), `OWNER_MAIL=sebastian@paloskin.de` (Handliste 18:00 Uhr), dann `docker compose -f deploy/docker-compose.yml up -d app`. Die Testinstanz bleibt über Compose im Testbetrieb.
 - Wieder in den Testbetrieb: `TEST_MODE=true`, neuen Testcode wie in Abschnitt 6 erzeugen, Container neu starten.
 - Zugriffsprotokolle von Caddy werden nach 14 Tagen gelöscht (Caddyfile `roll_keep_for`); nach Änderung Caddy neu erstellen.
+
+## 21. Protokolle höchstens 14 Tage (Datenschutzerklärung Ziffer 2, 3. Oktober 2026)
+
+- Caddy-Zugriffsprotokolle: `roll_keep_for 336h` im Caddyfile. Journal: `/etc/systemd/journald.conf.d/paloskin-14-tage.conf` mit `MaxRetentionSec=14day`. Syslog (`auth.log`, `ufw.log`, `kern.log`) und fail2ban: logrotate täglich, 14 Dateien (`/etc/logrotate.d/rsyslog`, `/etc/logrotate.d/fail2ban`). Die Protokolle der Anwendung (Docker) enthalten keine personenbezogenen Daten.
