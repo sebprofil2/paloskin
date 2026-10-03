@@ -72,7 +72,7 @@ Felder von `booking` (alle Zeiten UTC mit `Z`):
 | `zones` | Liste | gemeinsame Zonencodes, Tabelle in Abschnitt 8 |
 | `other_zone` | Text oder null | frei eingetragene Zone des Kunden |
 | `zones_unknown` | bool | „Ich weiß es noch nicht“ |
-| `status` | `requested`, `confirmed`, `cancelled`, `rescheduled`, `no_show`, `completed` | Buchungsstatus |
+| `status` | `requested`, `confirmed`, `cancelled`, `rescheduled`, `no_show`, `completed` | Buchungsstatus; beim Verschieben bleibt er unverändert, `rescheduled` als Status wird derzeit nicht gesetzt |
 | `channel` | `web` | Kanal |
 | `language` | `de`, `en`, `es`, `fr`, `pt` | Sprache des Kunden |
 | `device` | `mobile`, `desktop` | Gerät bei der Buchung |
@@ -84,7 +84,7 @@ Felder von `booking` (alle Zeiten UTC mit `Z`):
 | `test` | bool | Testbuchung (Testbetrieb der Seite); im Kundensystem gesondert behandeln |
 | `calendar_event_id`, `calendar_state` | Text, `pending`/`written`/`failed` | Kalendereintrag des Arztes |
 | `attendance_confirmed_at` | Zeit oder null | Zusage des Kunden über den Mail-Link |
-| `cancelled_at`, `cancel_reason` | Zeit, Text | Absage; `customer_link` (Kunde über den Mail-Link) oder `studio_cancelled` (Kundensystem) |
+| `cancelled_at`, `cancel_reason` | Zeit, Text | Absage; `customer_link` (Kunde über den Link, mehr als 24 Stunden vorher), `customer_link_short` (Kunde, 24 bis 8 Stunden vorher), `studio_calendar` (Studio hat den Eintrag im Kalender gelöscht) oder `studio_cancelled` (Kundensystem) |
 | `updated_at` | Zeit | letzte Änderung |
 
 ## 7. Ereignistypen mit Beispielen
@@ -157,11 +157,15 @@ Wie `created`, mit `"type": "confirmed"`, `"status": "confirmed"` und neuem `upd
 { "seq": 4, "event_id": "01M3Z2C4D5E6F7G8H9J0K1M2N3", "type": "cancelled", "occurred_at": "2026-10-02T19:44:54.230Z", "booking": { "id": "01M3Z293MN1KK9BTG42T2BZBJG", "reference": "PS-FFL87G", "status": "cancelled", "cancelled_at": "2026-10-02T19:44:54.230Z", "cancel_reason": "customer_link", "calendar_event_id": "g9lgojcpqbtal5is5ljv4f0rrg", "updated_at": "2026-10-02T19:44:54.230Z", "...": "übrige Felder wie bei created" } }
 ```
 
-`cancel_reason` ist `customer_link` (Kunde) oder `studio_cancelled` (Kundensystem). `calendar_event_id` kann im Ereignis noch gesetzt sein; der Kalendereintrag wird direkt danach gelöscht.
+`cancel_reason` ist `customer_link` oder `customer_link_short` (Kunde), `studio_calendar` (Studio im Kalender) oder `studio_cancelled` (Kundensystem). `calendar_event_id` kann im Ereignis noch gesetzt sein; der Kalendereintrag wird direkt danach gelöscht.
 
-### rescheduled: reserviert
+### rescheduled: Termin verschoben (Kunde über die Terminseite oder Studio im Kalender)
 
-Verschieben gibt es in der Buchung noch nicht (Kunden sagen ab und buchen neu). Der Typ bleibt im Schema; erscheint er später, trägt `booking` die neuen Zeiten und `"status": "rescheduled"`.
+Ereignistyp `rescheduled`; der Status der Buchung bleibt unverändert (in der Regel `confirmed`). `booking` trägt die neuen Zeiten `starts_at`, `ends_at` und `duration_minutes`; die alte Zeit kennt das Kundensystem aus dem vorherigen Stand. Eine Zusage (`attendance_confirmed_at`) gilt nur für den Termin, für den sie gegeben wurde, und ist nach dem Verschieben wieder `null`. Ändert das Studio im Kalender nur das Ende des Termins (Dauer), kommt ebenfalls `rescheduled` mit unverändertem `starts_at` und neuem `ends_at`.
+
+```json
+{ "seq": 5, "event_id": "01M41JC7Q2W8R4T6Y0A1B2C3D4", "type": "rescheduled", "occurred_at": "2026-10-03T19:03:01.921Z", "booking": { "id": "01M3Z293MN1KK9BTG42T2BZBJG", "reference": "PS-FFL87G", "status": "confirmed", "starts_at": "2026-10-08T07:00:00.000Z", "ends_at": "2026-10-08T07:30:00.000Z", "duration_minutes": 30, "attendance_confirmed_at": null, "updated_at": "2026-10-03T19:03:01.921Z", "...": "übrige Felder wie bei created" } }
+```
 
 ### reminder_changed: reserviert
 
