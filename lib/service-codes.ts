@@ -19,7 +19,7 @@ export const SERVICE_CODE_TABLE: CodeEntry[] = [
   { internal: "NEF", shared: "nefertiti", nameDe: "Nefertiti-Lift" },
   { internal: "HYP", shared: "hyperhidrosis_axilla", nameDe: "Übermäßiges Schwitzen (Achseln)" },
   { internal: "LDN", shared: "polynucleotides_eye", nameDe: "Lachs-DNA, eine Behandlung" },
-  { internal: "LDN4", shared: "polynucleotides_eye_4", nameDe: "Lachs-DNA Viererpaket" },
+  { internal: "LDN4", shared: "polynucleotides_eye_4", nameDe: "Lachs-DNA, vier Behandlungen" },
   { internal: "KON", shared: "control", nameDe: "Kontrolltermin (appointment_type control)" },
 ];
 

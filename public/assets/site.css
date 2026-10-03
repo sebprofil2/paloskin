@@ -130,6 +130,14 @@ p{margin:0}
 .blue .btn.ghost:hover{background:rgba(255,255,255,.1)}
 .blue .btn.primary{background:var(--white);color:var(--ultramarin)}
 .blue .btn.primary:hover{background:var(--kalk)}
+.zlink{display:inline-block;margin-top:12px;font-size:15px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ultramarin)}
+.quote{margin:0;padding-left:18px;border-left:2px solid var(--ultramarin)}
+.quote p{font-size:19px;line-height:1.5;margin:0}
+.quote p+p{margin-top:12px}
+.quote .by{margin-top:14px;font-size:15px;color:rgba(244,241,234,.6)}
+.studio .where{margin-top:28px}
+.studio .where p{margin-top:8px;font-size:17px}
+.studio .where a{text-decoration:underline;text-underline-offset:3px}
 .studio dl{display:grid;gap:16px;margin:0}
 @media (min-width:720px){.studio dl{grid-template-columns:1fr 1fr}}
 .studio dt{font-size:13px;letter-spacing:.02em;color:var(--ink-3);margin-bottom:3px}
@@ -171,6 +179,8 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
 
 /* Kontrast auf farbigen Flächen */
 .blue .steps3 p,.blue p{color:rgba(255,255,255,.86)}
+.blue .steps3 div{border-top-color:rgba(255,255,255,.5)}
+.blue .steps3 div::before{color:rgba(255,255,255,.8)}
 .blue h2,.blue h3{color:var(--white)}
 .dark .cols .intro p,.dark p.muted{color:rgba(244,241,234,.78)}
 .dark h2{color:var(--kalk)}

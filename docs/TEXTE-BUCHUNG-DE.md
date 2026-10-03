@@ -32,14 +32,14 @@ Stelle, dann aktueller Text. Zeilen mit „Altbestand“ sind im Code noch vorha
 26. **Schritt 1, Karte Beratung, Untertitel** (unsureD): Wir nehmen uns Zeit und finden gemeinsam, was zu Ihnen passt.
 27. **Schritt 1, Aufklappbereich Botox, Titel** (botGroup): Botox-Behandlung
 28. **Schritt 1, Zwischentitel weitere Behandlungen** (moreGroup): Weitere Behandlungen
-29. **Schritt 1, Karte Kaumuskel, Titel** (kaumuskel): Kaumuskel
-30. **Schritt 1, Karte Kaumuskel, Untertitel** (kaumuskelD): Kaumuskelentspannung und Facial Slimming
+29. **Schritt 1, Karte Kaumuskel, Titel** (kaumuskel): Kaumuskel (Masseter)
+30. **Schritt 1, Karte Kaumuskel, Untertitel** (kaumuskelD): Facial Slimming, Entspannung bei Zähneknirschen
 31. **Schritt 1, Karte Nefertiti-Lift, Titel** (nefertiti): Nefertiti-Lift
-32. **Schritt 1, Karte Nefertiti-Lift, Untertitel** (nefertitiD): Hals und Jawline, Entspannung
+32. **Schritt 1, Karte Nefertiti-Lift, Untertitel** (nefertitiD): Hals und Kieferkontur
 33. **Schritt 1, Skin Booster, Karte 1, Titel** (lachs): Lachs-DNA
 34. **Schritt 1, Skin Booster, Karte 1, Untertitel** (lachsD): Dunkle Augenringe, eine Behandlung
-35. **Schritt 1, Skin Booster, Karte 2, Titel** (lachsPack): Lachs-DNA Viererpaket
-36. **Schritt 1, Skin Booster, Karte 2, Untertitel** (lachsPackD): Dunkle Augenringe, vier Behandlungen
+35. **Schritt 1, Skin Booster, Karte 2, Titel** (lachsPack): Lachs-DNA, vier Behandlungen
+36. **Schritt 1, Skin Booster, Karte 2, Untertitel** (lachsPackD): Dunkle Augenringe, Augenpartie
 37. **Übersicht und Kalender, Zeile Lachs-DNA** (lachsRow): Lachs-DNA, eine Behandlung
 38. **Schritt 1, Notizfeld, Beschriftung (derzeit ausgeblendet)** (noteL): Notiz zur Behandlung
 39. **Schritt 1, Notizfeld, Zusatz (ausgeblendet)** (optional): (freiwillig)

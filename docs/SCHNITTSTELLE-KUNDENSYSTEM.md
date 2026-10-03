@@ -195,7 +195,7 @@ Behandlungen (`service_codes`):
 | NEF | `nefertiti` | Nefertiti-Lift |
 | HYP | `hyperhidrosis_axilla` | Übermäßiges Schwitzen (Achseln) |
 | LDN | `polynucleotides_eye` | Lachs-DNA, eine Behandlung |
-| LDN4 | `polynucleotides_eye_4` | Lachs-DNA Viererpaket |
+| LDN4 | `polynucleotides_eye_4` | Lachs-DNA, vier Behandlungen |
 | KON | `control` | Kontrolltermin, als `appointment_type` |
 
 Personenzahl (intern P2) ist das Feld `persons`, kein Code.

@@ -120,11 +120,11 @@ export function lineItemsDe(s: Selection): LineItem[] {
   const n = zoneCount(s);
   if (n > 0) out.push({ label: `Botox: ${n} ${n === 1 ? "Zone" : "Zonen"}: ${zoneListDe(s)}`, price: zonePrice(n) });
   else if (s.zonesUnknown) out.push({ label: "Botox: Zonen noch offen", price: 0 });
-  if (s.kaumuskel) out.push({ label: "Botox: Kaumuskel", price: PRICES.kaumuskel });
+  if (s.kaumuskel) out.push({ label: "Botox: Kaumuskel (Masseter)", price: PRICES.kaumuskel });
   if (s.nefertiti) out.push({ label: "Botox: Nefertiti-Lift", price: PRICES.nefertiti });
   if (s.achsel) out.push({ label: "Botox: Übermäßiges Schwitzen (Hyperhidrose)", price: PRICES.achsel });
   if (s.lachs === "single") out.push({ label: "Skin Booster: Lachs-DNA, eine Behandlung", price: PRICES.lachs });
-  if (s.lachs === "pack") out.push({ label: "Skin Booster: Lachs-DNA Viererpaket", price: PRICES.lachsPack });
+  if (s.lachs === "pack") out.push({ label: "Skin Booster: Lachs-DNA, vier Behandlungen", price: PRICES.lachsPack });
   return out;
 }
 
