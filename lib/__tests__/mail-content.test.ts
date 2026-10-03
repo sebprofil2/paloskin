@@ -135,10 +135,10 @@ describe("Bestätigungsmail nach Freigabe", () => {
   it("alle Sprachen: Betreff höchstens 40 Zeichen mit Datum und Uhrzeit vorn, Anrede, nichts Verbotenes", () => {
     const expected: Record<Lang, [RegExp, string, RegExp]> = {
       de: [/^Gebucht: Donnerstag, 8\.10\., 08:00 Uhr$/, "Hallo Verena,", /^Bis morgen um 08:00 Uhr!$/],
-      en: [/^Booked: Thu 8 Oct, 08:00$/, "Hello Verena,", /^See you tomorrow at 08:00!$/],
-      es: [/^Reservado: jue 8\/10, 08:00 h$/, "Hola Verena,", /^¡Hasta mañana a las 08:00 h!$/],
-      fr: [/^Réservé\u00A0: jeu\.? 8\/10, 08 h 00$/, "Bonjour Verena,", /^À demain à 08 h 00\u00A0!$/],
-      pt: [/^Marcado: qui\.? 8\/10, 08:00$/, "Olá Verena,", /^Até amanhã às 08:00!$/],
+      en: [/^Booked: Thursday, 8 October, 08:00$/, "Hello Verena,", /^See you tomorrow at 08:00!$/],
+      es: [/^Reservado: jueves, 8\/10, 08:00 h$/, "Hola Verena,", /^¡Hasta mañana a las 08:00 h!$/],
+      fr: [/^Réservé\u00A0: jeudi 8\/10, 08 h 00$/, "Bonjour Verena,", /^À demain à 08 h 00\u00A0!$/],
+      pt: [/^Marcado: quinta-feira, 8\/10, 08:00$/, "Olá Verena,", /^Até amanhã às 08:00!$/],
     };
     for (const lang of Object.keys(expected) as Lang[]) {
       const m = confirmationMail(row({ language: lang }));

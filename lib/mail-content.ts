@@ -21,7 +21,7 @@ export interface WhenLabels {
   dateYear: string;
   /** mitten im Satz: Spanisch, Französisch und Portugiesisch schreiben den Wochentag klein */
   dateIn: string;
-  /** kurz für den Betreff, zum Beispiel „Mittwoch, 7.10.“ oder „Wed 7 Oct“ */
+  /** kurz für den Betreff, zum Beispiel „Mittwoch, 7.10.“ oder „Wednesday, 7 October“ */
   short: string;
   /** in der Schreibweise der Sprache, zum Beispiel „08:00 Uhr“ */
   time: string;
@@ -32,8 +32,10 @@ export function whenLabels(start: Date, lang: Lang): WhenLabels {
   const raw = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(loc, { timeZone: TZ, ...o }).format(start);
   const date = raw({ weekday: "long", day: "numeric", month: "long" });
   const p = berlinParts(start);
+  // Wochentag ausgeschrieben, keine Abkürzungen: „Mittwoch, 7.10.“, „Wednesday, 7 October“, „miércoles, 7/10“, „mercredi 7/10“, „quarta-feira, 7/10“
+  const weekday = raw({ weekday: "long" });
   const short =
-    lang === "de" ? `${cap(raw({ weekday: "long" }))}, ${p.day}.${p.month}.` : lang === "en" ? `${raw({ weekday: "short" })} ${p.day} ${raw({ month: "short" })}` : `${raw({ weekday: "short" })} ${p.day}/${p.month}`;
+    lang === "de" ? `${cap(weekday)}, ${p.day}.${p.month}.` : lang === "en" ? `${weekday}, ${p.day} ${raw({ month: "long" })}` : lang === "fr" ? `${weekday} ${p.day}/${p.month}` : `${weekday}, ${p.day}/${p.month}`;
   return {
     date: cap(date),
     dateYear: cap(raw({ weekday: "long", day: "numeric", month: "long", year: "numeric" })),

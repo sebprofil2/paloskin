@@ -11,7 +11,8 @@ function whenLabels(d: Date, lang: Lang) {
   const loc = LANGS.find((x) => x.id === lang)?.loc ?? "de-DE";
   const raw = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(loc, { timeZone: "Europe/Berlin", ...o }).format(d);
   const date = raw({ weekday: "long", day: "numeric", month: "long" });
-  const short = lang === "de" ? `${cap(raw({ weekday: "long" }))}, 7.10.` : lang === "en" ? `${raw({ weekday: "short" })} 7 ${raw({ month: "short" })}` : `${raw({ weekday: "short" })} 7/10`;
+  const weekday = raw({ weekday: "long" });
+  const short = lang === "de" ? `${cap(weekday)}, 7.10.` : lang === "en" ? `${weekday}, 7 ${raw({ month: "long" })}` : lang === "fr" ? `${weekday} 7/10` : `${weekday}, 7/10`;
   return { date: cap(date), dateYear: cap(raw({ weekday: "long", day: "numeric", month: "long", year: "numeric" })), dateIn: date, short, time: TEXTS[lang].at("08:00") };
 }
 const out: string[] = [

@@ -98,7 +98,7 @@ Zeit für Sie: Ihr Termin beginnt pünktlich, ohne Wartezeit. Kommen Sie bitte z
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff (24 Zeichen): Booked: Wed 7 Oct, 08:00
+Betreff (35 Zeichen): Booked: Wednesday, 7 October, 08:00
 
 ```
 Hello Verena,
@@ -189,7 +189,7 @@ Time for you: Your appointment starts on time, with no waiting. Please arrive at
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff (28 Zeichen): Reservado: mié 7/10, 08:00 h
+Betreff (35 Zeichen): Reservado: miércoles, 7/10, 08:00 h
 
 ```
 Hola Verena,
@@ -280,7 +280,7 @@ Tiempo para usted: Su cita empieza puntual, sin espera. Venga, por favor, a la h
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff (28 Zeichen): Réservé : mer. 7/10, 08 h 00
+Betreff (32 Zeichen): Réservé : mercredi 7/10, 08 h 00
 
 ```
 Bonjour Verena,
@@ -371,7 +371,7 @@ Du temps pour vous: Votre rendez-vous commence à l’heure, sans attente. Merci
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff (25 Zeichen): Marcado: qua. 7/10, 08:00
+Betreff (34 Zeichen): Marcado: quarta-feira, 7/10, 08:00
 
 ```
 Olá Verena,
