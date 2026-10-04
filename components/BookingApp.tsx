@@ -340,11 +340,13 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   function validate(n: Step): string[] {
     const e: Partial<Record<string, ErrorKey>> = {};
     const f = s.f;
-    if (n === firstStep && !consult) e.consult = "eConsult";
+    // Reihenfolge wie auf der Seite: die erste Lücke wird angesteuert
     if (n === 1) {
       if (!visitChosen) e.visit = "eVisit";
+      if (!consult) e.consult = "eConsult";
       if (!treatmentChosen) e.treat = "eTreat";
     }
+    if (n === 2 && checkup && !consult) e.consult = "eConsult";
     if (n === 2 && !s.slot) e.slot = "eSlot";
     if (n === 3) {
       if (!f.vorname.trim()) e.vorname = "eVorname";
@@ -512,7 +514,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     </nav>
   );
 
-  /* ---------- Beratungssprache: erste Frage (Schritt 1, beim Kontrolltermin Schritt 2), Pflichtfeld ---------- */
+  /* ---------- Beratungssprache: Schritt 1 nach „Waren Sie schon einmal bei uns?“ (beim Kontrolltermin oben in Schritt 2), Pflichtfeld ---------- */
   const consultBlock = (
     <div className="block" id="sec-consult">
       <span className="lbl">{l.consultQ}</span>
@@ -535,7 +537,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     const zoneN = zoneCount({ zones: s.zoneIds, otherZone: s.otherOn ? s.otherText : null });
     return (
       <section className="sec" id="sec-treat">
-        {consultBlock}
+        {/* Reihenfolge (Dr. Vogel, 4. Oktober 2026): Für wen, schon einmal da, Beratungssprache, Behandlung */}
         <div className="block" id="sec-persons">
           <span className="lbl">{l.personsQ}</span>
           <div className="seg" role="radiogroup">
@@ -553,6 +555,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
             <button type="button" className="segb" role="radio" aria-checked={s.visit === "first"} onClick={() => setVisit("first")}>{l.noFirst}</button>
           </div>
         </div>
+        {consultBlock}
         <div className="block">
           <h2>{l.treatQ}</h2>
           <p className="nb">{l.noCommitTag}</p>
