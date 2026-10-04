@@ -97,11 +97,13 @@ export function readEnv(): Env {
   let bookings = (process.env.CALENDAR_BOOKINGS_ID ?? "").trim();
   if (bookings && !busy.includes(bookings)) busy.push(bookings);
   let openId = (process.env.CALENDAR_OPEN_ID ?? "").trim();
-  // Testinstanz: nur der Testkalender, für Fenster, Belegung und Einträge. Die Kalender der Produktion werden nie gelesen.
+  // Testinstanz: Belegung und alle Einträge nur im Testkalender. Öffnungsfenster aus TEST_OPEN_CALENDAR_ID (nur lesen,
+  // seit 4. Oktober 2026 der echte Kalender „Palo Skin offen“, damit neu dieselben Zeiten zeigt wie www); ohne Angabe wie
+  // früher aus dem Testkalender. CALENDAR_* der Produktion werden nie gelesen.
   if ((process.env.PALOSKIN_INSTANCE ?? "").trim() === "test") {
     const testCal = (process.env.TEST_CALENDAR_ID ?? "").trim();
     bookings = testCal;
-    openId = testCal;
+    openId = (process.env.TEST_OPEN_CALENDAR_ID ?? "").trim() || testCal;
     busy.length = 0;
     if (testCal) busy.push(testCal);
   }

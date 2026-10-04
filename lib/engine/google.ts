@@ -106,7 +106,8 @@ export class GoogleCalendarEngine implements BookingEngine {
   private async openWindows(from: Date, to: Date): Promise<Interval[]> {
     const g = readEnv().google;
     const events = await this.listEvents(g.calendarOpenId, from, to);
-    // Ein Kalender für alles (Testkalender): Fenster sind die als „verfügbar“ markierten Einträge ohne Buchung
+    // Ein Kalender für alles (Testkalender ohne TEST_OPEN_CALENDAR_ID): Fenster sind die als „verfügbar“ markierten Einträge ohne Buchung.
+    // Mit eigenem Fensterkalender zählen Einträge im Testkalender nie als Fenster.
     const shared = g.calendarOpenId === g.calendarBookingsId;
     const out: Interval[] = [];
     for (const e of events) {

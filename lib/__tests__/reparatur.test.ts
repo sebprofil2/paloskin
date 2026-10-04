@@ -206,6 +206,14 @@ describe("Reparaturauftrag 4. Oktober 2026: Ausfälle, Abbrüche, parallele Läu
       const env2 = readEnv();
       expect([env2.google.calendarBookingsId, env2.google.calendarOpenId, env2.google.calendarBusyIds]).toEqual(["test@group.calendar.google.com", "test@group.calendar.google.com", ["test@group.calendar.google.com"]]);
       expect(configProblems()).toEqual([]);
+      // Öffnungsfenster aus dem echten „Palo Skin offen“ (nur lesen); Belegung und Einträge bleiben im Testkalender (4. Oktober 2026)
+      process.env.TEST_OPEN_CALENDAR_ID = "offen-echt@group.calendar.google.com";
+      const env3 = readEnv();
+      expect(env3.google.calendarOpenId).toBe("offen-echt@group.calendar.google.com");
+      expect(env3.google.calendarBookingsId).toBe("test@group.calendar.google.com");
+      expect(env3.google.calendarBusyIds).toEqual(["test@group.calendar.google.com"]);
+      expect(JSON.stringify(env3.google)).not.toContain("produktion");
+      delete process.env.TEST_OPEN_CALENDAR_ID;
       // Jede Mail der Testinstanz, auch Studio-Mail und Handliste, geht nur an die Umleitung und trägt [TEST] im Betreff
       const dbDir = mkdtempSync(join(tmpdir(), "palo-mail-"));
       process.env.BOOKING_DB_PATH = join(dbDir, "buchung.sqlite");

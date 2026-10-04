@@ -3,7 +3,8 @@ import { readEnv } from "./env";
 /*
  * Produktion oder Testinstanz (neu.paloskin.de). Die Testinstanz setzt PALOSKIN_INSTANCE=test in der Compose-Datei.
  * Für die Testinstanz gilt (Reparaturauftrag 4. Oktober 2026):
- *   Kalender nur aus TEST_CALENDAR_ID (Lesen und Schreiben); CALENDAR_* der Produktion werden nie gelesen (lib/env.ts).
+ *   Belegung und Einträge nur in TEST_CALENDAR_ID; Öffnungsfenster aus TEST_OPEN_CALENDAR_ID (nur gelesen, der echte
+ *   Kalender „Palo Skin offen“), ohne Angabe aus dem Testkalender. CALENDAR_* der Produktion werden nie gelesen (lib/env.ts).
  *   Jede Mail geht an MAIL_REDIRECT_TO und trägt „[TEST]“ im Betreff (lib/mail.ts). Ohne Umleitung wird nichts gesendet.
  *   Fehlt etwas davon, verweigert sie Buchungen mit eindeutiger Meldung; ein Rückfall auf die Produktion ist ausgeschlossen.
  * Für die Produktion: LINK_SECRET ist Pflicht (kein Rückfall auf Testschlüssel mehr, lib/links.ts).
