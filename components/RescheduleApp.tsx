@@ -148,7 +148,18 @@ export function RescheduleApp({ token, lang, currentDate, currentTime }: Props) 
       <p style={{ margin: 0, fontSize: 17 }}>{l.rescheduleP(currentDate, currentTime)}</p>
       {result.status === "conflict" ? <div className="missing">{l.rescheduleGone}</div> : null}
       {result.status === "error" ? <div className="missing">{l.rescheduleDown}</div> : null}
-      {result.status === "unavailable" ? <div className="missing" role="alert">{l.rescheduleUnavailable}</div> : null}
+      {result.status === "unavailable" ? (
+        <div className="missing" role="alert">
+          {(() => {
+            // Der Satzteil „per WhatsApp“ (je Sprache wie in der Buchung) wird zum Link
+            const text = l.rescheduleUnavailable;
+            const part = TEXTS[lang].noSlotLink;
+            const i = text.indexOf(part);
+            if (i < 0) return text;
+            return <>{text.slice(0, i)}<a href={WA_LINK} target="_blank" rel="noopener">{part}</a>{text.slice(i + part.length)}</>;
+          })()}
+        </div>
+      ) : null}
       {body}
     </div>
   );

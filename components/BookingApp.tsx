@@ -769,7 +769,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
         </label>
         {s.errors.consent ? <div className="missing">{l.eConsent}</div> : null}
         {book.status === "error" ? <div className="missing">{l.bookErr}</div> : null}
-        {book.status === "unavailable" ? <div className="missing" role="alert">{l.bookUnavailable}</div> : null}
+        {book.status === "unavailable" ? <div className="missing" role="alert">{withLink(l.bookUnavailable, l.noSlotLink, WA)}</div> : null}
         <div className="note"><strong>{l.cancelT}</strong>{l.cancelP}<br />{l.cancelP2}</div>
       </section>
     );
