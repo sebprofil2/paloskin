@@ -126,7 +126,7 @@ describe("Kalender als Werkzeug des Studios: Abgleich alle 5 Minuten", () => {
     expect(events.at(-1)!.payload.status).toBe("confirmed");
     expect(events.at(-1)!.payload.starts_at).toBe(newStart.toISOString());
     expect(customerMails()).toHaveLength(1);
-    expect(customerMails()[0].subject).toMatch(/^Verschoben: /);
+    expect(customerMails()[0].subject).toMatch(/^🔵 Verschoben: /);
     expect(studioMails()).toHaveLength(1);
     expect(studioMails()[0].subject).toMatch(/^Im Kalender verschoben: /);
     expect(studioMails()[0].text).toContain("Bisher: ");

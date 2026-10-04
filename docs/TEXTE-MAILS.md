@@ -1,13 +1,13 @@
 # Kundentexte: Bestätigungsmail, Erinnerungsmail, Kalenderdatei, Terminseite, Bestätigungsseite (fünf Sprachen)
 
-Stand: 3. Oktober 2026, Gesamtauftrag abends (Freigabe Dr. Vogel). Deutsch wörtlich, die anderen Sprachen sinngemäß im selben Ton; Betreffzeilen höchstens 40 Zeichen mit Datum und Uhrzeit vorn. Erzeugt aus `lib/texts-mail.ts` und `lib/texts.ts` mit `scripts/texte-mails.mts`. Beispieltermin Mittwoch, 7. Oktober 2026, 08:00 Uhr (verschoben auf Donnerstag, 8. Oktober, 09:00 Uhr), Vorname Sebastian.
+Stand: 3. Oktober 2026, Gesamtauftrag abends (Freigabe Dr. Vogel). Deutsch wörtlich, die anderen Sprachen sinngemäß im selben Ton; Betreffzeilen der Kundenmails beginnen mit der blauen Kugel 🔵 und haben höchstens 42 Zeichen (Kugel zählt als ein Zeichen, Stand 4. Oktober 2026); Studio-Mails und Studio-Kalender bleiben ohne Kugel. Erzeugt aus `lib/texts-mail.ts` und `lib/texts.ts` mit `scripts/texte-mails.mts`. Beispieltermin Mittwoch, 7. Oktober 2026, 08:00 Uhr (verschoben auf Donnerstag, 8. Oktober, 09:00 Uhr), Vorname Sebastian.
 
 ## Deutsch (de)
 
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff (35 Zeichen): Gebucht: Mittwoch, 7.10., 08:00 Uhr
+Betreff (37 Zeichen, höchstens 42): 🔵 Gebucht: Mittwoch, 7.10., 08:00 Uhr
 
 ```
 Hallo Sebastian,
@@ -38,13 +38,13 @@ PALO SKIN by Dr. Vogel
 
 ### Mail nach dem Verschieben (wie die Bestätigung, drei Unterschiede)
 
-Betreff (40 Zeichen): Verschoben: Donnerstag, 8.10., 09:00 Uhr
+Betreff (42 Zeichen, höchstens 42): 🔵 Verschoben: Donnerstag, 8.10., 09:00 Uhr
 Erster Satz: Ihr Termin ist verschoben. Wir freuen uns auf Sie:
 Nach den Kalender-Knöpfen: Falls Sie den alten Termin in Ihrem Kalender gespeichert haben, löschen Sie ihn bitte dort.
 
 ### Erinnerungsmail (Vortag 10:00 Uhr)
 
-Betreff (40 Zeichen): Bitte kurz bestätigen: morgen, 08:00 Uhr
+Betreff (42 Zeichen, höchstens 42): 🔵 Bitte kurz bestätigen: morgen, 08:00 Uhr
 
 ```
 Hallo Sebastian,
@@ -68,7 +68,7 @@ PALO SKIN by Dr. Vogel
 
 ### Kalenderdatei und Kalender-Knöpfe
 
-Titel (alle Sprachen gleich): Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
+Titel (alle Sprachen gleich): 🔵 Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
 Beschreibung Google (HTML): <a href="<persönlicher Link>">Termin ansehen, verschieben oder absagen</a> (bis 24 Stunden vorher)<br><br><a href="https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8">So finden Sie uns</a>
 Beschreibung Outlook und Kalenderdatei (Klartext): Termin ansehen, verschieben oder absagen (bis 24 Stunden vorher): / <persönlicher Link https://www.paloskin.de/termin/...> / (Leerzeile) / So finden Sie uns: / https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
@@ -117,7 +117,7 @@ Zeit für Sie: Ihr Termin beginnt pünktlich, in der Regel ganz ohne Wartezeit. 
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff (35 Zeichen): Booked: Wednesday, 7 October, 08:00
+Betreff (37 Zeichen, höchstens 42): 🔵 Booked: Wednesday, 7 October, 08:00
 
 ```
 Hello Sebastian,
@@ -148,13 +148,13 @@ PALO SKIN by Dr. Vogel
 
 ### Mail nach dem Verschieben (wie die Bestätigung, drei Unterschiede)
 
-Betreff (39 Zeichen): Rescheduled: Thursday, 8 October, 09:00
+Betreff (41 Zeichen, höchstens 42): 🔵 Rescheduled: Thursday, 8 October, 09:00
 Erster Satz: Your appointment has been rescheduled. We look forward to seeing you:
 Nach den Kalender-Knöpfen: If you saved the previous appointment in your calendar, please delete it there.
 
 ### Erinnerungsmail (Vortag 10:00 Uhr)
 
-Betreff (31 Zeichen): Please confirm: tomorrow, 08:00
+Betreff (33 Zeichen, höchstens 42): 🔵 Please confirm: tomorrow, 08:00
 
 ```
 Hello Sebastian,
@@ -178,7 +178,7 @@ PALO SKIN by Dr. Vogel
 
 ### Kalenderdatei und Kalender-Knöpfe
 
-Titel (alle Sprachen gleich): Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
+Titel (alle Sprachen gleich): 🔵 Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
 Beschreibung Google (HTML): <a href="<persönlicher Link>">View, reschedule or cancel your appointment</a> (up to 24 hours in advance)<br><br><a href="https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8">How to find us</a>
 Beschreibung Outlook und Kalenderdatei (Klartext): View, reschedule or cancel your appointment (up to 24 hours in advance): / <persönlicher Link https://www.paloskin.de/termin/...> / (Leerzeile) / How to find us: / https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
@@ -227,7 +227,7 @@ Time for you: Your appointment starts on time, usually with no waiting at all. P
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff (35 Zeichen): Reservado: miércoles, 7/10, 08:00 h
+Betreff (37 Zeichen, höchstens 42): 🔵 Reservado: miércoles, 7/10, 08:00 h
 
 ```
 Hola Sebastian,
@@ -258,13 +258,13 @@ PALO SKIN by Dr. Vogel
 
 ### Mail nach dem Verschieben (wie die Bestätigung, drei Unterschiede)
 
-Betreff (31 Zeichen): Cambiado: jueves, 8/10, 09:00 h
+Betreff (33 Zeichen, höchstens 42): 🔵 Cambiado: jueves, 8/10, 09:00 h
 Erster Satz: Su cita ha sido cambiada. Le esperamos:
 Nach den Kalender-Knöpfen: Si guardó la cita anterior en su calendario, elimínela allí, por favor.
 
 ### Erinnerungsmail (Vortag 10:00 Uhr)
 
-Betreff (36 Zeichen): Por favor, confirme: mañana, 08:00 h
+Betreff (38 Zeichen, höchstens 42): 🔵 Por favor, confirme: mañana, 08:00 h
 
 ```
 Hola Sebastian,
@@ -288,7 +288,7 @@ PALO SKIN by Dr. Vogel
 
 ### Kalenderdatei und Kalender-Knöpfe
 
-Titel (alle Sprachen gleich): Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
+Titel (alle Sprachen gleich): 🔵 Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
 Beschreibung Google (HTML): <a href="<persönlicher Link>">Ver, cambiar o cancelar su cita</a> (hasta 24 horas antes)<br><br><a href="https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8">Cómo llegar</a>
 Beschreibung Outlook und Kalenderdatei (Klartext): Ver, cambiar o cancelar su cita (hasta 24 horas antes): / <persönlicher Link https://www.paloskin.de/termin/...> / (Leerzeile) / Cómo llegar: / https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
@@ -337,7 +337,7 @@ Tiempo para usted: Su cita empieza puntual, por lo general sin ninguna espera. V
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff (32 Zeichen): Réservé : mercredi 7/10, 08 h 00
+Betreff (34 Zeichen, höchstens 42): 🔵 Réservé : mercredi 7/10, 08 h 00
 
 ```
 Bonjour Sebastian,
@@ -368,13 +368,13 @@ PALO SKIN by Dr. Vogel
 
 ### Mail nach dem Verschieben (wie die Bestätigung, drei Unterschiede)
 
-Betreff (29 Zeichen): Déplacé : jeudi 8/10, 09 h 00
+Betreff (31 Zeichen, höchstens 42): 🔵 Déplacé : jeudi 8/10, 09 h 00
 Erster Satz: Votre rendez-vous a été déplacé. Nous avons hâte de vous voir :
 Nach den Kalender-Knöpfen: Si vous aviez enregistré l’ancien rendez-vous dans votre agenda, merci de l’y supprimer.
 
 ### Erinnerungsmail (Vortag 10:00 Uhr)
 
-Betreff (36 Zeichen): Merci de confirmer : demain, 08 h 00
+Betreff (38 Zeichen, höchstens 42): 🔵 Merci de confirmer : demain, 08 h 00
 
 ```
 Bonjour Sebastian,
@@ -398,7 +398,7 @@ PALO SKIN by Dr. Vogel
 
 ### Kalenderdatei und Kalender-Knöpfe
 
-Titel (alle Sprachen gleich): Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
+Titel (alle Sprachen gleich): 🔵 Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
 Beschreibung Google (HTML): <a href="<persönlicher Link>">Voir, déplacer ou annuler votre rendez-vous</a> (jusqu’à 24 heures avant)<br><br><a href="https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8">Comment nous trouver</a>
 Beschreibung Outlook und Kalenderdatei (Klartext): Voir, déplacer ou annuler votre rendez-vous (jusqu’à 24 heures avant): / <persönlicher Link https://www.paloskin.de/termin/...> / (Leerzeile) / Comment nous trouver: / https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8
@@ -447,7 +447,7 @@ Du temps pour vous: Votre rendez-vous commence à l’heure, en général sans a
 ### Bestätigungsmail
 
 Absender: PALO SKIN by Dr. Vogel <bookings@paloskin.de>, Antwort an bookings@paloskin.de
-Betreff (34 Zeichen): Marcado: quarta-feira, 7/10, 08:00
+Betreff (36 Zeichen, höchstens 42): 🔵 Marcado: quarta-feira, 7/10, 08:00
 
 ```
 Olá Sebastian,
@@ -478,13 +478,13 @@ PALO SKIN by Dr. Vogel
 
 ### Mail nach dem Verschieben (wie die Bestätigung, drei Unterschiede)
 
-Betreff (36 Zeichen): Remarcado: quinta-feira, 8/10, 09:00
+Betreff (38 Zeichen, höchstens 42): 🔵 Remarcado: quinta-feira, 8/10, 09:00
 Erster Satz: Sua consulta foi remarcada. Esperamos por você:
 Nach den Kalender-Knöpfen: Se você salvou a consulta anterior no seu calendário, apague-a lá, por favor.
 
 ### Erinnerungsmail (Vortag 10:00 Uhr)
 
-Betreff (34 Zeichen): Confirme, por favor: amanhã, 08:00
+Betreff (36 Zeichen, höchstens 42): 🔵 Confirme, por favor: amanhã, 08:00
 
 ```
 Olá Sebastian,
@@ -508,7 +508,7 @@ PALO SKIN by Dr. Vogel
 
 ### Kalenderdatei und Kalender-Knöpfe
 
-Titel (alle Sprachen gleich): Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
+Titel (alle Sprachen gleich): 🔵 Goodbye Wrinkles: <Vorname> <Nachname> · PALO SKIN by Dr. Vogel
 Ort: PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin
 Beschreibung Google (HTML): <a href="<persönlicher Link>">Ver, remarcar ou cancelar sua consulta</a> (até 24 horas antes)<br><br><a href="https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8">Como chegar</a>
 Beschreibung Outlook und Kalenderdatei (Klartext): Ver, remarcar ou cancelar sua consulta (até 24 horas antes): / <persönlicher Link https://www.paloskin.de/termin/...> / (Leerzeile) / Como chegar: / https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8

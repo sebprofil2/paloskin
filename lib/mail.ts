@@ -9,7 +9,11 @@ function guardTest(message: MailMessage): MailMessage {
   if (!isTestInstance()) return message;
   const to = readEnv().mail.redirectTo;
   if (!to) throw Object.assign(new Error("Testinstanz ohne MAIL_REDIRECT_TO: Versand verweigert"), { code: "TEST_NO_REDIRECT" });
-  const subject = /^(\[TEST\]|TEST:)/.test(message.subject) ? message.subject : `[TEST] ${message.subject}`;
+  // Die blaue Kugel der Kundenmails bleibt vorn; „[TEST]“ kommt dahinter, wenn noch kein Testvermerk da ist
+  const parts = /^(\u{1F535} )?([\s\S]*)$/u.exec(message.subject)!;
+  const kugel = parts[1] ?? "";
+  const rest = parts[2];
+  const subject = /^(\[TEST\]|TEST:)/.test(rest) ? message.subject : `${kugel}[TEST] ${rest}`;
   return { ...message, to, subject };
 }
 

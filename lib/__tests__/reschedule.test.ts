@@ -117,7 +117,7 @@ describe("Verschieben, Fristen, Studio-Mails (Block 6 und 8)", () => {
     expect(store.eventsForBooking(b.id).at(-1)!.payload.starts_at).toBe(s3.toISOString());
     // Mails: neue Bestätigung „Verschoben“ an den Kunden, Studio-Mail „Verschoben“
     const customerMail = mailer.sent.find((m) => m.to === "sebastian@example.com")!;
-    expect(customerMail.subject).toMatch(/^Verschoben: /);
+    expect(customerMail.subject).toMatch(/^🔵 Verschoben: /);
     expect(customerMail.text).toContain("Ihr Termin ist verschoben.");
     const studio = mailer.sent.find((m) => m.to === "studio@example.com")!;
     expect(studio.subject).toMatch(/^Verschoben: /);

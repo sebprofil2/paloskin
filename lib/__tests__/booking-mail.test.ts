@@ -73,7 +73,7 @@ describe("Bestätigungsmail, Zusage, Absage, Erinnerung", () => {
     expect(mailer.sent).toHaveLength(1);
     const m = mailer.sent[0];
     expect(m.to).toBe("erika@example.com");
-    expect(m.subject).toMatch(/^Angefragt: /);
+    expect(m.subject).toMatch(/^🔵 Angefragt: /);
     expect(m.ics?.content).toContain("BEGIN:VEVENT");
     expect(m.text).not.toContain("Nur für die Datenbank");
     const row = store.findByRequestId("11111111-1111-4111-8111-111111111111")!;
@@ -89,7 +89,7 @@ describe("Bestätigungsmail, Zusage, Absage, Erinnerung", () => {
     const start = await freeStart();
     const a = await placeBooking(input("22222222-2222-4222-8222-222222222222", start, { binding: true }), deps());
     expect(a.status === "booked" && a.booking.binding).toBe(true);
-    expect(mailer.sent[0].subject).toMatch(/^Gebucht: /);
+    expect(mailer.sent[0].subject).toMatch(/^🔵 Gebucht: /);
   });
 
   it("Versand scheitert: Buchung bleibt, Hintergrundlauf holt die Mail nach, Protokoll nur mit Nummer", async () => {
@@ -186,7 +186,7 @@ describe("Bestätigungsmail, Zusage, Absage, Erinnerung", () => {
     r = await sendRemindersIfDue(deps(), berlin(10, 5));
     expect(r).toMatchObject({ sent: 1, skipped: 0, failed: 0 });
     expect(mailer.sent).toHaveLength(1);
-    expect(mailer.sent[0].subject).toMatch(/^Bitte kurz bestätigen: morgen, /);
+    expect(mailer.sent[0].subject).toMatch(/^🔵 Bitte kurz bestätigen: morgen, /);
     expect(mailer.sent[0].ics).toBeUndefined();
     expect(await sendRemindersIfDue(deps(), berlin(10, 10))).toBeNull();
     expect(mailer.sent).toHaveLength(1);

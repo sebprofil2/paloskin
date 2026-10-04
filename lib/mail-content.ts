@@ -80,8 +80,16 @@ function icsFold(line: string): string {
  *   Google: Beschreibung als HTML mit verlinkten Wörtern; Outlook und Kalenderdatei: Klartext mit Leerzeile,
  *   die Kalenderdatei zusätzlich mit X-ALT-DESC (HTML) für Outlook am Computer. Erinnerung 1 Stunde vorher nur in der Datei.
  */
+/** Blaue Kugel als Erkennungszeichen vor Betreff und Kalendertitel für Kunden (Entscheidung Dr. Vogel, 4. Oktober 2026). Nie bei Studio-Mails. */
+export const KUGEL = "\u{1F535} ";
+
+/** Betreff einer Kundenmail: Kugel zuerst, im Testbetrieb danach „TEST:“. Höchstens 42 Zeichen (Kugel zählt als ein Zeichen). */
+export function customerSubject(subject: string, test: boolean): string {
+  return `${KUGEL}${test ? "TEST: " : ""}${subject}`;
+}
+
 export function calendarTitle(b: BookingRow): string {
-  return `Goodbye Wrinkles: ${b.first_name.trim()} ${b.last_name.trim()} · ${STUDIO}`;
+  return `${KUGEL}Goodbye Wrinkles: ${b.first_name.trim()} ${b.last_name.trim()} · ${STUDIO}`;
 }
 
 export function calendarDescriptionText(b: BookingRow, lang: Lang): string {
@@ -207,7 +215,7 @@ export function confirmationMail(b: BookingRow, now = new Date()): MailMessage {
     `<p style="margin:16px 0 0">${escapeHtml(m.closing)}<br>${escapeHtml(SIGNER)}<br>${escapeHtml(STUDIO)}</p>`,
   ]);
 
-  return { to: b.email, subject: `${test ? "TEST: " : ""}${subject}`, text: text.join("\n"), html, ics: { filename: "termin.ics", content: buildIcs(b, lang, now) } };
+  return { to: b.email, subject: customerSubject(subject, test), text: text.join("\n"), html, ics: { filename: "termin.ics", content: buildIcs(b, lang, now) } };
 }
 
 /** Erinnerung am Vortag um 10:00 Uhr: Bestätigen mit einem Klick, sonst verschieben. Keine Kalender-Knöpfe. */
@@ -232,5 +240,5 @@ export function reminderMail(b: BookingRow): MailMessage {
     `<p style="margin:16px 0 0">${escapeHtml(m.closingReminder)}<br>${escapeHtml(SIGNER)}<br>${escapeHtml(STUDIO)}</p>`,
   ]);
 
-  return { to: b.email, subject: `${test ? "TEST: " : ""}${m.subjectReminder(when.time)}`, text: text.join("\n"), html };
+  return { to: b.email, subject: customerSubject(m.subjectReminder(when.time), test), text: text.join("\n"), html };
 }

@@ -136,7 +136,7 @@ export async function placeBooking(i: PlaceInput, deps: Deps = defaultDeps()): P
   return { status: "booked", booking: summarize(r.booking, i.requestId) };
 }
 
-function calendarInput(b: BookingRow) {
+export function calendarInput(b: BookingRow) {
   const selection = JSON.parse(b.selection) as Selection;
   const customer: Customer = { vorname: b.first_name, nachname: b.last_name, handy: b.phone_e164, email: b.email };
   let description = buildDescription({
