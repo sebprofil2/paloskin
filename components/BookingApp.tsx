@@ -493,7 +493,6 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
         <a href="/" aria-label="PALO SKIN by Dr. Vogel, Startseite">
           <LogoKopf />
         </a>
-        <div className="claim">Goodbye wrinkles.</div>
         <div className="spec">{l.spec}</div>
       </header>
       <div className="langs2">

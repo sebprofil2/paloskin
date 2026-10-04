@@ -30,11 +30,12 @@ await send("Emulation.setUserAgentOverride", { userAgent: mobile ? "Mozilla/5.0 
 await send("Page.navigate", { url });
 for (let i = 0; i < 100 && !loaded; i++) await sleep(100);
 await sleep(900);
+if (process.env.WAIT_FOR) { for (let i = 0; i < 100; i++) { if (await evalJs(`!!document.querySelector(${JSON.stringify(process.env.WAIT_FOR)})`)) break; await sleep(200); } await sleep(400); }
 const info = await evalJs(`(() => {
   const H = Math.ceil(document.documentElement.scrollHeight);
   const r = (s) => { const el = document.querySelector(s); if (!el) return null; const b = el.getBoundingClientRect(); return { top: Math.round(b.top + scrollY), h: Math.round(b.height) }; };
-  const firstText = document.querySelector(".hero h1").getBoundingClientRect();
-  return { H, links: Math.round(firstText.left), hero: r(".hero"), preise: r("#preise"), ablauf: r("#ablauf"), studio: r("#studio"), fragen: r("#fragen"), footer: r("footer") };
+  const first = document.querySelector(".hero h1, .page h2, h1, h2");
+  return { H, links: first ? Math.round(first.getBoundingClientRect().left) : null, hero: r(".hero"), preise: r("#preise"), ablauf: r("#ablauf"), studio: r("#studio"), fragen: r("#fragen"), footer: r("footer"), brand: r(".brand"), schritt1: r("#sec-persons") };
 })()`);
 const shot = await send("Page.captureScreenshot", { format: "jpeg", quality: 80, captureBeyondViewport: true, clip: { x: 0, y: 0, width, height: info.H, scale: 1 } });
 writeFileSync(file, Buffer.from(shot.result.data, "base64"));

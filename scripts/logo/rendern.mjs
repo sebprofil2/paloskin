@@ -15,6 +15,7 @@ const asset = (p) => join(root, "public/assets", p);
 const svgOf = (p) => readFileSync(asset(p), "utf8");
 const jobs = [
   { svg: "logo/og-1200x630.svg", w: 1200, h: 630, out: "og-1200x630.png" },
+  { svg: "logo/og-1200x630-b.svg", w: 1200, h: 630, out: "og-1200x630-b.png" },
   { svg: "logo/og-1200x1200.svg", w: 1200, h: 1200, out: "og-1200x1200.png" },
   { svg: "logo/icon-quadrat.svg", w: 180, h: 180, out: "apple-touch-icon.png" },
   { svg: "logo/icon-quadrat.svg", w: 192, h: 192, out: "icon-192.png" },
@@ -22,6 +23,10 @@ const jobs = [
   { svg: "favicon.svg", w: 16, h: 16, out: null, ico: true },
   { svg: "favicon.svg", w: 32, h: 32, out: null, ico: true },
   { svg: "favicon.svg", w: 48, h: 48, out: null, ico: true },
+  /* nur zur Ansicht in der Vorschau, nicht ausgeliefert */
+  { svg: "favicon.svg", w: 16, h: 16, out: "../../design/favicon-16.png" },
+  { svg: "favicon.svg", w: 32, h: 32, out: "../../design/favicon-32.png" },
+  { svg: "logo/favicon-16-vorschlag.svg", w: 16, h: 16, out: "../../design/favicon-16-vorschlag.png" },
 ];
 
 const profile = mkdtempSync(join(tmpdir(), "palo-chrome-"));
@@ -36,6 +41,8 @@ let id = 0; const pending = new Map();
 ws.onmessage = (m) => { const d = JSON.parse(m.data); if (d.id && pending.has(d.id)) { pending.get(d.id)(d); pending.delete(d.id); } };
 const send = (method, params = {}) => new Promise((r) => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); });
 await send("Page.enable");
+// Durchsichtiger Hintergrund, sonst bekommen die abgerundeten Ecken des Favicons weiße Pixel
+await send("Emulation.setDefaultBackgroundColorOverride", { color: { r: 0, g: 0, b: 0, a: 0 } });
 
 const icoParts = [];
 for (const j of jobs) {

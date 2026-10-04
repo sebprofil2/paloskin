@@ -179,35 +179,69 @@ def icon(size, anteil=0.64, rund=0.0):
 open(os.path.join(ROOT, "public/assets/favicon.svg"), "w").write(icon(64, 0.66, 0.18))
 open(os.path.join(OUT, "icon-quadrat.svg"), "w").write(icon(512, 0.58, 0))
 
-# 5. Vorschaubilder: Blau, mittig weiß Zeichen, PALO SKIN, by Dr. Vogel, Goodbye wrinkles. (Aufbau wie das Profilbild)
-def og(w, h, hoehe_anteil):
-    a2, b2 = wortmarke_teile(0.5)
-    # „by Dr. Vogel“ unter PALO SKIN mittig, „Goodbye wrinkles.“ mit größerem Abstand
+# 5. Vorschaubilder (Runde 2, Durchsicht Dr. Vogel): kompakte Markengrafik, „PALO SKIN“ dominiert,
+#    „by Dr. Vogel“ rund 22 Prozent kleiner und enger daran, „Goodbye wrinkles.“ kleiner als abgesetzte Schlusszeile,
+#    Zeichen und Wortmarke enger zusammen. Alles innerhalb der Sicherheitszone (Inhalt höchstens 84 Prozent der Breite
+#    und 70 Prozent der Höhe im Querformat, 62 Prozent im Quadrat).
+OG_BY = BY_ZU_PALO * 0.78          # 22 Prozent kleiner als in Runde 1
+OG_BY_ABSTAND = 0.30               # Abstand PALO SKIN zu by Dr. Vogel in Versalhöhen (Runde 1: 0,50)
+OG_GOODBYE = GOODBYE_ZU_PALO * 0.74         # knapp kleiner als „by Dr. Vogel“
+OG_GOODBYE_ABSTAND = 1.15          # bewusst abgesetzt
+OG_ZEICHEN_GESTAPELT = 2.6         # Zeichenhöhe in Versalhöhen der Wortmarke (Runde 1: 3,2)
+OG_ZEICHEN_ABSTAND = 0.75          # Zeichen zu Wortmarke (Runde 1: 1,25)
+
+def og_zeilen():
+    """PALO SKIN, by Dr. Vogel und Goodbye wrinkles. linksbündig ab (0,0); Rückgabe der drei Zeilen."""
+    a2 = shift(palo_t, -px0, -py0)
+    by_x0 = bbox(by)[0]
+    s_by = by_scale * OG_BY / BY_ZU_PALO
+    b2 = shift(by, -by_x0, -(by_base - (dy1 - dy0)), s_by)
+    b2 = shift(b2, 0, cap + cap * OG_BY_ABSTAND)
     gx0 = bbox(goodbye)[0]
-    g2 = shift(goodbye, -gx0, -(gb_base - (g_cap[3] - g_cap[1])), gb_scale)
-    aw = bbox(a2)[2]; bw = bbox(b2)[2] - bbox(b2)[0]; gw = bbox(g2)[2]
-    b2 = shift(b2, (aw - bw) / 2 - bbox(b2)[0], 0)
-    g_top = bbox(b2)[3] + cap * 1.05
-    g2 = shift(g2, (aw - gw) / 2, g_top)
-    block = a2 + b2 + g2
-    bb = bbox(block)
-    # Zeichen über dem Text, Höhe 1,9 Versalhöhen der Wortmarke wie auf dem Profilbild
-    zs = (cap * 3.2) / zh
-    z_w = zw * zs
-    z_top = -(zh * zs) - cap * 1.25
-    zeichen2 = shift(zeichen, -zx0, -zy0, zs)
-    zeichen2 = shift(zeichen2, (aw - z_w) / 2, z_top)
-    alles = zeichen2 + block
+    s_g = gb_scale * OG_GOODBYE / GOODBYE_ZU_PALO
+    g2 = shift(goodbye, -gx0, -(gb_base - (g_cap[3] - g_cap[1])), s_g)
+    # Abstand von der Grundlinie von by Dr. Vogel (ohne Unterlänge) bis zur Oberkante von Goodbye
+    by_grund = cap + cap * OG_BY_ABSTAND + (dy1 - dy0) * s_by
+    g2 = shift(g2, 0, by_grund + cap * OG_GOODBYE_ABSTAND)
+    return a2, b2, g2
+
+def platzieren(teile, w, h, max_w, max_h):
+    """Gruppe gleichmäßig skalieren, bis sie in max_w x max_h passt, und mittig setzen."""
+    alles = [sp for t in teile for sp in t]
     tb = bbox(alles)
-    total_h = tb[3] - tb[1]
-    s = (h * hoehe_anteil) / total_h
+    s = min(max_w / (tb[2] - tb[0]), max_h / (tb[3] - tb[1]))
     ox = (w - (tb[2] - tb[0]) * s) / 2 - tb[0] * s
-    oy = (h - total_h * s) / 2 - tb[1] * s
-    def put(subs): return emit(shift(subs, ox / s, oy / s, s))
-    body = f'<rect width="{w}" height="{h}" fill="{BLAU}"/><path fill="{WEISS}" d="{put(zeichen2)}"/><path fill="{WEISS}" d="{put(a2)}"/><path fill="{WEISS}" d="{put(b2)}"/><path fill="{WEISS}" d="{put(g2)}"/>'
+    oy = (h - (tb[3] - tb[1]) * s) / 2 - tb[1] * s
+    return "".join(f'<path fill="{WEISS}" d="{emit(shift(t, ox / s, oy / s, s))}"/>' for t in teile)
+
+def og_gestapelt(w, h, max_w, max_h):
+    a2, b2, g2 = og_zeilen()
+    aw = bbox(a2)[2]
+    b2 = shift(b2, (aw - (bbox(b2)[2] - bbox(b2)[0])) / 2 - bbox(b2)[0], 0)
+    g2 = shift(g2, (aw - bbox(g2)[2]) / 2, 0)
+    zs = (cap * OG_ZEICHEN_GESTAPELT) / zh
+    z2 = shift(zeichen, -zx0, -zy0, zs)
+    z2 = shift(z2, (aw - zw * zs) / 2, -(zh * zs) - cap * OG_ZEICHEN_ABSTAND)
+    body = f'<rect width="{w}" height="{h}" fill="{BLAU}"/>' + platzieren([z2, a2, b2, g2], w, h, max_w, max_h)
     return svg(w, h, body, "PALO SKIN by Dr. Vogel, Goodbye wrinkles.")
-open(os.path.join(OUT, "og-1200x630.svg"), "w").write(og(1200, 630, 0.74))
-open(os.path.join(OUT, "og-1200x1200.svg"), "w").write(og(1200, 1200, 0.62))
+
+def og_waagerecht(w, h, max_w, max_h):
+    """Zeichen links, so hoch wie PALO SKIN mit by Dr. Vogel (wie im Kopf der Seite), Goodbye wrinkles. darunter linksbündig."""
+    a2, b2, g2 = og_zeilen()
+    block_h = bbox(a2 + b2)[3]
+    zs = block_h / zh
+    z2 = shift(zeichen, -zx0, -zy0, zs)
+    luecke = 0.18 * block_h
+    dx = zw * zs + luecke
+    body = f'<rect width="{w}" height="{h}" fill="{BLAU}"/>' + platzieren([z2, shift(a2, dx, 0), shift(b2, dx, 0), shift(g2, dx, 0)], w, h, max_w, max_h)
+    return svg(w, h, body, "PALO SKIN by Dr. Vogel, Goodbye wrinkles.")
+
+open(os.path.join(OUT, "og-1200x630.svg"), "w").write(og_gestapelt(1200, 630, 1200 * 0.84, 630 * 0.70))
+open(os.path.join(OUT, "og-1200x630-b.svg"), "w").write(og_waagerecht(1200, 630, 1200 * 0.70, 630 * 0.62))
+open(os.path.join(OUT, "og-1200x1200.svg"), "w").write(og_gestapelt(1200, 1200, 1200 * 0.62, 1200 * 0.62))
+
+# 6. Favicon-Vorschlag nur für 16 Pixel: Zeichen größer (82 Prozent statt 66), Ecken weniger rund
+open(os.path.join(OUT, "favicon-16-vorschlag.svg"), "w").write(icon(16, 0.82, 0.12))
 
 print("Versalhöhe Wortmarke", fmt(cap), "| Kopf", fmt(kopf_w), "x", fmt(text_h), "| Seitenverhältnis", round(kopf_w / text_h, 3))
 print("Buchstaben PALO SKIN:", len(glyphs(palo)), "| by Dr. Vogel:", len(by_glyphs), "| Goodbye:", len(gd))
