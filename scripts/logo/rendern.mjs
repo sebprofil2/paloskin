@@ -2,7 +2,7 @@
  * PNG-Dateien aus den SVG-Vorlagen rendern (Chrome ohne Fenster, genau die verlangte Pixelgröße).
  *   node scripts/logo/rendern.mjs
  * Erzeugt: public/assets/og-1200x630.png, og-1200x1200.png, apple-touch-icon.png (180), icon-192.png, icon-512.png,
- * favicon.ico (16, 32, 48; PNG in ICO). Vorher python3 scripts/logo/bauen.py ausführen.
+ * favicon.ico (16 aus favicon-16-vorschlag.svg, 32 und 48 aus favicon.svg; PNG in ICO). Vorher python3 scripts/logo/bauen.py ausführen.
  */
 import { spawn } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -15,12 +15,11 @@ const asset = (p) => join(root, "public/assets", p);
 const svgOf = (p) => readFileSync(asset(p), "utf8");
 const jobs = [
   { svg: "logo/og-1200x630.svg", w: 1200, h: 630, out: "og-1200x630.png" },
-  { svg: "logo/og-1200x630-b.svg", w: 1200, h: 630, out: "og-1200x630-b.png" },
   { svg: "logo/og-1200x1200.svg", w: 1200, h: 1200, out: "og-1200x1200.png" },
   { svg: "logo/icon-quadrat.svg", w: 180, h: 180, out: "apple-touch-icon.png" },
   { svg: "logo/icon-quadrat.svg", w: 192, h: 192, out: "icon-192.png" },
   { svg: "logo/icon-quadrat.svg", w: 512, h: 512, out: "icon-512.png" },
-  { svg: "favicon.svg", w: 16, h: 16, out: null, ico: true },
+  { svg: "logo/favicon-16-vorschlag.svg", w: 16, h: 16, out: null, ico: true }, // eigene Fassung nur für 16 Pixel
   { svg: "favicon.svg", w: 32, h: 32, out: null, ico: true },
   { svg: "favicon.svg", w: 48, h: 48, out: null, ico: true },
   /* nur zur Ansicht in der Vorschau, nicht ausgeliefert */

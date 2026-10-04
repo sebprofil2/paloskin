@@ -237,10 +237,9 @@ def og_waagerecht(w, h, max_w, max_h):
     return svg(w, h, body, "PALO SKIN by Dr. Vogel, Goodbye wrinkles.")
 
 open(os.path.join(OUT, "og-1200x630.svg"), "w").write(og_gestapelt(1200, 630, 1200 * 0.84, 630 * 0.70))
-open(os.path.join(OUT, "og-1200x630-b.svg"), "w").write(og_waagerecht(1200, 630, 1200 * 0.70, 630 * 0.62))
 open(os.path.join(OUT, "og-1200x1200.svg"), "w").write(og_gestapelt(1200, 1200, 1200 * 0.62, 1200 * 0.62))
 
-# 6. Favicon-Vorschlag nur für 16 Pixel: Zeichen größer (82 Prozent statt 66), Ecken weniger rund
+# 6. Favicon nur für 16 Pixel (freigegeben 4. Oktober 2026): Zeichen größer (82 Prozent statt 66), Ecken weniger rund
 open(os.path.join(OUT, "favicon-16-vorschlag.svg"), "w").write(icon(16, 0.82, 0.12))
 
 print("Versalhöhe Wortmarke", fmt(cap), "| Kopf", fmt(kopf_w), "x", fmt(text_h), "| Seitenverhältnis", round(kopf_w / text_h, 3))
