@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { SlotDay } from "@/lib/slots";
-import { FLAGS, LANGS, TEXTS, type Texts } from "@/lib/texts";
-import { saveLangChoice } from "@/lib/i18n";
+import { LANGS, TEXTS, type Texts } from "@/lib/texts";
+import { CONSULT_LANGS, defaultConsult, isConsultLang, langDir, type ConsultLang } from "@/lib/i18n";
+import { Sprachwahl } from "@/components/Sprachwahl";
 import { normalizePhoneE164 } from "@/lib/phone";
 import { PRICES, ZONE_IDS, hasBotulinum, hasTreatment, zoneCount, zonePrice, type Lachs, type Lang, type Selection, type Visit, type ZoneId } from "@/lib/treatments";
 import { LogoKopf } from "@/components/LogoKopf";
@@ -18,7 +19,7 @@ const WA = "https://wa.me/4915158872566";
 const TZ = "Europe/Berlin";
 /* Notizfeld erst mit der eigenen Ablage (Stufe 2): im Kalender steht keine Notiz */
 const NOTE_ENABLED = false;
-const THOUSANDS: Record<Lang, string> = { de: ".", en: ",", es: ".", fr: "\u00A0", pt: "." };
+const THOUSANDS: Record<Lang, string> = { de: ".", en: ",", es: ".", fr: "\u00A0", pt: ".", uk: "\u00A0", ar: "," };
 
 type Step = 1 | 2 | 3;
 type ErrorKey = keyof Texts;
@@ -39,6 +40,9 @@ interface Slot {
 }
 
 interface State {
+  /** Beratungssprache; solange nicht angetippt, gilt die Seitensprache als Vorauswahl (wenn sie eine der fünf ist) */
+  consult: ConsultLang | null;
+  consultTouched: boolean;
   persons: 1 | 2;
   step: Step;
   maxStep: Step;
@@ -80,6 +84,8 @@ type SlotsState = { status: "idle" | "loading" | "ready" | "down"; days: SlotDay
 type BookState = { status: "idle" | "sending" | "error" | "unavailable" | "conflict" | "pending" } | { status: "done"; booking: Booking };
 
 const blank = (checkup: boolean): State => ({
+  consult: null,
+  consultTouched: false,
   persons: 1,
   step: checkup ? 2 : 1,
   maxStep: checkup ? 2 : 1,
@@ -227,21 +233,25 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   const numRef = useRef<HTMLDivElement>(null);
 
   const l = TEXTS[lang];
+  /* Preise, Nummern und Uhrzeiten bleiben in arabischer Schrift lesbar: als links-nach-rechts isoliert (LRI … PDI) */
+  const ltr = (t: string) => (langDir(lang) === "rtl" ? `\u2066${t}\u2069` : t);
+  const comma = lang === "ar" ? "،" : ",";
   const langQuery = lang === "de" ? "" : `?lang=${lang}`;
   const loc = LANGS.find((x) => x.id === lang)!.loc;
   /* Preise: Tausendertrennzeichen je Sprache (EN Komma, FR geschütztes Leerzeichen, sonst Punkt), Euro dahinter, wie auf der Startseite */
   const fmt = useCallback((n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, THOUSANDS[lang]) + "\u00A0€", [lang]);
   /* Sichtbare Preise: „ab“ und Sternchen, Fußnote unter der Liste */
-  const priceTag = (n: number) => `${fmt(n)}*`;
+  const priceTag = (n: number) => ltr(`${fmt(n)}*`);
   const dfmt = useCallback((key: string, o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(loc, { ...o, timeZone: TZ }).format(keyToNoon(key)), [loc]);
   const dayWd = (key: string) => cap(dfmt(key, { weekday: "short" }).replace(/\.$/, ""));
   const dayN = (key: string) => Number(key.slice(8));
   const dayLabel = (key: string) => cap(dfmt(key, { weekday: "long", day: "numeric", month: "long" }));
 
-  const setLang = (id: Lang) => {
-    setLangState(id);
-    saveLangChoice(id);
-  };
+  /* Seitensprache wechseln (Sprachwahl speichert die Wahl); Eingaben bleiben erhalten */
+  const setLang = (id: Lang) => setLangState(id);
+  /* Beratungssprache: Vorauswahl ist die Seitensprache, wenn sie eine der fünf ist; bei Ukrainisch und Arabisch keine */
+  const consult: ConsultLang | null = s.consultTouched ? s.consult : defaultConsult(lang);
+  const setConsult = (c: ConsultLang) => setS((p) => clearErr({ ...p, consult: c, consultTouched: true }, "consult"));
 
   const selection = useMemo(() => toSelection(s, checkup), [s, checkup]);
   const selKey = durationKey(selection);
@@ -330,6 +340,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   function validate(n: Step): string[] {
     const e: Partial<Record<string, ErrorKey>> = {};
     const f = s.f;
+    if (n === firstStep && !consult) e.consult = "eConsult";
     if (n === 1) {
       if (!visitChosen) e.visit = "eVisit";
       if (!treatmentChosen) e.treat = "eTreat";
@@ -345,7 +356,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     setS((p) => ({ ...p, errors: e }));
     return Object.keys(e);
   }
-  const target = (k: string) => ({ visit: "sec-visit", treat: "sec-treat", slot: "sec-slot" } as Record<string, string>)[k] || k;
+  const target = (k: string) => ({ consult: "sec-consult", visit: "sec-visit", treat: "sec-treat", slot: "sec-slot" } as Record<string, string>)[k] || k;
 
   function next() {
     const bad = validate(s.step);
@@ -376,6 +387,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
       selection,
       start: s.slot.start,
       lang,
+      consultationLanguage: consult,
       customer: { vorname: s.f.vorname.trim(), nachname: s.f.nachname.trim(), handy: s.f.handy.trim(), email: s.f.email.trim() },
       consent: true,
       reminder: s.f.reminder,
@@ -477,16 +489,9 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
         <a href="/" aria-label="PALO SKIN by Dr. Vogel, Startseite">
           <LogoKopf />
         </a>
+        <Sprachwahl lang={lang} onChange={setLang} />
         <div className="spec">{l.spec}</div>
       </header>
-      <div className="langs2">
-        <span>{l.say}</span>
-        <div className="flags" role="group" aria-label={l.say}>
-          {LANGS.map((x) => (
-            <button key={x.id} type="button" className="flag" aria-pressed={x.id === lang} aria-label={x.name} title={x.name} lang={x.id} onClick={() => setLang(x.id)} dangerouslySetInnerHTML={{ __html: FLAGS[x.id] }} />
-          ))}
-        </div>
-      </div>
     </>
   );
 
@@ -507,6 +512,20 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     </nav>
   );
 
+  /* ---------- Beratungssprache: erste Frage (Schritt 1, beim Kontrolltermin Schritt 2), Pflichtfeld ---------- */
+  const consultBlock = (
+    <div className="block" id="sec-consult">
+      <span className="lbl">{l.consultQ}</span>
+      {miss("consult")}
+      <div className="seg seg-consult" role="radiogroup" aria-label={l.consultQ}>
+        {CONSULT_LANGS.map((c) => (
+          <button key={c.id} type="button" className="segb" role="radio" aria-checked={consult === c.id} onClick={() => setConsult(c.id)}><span lang={c.id} dir="ltr">{c.name}</span></button>
+        ))}
+      </div>
+      {!isConsultLang(lang) ? <p className="hint" style={{ margin: 0 }}>{l.consultHint}</p> : null}
+    </div>
+  );
+
   /* ---------- Schritt 1: Behandlung ---------- */
   const stepTreat = () => {
     const botChosen = [...s.zoneIds.map((z) => l.zoneNames[z]), s.otherOn ? s.otherText.trim() || l.zoneOther : "", s.zonesUnknown ? l.zoneUnknown : "", s.kaumuskel ? l.kaumuskel : "", s.nefertiti ? l.nefertiti : "", s.achsel ? l.achsel : ""]
@@ -516,6 +535,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     const zoneN = zoneCount({ zones: s.zoneIds, otherZone: s.otherOn ? s.otherText : null });
     return (
       <section className="sec" id="sec-treat">
+        {consultBlock}
         <div className="block" id="sec-persons">
           <span className="lbl">{l.personsQ}</span>
           <div className="seg" role="radiogroup">
@@ -603,7 +623,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
         <div className="fallback">
           <strong>{l.downT}</strong>
           <p className="hint" style={{ margin: "6px 0 0" }}>{l.downP}</p>
-          <div className="num" ref={numRef}><a href={PHONE_TEL} style={{ color: "inherit", textDecoration: "none" }}>{PHONE}</a></div>
+          <div className="num" ref={numRef}><a href={PHONE_TEL} dir="ltr" style={{ color: "inherit", textDecoration: "none" }}>{PHONE}</a></div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <button className="btn-ghost" type="button" onClick={copyNumber}>{l[copyLabel]}</button>
             <a className="btn-ghost" style={{ textDecoration: "none", display: "inline-block" }} href={WA} target="_blank" rel="noopener">WhatsApp</a>
@@ -616,7 +636,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
       body = (
         <div className="note">
           <strong>{l.fullT}</strong>
-          {l.noneFree} <a href={WA} target="_blank" rel="noopener">{PHONE}</a>
+          {l.noneFree} <a href={WA} target="_blank" rel="noopener" dir="ltr">{PHONE}</a>
         </div>
       );
     } else {
@@ -624,8 +644,8 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
       const day = slots.days.find((d) => d.date === s.day) ?? slots.days[0];
       const quick = ff ? (
         <button type="button" className="quick" onClick={() => setS((p) => clearErr({ ...p, day: ff.day, slot: ff.slot }, "slot"))}>
-          <div><strong>{l.nextFree}</strong><span>{dayLabel(ff.day)}, {l.at(ff.slot.time)}</span></div>
-          <span aria-hidden="true">→</span>
+          <div><strong>{l.nextFree}</strong><span>{dayLabel(ff.day)}{comma} {l.at(ff.slot.time)}</span></div>
+          <span className="arrow" aria-hidden="true">→</span>
         </button>
       ) : null;
       const slotsBody = day.holiday ? (
@@ -660,6 +680,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     }
     return (
       <section className="sec" id="sec-slot">
+        {checkup ? consultBlock : null}
         {chk}
         <h2>{title}</h2>
         {book.status === "conflict" ? (
@@ -695,8 +716,12 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     <div className="overview">
       <div className="ov-h">{l.sumHead}</div>
       <div className="ov-row">
-        <span>{s.day && s.slot ? `${dayLabel(s.day)}, ${l.at(s.slot.time)}` : ""}</span>
+        <span>{s.day && s.slot ? `${dayLabel(s.day)}${comma} ${l.at(s.slot.time)}` : ""}</span>
         <button type="button" className="chg" onClick={() => goto(2)}>{l.change}</button>
+      </div>
+      <div className="ov-row">
+        <span>{consult ? l.consultSum(l.consultNames[consult]) : ""}</span>
+        <button type="button" className="chg" onClick={() => goto(firstStep)}>{l.change}</button>
       </div>
       {!checkup ? (
         <div className="ov-row">
@@ -720,7 +745,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
           <div className="pending" role="status">
             <strong>{l.pendingT}</strong>
             <span>{l.pendingP}</span>
-            <span>WhatsApp <a href={WA} target="_blank" rel="noopener">{PHONE}</a></span>
+            <span>WhatsApp <a href={WA} target="_blank" rel="noopener" dir="ltr">{PHONE}</a></span>
           </div>
         </section>
       );
@@ -764,7 +789,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
         <div className="confirm">
           <h1>{b.binding ? l.doneBindingH : l.doneH}</h1>
           {b.binding ? <p>{l.doneBindingP}</p> : null}
-          <p style={{ fontWeight: 500, fontSize: 20 }}>{dayLabel(dayKey)}, {l.at(time)}</p>
+          <p style={{ fontWeight: 500, fontSize: 20 }}>{dayLabel(dayKey)}{comma} {l.at(time)}</p>
           <p style={{ margin: 0, lineHeight: 1.2 }}>
             <span style={{ display: "block", fontSize: 22, letterSpacing: ".09em" }}>PALO SKIN</span>
             <span style={{ display: "block", fontSize: 14, letterSpacing: ".04em", opacity: 0.85 }}>by Dr. Vogel</span>

@@ -1,6 +1,9 @@
 /* PALO SKIN by Dr. Vogel, paloskin.de */
 @font-face{font-family:"Schibsted Grotesk";src:url("/assets/fonts/SchibstedGrotesk-Variable.woff2") format("woff2");font-weight:400 900;font-style:normal;font-display:swap}
 @font-face{font-family:"Schibsted Grotesk";src:url("/assets/fonts/SchibstedGrotesk-Italic-Variable.woff2") format("woff2");font-weight:400 900;font-style:italic;font-display:swap}
+/* Kyrillisch (Ukrainisch) und Arabisch deckt Schibsted Grotesk nicht ab: Noto Sans und Noto Sans Arabic, selbst gehostet (OFL, public/assets/fonts/OFL-Noto.txt). Geladen werden sie nur, wenn solche Zeichen auf der Seite stehen. */
+@font-face{font-family:"PALO Noto";src:url("/assets/fonts/NotoSans-Cyrillic-Variable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"PALO Noto";src:url("/assets/fonts/NotoSansArabic-Variable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
 
 :root{
   --ultramarin:#002FA7;
@@ -14,7 +17,7 @@
   --line:#D8D2C5;
   --white:#FFFFFF;
   --error:#A3392A;
-  --font:"Schibsted Grotesk",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --font:"Schibsted Grotesk","PALO Noto",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
   --max:1328px; /* 1200 Pixel Inhalt plus zweimal 64 Pixel Rand */
   color-scheme:light;
 }
@@ -42,7 +45,7 @@ a{color:inherit}
 .wm .logo{display:block;height:40px;width:auto}
 @media (max-width:479px){.wm .logo{height:34px}}
 .nav{display:flex;align-items:center;gap:10px}
-.nav .links{display:none;gap:22px;margin-right:16px;font-size:15px}
+.nav .links{display:none;gap:22px;margin-inline-end:16px;font-size:15px}
 .nav .links a{text-decoration:none;color:var(--ink-2)}
 .nav .links a:hover{color:var(--ink)}
 @media (min-width:860px){.nav .links{display:flex}}
@@ -66,9 +69,9 @@ a{color:inherit}
 .lang svg{width:18px;height:12px;display:block;box-shadow:0 0 0 1px rgba(29,31,34,.12);flex:none}
 .chev{width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg);flex:none}
 [aria-expanded="true"]>.chev{transform:translateY(2px) rotate(225deg)}
-.lang-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:30;background:var(--white);box-shadow:0 0 0 1px var(--line),0 12px 28px rgba(29,31,34,.12);min-width:230px;padding:6px}
+.lang-menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:30;background:var(--white);box-shadow:0 0 0 1px var(--line),0 12px 28px rgba(29,31,34,.12);min-width:230px;padding:6px}
 .lang-say{font-size:13px;color:var(--ink-2);padding:8px 10px 6px;line-height:1.4}
-.lang-item{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;padding:10px;font-size:15px;cursor:pointer;text-align:left}
+.lang-item{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;padding:10px;font-size:15px;cursor:pointer;text-align:start}
 .lang-item:hover{background:var(--kalk-2)}
 .lang-item[aria-checked="true"]{box-shadow:inset 2px 0 0 var(--ultramarin);font-weight:500}
 
@@ -151,7 +154,7 @@ p{margin:0}
 .blue .btn.primary{background:var(--white);color:var(--ultramarin)}
 .blue .btn.primary:hover{background:var(--kalk)}
 .zlink{display:inline-block;margin-top:12px;font-size:15px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ultramarin)}
-.quote{margin:0;padding-left:18px;border-left:2px solid var(--ultramarin);max-width:36em}
+.quote{margin:0;padding-inline-start:18px;border-inline-start:2px solid var(--ultramarin);max-width:36em}
 /* Studio: Zitat links, Angaben rechts; später ein Porträt ganz links (.studio-grid .portrait) */
 .studio-grid{display:grid;gap:28px}
 @media (min-width:860px){.studio-grid{grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:48px;align-items:start}.studio-grid:has(.portrait){grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,4fr)}}
@@ -199,7 +202,7 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
 .legal h2{font-size:22px;margin:36px 0 10px}
 .legal h3{font-size:18px;margin:22px 0 6px}
 .legal p,.legal li{margin:0 0 12px;color:var(--ink);line-height:1.6}
-.legal ul{padding-left:20px;margin:0 0 12px}
+.legal ul{padding-inline-start:20px;margin:0 0 12px}
 .legal a{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ultramarin)}
 .legal .meta{color:var(--ink-3);font-size:14px;margin-bottom:8px}
 
@@ -210,3 +213,8 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
 .blue h2,.blue h3{color:var(--white)}
 .dark .cols .intro p,.dark p.muted{color:rgba(244,241,234,.78)}
 .dark h2{color:var(--kalk)}
+
+/* ---------- Rechts nach links (Arabisch, dir="rtl"): Spiegelung über logische Eigenschaften, hier nur die Ausnahmen ---------- */
+/* Arabische Schrift ist verbunden: kein Zeichenabstand */
+html[lang="ar"] *{letter-spacing:normal!important}
+[dir="rtl"] .lang-item[aria-checked="true"]{box-shadow:inset -2px 0 0 var(--ultramarin)}

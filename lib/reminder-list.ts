@@ -3,6 +3,7 @@ import { readEnv } from "./env";
 import { logEvent } from "./log";
 import { mailErrorClass } from "./mail";
 import type { BookingRow } from "./store";
+import { consultLine } from "./studio-mail";
 import { addDaysKey, berlinDateKey, berlinParts, berlinTimeLabel, fromBerlinKey } from "./time";
 
 /*
@@ -58,7 +59,8 @@ export function listMail(rows: BookingRow[], now: Date): { subject: string; text
   const open = rows.filter((b) => !b.attendance_confirmed_at).length;
   const subject = `Morgen: ${n} ${n === 1 ? "Termin" : "Termine"}, davon ${open} noch nicht bestätigt`;
   const line = (b: BookingRow) => {
-    const t = `${berlinTimeLabel(new Date(b.starts_at))} Uhr, ${b.first_name} ${b.last_name}`;
+    const consult = consultLine(b);
+    const t = `${berlinTimeLabel(new Date(b.starts_at))} Uhr, ${b.first_name} ${b.last_name}${consult ? `, ${consult}` : ""}`;
     if (b.attendance_confirmed_at) return { t: `${t}, bestätigt`, link: null };
     const link = b.reminder_whatsapp === 1 ? `https://wa.me/${b.phone_e164.replace(/^\+/, "")}` : `tel:${b.phone_e164}`;
     return { t: `${t}, noch offen`, link };

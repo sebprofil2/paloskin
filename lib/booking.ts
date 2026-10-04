@@ -12,6 +12,7 @@ import { bookingRefFor } from "./ref";
 import type { Customer } from "./schema";
 import { getStore, type BookingRow, type Store } from "./store";
 import { toBerlinIso } from "./time";
+import type { ConsultLang } from "./i18n";
 import type { Lang, Selection } from "./treatments";
 
 /*
@@ -47,6 +48,8 @@ export interface PlaceInput {
   durationMinutes: number;
   customer: Customer;
   lang: Lang;
+  /** Beratungssprache, getrennt von der Seitensprache */
+  consultLang?: ConsultLang | null;
   consentAt: Date;
   reminder: boolean;
   device: "mobile" | "desktop";
@@ -123,6 +126,7 @@ export async function placeBooking(i: PlaceInput, deps: Deps = defaultDeps()): P
     selection: i.selection,
     customer: i.customer,
     lang: i.lang,
+    consultLang: i.consultLang ?? null,
     consentAt: i.consentAt,
     reminder: i.reminder,
     device: i.device,
@@ -146,6 +150,7 @@ export function calendarInput(b: BookingRow) {
     durationMinutes: b.duration_minutes,
     customer,
     lang: b.language,
+    consultLang: b.consultation_language,
     consentAt: new Date(b.consent_at),
     reminder: b.reminder_whatsapp === 1,
   });

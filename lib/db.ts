@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS bookings (
   status TEXT NOT NULL CHECK (status IN ('requested', 'confirmed', 'cancelled', 'rescheduled', 'no_show', 'completed')),
   channel TEXT NOT NULL DEFAULT 'web',
   language TEXT NOT NULL,
+  consultation_language TEXT,
   device TEXT NOT NULL,
   reminder_whatsapp INTEGER NOT NULL,
   reminder_consent_at TEXT,
@@ -191,6 +192,8 @@ function migrate(db: DatabaseSync): void {
       COMMIT;
     `);
   }
+  // 4. Oktober 2026 (Entscheidung Dr. Vogel): Beratungssprache getrennt von der Seitensprache; ältere Buchungen ohne Angabe
+  if (!columns.has("consultation_language")) db.exec("ALTER TABLE bookings ADD COLUMN consultation_language TEXT");
   const studioColumns = new Set((db.prepare("PRAGMA table_info(studio_mails)").all() as { name: string }[]).map((r) => r.name));
   if (!studioColumns.has("claimed_until")) db.exec("ALTER TABLE studio_mails ADD COLUMN claimed_until TEXT");
   // 3. Oktober 2026: kurzfristige Absage heißt customer_short_notice statt customer_link_short (Rückfrage des Kundensystems).

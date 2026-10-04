@@ -3,15 +3,15 @@
  * nichts umformuliert. Block X: Ergänzungen für die echte Seite (Testhinweis, Buchungsnummer,
  * unklarer Ausgang, Absage per WhatsApp), die im Entwurf nicht vorkommen.
  */
-import type { Lang } from "./i18n";
+import type { ConsultLang, Lang } from "./i18n";
 import type { ZoneId } from "./treatments";
 
-export { FLAGS, LANGS, LANG_IDS, isLang } from "./i18n";
+export { LANGS, LANG_IDS, isLang } from "./i18n";
 
 type Fn1 = (p: string) => string;
 
 export interface DraftTexts {
-  say: string; spec: string; otherPh: string; achsel: string; achselD: string;
+  spec: string; otherPh: string; achsel: string; achselD: string;
   interestL: string; noCommitTag: string; noCommit: string; yesBeen: string; noFirst: string;
   stepTreat: string; stepSlot: string; stepData: string; consultPrice: string; noteAdd: string;
   next1: string; next2: string; back: string; change: string; refThanks: string; refSend: string;
@@ -29,7 +29,6 @@ export interface DraftTexts {
 
 const T: Record<Lang, DraftTexts> = {
 de:{
-  say:"Wir behandeln Sie gerne in Ihrer Sprache",
   spec:"Spezialisiert auf Faltenbehandlungen",
   otherPh:"Welche Zone?",
   achsel:"Übermäßiges Schwitzen", achselD:"Achseln (Hyperhidrose)",
@@ -61,7 +60,6 @@ de:{
   eEmail:"Kurz noch: Die E-Mail-Adresse stimmt noch nicht ganz.", eConsent:"Kurz noch: Ohne Ihr Einverständnis können wir den Termin leider nicht anlegen.",
   },
 en:{
-  say:"We are happy to treat you in your language",
   spec:"Specialised in wrinkle treatments",
   otherPh:"Which area?",
   achsel:"Excessive sweating", achselD:"Underarms (hyperhidrosis)",
@@ -93,7 +91,6 @@ en:{
   eEmail:"Just one thing: The email address isn’t quite right yet.", eConsent:"Just one thing: Without your consent we unfortunately can’t create the appointment.",
   },
 es:{
-  say:"Le atendemos con gusto en su idioma",
   spec:"Especializados en tratamientos de arrugas",
   otherPh:"¿Qué zona?",
   achsel:"Sudoración excesiva", achselD:"Axilas (hiperhidrosis)",
@@ -125,7 +122,6 @@ es:{
   eEmail:"Un detalle: El correo electrónico aún no es correcto.", eConsent:"Un detalle: Sin su consentimiento no podemos registrar la cita.",
   },
 fr:{
-  say:"Nous vous recevons volontiers dans votre langue",
   spec:"Spécialisés dans les traitements des rides",
   otherPh:"Quelle zone ?",
   achsel:"Transpiration excessive", achselD:"Aisselles (hyperhidrose)",
@@ -157,7 +153,6 @@ fr:{
   eEmail:"Juste une chose : L’adresse e-mail n’est pas encore tout à fait correcte.", eConsent:"Juste une chose : Sans votre accord, nous ne pouvons malheureusement pas enregistrer le rendez-vous.",
   },
 pt:{
-  say:"Atendemos você com prazer no seu idioma",
   spec:"Especializados em tratamentos de rugas",
   otherPh:"Qual área?",
   achsel:"Suor excessivo", achselD:"Axilas (hiperidrose)",
@@ -187,7 +182,70 @@ pt:{
   eVisit:"Só mais uma coisa: Você já esteve com a gente?", eTreat:"Só mais uma coisa: Escolha um tratamento ou “Quero orientação primeiro”.", eSlot:"Só mais uma coisa: Escolha um horário.",
   eVorname:"Só mais uma coisa: Falta seu nome.", eNachname:"Só mais uma coisa: Falta seu sobrenome.", eHandy:"O número de celular não parece correto. Por favor, confira mais uma vez.",
   eEmail:"Só mais uma coisa: O e-mail ainda não está certinho.", eConsent:"Só mais uma coisa: Sem a sua autorização não conseguimos registrar o horário.",
-  }
+  },
+  uk:{
+  spec:"Спеціалізація: корекція зморшок",
+  otherPh:"Яка зона?",
+  achsel:"Надмірне потовиділення", achselD:"Пахви (гіпергідроз)",
+  interestL:"Мене цікавить:", noCommitTag:"Попередній вибір без зобов’язань", noCommit:"Можна обрати й кілька варіантів. Що саме ми робитимемо, обговоримо разом у студії.", yesBeen:"Так", noFirst:"Ні, це мій перший візит",
+  stepTreat:"Процедура", stepSlot:"Час", stepData:"Дані", consultPrice:"", noteAdd:"Додати примітку",
+  next1:"Далі: коли Вам зручно?", next2:"Далі: майже готово", back:"Назад", change:"Змінити", refThanks:"Дякуємо!", refSend:"Надіслати",
+  visitQ:"Ви вже бували в нас?", visitFirstLbl:"Перший візит", visitReturnLbl:"Повторний візит", checkupLbl:"Контрольний огляд",
+  treatQ:"Що Вас цікавить?", unsureT:"Спершу хочу консультацію", unsureD:"Ми не поспішаємо і разом вирішимо, що Вам підходить.", botGroup:"Ін’єкції ботоксу", moreGroup:"Інші процедури",
+  kaumuskel:"Жувальний м’яз (масетер)", kaumuskelD:"Facial Slimming, розслаблення при скреготі зубами", nefertiti:"Ліфтинг Nefertiti", nefertitiD:"Шия та контур нижньої щелепи",
+  lachs:"ДНК лосося", lachsD:"Темні кола під очима, одна процедура", lachsPack:"ДНК лосося, чотири процедури", lachsPackD:"Темні кола під очима, зона навколо очей",
+  lachsRow:"ДНК лосося, одна процедура",
+  noteL:"Примітка до процедури", optional:"(за бажанням)", notePh:"Наприклад: зазвичай дві зони, цього разу, можливо, ще й жувальний м’яз.",
+  priceHint:"* Орієнтовні ціни. Розрахунок згідно з німецьким тарифом на лікарські послуги (Gebührenordnung für Ärzte). Ціни включають податок на додану вартість.",
+  slotQ:"Коли Вам зручно?", slotQCheckup:"Коли Вам зручно прийти на контрольний огляд?",
+  downT:"У нас зараз технічні труднощі.", downP:"Коротко напишіть нам у WhatsApp, і ми швидко знайдемо для Вас час.",
+  copy:"Копіювати номер", copied:"Скопійовано", marked:"Виділено, тепер скопіюйте",
+  nextFree:"Найближчий вільний час", orDay:"Або оберіть день самостійно", dayAria:"Обрати день", closed:"Цього дня ми не працюємо в студії.", closedAria:"зачинено",
+  holiday:"День єдності Німеччини", fullT:"Цей день уже повністю заброньовано.", fullP:"Перегляньте, будь ласка, інший день.",
+  at:t=>t,
+  dataH:"Як з Вами зв’язатися?", vorname:"Ім’я", nachname:"Прізвище", handy:"Номер мобільного телефону", handyWhy:"", email:"Адреса електронної пошти", emailWhy:"",
+  phoneReturn:"Бажано той самий номер, що й минулого разу, тоді ми одразу Вас упізнаємо.",
+  refQ:"Вам хтось порекомендував PALO SKIN?", refPh:"Ім’я або код рекомендації",
+  consent:"Я погоджуюся, що PALO SKIN обробляє мої дані для мого запису. Детальніше: Декларація про захист даних.", cancelT:"Час для Вас", cancelP:"Ваш прийом починається вчасно, як правило, зовсім без очікування. Будь ласка, приходьте у призначений час або щонайбільше за п’ять хвилин до нього.",
+  sumHead:"Ваш запис", beratungRow:"Консультація, процедуру ще не обрано", botRow:"Ботокс: ", boostRow:"Skin Booster: ", doneH:"Чудово, Ваш запит на запис отримано. Ми коротко підтвердимо його у WhatsApp.", gcal:"Google Календар", ocal:"Outlook", ical:"Календар iPhone",
+  addrL:"Адреса", book:"Записатися",
+  checkupP:"Вас запрошено на короткий контрольний огляд.",
+  eVisit:"Ще одне: Ви вже бували в нас?", eTreat:"Ще одне: оберіть, будь ласка, процедуру або «Спершу хочу консультацію».", eSlot:"Ще одне: оберіть, будь ласка, час.",
+  eVorname:"Ще одне: не вказано Ваше ім’я.", eNachname:"Ще одне: не вказано Ваше прізвище.", eHandy:"Схоже, номер мобільного телефону неправильний. Будь ласка, перевірте його ще раз.",
+  eEmail:"Ще одне: адреса електронної пошти ще не зовсім правильна.", eConsent:"Ще одне: без Вашої згоди ми, на жаль, не можемо створити запис.",
+  },
+  ar:{
+  spec:"متخصصون في علاج التجاعيد",
+  otherPh:"أي منطقة؟",
+  achsel:"التعرق المفرط", achselD:"منطقة الإبطين (فرط التعرق)",
+  interestL:"مجالات الاهتمام:", noCommitTag:"اختيار مبدئي غير ملزم", noCommit:"يمكن اختيار أكثر من خيار. نقرر معًا في العيادة ما سنقوم به.", yesBeen:"نعم", noFirst:"لا، هذه زيارتي الأولى",
+  stepTreat:"العلاج", stepSlot:"الموعد", stepData:"البيانات", consultPrice:"", noteAdd:"إضافة ملاحظة",
+  next1:"التالي: ما الوقت المناسب لكم؟", next2:"التالي: أوشكنا على الانتهاء", back:"رجوع", change:"تغيير", refThanks:"شكرًا!", refSend:"إرسال",
+  visitQ:"هل سبق لكم زيارتنا؟", visitFirstLbl:"الزيارة الأولى", visitReturnLbl:"زيارة سابقة", checkupLbl:"موعد متابعة",
+  treatQ:"ما العلاج الذي يهمكم؟", unsureT:"أرغب في الاستشارة أولًا", unsureD:"نأخذ وقتنا ونقرر معًا ما يناسبكم.", botGroup:"علاج البوتوكس", moreGroup:"علاجات أخرى",
+  kaumuskel:"عضلة المضغ (الماضغة)", kaumuskelD:"تنحيف الوجه، والتخفيف من صرير الأسنان", nefertiti:"شد نفرتيتي", nefertitiD:"الرقبة وخط الفك",
+  lachs:"الحمض النووي للسلمون", lachsD:"الهالات السوداء، جلسة واحدة", lachsPack:"الحمض النووي للسلمون، أربع جلسات", lachsPackD:"الهالات السوداء، منطقة حول العينين",
+  lachsRow:"الحمض النووي للسلمون، جلسة واحدة",
+  noteL:"ملاحظة حول العلاج", optional:"(اختياري)", notePh:"مثلًا: عادةً منطقتان، وربما هذه المرة عضلة المضغ أيضًا.",
+  priceHint:"* أسعار استرشادية. تتم المحاسبة وفق لائحة أتعاب الأطباء الألمانية (GOÄ). الأسعار شاملة ضريبة القيمة المضافة.",
+  slotQ:"ما الوقت المناسب لكم؟", slotQCheckup:"ما الوقت المناسب لكم لموعد المتابعة؟",
+  downT:"هناك خلل مؤقت لدينا.", downP:"يرجى مراسلتنا سريعًا عبر WhatsApp، وسنجد لكم موعدًا في أقرب وقت.",
+  copy:"نسخ الرقم", copied:"تم النسخ", marked:"تم التحديد، يمكن النسخ الآن",
+  nextFree:"أقرب موعد متاح", orDay:"أو اختيار يوم آخر بأنفسكم", dayAria:"اختيار اليوم", closed:"لا نكون في العيادة في هذا اليوم.", closedAria:"مغلق",
+  holiday:"يوم الوحدة الألمانية", fullT:"هذا اليوم محجوز بالكامل.", fullP:"يمكنكم الاطلاع على يوم آخر.",
+  at:t=>"الساعة "+t,
+  dataH:"كيف يمكننا التواصل معكم؟", vorname:"الاسم الأول", nachname:"اسم العائلة", handy:"رقم الجوال", handyWhy:"", email:"البريد الإلكتروني", emailWhy:"",
+  phoneReturn:"يفضَّل استخدام الرقم نفسه كالمرة السابقة، ليسهل علينا التعرف عليكم مباشرة.",
+  refQ:"هل أوصاكم أحد بـ PALO SKIN؟", refPh:"الاسم أو رمز التوصية",
+  consent:"أوافق على أن تعالج PALO SKIN بياناتي من أجل موعدي. المزيد في بيان حماية البيانات.", cancelT:"وقت لكم وحدكم", cancelP:"يبدأ موعدكم في وقته، وعادةً دون أي انتظار. يرجى الحضور في الموعد المتفق عليه أو قبله بخمس دقائق كحد أقصى.",
+  sumHead:"موعدكم", beratungRow:"استشارة، والعلاج لم يُحدد بعد", botRow:"بوتوكس: ", boostRow:"سكين بوستر: ", doneH:"رائع، وصل طلب موعدكم. سنؤكده لكم قريبًا عبر WhatsApp.", gcal:"تقويم Google", ocal:"Outlook", ical:"تقويم iPhone",
+  addrL:"العنوان", book:"حجز موعد",
+  checkupP:"تمت دعوتكم إلى موعد متابعة قصير.",
+  eVisit:"ملاحظة صغيرة: هل سبق لكم زيارتنا؟", eTreat:"ملاحظة صغيرة: يرجى اختيار علاج أو «أرغب في الاستشارة أولًا».", eSlot:"ملاحظة صغيرة: يرجى اختيار الوقت.",
+  eVorname:"ملاحظة صغيرة: الاسم الأول غير مذكور.", eNachname:"ملاحظة صغيرة: اسم العائلة غير مذكور.", eHandy:"يبدو أن رقم الجوال غير صحيح. يرجى التحقق منه مرة أخرى.",
+  eEmail:"ملاحظة صغيرة: عنوان البريد الإلكتروني غير صحيح تمامًا بعد.", eConsent:"ملاحظة صغيرة: للأسف لا يمكننا تسجيل الموعد دون موافقتكم.",
+  },
+
 };
 
 /* Ergänzungen für die echte Seite. Deutsch nach Bauauftrag, Übersetzungen bitte gegenlesen. */
@@ -239,6 +297,15 @@ export interface ExtraTexts {
   secondPerson: string;
   /* freiwilliger Erinnerungshaken */
   reminderOpt: string;
+  /* Beratungssprache (Entscheidung Dr. Vogel, 4. Oktober 2026): erste Frage in Schritt 1, Pflichtfeld */
+  consultQ: string;
+  /** klein unter der Frage, nur wenn die Seitensprache keine Beratungssprache ist (Ukrainisch, Arabisch) */
+  consultHint: string;
+  eConsult: string;
+  /** Zeile in der Zusammenfassung (Schritt 3), Name der Sprache aus consultNames */
+  consultSum: (name: string) => string;
+  /** Namen der fünf Beratungssprachen in der Seitensprache */
+  consultNames: Record<ConsultLang, string>;
 }
 
 const X: Record<Lang, ExtraTexts> = {
@@ -262,6 +329,8 @@ const X: Record<Lang, ExtraTexts> = {
     zoneOther: "Sonstiges", zoneUnknown: "Weiß ich noch nicht", zonesOpen: "Zonen noch offen",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "Zone" : "Zonen"}`,
     zoneTiers: (p1, p2, p3, p4) => `1 Zone ${p1}, 2 Zonen ${p2}, 3 Zonen ${p3}, jede weitere ${p4}`,
+    consultQ: "In welcher Sprache möchten Sie beraten werden?", consultHint: "Dr. Vogel berät Sie auf Deutsch, Englisch, Spanisch, Französisch oder Portugiesisch.", eConsult: "Kurz noch: Bitte wählen Sie die Sprache für Ihre Beratung.",
+    consultSum: (name) => `Beratung auf ${name}`, consultNames: { de: "Deutsch", en: "Englisch", es: "Spanisch", fr: "Französisch", pt: "Portugiesisch" },
   },
   en: {
     testBanner: "Test version. Please enter invented names only and no real treatment wishes. The booking really does go into the calendar.",
@@ -283,6 +352,8 @@ const X: Record<Lang, ExtraTexts> = {
     zoneOther: "Other", zoneUnknown: "Not decided yet", zonesOpen: "Areas not decided yet",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "area" : "areas"}`,
     zoneTiers: (p1, p2, p3, p4) => `1 area ${p1}, 2 areas ${p2}, 3 areas ${p3}, each additional ${p4}`,
+    consultQ: "In which language would you like your consultation?", consultHint: "Dr. Vogel advises you in German, English, Spanish, French or Portuguese.", eConsult: "Just one thing: Please choose the language for your consultation.",
+    consultSum: (name) => `Consultation in ${name}`, consultNames: { de: "German", en: "English", es: "Spanish", fr: "French", pt: "Portuguese" },
   },
   es: {
     testBanner: "Versión de prueba. Introduzca solo nombres inventados y ningún deseo de tratamiento real. La reserva se registra de verdad en el calendario.",
@@ -304,6 +375,8 @@ const X: Record<Lang, ExtraTexts> = {
     zoneOther: "Otra", zoneUnknown: "Aún por decidir", zonesOpen: "Zonas por decidir",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "zona" : "zonas"}`,
     zoneTiers: (p1, p2, p3, p4) => `1 zona ${p1}, 2 zonas ${p2}, 3 zonas ${p3}, cada zona adicional ${p4}`,
+    consultQ: "¿En qué idioma desea que le asesoremos?", consultHint: "El Dr. Vogel le asesora en alemán, inglés, español, francés o portugués.", eConsult: "Un detalle: Elija el idioma de su consulta.",
+    consultSum: (name) => `Consulta en ${name}`, consultNames: { de: "alemán", en: "inglés", es: "español", fr: "francés", pt: "portugués" },
   },
   fr: {
     testBanner: "Version de test. Merci de n’indiquer que des noms inventés et aucun souhait de soin réel. La réservation est réellement inscrite dans l’agenda.",
@@ -325,6 +398,8 @@ const X: Record<Lang, ExtraTexts> = {
     zoneOther: "Autre", zoneUnknown: "Pas encore décidé", zonesOpen: "Zones à définir",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "zone" : "zones"}`,
     zoneTiers: (p1, p2, p3, p4) => `1 zone ${p1}, 2 zones ${p2}, 3 zones ${p3}, chaque zone supplémentaire ${p4}`,
+    consultQ: "Dans quelle langue souhaitez-vous être conseillé ?", consultHint: "Le Dr Vogel vous conseille en allemand, anglais, espagnol, français ou portugais.", eConsult: "Juste une chose : Choisissez la langue de votre consultation.",
+    consultSum: (name) => `Consultation en ${name}`, consultNames: { de: "allemand", en: "anglais", es: "espagnol", fr: "français", pt: "portugais" },
   },
   pt: {
     testBanner: "Versão de teste. Use apenas nomes inventados e nenhum desejo real de tratamento. A reserva é registrada de verdade no calendário.",
@@ -346,7 +421,56 @@ const X: Record<Lang, ExtraTexts> = {
     zoneOther: "Outra", zoneUnknown: "Ainda não decidi", zonesOpen: "Áreas a definir",
     zoneCountLabel: (n) => `${n} ${n === 1 ? "área" : "áreas"}`,
     zoneTiers: (p1, p2, p3, p4) => `1 área ${p1}, 2 áreas ${p2}, 3 áreas ${p3}, cada área adicional ${p4}`,
+    consultQ: "Em qual idioma você gostaria de ser atendido?", consultHint: "O Dr. Vogel atende em alemão, inglês, espanhol, francês ou português.", eConsult: "Só mais uma coisa: Escolha o idioma da sua consulta.",
+    consultSum: (name) => `Consulta em ${name}`, consultNames: { de: "alemão", en: "inglês", es: "espanhol", fr: "francês", pt: "português" },
   },
+  uk: {
+    testBanner: "Тестова версія. Будь ласка, вводьте лише вигадані імена і жодних справжніх побажань щодо процедур. Запис справді потрапляє до календаря.",
+    noSlotHint: "Немає відповідного часу? Напишіть нам у WhatsApp.", noSlotLink: "у WhatsApp", otherTime: "Обрати інший час",
+    mapL: "Як нас знайти", saveQ: "Бажаєте одразу зберегти запис у календарі?",
+    doneBindingH: "Заброньовано! Чекаємо на Вас.", doneBindingP: "Усі деталі невдовзі надійдуть на Вашу електронну пошту.",
+    cancelP2: "Перенести або скасувати запис можна не пізніше ніж за 24 години за посиланням у Вашому підтвердженні запису.",
+    pendingT: "Ми перевіряємо Ваше бронювання.", pendingP: "Будь ласка, не бронюйте повторно, ми з Вами зв’яжемося.",
+    conflict: "На жаль, цей час більше недоступний для онлайн-запису. Будь ласка, оберіть інший час або напишіть нам у WhatsApp.",
+    bookErr: "Щось пішло не так. Будь ласка, спробуйте ще раз або напишіть нам у WhatsApp.",
+    bookUnavailable: "Зараз ми не можемо перевірити вільний час, тому ще нічого не заброньовано. Ваші дані збережено. Будь ласка, спробуйте ще раз за кілька хвилин. Або коротко напишіть нам у WhatsApp.",
+    loading: "Хвилинку, дивимося в календар.",
+    noneFree: "Зараз онлайн немає вільного часу. Напишіть нам у WhatsApp, і ми знайдемо для Вас час.",
+    refL: "Номер бронювання", durL: "Тривалість", minutes: (n) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? "хвилина" : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? "хвилини" : "хвилин"}`,
+    home: "На головну сторінку", legalImprint: "Вихідні дані", legalPrivacy: "Декларація про захист даних",
+    zoneNames: { zornesfalte: "Міжбрівна зморшка", stirn: "Чоло", kraehenfuesse: "«Гусячі лапки»", browlift: "Brow Lift", lipflip: "Lip Flip", bunnylines: "Bunny Lines", mundwinkel: "Куточки рота", erdbeerkinn: "Підборіддя «апельсинова кірка»", gummysmile: "Gummy Smile", oberlippe: "Зморшки над верхньою губою", nase: "Звуження носа" },
+    personsQ: "Для кого Ви записуєтеся?", persons1: "Для себе", persons2: "Для нас двох", personsSum: "Удвох", personsMore: "Бажаєте записати трьох або більше людей? Напишіть нам у WhatsApp. Ми заплануємо Ваші прийоми один за одним.", personsWa: "Написати у WhatsApp", secondPerson: "Чудово, ми заплануємо більше часу. Особа, яка Вас супроводжує, спокійно вирішить у студії, чого бажає.",
+    reminderOpt: "Нагадайте мені, будь ласка, про запис у WhatsApp.",
+    zoneOther: "Інше", zoneUnknown: "Ще не знаю", zonesOpen: "Зони ще не визначено",
+    zoneCountLabel: (n) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? "зона" : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? "зони" : "зон"}`,
+    zoneTiers: (p1, p2, p3, p4) => `1 зона ${p1}, 2 зони ${p2}, 3 зони ${p3}, кожна наступна ${p4}`,
+    consultQ: "Якою мовою Ви бажаєте отримати консультацію?", consultHint: "Dr. Vogel консультує німецькою, англійською, іспанською, французькою або португальською мовою.", eConsult: "Ще одне: будь ласка, оберіть мову консультації.",
+    consultSum: (name) => `Мова консультації: ${name}`, consultNames: { de: "німецька", en: "англійська", es: "іспанська", fr: "французька", pt: "португальська" },
+  },
+  ar: {
+    testBanner: "نسخة تجريبية. يرجى إدخال أسماء وهمية فقط، ودون رغبات علاجية حقيقية. الحجز يُسجَّل فعلًا في التقويم.",
+    noSlotHint: "لا يوجد موعد مناسب؟ يسعدنا تواصلكم معنا عبر WhatsApp.", noSlotLink: "عبر WhatsApp", otherTime: "اختيار وقت آخر",
+    mapL: "الطريق إلينا", saveQ: "هل ترغبون في حفظ الموعد في التقويم الآن؟",
+    doneBindingH: "تم الحجز! نتطلع إلى لقائكم.", doneBindingP: "ستصلكم جميع التفاصيل بالبريد الإلكتروني بعد قليل.",
+    cancelP2: "يمكن تغيير الموعد أو إلغاؤه حتى 24 ساعة قبله عبر الرابط الموجود في تأكيد الموعد.",
+    pendingT: "نتحقق من حجزكم.", pendingP: "يرجى عدم الحجز مرة أخرى، سنتواصل معكم.",
+    conflict: "للأسف لم يعد هذا الموعد متاحًا للحجز عبر الإنترنت. يرجى اختيار وقت آخر أو مراسلتنا عبر WhatsApp.",
+    bookErr: "لم تنجح العملية للتو. يرجى المحاولة مرة أخرى أو مراسلتنا عبر WhatsApp.",
+    bookUnavailable: "لا يمكننا التحقق من الأوقات المتاحة حاليًا، لذلك لم يتم حجز أي شيء بعد. بياناتكم محفوظة. يرجى المحاولة مرة أخرى بعد بضع دقائق، أو مراسلتنا باختصار عبر WhatsApp.",
+    loading: "لحظة من فضلكم، نتحقق من التقويم.",
+    noneFree: "لا توجد مواعيد متاحة عبر الإنترنت حاليًا. يرجى مراسلتنا عبر WhatsApp، وسنجد لكم موعدًا.",
+    refL: "رقم الحجز", durL: "المدة", minutes: (n) => n === 1 ? "دقيقة واحدة" : n === 2 ? "دقيقتان" : n % 100 >= 3 && n % 100 <= 10 ? `${n} دقائق` : `${n} دقيقة`,
+    home: "إلى الصفحة الرئيسية", legalImprint: "الإشعار القانوني", legalPrivacy: "بيان حماية البيانات",
+    zoneNames: { zornesfalte: "خطوط ما بين الحاجبين", stirn: "الجبهة", kraehenfuesse: "تجاعيد زوايا العينين", browlift: "رفع الحاجبين", lipflip: "ليب فليب", bunnylines: "تجاعيد جانبي الأنف", mundwinkel: "زوايا الفم", erdbeerkinn: "تجعّد الذقن", gummysmile: "الابتسامة اللثوية", oberlippe: "تجاعيد الشفة العليا", nase: "تنحيف الأنف" },
+    personsQ: "لمن الحجز؟", persons1: "لنفسي", persons2: "لشخصين معًا", personsSum: "لشخصين", personsMore: "هل ترغبون في الحجز لثلاثة أشخاص أو أكثر؟ يسعدنا تواصلكم معنا عبر WhatsApp. سنرتب مواعيدكم متتالية.", personsWa: "المراسلة عبر WhatsApp", secondPerson: "رائع، سنرتب وقتًا أطول. ويمكن للشخص المرافق أن يقرر بهدوء في العيادة ما يرغب فيه.",
+    reminderOpt: "أرجو تذكيري بالموعد عبر WhatsApp.",
+    zoneOther: "أخرى", zoneUnknown: "لم أحدد بعد", zonesOpen: "المناطق لم تُحدد بعد",
+    zoneCountLabel: (n) => n === 1 ? "منطقة واحدة" : n === 2 ? "منطقتان" : n % 100 >= 3 && n % 100 <= 10 ? `${n} مناطق` : `${n} منطقة`,
+    zoneTiers: (p1, p2, p3, p4) => `منطقة واحدة ${p1}، منطقتان ${p2}، 3 مناطق ${p3}، كل منطقة إضافية ${p4}`,
+    consultQ: "بأي لغة ترغبون في تلقي الاستشارة؟", consultHint: "يقدّم Dr. Vogel الاستشارة باللغة الألمانية أو الإنجليزية أو الإسبانية أو الفرنسية أو البرتغالية.", eConsult: "ملاحظة صغيرة: يرجى اختيار لغة الاستشارة.",
+    consultSum: (name) => `الاستشارة باللغة ${name}`, consultNames: { de: "الألمانية", en: "الإنجليزية", es: "الإسبانية", fr: "الفرنسية", pt: "البرتغالية" },
+  },
+
 };
 
 export type Texts = DraftTexts & ExtraTexts;
@@ -357,6 +481,8 @@ export const TEXTS: Record<Lang, Texts> = {
   es: { ...T.es, ...X.es },
   fr: { ...T.fr, ...X.fr },
   pt: { ...T.pt, ...X.pt },
+  uk: { ...T.uk, ...X.uk },
+  ar: { ...T.ar, ...X.ar },
 };
 
 /* Französisch: geschütztes Leerzeichen vor ? ! : ; und in « » */

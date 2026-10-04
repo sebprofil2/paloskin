@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isLang } from "@/lib/i18n";
 import { cancelBooking, confirmAttendance, terminWindow } from "@/lib/booking";
 import { linkCancelReason } from "@/lib/cancel-reasons";
 import { verifyTerminToken } from "@/lib/links";
@@ -14,12 +15,16 @@ export const dynamic = "force-dynamic";
  * Absage bis 2 Stunden vor dem Termin (ja: jederzeit vor dem Termin). Antwort ist eine Weiterleitung auf die Terminseite.
  */
 export async function POST(req: Request) {
+  let lang = "";
   const back = (token: string, m: string) =>
-    new NextResponse(null, { status: 303, headers: { location: `/termin/${encodeURIComponent(token)}?m=${m}`, "cache-control": "no-store" } });
+    new NextResponse(null, { status: 303, headers: { location: `/termin/${encodeURIComponent(token)}?m=${m}${lang ? `&lang=${lang}` : ""}`, "cache-control": "no-store" } });
   if (!allow(clientKey(req), LIMITS.termin.limit, LIMITS.termin.windowMs)) return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   const form = await req.formData().catch(() => null);
   const token = String(form?.get("token") ?? "").slice(0, 80);
   const action = String(form?.get("action") ?? "");
+  // gewählte Seitensprache der Terminseite beibehalten (nur bekannte Kürzel)
+  const langField = String(form?.get("lang") ?? "");
+  if (isLang(langField)) lang = langField;
   const id = verifyTerminToken(token);
   if (!id || (action !== "ja" && action !== "absagen")) return NextResponse.json({ error: "invalid" }, { status: 400 });
   try {

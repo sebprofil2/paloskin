@@ -82,7 +82,8 @@ Felder von `booking` (alle Zeiten UTC mit `Z`):
 | `zones_unknown` | bool | „Ich weiß es noch nicht“ |
 | `status` | `requested`, `confirmed`, `cancelled`, `rescheduled`, `no_show`, `completed` | Buchungsstatus; beim Verschieben bleibt er unverändert, `rescheduled` als Status wird derzeit nicht gesetzt |
 | `channel` | `web` | Kanal |
-| `language` | `de`, `en`, `es`, `fr`, `pt` | Sprache des Kunden |
+| `language` | `de`, `en`, `es`, `fr`, `pt`, `uk`, `ar` | Seitensprache des Kunden: in dieser Sprache hat er gebucht und bekommt er seine Mails. Neu (Ukrainisch, Arabisch): `uk`, `ar` |
+| `consultation_language` | `de`, `en`, `es`, `fr`, `pt` oder null | Neu: Sprache, in der Dr. Vogel berät (Pflichtfrage in der Buchung, getrennt von `language`). `null` bei Buchungen von vor der Einführung. Ukrainisch und Arabisch kommen hier nie vor |
 | `device` | `mobile`, `desktop` | Gerät bei der Buchung |
 | `reminder_whatsapp` | `{ "consented": bool, "consented_at": Zeit oder null }` | Einwilligung zur Erinnerung per WhatsApp |
 | `consent_at` | Zeit | Einwilligung zur Verarbeitung |
@@ -94,6 +95,15 @@ Felder von `booking` (alle Zeiten UTC mit `Z`):
 | `attendance_confirmed_at` | Zeit oder null | Zusage des Kunden („Ja, ich komme“). Frühestens ab dem Vortag des Termins, 10:00 Uhr Berliner Zeit (zeitgleich mit der Erinnerungsmail); vorher lehnt die Buchung eine Zusage ab. Bei Buchung oder Verschiebung nach diesem Zeitpunkt automatisch gesetzt (Zeitpunkt der Buchung oder Verschiebung), weil der Kunde keine Erinnerung mehr bekommt. Siehe Abschnitt 7, attendance_confirmed. |
 | `cancelled_at`, `cancel_reason` | Zeit, Text | Absage; Werte und Bedeutung in Abschnitt 6.1 |
 | `updated_at` | Zeit | letzte Änderung |
+
+### 6.0 Seitensprache und Beratungssprache (Erweiterung, Entscheidung Dr. Vogel vom 4. Oktober 2026)
+
+Die Seite gibt es in sieben Sprachen, beraten wird in fünf. Deshalb zwei getrennte Felder:
+
+- `language` (Seitensprache): bisher `de`, `en`, `es`, `fr`, `pt`, neu zusätzlich `uk` (Ukrainisch) und `ar` (Arabisch). Kundenmails gehen in dieser Sprache.
+- `consultation_language` (Beratungssprache): neues Feld, nur `de`, `en`, `es`, `fr`, `pt`. Bei neuen Buchungen immer gesetzt (Pflichtfeld), bei älteren Buchungen `null`. Für den Kontakt im Studio ist dieses Feld maßgeblich.
+
+Das Schema ist nur erweitert: kein bestehendes Feld entfällt oder ändert seine Bedeutung, Ereignistypen bleiben gleich. Ein Kundensystem, das unbekannte Felder ignoriert und bei `language` unbekannte Werte toleriert, läuft unverändert weiter. Stand: auf der Testinstanz neu.paloskin.de seit 4. Oktober 2026, auf www erst nach Freigabe durch Dr. Vogel.
 
 ### 6.1 Werte von `cancel_reason`
 
@@ -142,6 +152,7 @@ Gemeinsame Werte der Beispiele: Buchung `01M3Z293MN1KK9BTG42T2BZBJG`, Nummer `PS
     "status": "confirmed",
     "channel": "web",
     "language": "de",
+    "consultation_language": "de",
     "device": "mobile",
     "reminder_whatsapp": { "consented": true, "consented_at": "2026-10-02T19:43:23.795Z" },
     "consent_at": "2026-10-02T19:43:23.795Z",

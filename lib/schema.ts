@@ -31,7 +31,9 @@ export const selectionSchema = z
     if (!sel.beratung && !hasTreatment(sel)) ctx.addIssue({ code: "custom", message: "Keine Behandlung gewählt" });
   });
 
-export const langSchema = z.enum(["de", "en", "es", "fr", "pt"]);
+/* Seitensprache (sieben) und Beratungssprache (fünf, Entscheidung 4. Oktober 2026), Listen aus lib/i18n.ts */
+export const langSchema = z.enum(["de", "en", "es", "fr", "pt", "uk", "ar"]);
+export const consultLangSchema = z.enum(["de", "en", "es", "fr", "pt"]);
 
 export const slotsRequestSchema = z.object({
   selection: selectionSchema,
@@ -57,6 +59,8 @@ export const bookRequestSchema = z.object({
   selection: selectionSchema,
   start: z.iso.datetime({ offset: true }),
   lang: langSchema,
+  /* Pflichtfeld: In welcher Sprache möchten Sie beraten werden? */
+  consultationLanguage: consultLangSchema,
   customer: customerSchema,
   consent: z.literal(true),
   /* freiwillige Erinnerung per WhatsApp */

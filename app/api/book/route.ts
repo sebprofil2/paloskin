@@ -54,6 +54,7 @@ export async function POST(req: Request) {
       durationMinutes: minutes,
       customer: body.customer,
       lang: body.lang,
+      consultLang: body.consultationLanguage,
       consentAt: new Date(),
       reminder: body.reminder,
       device: deviceFrom(req.headers.get("user-agent")),

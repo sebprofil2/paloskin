@@ -47,7 +47,7 @@ describe("Gemeinsames Sprachsystem (4. Oktober 2026)", () => {
   it("Startseite kommt vom Server in der gewählten Sprache: lang-Attribut, Titel, Vorschau, Texte, JSON-LD unverändert", () => {
     for (const lang of LANG_IDS) {
       const html = startseiteHtml(lang);
-      expect(html).toContain(`<html lang="${lang}" dir="ltr">`);
+      expect(html).toContain(`<html lang="${lang}" dir="${lang === "ar" ? "rtl" : "ltr"}">`);
       expect(html).toContain(`<title>${HOME_TEXTS[lang].title.replace(/&/g, "&amp;")}</title>`);
       expect(html).toContain(`<meta property="og:title" content="${HOME_TEXTS[lang].title}">`);
       expect(html).toContain(`<script type="application/ld+json">\n${STUDIO_JSONLD}\n</script>`);

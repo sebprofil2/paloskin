@@ -20,6 +20,7 @@ function row(over: Partial<BookingRow> = {}): BookingRow {
     status: "confirmed",
     channel: "web",
     language: "de",
+    consultation_language: "de",
     device: "mobile",
     reminder_whatsapp: 1,
     reminder_consent_at: "2026-10-01T10:00:00.000Z",
@@ -204,6 +205,8 @@ describe("Bestätigungsmail nach Freigabe", () => {
       es: ["Reservado: miércoles, 7/10, 08:00 h", "Por favor, confirme: mañana, 08:00 h", "Cambiado: jueves, 8/10, 09:00 h"],
       fr: ["Réservé\u00A0: mercredi 7/10, 08 h 00", "Merci de confirmer\u00A0: demain, 08 h 00", "Déplacé\u00A0: jeudi 8/10, 09 h 00"],
       pt: ["Marcado: quarta-feira, 7/10, 08:00", "Confirme, por favor: amanhã, 08:00", "Remarcado: quinta-feira, 8/10, 09:00"],
+      uk: ["Заброньовано: середа, 7.10, 08:00", "Просимо підтвердити: завтра, 08:00", "Перенесено: четвер, 8.10, 09:00"],
+      ar: ["محجوز: الأربعاء 7/10 الساعة 08:00", "يرجى التأكيد: غدًا الساعة 08:00", "تعديل: الخميس 8/10 الساعة 09:00"],
     };
     for (const lang of Object.keys(expected) as Lang[]) {
       const m = confirmationMail({ ...booked7, language: lang }, booked);

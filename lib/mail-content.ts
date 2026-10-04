@@ -4,6 +4,7 @@ import { readEnv } from "./env";
 import { confirmFromFor } from "./attendance";
 import type { BookingRow } from "./store";
 import { LANGS, TEXTS } from "./texts";
+import { langDir } from "./i18n";
 import { ADDRESS, MAIL_TEXTS, MAPS_LINK, NB, SIGNER, STUDIO } from "./texts-mail";
 import { addDaysKey, berlinDateKey, berlinParts, berlinTimeLabel, fromBerlinKey, TZ } from "./time";
 import type { Lang } from "./treatments";
@@ -15,6 +16,11 @@ import type { Lang } from "./treatments";
  */
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/** „Datum, Uhrzeit“ mit dem Komma der Sprache (Arabisch „،“) */
+export function dateTime(lang: Lang, date: string, time: string): string {
+  return `${date}${lang === "ar" ? "،" : ","} ${time}`;
+}
 
 export interface WhenLabels {
   /** am Satzanfang oder allein stehend, zum Beispiel „Mittwoch, 7. Oktober“ */
@@ -35,7 +41,12 @@ export function whenLabels(start: Date, lang: Lang): WhenLabels {
   const p = berlinParts(start);
   const weekday = raw({ weekday: "long" });
   const short =
-    lang === "de" ? `${cap(weekday)}, ${p.day}.${p.month}.` : lang === "en" ? `${weekday}, ${p.day} ${raw({ month: "long" })}` : lang === "fr" ? `${weekday} ${p.day}/${p.month}` : `${weekday}, ${p.day}/${p.month}`;
+    lang === "de" ? `${cap(weekday)}, ${p.day}.${p.month}.`
+    : lang === "en" ? `${weekday}, ${p.day} ${raw({ month: "long" })}`
+    : lang === "fr" ? `${weekday} ${p.day}/${p.month}`
+    : lang === "uk" ? `${weekday}, ${p.day}.${String(p.month).padStart(2, "0")}`
+    : lang === "ar" ? `${weekday} ${p.day}/${p.month}`
+    : `${weekday}, ${p.day}/${p.month}`;
   return {
     date: cap(date),
     dateYear: cap(raw({ weekday: "long", day: "numeric", month: "long", year: "numeric" })),
@@ -162,10 +173,13 @@ const button = (href: string, label: string, primary = true) =>
     ? `<a href="${escapeHtml(href)}" style="display:inline-block;background:#002FA7;color:#ffffff;text-decoration:none;padding:12px 20px;font-weight:500;margin:0 8px 8px 0">${escapeHtml(label)}</a>`
     : `<a href="${escapeHtml(href)}" style="display:inline-block;border:1px solid #1d1f22;color:#1d1f22;text-decoration:none;padding:11px 20px;margin:0 8px 8px 0">${escapeHtml(label)}</a>`;
 
+/* Arabisch von rechts nach links: dir und Ausrichtung an html, body und Inhalt (manche Mailprogramme lesen nur eines davon) */
 function wrap(lang: Lang, test: boolean, body: string[]): string {
   const m = MAIL_TEXTS[lang];
+  const dir = langDir(lang);
+  const align = dir === "rtl" ? "text-align:right;direction:rtl;" : "";
   return [
-    `<!doctype html><html lang="${lang}"><body style="margin:0;padding:24px;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;color:#1d1f22;background:#ffffff"><div style="max-width:560px;margin:0 auto">`,
+    `<!doctype html><html lang="${lang}" dir="${dir}"><body dir="${dir}" style="margin:0;padding:24px;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;color:#1d1f22;background:#ffffff;${align}"><div dir="${dir}" style="max-width:560px;margin:0 auto;${align}">`,
     test ? `<p style="margin:0 0 16px;padding:8px 12px;background:#f3f1ec;font-size:14px">${escapeHtml(m.testNote)}</p>` : "",
     ...body,
     "</div></body></html>",
@@ -194,7 +208,7 @@ export function confirmationMail(b: BookingRow, now = new Date()): MailMessage {
 
   const text: string[] = [];
   if (test) text.push(m.testNote, "");
-  text.push(m.greeting(b.first_name), "", intro, "", `${when.date}, ${when.time}`, STUDIO, ADDRESS, `${m.mapL}: ${MAPS_LINK}`, "", m.punctual, "");
+  text.push(m.greeting(b.first_name), "", intro, "", dateTime(lang, when.date, when.time), STUDIO, ADDRESS, `${m.mapL}: ${MAPS_LINK}`, "", m.punctual, "");
   if (b.persons === 2) text.push(m.both, "");
   text.push(m.saveQ, `${m.gcal}: ${cal.google}`, `${m.ical}: ${cal.ics}`, `${m.ocal}: ${cal.outlook}`, "");
   if (rescheduled) text.push(m.oldCalendarNote, "");
@@ -207,7 +221,7 @@ export function confirmationMail(b: BookingRow, now = new Date()): MailMessage {
   const html = wrap(lang, test, [
     p(m.greeting(b.first_name)),
     p(intro),
-    `<p style="margin:0 0 14px"><strong>${escapeHtml(`${when.date}, ${when.time}`)}</strong><br>${escapeHtml(STUDIO)}<br>${escapeHtml(ADDRESS)}<br>${a(MAPS_LINK, m.mapL)}</p>`,
+    `<p style="margin:0 0 14px"><strong>${escapeHtml(dateTime(lang, when.date, when.time))}</strong><br><span dir="ltr">${escapeHtml(STUDIO)}<br>${escapeHtml(ADDRESS)}</span><br>${a(MAPS_LINK, m.mapL)}</p>`,
     p(m.punctual),
     b.persons === 2 ? p(m.both) : "",
     `<p style="margin:0 0 6px">${escapeHtml(m.saveQ)}</p><p style="margin:0 0 14px">${button(cal.google, m.gcal, false)}${button(cal.ics, m.ical, false)}${button(cal.outlook, m.ocal, false)}</p>`,
@@ -231,12 +245,12 @@ export function reminderMail(b: BookingRow): MailMessage {
 
   const text: string[] = [];
   if (test) text.push(m.testNote, "");
-  text.push(m.greeting(b.first_name), "", m.introReminder, "", `${when.date}, ${when.time}`, ADDRESS, `${m.mapL}: ${MAPS_LINK}`, "", m.confirmQ, `${m.yes}: ${yesUrl}`, `${m.notFit} ${m.rescheduleLink}: ${moveUrl}`, "", m.punctualShort, "", m.closingReminder, SIGNER, STUDIO);
+  text.push(m.greeting(b.first_name), "", m.introReminder, "", dateTime(lang, when.date, when.time), ADDRESS, `${m.mapL}: ${MAPS_LINK}`, "", m.confirmQ, `${m.yes}: ${yesUrl}`, `${m.notFit} ${m.rescheduleLink}: ${moveUrl}`, "", m.punctualShort, "", m.closingReminder, SIGNER, STUDIO);
 
   const html = wrap(lang, test, [
     p(m.greeting(b.first_name)),
     p(m.introReminder),
-    `<p style="margin:0 0 14px"><strong>${escapeHtml(`${when.date}, ${when.time}`)}</strong><br>${escapeHtml(ADDRESS)}<br>${a(MAPS_LINK, m.mapL)}</p>`,
+    `<p style="margin:0 0 14px"><strong>${escapeHtml(dateTime(lang, when.date, when.time))}</strong><br><span dir="ltr">${escapeHtml(ADDRESS)}</span><br>${a(MAPS_LINK, m.mapL)}</p>`,
     `<p style="margin:0 0 6px">${escapeHtml(m.confirmQ)}</p><p style="margin:0 0 6px">${button(yesUrl, m.yes)}</p><p style="margin:0 0 14px">${escapeHtml(m.notFit)} ${a(moveUrl, m.rescheduleLink)}</p>`,
     p(m.punctualShort),
     `<p style="margin:16px 0 0">${escapeHtml(m.closingReminder)}<br>${escapeHtml(SIGNER)}<br>${escapeHtml(STUDIO)}</p>`,

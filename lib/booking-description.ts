@@ -1,13 +1,17 @@
 import { normalizePhoneE164 } from "./phone";
 import type { Customer } from "./schema";
+import { CONSULT_NAMES_DE, type ConsultLang } from "./i18n";
 import { lineItemsDe, totalPrice, hasTreatment, type Lang, type Selection } from "./treatments";
 
+/* Seitensprache für das Studio ausgeschrieben auf Deutsch */
 export const LANG_NAMES: Record<Lang, string> = {
   de: "Deutsch",
-  en: "English",
-  es: "Español",
-  fr: "Français",
-  pt: "Português",
+  en: "Englisch",
+  es: "Spanisch",
+  fr: "Französisch",
+  pt: "Portugiesisch",
+  uk: "Ukrainisch",
+  ar: "Arabisch",
 };
 
 export function normalizePhone(v: string): string {
@@ -20,6 +24,8 @@ export interface DescriptionInput {
   durationMinutes: number;
   customer: Customer;
   lang: Lang;
+  /** Beratungssprache; null bei Buchungen vor dem 4. Oktober 2026 */
+  consultLang?: ConsultLang | null;
   consentAt: Date;
   reminder: boolean;
 }
@@ -42,7 +48,11 @@ export function buildDescription(i: DescriptionInput): string {
     for (const it of items) rows.push(`- ${it.label} (${it.price} Euro brutto)`);
     if (hasTreatment(s) && totalPrice(s) > 0) rows.push(`Summe voraussichtlich: ${totalPrice(s)} Euro brutto`);
   }
-  rows.push(`Sprache: ${LANG_NAMES[i.lang]}`);
+  // Beratungssprache ausgeschrieben (Entscheidung 4. Oktober 2026); die Seitensprache nur, wenn sie davon abweicht (Mails gehen in der Seitensprache)
+  if (i.consultLang) {
+    rows.push(`Beratung: ${CONSULT_NAMES_DE[i.consultLang]}`);
+    if (i.lang !== i.consultLang) rows.push(`Seitensprache und Mails: ${LANG_NAMES[i.lang]}`);
+  } else rows.push(`Sprache: ${LANG_NAMES[i.lang]}`);
   // Handliste für die WhatsApp-Erinnerung: die Nummer steht nur im Kalender, wenn der Kunde die Erinnerung möchte
   if (i.reminder) rows.push(`WhatsApp-Erinnerung: ja, ${normalizePhone(i.customer.handy)}`);
   return rows.join("\n");

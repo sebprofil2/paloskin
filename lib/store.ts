@@ -6,6 +6,7 @@ import { isUniqueViolation, openDatabase } from "./db";
 import { readEnv } from "./env";
 import type { Customer } from "./schema";
 import type { Interval } from "./slots";
+import type { ConsultLang } from "./i18n";
 import type { Lang, Selection } from "./treatments";
 import { appointmentType, toSharedServiceCodes, toSharedZones, type AppointmentType } from "./service-codes";
 import { ulid } from "./ulid";
@@ -38,6 +39,8 @@ export interface BookingRow {
   status: BookingStatus;
   channel: string;
   language: Lang;
+  /** Beratungssprache (de, en, es, fr, pt), null bei Buchungen vor dem 4. Oktober 2026 */
+  consultation_language: ConsultLang | null;
   device: string;
   reminder_whatsapp: number;
   reminder_consent_at: string | null;
@@ -97,6 +100,8 @@ export interface BookingPayload {
   status: BookingStatus;
   channel: string;
   language: Lang;
+  /** Beratungssprache, getrennt von der Seitensprache language; null bei älteren Buchungen */
+  consultation_language: ConsultLang | null;
   device: string;
   reminder_whatsapp: { consented: boolean; consented_at: string | null };
   consent_at: string;
@@ -132,6 +137,8 @@ export interface ReserveInput {
   selection: Selection;
   customer: Customer;
   lang: Lang;
+  /** Beratungssprache; die Schnittstelle /api/book verlangt sie, ältere Aufrufer ohne Angabe speichern null */
+  consultLang?: ConsultLang | null;
   consentAt: Date;
   reminder: boolean;
   device: "mobile" | "desktop";
@@ -174,6 +181,7 @@ export function toPayload(r: BookingRow): BookingPayload {
     status: r.status,
     channel: r.channel,
     language: r.language,
+    consultation_language: r.consultation_language ?? null,
     device: r.device,
     reminder_whatsapp: { consented: r.reminder_whatsapp === 1, consented_at: r.reminder_consent_at },
     consent_at: r.consent_at,
@@ -257,9 +265,9 @@ export class Store {
       this.db
         .prepare(
           `INSERT INTO bookings (id, reference, created_at, starts_at, ends_at, duration_minutes, persons, first_visit, service_codes, zones, checkup,
-             status, channel, language, device, reminder_whatsapp, reminder_consent_at, consent_at, first_name, last_name, phone_e164, email, note,
+             status, channel, language, consultation_language, device, reminder_whatsapp, reminder_consent_at, consent_at, first_name, last_name, phone_e164, email, note,
              referral, selection, test_mode, calendar_event_id, calendar_state, calendar_attempts, calendar_attempted_at, updated_at, deleted_at, attendance_confirmed_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'web', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, NULL, 'pending', 0, NULL, ?, NULL, ?)`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'web', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, NULL, 'pending', 0, NULL, ?, NULL, ?)`,
         )
         .run(
           id,
@@ -275,6 +283,7 @@ export class Store {
           s.checkup ? 1 : 0,
           i.status,
           i.lang,
+          i.consultLang ?? null,
           i.device,
           i.reminder ? 1 : 0,
           i.reminder ? iso(i.consentAt) : null,

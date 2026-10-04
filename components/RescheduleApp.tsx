@@ -13,6 +13,8 @@ import type { Lang } from "@/lib/treatments";
 interface Props {
   token: string;
   lang: Lang;
+  /** ?lang=, wenn die Seite in einer anderen Sprache als die Buchung läuft */
+  langQuery?: string;
   currentDate: string;
   currentTime: string;
 }
@@ -23,7 +25,7 @@ type Result = { status: "idle" | "sending" | "conflict" | "error" | "unavailable
 const TZ = "Europe/Berlin";
 const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 
-export function RescheduleApp({ token, lang, currentDate, currentTime }: Props) {
+export function RescheduleApp({ token, lang, langQuery = "", currentDate, currentTime }: Props) {
   const l = MAIL_TEXTS[lang];
   const t = TEXTS[lang];
   const loc = LANGS.find((x) => x.id === lang)?.loc ?? "de-DE";
@@ -101,7 +103,7 @@ export function RescheduleApp({ token, lang, currentDate, currentTime }: Props) 
             <a className="btn-ghost" href={result.calendar.outlook} target="_blank" rel="noopener" style={{ textAlign: "center" }}>{l.ocal}</a>
           </div>
           <p className="hint" style={{ margin: 0 }}>{l.oldCalendarNote}</p>
-          <a className="btn-ghost" href={`/termin/${token}`} style={{ textAlign: "center" }}>{l.pageTitle}</a>
+          <a className="btn-ghost" href={`/termin/${token}${langQuery}`} style={{ textAlign: "center" }}>{l.pageTitle}</a>
         </div>
       </>
     );

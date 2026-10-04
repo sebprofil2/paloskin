@@ -21,6 +21,7 @@ describe("Eingabeprüfung", () => {
       selection: { ...emptySelection(), visit: "first", beratung: true },
       start: "2026-10-26T10:00:00+01:00",
       lang: "de",
+      consultationLanguage: "de",
       customer: { vorname: "Erika", nachname: "Muster", handy: "0151 1234567", email: "erika@example.com" },
       consent: true,
     };

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { Lang } from "./i18n";
+import { LANG_IDS, type Lang } from "./i18n";
 import { HOME_TEXTS } from "./texts-home";
 
 /*
@@ -18,26 +18,40 @@ const BOOKING: Record<Lang, { title: string; description: string; locale: string
   es: { title: "Reservar cita · PALO SKIN by Dr. Vogel", description: "Reserve en línea su cita en PALO SKIN by Dr. Vogel en Berlín Prenzlauer Berg: tratamiento de arrugas, skin booster o consulta. Confirmación inmediata por correo electrónico.", locale: "es_ES" },
   fr: { title: "Prendre rendez-vous · PALO SKIN by Dr. Vogel", description: "Réservez en ligne votre rendez-vous chez PALO SKIN by Dr. Vogel à Berlin Prenzlauer Berg : traitement des rides, skin booster ou consultation. Confirmation immédiate par e-mail.", locale: "fr_FR" },
   pt: { title: "Agendar consulta · PALO SKIN by Dr. Vogel", description: "Agende online sua consulta na PALO SKIN by Dr. Vogel em Berlim Prenzlauer Berg: tratamento de rugas, skin booster ou avaliação. Confirmação imediata por e-mail.", locale: "pt_BR" },
+  uk: { title: "Записатися на прийом · PALO SKIN by Dr. Vogel", description: "Запишіться онлайн до PALO SKIN by Dr. Vogel у Берліні, Prenzlauer Berg: корекція зморшок, Skin Booster або консультація. Миттєве підтвердження електронною поштою.", locale: "uk_UA" },
+  ar: { title: "حجز موعد · PALO SKIN by Dr. Vogel", description: "حجز موعد عبر الإنترنت في PALO SKIN by Dr. Vogel في Prenzlauer Berg ببرلين: علاج التجاعيد، أو سكين بوستر، أو استشارة. تأكيد فوري بالبريد الإلكتروني.", locale: "ar_AR" },
+
 };
 
 export function bookingMetadata(lang: Lang): Metadata {
   const t = BOOKING[lang];
-  const url = lang === "de" ? `${SITE}/booking` : `${SITE}/booking?lang=${lang}`;
+  const url = langUrl("/booking", lang);
   return {
     title: t.title,
     description: t.description,
-    alternates: { canonical: `${SITE}/booking` },
+    alternates: { canonical: url, languages: Object.fromEntries(hreflangLinks("/booking").map((l) => [l.hreflang, l.href])) },
     openGraph: { type: "website", siteName: "PALO SKIN by Dr. Vogel", locale: t.locale, url, title: t.title, description: t.description, images: SHARE_IMAGES },
     twitter: { card: "summary_large_image", title: t.title, description: t.description, images: [SHARE_IMAGES[0].url] },
   };
 }
 
-export const LOCALE: Record<Lang, string> = { de: "de_DE", en: "en_GB", es: "es_ES", fr: "fr_FR", pt: "pt_BR" };
+export const LOCALE: Record<Lang, string> = { de: "de_DE", en: "en_GB", es: "es_ES", fr: "fr_FR", pt: "pt_BR", uk: "uk_UA", ar: "ar_AR" };
 
-/* Startseite: Titel und Beschreibung aus lib/texts-home.ts, Vorschaubilder wie oben; kanonische Adresse immer die Startseite */
+/* Adresse einer Seite in einer Sprache: Deutsch ohne Angabe, sonst ?lang= */
+export function langUrl(path: string, lang: Lang): string {
+  return lang === "de" ? `${SITE}${path}` : `${SITE}${path}?lang=${lang}`;
+}
+
+/* hreflang für alle sieben Sprachen, dazu x-default (Deutsch) */
+export function hreflangLinks(path: string): { hreflang: string; href: string }[] {
+  return [...LANG_IDS.map((l) => ({ hreflang: l, href: langUrl(path, l) })), { hreflang: "x-default", href: langUrl(path, "de") }];
+}
+
+/* Startseite: Titel und Beschreibung aus lib/texts-home.ts, Vorschaubilder wie oben */
 export function homeShare(lang: Lang) {
   const t = HOME_TEXTS[lang];
-  return { title: t.title, description: t.metaDesc, locale: LOCALE[lang], url: lang === "de" ? `${SITE}/` : `${SITE}/?lang=${lang}`, canonical: `${SITE}/` };
+  // Jede Sprachfassung ist ihre eigene kanonische Adresse; die Fassungen verweisen über hreflang aufeinander
+  return { title: t.title, description: t.metaDesc, locale: LOCALE[lang], url: langUrl("/", lang), canonical: langUrl("/", lang) };
 }
 
 /* Strukturierte Daten der Startseite (MedicalBusiness und Arzt), Zeichen für Zeichen wie bisher in public/index.html */
