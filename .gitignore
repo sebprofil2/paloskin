@@ -17,8 +17,6 @@ service-account*.json
 # Lokale Buchungsdatenbank
 .data/
 
-# Vercel
-.vercel/
 
 # Tests, Protokolle, System
 coverage/

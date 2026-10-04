@@ -1,7 +1,77 @@
-/* Texte der Startseite in fünf Sprachen. Deutsch ist die Vorlage (Freigabe Dr. Vogel, 3. Oktober 2026), die anderen Sprachen sind daraus übersetzt. */
-window.PALO = window.PALO || {};
-window.PALO.HOME = {
-de:{
+/*
+ * Texte der Startseite. Deutsch ist die Vorlage (Freigabe Dr. Vogel, 3. Oktober 2026), die anderen Sprachen sind daraus übersetzt.
+ * Früher in public/assets/home-text.js; seit 4. Oktober 2026 hier, im selben System wie Buchung, Mails und Vorschautexte.
+ * title und metaDesc sind Titel und Beschreibung der Startseite (auch für die Vorschau beim Teilen, lib/share-meta.ts).
+ */
+import type { Lang } from "./i18n";
+
+export interface HomeTexts {
+  title: string;
+  metaDesc: string;
+  navPrices: string;
+  navHow: string;
+  navStudio: string;
+  navFaq: string;
+  book: string;
+  bookNow: string;
+  whatsapp: string;
+  h1: string;
+  lead: string;
+  fAddress: string;
+  fDoctor: string;
+  fLang: string;
+  langs: string;
+  fHours: string;
+  hours: string;
+  pricesH: string;
+  pricesP: string;
+  botH: string;
+  z1: string;
+  z2: string;
+  z3: string;
+  zx: string;
+  zoneLink: string;
+  kauH: string;
+  kauR: string;
+  nefH: string;
+  nefR: string;
+  achselH: string;
+  achselR: string;
+  boostH: string;
+  lachs: string;
+  lachsS: string;
+  lachs4: string;
+  lachs4S: string;
+  pLachs4: string;
+  pnote: string;
+  howH: string;
+  s1H: string;
+  s1P: string;
+  s2H: string;
+  s2P: string;
+  s3H: string;
+  s3P: string;
+  studioH: string;
+  quote1: string;
+  quote3: string;
+  studioLangs: string;
+  studioAddr: string;
+  mapL: string;
+  faqH: string;
+  q1: string;
+  a1: string;
+  q2: string;
+  a2: string;
+  q3: string;
+  a3: string;
+  q4: string;
+  a4: string;
+  imprint: string;
+  privacy: string;
+}
+
+export const HOME_TEXTS: Record<Lang, HomeTexts> = {
+  de: {
   title:"PALO SKIN by Dr. Vogel | Ärztliche Faltenbehandlung in Berlin",
   metaDesc:"PALO SKIN by Dr. Vogel in Berlin Prenzlauer Berg: ärztliche Faltenbehandlung durch Dr. med. Sebastian Vogel. Termine online buchen, auch kurzfristig.",
   navPrices:"Behandlungen und Preise", navHow:"Ablauf", navStudio:"Studio", navFaq:"Fragen",
@@ -35,7 +105,7 @@ de:{
   q4:"Ist die Behandlung für mich geeignet?", a4:"Das klären wir im Gespräch vor der Behandlung. Nicht behandeln wir bei Schwangerschaft und Stillzeit, bestimmten Muskelerkrankungen, akuten Infekten im Behandlungsbereich und bekannten Unverträglichkeiten.",
   imprint:"Impressum", privacy:"Datenschutz"
 },
-en:{
+  en: {
   title:"PALO SKIN by Dr. Vogel | Physician-led wrinkle treatment in Berlin",
   metaDesc:"PALO SKIN by Dr. Vogel in Berlin Prenzlauer Berg: physician-led wrinkle treatment by Dr. med. Sebastian Vogel. Book appointments online, also at short notice.",
   navPrices:"Treatments and prices", navHow:"How it works", navStudio:"Studio", navFaq:"Questions",
@@ -69,7 +139,7 @@ en:{
   q4:"Is the treatment suitable for me?", a4:"We clarify that in the consultation before the treatment. We do not treat during pregnancy and breastfeeding, with certain muscle disorders, with acute infections in the treatment area or with known intolerances.",
   imprint:"Legal notice", privacy:"Privacy"
 },
-es:{
+  es: {
   title:"PALO SKIN by Dr. Vogel | Tratamiento médico de arrugas en Berlín",
   metaDesc:"PALO SKIN by Dr. Vogel en Berlín Prenzlauer Berg: tratamiento médico de arrugas por el Dr. med. Sebastian Vogel. Reserve su cita en línea, también con poca antelación.",
   navPrices:"Tratamientos y precios", navHow:"Cómo funciona", navStudio:"Estudio", navFaq:"Preguntas",
@@ -103,7 +173,7 @@ es:{
   q4:"¿Es el tratamiento adecuado para mí?", a4:"Lo aclaramos en la conversación previa al tratamiento. No tratamos durante el embarazo y la lactancia, en ciertas enfermedades musculares, con infecciones agudas en la zona de tratamiento ni con intolerancias conocidas.",
   imprint:"Aviso legal", privacy:"Privacidad"
 },
-fr:{
+  fr: {
   title:"PALO SKIN by Dr. Vogel | Traitement médical des rides à Berlin",
   metaDesc:"PALO SKIN by Dr. Vogel à Berlin Prenzlauer Berg : traitement médical des rides par le Dr med. Sebastian Vogel. Réservez en ligne, même à court terme.",
   navPrices:"Soins et tarifs", navHow:"Déroulement", navStudio:"Studio", navFaq:"Questions",
@@ -137,7 +207,7 @@ fr:{
   q4:"Le soin est-il adapté pour moi ?", a4:"Nous le déterminons lors de l’entretien avant le soin. Nous ne traitons pas pendant la grossesse et l’allaitement, en cas de certaines maladies musculaires, d’infections aiguës dans la zone à traiter ou d’intolérances connues.",
   imprint:"Mentions légales", privacy:"Confidentialité"
 },
-pt:{
+  pt: {
   title:"PALO SKIN by Dr. Vogel | Tratamento médico de rugas em Berlim",
   metaDesc:"PALO SKIN by Dr. Vogel em Berlim Prenzlauer Berg: tratamento médico de rugas pelo Dr. med. Sebastian Vogel. Marque online, também em cima da hora.",
   navPrices:"Tratamentos e preços", navHow:"Como funciona", navStudio:"Estúdio", navFaq:"Perguntas",
@@ -172,5 +242,8 @@ pt:{
   imprint:"Informações legais", privacy:"Privacidade"
 }
 };
-/* Französisch: geschütztes Leerzeichen vor ? ! : ; und innerhalb der Anführungszeichen */
-(function(){ const f = window.PALO.HOME.fr; Object.keys(f).forEach(k => { if (typeof f[k]==="string") f[k] = f[k].replace(/ ([?!:;»])/g," $1").replace(/« /g,"« "); }); })();
+
+/*
+ * Französisch: Die frühere Fassung in home-text.js wollte vor ? ! : ; ein geschütztes Leerzeichen setzen, ersetzte aber
+ * versehentlich durch ein normales Leerzeichen. Für die pixelgleiche Übernahme bleibt es vorerst bei normalen Leerzeichen.
+ */

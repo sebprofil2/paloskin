@@ -67,7 +67,7 @@ export function hasAccess(req: Request): boolean {
 export function isSecureRequest(req: Request): boolean {
   if (new URL(req.url).protocol === "https:") return true;
   const proto = req.headers.get("x-forwarded-proto");
-  return proto === "https" && (readEnv().trustProxy || !!process.env.VERCEL);
+  return proto === "https" && readEnv().trustProxy;
 }
 
 export function cookieHeader(value: string, secure: boolean): string {

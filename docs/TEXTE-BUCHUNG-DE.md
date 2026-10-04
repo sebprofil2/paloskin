@@ -122,38 +122,9 @@ Stelle, dann aktueller Text. Zeilen mit „Altbestand“ sind im Code noch vorha
 114. **Schritt 1, Summenzeile (Anzahl)** (zoneCountLabel): 3 Zonen  (Vorlage mit Beispielwert)
 115. **Schritt 1, Summenzeile, Staffel klein** (zoneTiers): 1 Zone 120 €*, 2 Zonen 210 €*, 3 Zonen 300 €*, jede weitere 80 €*  (Vorlage mit Beispielwert)
 
-## B. Zwischenlösung (/booking ohne Testcode), zusätzliche Texte
+## B. und C. Zwischenlösung (entfallen)
 
-Die Zwischenlösung nutzt dieselben Texte wie A für Kopf, Schritt 1 und Fehlermeldungen; abweichend sind nur die Texte in Schritt 2 (Wunschtermin per WhatsApp):
-
-116. **Zwischenlösung, Kasten Auswahl, Überschrift** (selH): Ihre Auswahl
-117. **Zwischenlösung, Kasten Auswahl, Hinweis** (selHint): Kopieren Sie Ihre Auswahl einfach und fügen Sie sie im Chat ein.
-118. **Zwischenlösung, Knopf Auswahl kopieren** (copySel): Auswahl kopieren
-119. **Zwischenlösung, Schritt 2, Frage Tag** (dayQ): Welcher Tag passt Ihnen?
-120. **Zwischenlösung, Schritt 2, Frage Tageszeit** (winQ): Zu welcher Tageszeit?
-121. **Zwischenlösung, Schritt 2, Kacheln Tageszeit** (wins): Vormittag | Mittag | Nachmittag | Abend
-122. **Zwischenlösung, Schritt 2, Kachel flexibel** (flex): Ich bin flexibel
-123. **Zwischenlösung, Schritt 2, Überschrift Name** (nameH): Ihr Name
-124. **Zwischenlösung, Schritt 2, Erklärtext oben** (interim): Sagen Sie uns, wann es Ihnen passt. Wir melden uns per WhatsApp und bestätigen die genaue Uhrzeit.
-125. **Zwischenlösung, Knopf unten** (send): Anfrage per WhatsApp senden
-126. **Zwischenlösung, Knopf SMS** (sms): Lieber per SMS
-127. **Zwischenlösung, Einwilligungszeile** (consentLine): Mit dem Absenden sind Sie einverstanden, dass Palo Skin Ihre Angaben, auch die gewählte Behandlung, für Ihren Termin verarbeitet. Mehr in der <a href='/datenschutz'>Datenschutzerklärung</a>.
-128. **Zwischenlösung, Link unter der Karte** (home): Zur Startseite
-129. **Zwischenlösung, Fehlermeldung Tag** (eDay): Bitte wählen Sie einen Tag oder „Ich bin flexibel“.
-130. **Zwischenlösung, Fehlermeldung Tageszeit** (eWin): Bitte wählen Sie eine Tageszeit.
-131. **Zwischenlösung, WhatsApp-Nachricht (einziger Inhalt des Links)** (msgHello): Hallo Palo Skin, ich möchte einen Termin anfragen.
-132. **Zwischenlösung, Auswahl, Vorsatz Wunschtermin** (msgWish): Wunschtermin
-133. **Zwischenlösung, Auswahl, Vorsatz Name** (msgName): Name
-134. **Zwischenlösung, Auswahl, Wort für flexibel** (msgFlex): flexibel
-
-## C. Zwischenlösung, Texte, die vom Next.js-Stand abweichen (älterer Entwurf)
-
-135. **Schritt 1, Karte Beratung, Preiszeile** (consultPrice): Preis folgt
-136. **Schritt 3, Überschrift** (dataH): Ihre Angaben
-137. **Schritt 3, Zusatz zur Handynummer** (handyWhy): (für Bestätigung und Erinnerung per WhatsApp)
-138. **Schritt 3, Hinweis unter Handynummer bei Schon einmal da** (phoneReturn): Bitte dieselbe Handynummer wie bei Ihrem letzten Besuch, damit wir Sie wiedererkennen.
-139. **Bestätigung, Überschrift** (doneH): Ihr Termin ist gebucht
-140. **Leiste unten, Knopf in Schritt 3** (book): Termin buchen
+Die Zwischenlösung (Anfrage per WhatsApp unter /booking ohne Testcode) ist seit 4. Oktober 2026 entfernt, ihre Texte (Nummern 116 bis 140) gibt es nicht mehr. Ohne Testcode zeigt die Testumgebung neu.paloskin.de nur den Hinweis „Testumgebung, nicht öffentlich“.
 
 ## D. Im Code vorhanden, derzeit nicht sichtbar (Altbestand aus dem Entwurf)
 

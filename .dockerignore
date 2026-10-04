@@ -12,7 +12,6 @@ node_modules
 *gserviceaccount*.json
 palo-skin-buchung-*.json
 service-account*.json
-.vercel
 coverage
 *.log
 .DS_Store

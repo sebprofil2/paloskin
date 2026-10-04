@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { SlotDay } from "@/lib/slots";
-import { FLAGS, LANGS, TEXTS, isLang, type Texts } from "@/lib/texts";
+import { FLAGS, LANGS, TEXTS, type Texts } from "@/lib/texts";
+import { saveLangChoice } from "@/lib/i18n";
 import { normalizePhoneE164 } from "@/lib/phone";
 import { PRICES, ZONE_IDS, hasBotulinum, hasTreatment, zoneCount, zonePrice, type Lachs, type Lang, type Selection, type Visit, type ZoneId } from "@/lib/treatments";
 import { LogoKopf } from "@/components/LogoKopf";
@@ -125,18 +126,6 @@ function durationKey(sel: Selection): string {
 }
 
 
-/* Sprache: Adresse, dann gespeicherte Wahl, dann Sprache des Geräts, sonst Deutsch (wie lang.js) */
-function detectLang(fromUrl: Lang | null): Lang {
-  if (fromUrl) return fromUrl;
-  try {
-    const saved = localStorage.getItem("paloLang");
-    if (isLang(saved)) return saved;
-  } catch {}
-  const nav = (navigator.languages || [navigator.language || "de"]).map((l) => String(l).slice(0, 2).toLowerCase());
-  for (const n of nav) if (isLang(n)) return n;
-  return "de";
-}
-
 const pad = (n: number) => String(n).padStart(2, "0");
 const keyToNoon = (key: string) => new Date(`${key}T12:00:00Z`);
 const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
@@ -210,9 +199,9 @@ function withPrivacyLink(text: string, word: string, href: string): React.ReactN
 }
 
 /* ---------- Komponente ---------- */
-export function BookingApp({ initialLang, testMode, checkup }: { initialLang: Lang | null; testMode: boolean; checkup: boolean }) {
-  const [lang, setLangState] = useState<Lang>(initialLang ?? "de");
-  const [ready, setReady] = useState(false);
+/* initialLang hat der Server bestimmt (lib/i18n.ts): Die Seite kommt gleich in der richtigen Sprache, nichts springt um */
+export function BookingApp({ initialLang, testMode, checkup }: { initialLang: Lang; testMode: boolean; checkup: boolean }) {
+  const [lang, setLangState] = useState<Lang>(initialLang);
   const [s, setS] = useState<State>(() => blank(checkup));
   const [slots, setSlots] = useState<SlotsState>({ status: "idle", days: [], durationMinutes: null, key: "" });
   const [book, setBook] = useState<BookState>({ status: "idle" });
@@ -249,19 +238,9 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   const dayN = (key: string) => Number(key.slice(8));
   const dayLabel = (key: string) => cap(dfmt(key, { weekday: "long", day: "numeric", month: "long" }));
 
-  useEffect(() => {
-    const detected = detectLang(initialLang);
-    setLangState(detected);
-    document.documentElement.lang = detected;
-    setReady(true);
-  }, [initialLang]);
-
   const setLang = (id: Lang) => {
     setLangState(id);
-    document.documentElement.lang = id;
-    try {
-      localStorage.setItem("paloLang", id);
-    } catch {}
+    saveLangChoice(id);
   };
 
   const selection = useMemo(() => toSelection(s, checkup), [s, checkup]);
@@ -850,9 +829,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     <div className="shell">
       {testMode ? <div className="testbar" role="note"><b>Test.</b> {l.testBanner}</div> : null}
       <main className="app" id="app" ref={appRef} aria-live="polite">
-        {!ready ? (
-          <div className="band" />
-        ) : book.status === "done" ? (
+        {book.status === "done" ? (
           screenDone(book.booking)
         ) : (
           <>
@@ -863,7 +840,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
           </>
         )}
       </main>
-      {ready ? foot : null}
+      {foot}
     </div>
   );
 }

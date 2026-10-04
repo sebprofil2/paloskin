@@ -44,7 +44,8 @@ export const ZONE_NAMES_DE: Record<ZoneId, string> = {
 
 export type Lachs = "single" | "pack";
 export type Visit = "first" | "return";
-export type Lang = "de" | "en" | "es" | "fr" | "pt";
+export type { Lang } from "./i18n";
+import type { Lang } from "./i18n";
 
 export interface Selection {
   /** Buchende Person plus höchstens eine weitere; Behandlung gilt für die buchende Person */

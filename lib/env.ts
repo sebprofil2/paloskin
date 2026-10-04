@@ -77,7 +77,7 @@ function serviceAccount(): { email: string; key: string } {
   }
   return {
     email: (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "").trim(),
-    // Vercel speichert Zeilenumbrüche je nach Eingabe als \n: beide Formen zulassen
+    // Zeilenumbrüche im Schlüssel als echte Umbrüche oder als \n: beide Formen zulassen
     key: (process.env.GOOGLE_PRIVATE_KEY ?? "").replace(/\\n/g, "\n").replace(/^"|"$/g, ""),
   };
 }
@@ -107,8 +107,8 @@ export function readEnv(): Env {
   }
   return {
     engine: process.env.BOOKING_ENGINE === "google" ? "google" : "mock",
-    // Standard ist Testbetrieb: erst TEST_MODE=false schaltet die echte Buchung für alle frei
-    testMode: process.env.TEST_MODE !== "false",
+    // Standard ist Produktion (öffentlich, seit 4. Oktober 2026). Testbetrieb nur mit TEST_MODE=true oder auf der Testinstanz
+    testMode: process.env.TEST_MODE === "true" || (process.env.PALOSKIN_INSTANCE ?? "").trim() === "test",
     testCode: (process.env.TEST_ACCESS_CODE ?? "").trim(),
     testCookieSecret: (process.env.TEST_COOKIE_SECRET ?? "").trim(),
     stepMinutes: int(process.env.SLOT_STEP_MINUTES, 30),

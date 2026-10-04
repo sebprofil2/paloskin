@@ -1,7 +1,7 @@
 # Reverse-Proxy mit automatischem HTTPS (Let's Encrypt) für paloskin.de auf dem Hetzner-Server.
 # Caddy holt und erneuert die Zertifikate selbst, sobald die DNS-Einträge auf den Server zeigen.
 # Die Sicherheitsheader (CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy) setzt die Anwendung selbst
-# (next.config.ts), damit sie auf Vercel und hier gleich sind. HSTS kommt erst hier, nach geprüftem HTTPS.
+# (next.config.ts), damit sie an einer Stelle stehen. HSTS kommt erst hier, nach geprüftem HTTPS.
 # Kein HTTP/3 (UDP 443 ist in der Hetzner-Firewall nicht offen); nur HTTP/1.1 und HTTP/2.
 {
 	servers {

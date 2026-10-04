@@ -1,5 +1,13 @@
 # Hinweise für Claude Code: Website paloskin.de und Buchung zusammenführen
 
+## Aktueller Stand (4. Oktober 2026), vor den älteren Abschnitten lesen
+
+- paloskin.de läuft nur noch auf dem eigenen Server bei Hetzner. Vercel wird nicht mehr genutzt, `vercel.json` ist entfernt; das alte Vercel-Projekt löst Dr. Vogel am 9. Oktober 2026 auf. Abschnitte unten, die Vercel nennen, sind Verlauf.
+- Ein Sprachsystem für alles: `lib/i18n.ts` (Seitensprache, Erkennung, Cookie `palo_lang`), `proxy.ts` (Sprache je Anfrage), Texte in `lib/texts-home.ts`, `lib/texts.ts`, `lib/texts-mail.ts`, `lib/share-meta.ts`. `public/index.html`, `public/assets/lang.js` und `public/assets/home-text.js` gibt es nicht mehr.
+- Startseite: `app/route.ts` liefert fertiges HTML aus `lib/startseite.ts` (gleiches Markup und `site.css` wie früher, ohne React-Laufzeit). Sprachmenü und Zonen-Link: `public/assets/sprachwahl.js`.
+- Ohne Angabe gilt Produktion. Testbetrieb nur mit `TEST_MODE=true` oder `PALOSKIN_INSTANCE=test`; ohne Code zeigt die Testumgebung nur „Testumgebung, nicht öffentlich“. Die Zwischenlösung (`content/booking-interim.html`, `components/InterimBooking.tsx`) ist entfernt.
+- Aufnahmen und Pixelvergleich: `node scripts/aufnahmen.mjs` (Aufruf im Kopf der Datei).
+
 Stand: 1. Oktober 2026 (Berliner Zeit). Dieses Repository enthält die fertige statische Website von Palo Skin by Dr. Vogel. Die Buchungsanwendung (Next.js, Google Kalender) wird nach dem „Bauauftrag Buchung mit Google Kalender" in dasselbe Repository gebaut. Ziel: ein Vercel-Projekt, eine Domain, keine zweite Seite.
 
 ## Was schon da ist (Ordner public)
@@ -66,7 +74,7 @@ Solange /booking die Zwischenlösung (Anfrage per WhatsApp) zeigt, sind die Text
 3. `hours2` (Studio, Termine): derzeit „Nur mit Termin, Anfrage online oder per WhatsApp“. Dann „Buchung online rund um die Uhr“.
 4. `a5` (Häufige Fragen, Absagen): derzeit „Per WhatsApp an +49 151 58872566 …“. Erst ändern, wenn es Absagen über einen Link gibt.
 
-Außerdem: `TEST_MODE` gilt standardmäßig als eingeschaltet. Ohne Umgebungsvariablen auf Vercel zeigt /booking deshalb die Zwischenlösung, nie die Testbuchung.
+Außerdem (Stand damals): `TEST_MODE` galt standardmäßig als eingeschaltet. Seit 4. Oktober 2026 ist es umgekehrt, siehe oben.
 
 ## Google-Anbindung eingerichtet (1. Oktober 2026, spät)
 
@@ -142,4 +150,4 @@ Für später, nicht gebaut: Nach einer Buchung für 1 Person soll die Bestätigu
 ## Gesamtauftrag 3. Oktober 2026 abends (Stand nach den Blöcken 1 bis 10)
 
 - Fristen: Vorlauf 2 Stunden, Nachtregel 23:00 Uhr für Termine vor 10:00 Uhr, Horizont 6 Wochen (`lib/slots.ts`, `isBookableStart`). Terminseite: Verschieben und Absagen bis 24 Stunden kommuniziert, technisch bis 2 Stunden (`terminWindow` in `lib/booking.ts`, Entscheidung 3. Oktober 2026, vorher 8 Stunden). Erinnerung am Vortag 10:00 Uhr nur für vorher gebuchte Termine. Studio-Mails an `OWNER_MAIL` über `studio_mails`.
-- Texte: `lib/texts-mail.ts` (Mails, Terminseite, Verschieben), `lib/texts.ts` (Buchung), `public/assets/home-text.js` (Startseite); Liste `docs/TEXTE-MAILS.md` über `scripts/texte-mails.mts`.
+- Texte: `lib/texts-mail.ts` (Mails, Terminseite, Verschieben), `lib/texts.ts` (Buchung), `lib/texts-home.ts` (Startseite, bis 4. Oktober 2026 `public/assets/home-text.js`); Liste `docs/TEXTE-MAILS.md` über `scripts/texte-mails.mts`.

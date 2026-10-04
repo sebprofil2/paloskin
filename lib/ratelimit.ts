@@ -22,11 +22,11 @@ export function allow(key: string, limit: number, windowMs: number, now = Date.n
 }
 
 /**
- * Anschluss des Aufrufers. X-Forwarded-For nur, wenn der eigene Proxy davor steht
- * (TRUST_PROXY=true hinter Caddy) oder Vercel die Kopfzeile setzt. Sonst ein fester Schlüssel.
+ * Anschluss des Aufrufers. X-Forwarded-For nur, wenn der eigene Proxy davor steht und die Kopfzeile setzt
+ * (TRUST_PROXY=true hinter Caddy). Sonst ein fester Schlüssel.
  */
 export function clientKey(req: Request): string {
-  const trusted = readEnv().trustProxy || !!process.env.VERCEL;
+  const trusted = readEnv().trustProxy;
   if (trusted) {
     const fwd = req.headers.get("x-forwarded-for");
     const ip = (fwd ? fwd.split(",")[0] : req.headers.get("x-real-ip") ?? "").trim();

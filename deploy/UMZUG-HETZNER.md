@@ -2,7 +2,7 @@
 
 Stand: 2. Oktober 2026. Diese Anleitung ist zum Mitklicken geschrieben. Jeder Befehl steht in einem eigenen Block; Sie kopieren ihn in das Terminal und drücken Enter. Wörter in spitzen Klammern wie `<SERVER-IP>` ersetzen Sie durch Ihren Wert. Was der Server antwortet, steht als „Erwartet“. Dauer insgesamt etwa zwei Stunden, DNS-Umstellung am Ende.
 
-Vorab: Es wird der Branch `zonen` ausgerollt. Die Live-Seite auf Vercel bleibt unverändert, bis Sie in Schritt 11 die DNS-Einträge umstellen. Bis dahin ist nichts öffentlich sichtbar.
+Vorab: Es wird der Branch `zonen` ausgerollt. Beim Umzug am 2. Oktober 2026 blieb die frühere Seite unverändert, bis in Schritt 11 die DNS-Einträge umgestellt wurden. Seitdem läuft paloskin.de nur noch auf diesem Server.
 
 ## 1. SSH-Schlüssel auf dem Mac erzeugen (erledigt am 2. Oktober 2026)
 
@@ -249,7 +249,7 @@ Nichts zu tun. Sobald DNS auf den Server zeigt, holt Caddy das Zertifikat selbst
 dig +short www.paloskin.de A
 ```
 
-Erwartet: `<SERVER-IP>`. Dann im Browser https://www.paloskin.de öffnen: Schloss-Symbol ohne Warnung, Startseite mit neuem Stand, `/booking` zeigt die Zwischenlösung, `/booking/zugang` die Codeabfrage.
+Erwartet: `<SERVER-IP>`. Dann im Browser https://www.paloskin.de öffnen: Schloss-Symbol ohne Warnung, Startseite mit neuem Stand, `/booking` zeigt die Buchung (die Zwischenlösung von damals ist seit 4. Oktober 2026 entfernt).
 
 5. HSTS einschalten, erst wenn https://paloskin.de und https://www.paloskin.de beide ohne Warnung laden. Auf dem Server in `deploy/Caddyfile` das `#` vor der Zeile `Strict-Transport-Security` entfernen, dann:
 
@@ -257,11 +257,11 @@ Erwartet: `<SERVER-IP>`. Dann im Browser https://www.paloskin.de öffnen: Schlos
 cd /opt/paloskin && docker compose -f deploy/docker-compose.yml restart caddy
 ```
 
-6. Vercel: eine Woche lang nichts ändern. Danach im Vercel-Projekt unter Settings, Domains die Domain entfernen und die Umgebungsvariablen löschen.
+6. Früheres Hosting: Das alte Projekt bei Vercel löst Dr. Vogel am 9. Oktober 2026 auf (Domain und Umgebungsvariablen dort entfernen). Im Repository gibt es seit 4. Oktober 2026 keine Vercel-Konfiguration mehr.
 
-## 12. Rückweg zu Vercel
+## 12. Rückweg (entfällt)
 
-Solange die Domain bei Vercel nicht entfernt ist: bei GoDaddy die beiden Einträge auf die notierten Vercel-Werte zurücksetzen (`A @ 76.76.21.21`, `CNAME www cname.vercel-dns.com`) und die `AAAA`-Einträge löschen. Mit TTL 600 greift das in etwa zehn Minuten. Der Server kann weiterlaufen; `docker compose -f deploy/docker-compose.yml down` hält ihn an.
+Ein Rückweg zum früheren Hosting ist nicht mehr vorgesehen. Bei einem Ausfall des Servers gilt die Wiederherstellung aus Abschnitt 19 und aus den Hetzner-Sicherungen.
 
 ## 13. Später: Aktualisieren
 

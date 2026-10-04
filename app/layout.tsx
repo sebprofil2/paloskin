@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { langDir, LANG_MIGRATE_SCRIPT } from "@/lib/i18n";
+import { requestLang } from "@/lib/i18n-server";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.paloskin.de"),
@@ -19,9 +21,14 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+/* Sprache und Schreibrichtung setzt schon der Server (proxy.ts, lib/i18n.ts) */
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const lang = await requestLang();
   return (
-    <html lang="de" suppressHydrationWarning>
+    <html lang={lang} dir={langDir(lang)} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: LANG_MIGRATE_SCRIPT }} />
+      </head>
       <body>{children}</body>
     </html>
   );

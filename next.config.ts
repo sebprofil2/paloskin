@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 /*
- * paloskin.de: statische Website im Ordner public, Buchung unter /booking.
- * Weiterleitungen und saubere Adressen aus der früheren vercel.json sind hier übernommen.
+ * paloskin.de: Startseite (app/page.tsx) und Buchung (/booking) als Next.js-Seiten, Impressum und Datenschutz
+ * als statische Seiten im Ordner public. Weiterleitungen und saubere Adressen stehen nur hier.
  */
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -11,13 +11,9 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["nodemailer"],
   trailingSlash: false,
   poweredByHeader: false,
-  outputFileTracingIncludes: {
-    "/booking": ["./content/**"],
-  },
   async rewrites() {
     return {
       beforeFiles: [
-        { source: "/", destination: "/index.html" },
         { source: "/impressum", destination: "/impressum/index.html" },
         { source: "/datenschutz", destination: "/datenschutz/index.html" },
       ],
@@ -67,7 +63,7 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
           /*
            * Content-Security-Policy: nur eigene Quellen. Inline-Skripte und -Stile sind nötig
-           * (Zwischenlösung und Next.js-Laufzeit), externe Skripte, Schriften oder Einbettungen gibt es nicht.
+           * (Next.js-Laufzeit, Sprachübernahme im Kopf), externe Skripte, Schriften oder Einbettungen gibt es nicht.
            * HSTS setzt erst der Reverse-Proxy, sobald HTTPS dauerhaft läuft.
            */
           {

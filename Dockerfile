@@ -1,5 +1,5 @@
-# paloskin.de: Next.js im Standalone-Modus. Für den späteren Betrieb auf einem Hetzner-Server
-# (automatisches HTTPS zum Beispiel über Caddy davor). Umgebungsvariablen zur Laufzeit setzen.
+# paloskin.de: Next.js im Standalone-Modus für den Hetzner-Server (HTTPS über Caddy davor, deploy/docker-compose.yml).
+# Umgebungsvariablen zur Laufzeit setzen.
 FROM node:24-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -22,7 +22,6 @@ RUN addgroup -g 10001 -S app && adduser -u 10001 -S app -G app
 COPY --from=build --chown=app:app /app/.next/standalone ./
 COPY --from=build --chown=app:app /app/.next/static ./.next/static
 COPY --from=build --chown=app:app /app/public ./public
-COPY --from=build --chown=app:app /app/content ./content
 USER app
 EXPOSE 3000
 CMD ["node", "server.js"]

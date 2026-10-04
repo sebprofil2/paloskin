@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import type { Lang } from "./treatments";
+import type { Lang } from "./i18n";
+import { HOME_TEXTS } from "./texts-home";
 
 /*
  * Vorschautexte und Vorschaubilder beim Teilen (Instagram, WhatsApp, iMessage) und für Suchmaschinen.
@@ -30,3 +31,14 @@ export function bookingMetadata(lang: Lang): Metadata {
     twitter: { card: "summary_large_image", title: t.title, description: t.description, images: [SHARE_IMAGES[0].url] },
   };
 }
+
+export const LOCALE: Record<Lang, string> = { de: "de_DE", en: "en_GB", es: "es_ES", fr: "fr_FR", pt: "pt_BR" };
+
+/* Startseite: Titel und Beschreibung aus lib/texts-home.ts, Vorschaubilder wie oben; kanonische Adresse immer die Startseite */
+export function homeShare(lang: Lang) {
+  const t = HOME_TEXTS[lang];
+  return { title: t.title, description: t.metaDesc, locale: LOCALE[lang], url: lang === "de" ? `${SITE}/` : `${SITE}/?lang=${lang}`, canonical: `${SITE}/` };
+}
+
+/* Strukturierte Daten der Startseite (MedicalBusiness und Arzt), Zeichen für Zeichen wie bisher in public/index.html */
+export const STUDIO_JSONLD = `{"@context": "https://schema.org", "@graph": [{"@type": "MedicalBusiness", "@id": "https://www.paloskin.de/#studio", "name": "PALO SKIN by Dr. Vogel", "alternateName": "PALO SKIN", "url": "https://www.paloskin.de/", "telephone": "+4915158872566", "email": "info@paloskin.de", "address": {"@type": "PostalAddress", "streetAddress": "Hagenauer Straße 14", "postalCode": "10435", "addressLocality": "Berlin", "addressCountry": "DE"}, "parentOrganization": {"@type": "Organization", "name": "Nidus Skin Berlin GmbH"}, "founder": {"@id": "https://www.paloskin.de/#arzt"}, "employee": {"@id": "https://www.paloskin.de/#arzt"}, "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"], "opens": "07:30", "closes": "20:00"}, {"@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "07:30", "closes": "19:00"}, {"@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "09:00", "closes": "17:00"}, {"@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "11:00", "closes": "17:00"}], "availableLanguage": ["de", "en", "es", "fr", "pt"], "sameAs": ["https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8", "https://www.instagram.com/palo.skin"]}, {"@type": "Physician", "@id": "https://www.paloskin.de/#arzt", "name": "Dr. med. Sebastian Vogel", "givenName": "Sebastian", "familyName": "Vogel", "honorificPrefix": "Dr. med.", "jobTitle": "Arzt", "worksFor": {"@id": "https://www.paloskin.de/#studio"}, "url": "https://www.paloskin.de/"}]}`;
