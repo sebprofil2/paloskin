@@ -64,6 +64,19 @@ describe("Ereignisstrom ohne Lücke: oldest_seq, stream_generation, Löschlauf, 
     store.close();
   });
 
+  it("oldest_seq erkennt auch Löschungen aus der Zeit vor dem Vermerk (Nummern beginnen bei 1)", () => {
+    const store = openStore(":memory:");
+    const t0 = new Date(Date.now() + 86400000);
+    for (let n = 1; n <= 3; n++) store.reserve(input(n, new Date(t0.getTime() + n * 3600000), new Date()));
+    const db = (store as unknown as { db: { prepare: (s: string) => { run: (...a: unknown[]) => unknown } } }).db;
+    db.prepare("DELETE FROM booking_events WHERE seq <= 2").run();
+    expect(store.oldestSeq()).toBe(3);
+    db.prepare("DELETE FROM booking_events").run();
+    expect(store.oldestSeq()).toBe(4);
+    expect(store.lastSeq()).toBe(3);
+    store.close();
+  });
+
   it("mit angemeldetem Verbraucher: unbestätigte Ereignisse werden nie gelöscht, bestätigte nach 90 Tagen schon", async () => {
     const store = openStore(":memory:");
     const t0 = new Date(Date.now() - 200 * 86400000);

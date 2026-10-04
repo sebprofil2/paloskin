@@ -754,11 +754,14 @@ export class Store {
   /**
    * Kleinste noch vorhandene Ereignisnummer; 0, solange noch nie ein Ereignis gelöscht wurde (Verlauf vollständig).
    * Sind alle Ereignisse gelöscht, die Nummer nach der höchsten gelöschten.
+   * Gelöscht gilt auch ohne Vermerk, wenn die Daten es zeigen (Nummern beginnen bei 1): so zählen auch Löschungen
+   * aus der Zeit vor dem Vermerk events_purged_max.
    */
   oldestSeq(): number {
-    const purged = Number(this.getMeta("events_purged_max") ?? 0);
-    if (!purged) return 0;
     const r = this.db.prepare("SELECT MIN(seq) AS n FROM booking_events").get() as { n: number | null };
+    const shown = r.n === null ? this.lastSeq() : r.n - 1;
+    const purged = Math.max(Number(this.getMeta("events_purged_max") ?? 0), shown);
+    if (!purged) return 0;
     return r.n ?? purged + 1;
   }
 
