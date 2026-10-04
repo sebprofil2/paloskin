@@ -80,7 +80,7 @@ Kalenderdatei zusätzlich mit HTML-Fassung (X-ALT-DESC) und Erinnerung 1 Stunde 
 - Anrede: Hallo Sebastian, hier finden Sie Ihren Termin bei PALO SKIN:
 - Kasten: Mittwoch, 7. Oktober, 08:00 Uhr (fett), PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin, [So finden Sie uns]
 - Hinweis: Ihr Termin beginnt pünktlich, in der Regel ganz ohne Wartezeit. Kommen Sie bitte zur vereinbarten Zeit oder höchstens fünf Minuten vorher.
-- Zusage: Passt der Termin weiterhin für Sie? Dann bestätigen Sie bitte kurz mit einem Klick: [Ja, ich komme]
+- Zusage (erst ab dem Vortag 10:00 Uhr, vorher fehlt der Block): Passt der Termin weiterhin für Sie? Dann bestätigen Sie bitte kurz mit einem Klick: [Ja, ich komme]
 - Mehr als 24 Stunden: Den Termin verschieben oder absagen können Sie bis 24 Stunden vorher. [Termin verschieben] [Termin absagen]
 - 24 bis 2 Stunden: Sie können nicht kommen? Bitte sagen Sie uns kurz Bescheid, dann können wir die Zeit noch vergeben. [Termin verschieben] [Leider verhindert]
 - Weniger als 2 Stunden: kein Satz, keine Knöpfe
@@ -190,7 +190,7 @@ Kalenderdatei zusätzlich mit HTML-Fassung (X-ALT-DESC) und Erinnerung 1 Stunde 
 - Anrede: Hello Sebastian, here is your appointment at PALO SKIN:
 - Kasten: Wednesday 7 October, 08:00 (fett), PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin, [How to find us]
 - Hinweis: Your appointment starts on time, usually with no waiting at all. Please arrive at the agreed time or at most five minutes early.
-- Zusage: Does the appointment still suit you? Then please confirm briefly with one click: [Yes, I’ll be there]
+- Zusage (erst ab dem Vortag 10:00 Uhr, vorher fehlt der Block): Does the appointment still suit you? Then please confirm briefly with one click: [Yes, I’ll be there]
 - Mehr als 24 Stunden: You can reschedule or cancel the appointment up to 24 hours in advance. [Reschedule appointment] [Cancel appointment]
 - 24 bis 2 Stunden: Can’t make it? Please let us know briefly so we can still give the time to someone else. [Reschedule appointment] [Unable to come]
 - Weniger als 2 Stunden: kein Satz, keine Knöpfe
@@ -300,7 +300,7 @@ Kalenderdatei zusätzlich mit HTML-Fassung (X-ALT-DESC) und Erinnerung 1 Stunde 
 - Anrede: Hola Sebastian, aquí tiene su cita en PALO SKIN:
 - Kasten: Miércoles, 7 de octubre, 08:00 h (fett), PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin, [Cómo llegar]
 - Hinweis: Su cita empieza puntual, por lo general sin ninguna espera. Venga, por favor, a la hora acordada o como máximo cinco minutos antes.
-- Zusage: ¿La cita le sigue viniendo bien? Entonces confírmela brevemente con un clic: [Sí, voy a ir]
+- Zusage (erst ab dem Vortag 10:00 Uhr, vorher fehlt der Block): ¿La cita le sigue viniendo bien? Entonces confírmela brevemente con un clic: [Sí, voy a ir]
 - Mehr als 24 Stunden: Puede cambiar o cancelar la cita hasta 24 horas antes. [Cambiar la cita] [Cancelar la cita]
 - 24 bis 2 Stunden: ¿No puede venir? Avísenos brevemente, así aún podemos dar la hora a otra persona. [Cambiar la cita] [No puedo ir]
 - Weniger als 2 Stunden: kein Satz, keine Knöpfe
@@ -410,7 +410,7 @@ Kalenderdatei zusätzlich mit HTML-Fassung (X-ALT-DESC) und Erinnerung 1 Stunde 
 - Anrede: Bonjour Sebastian, voici votre rendez-vous chez PALO SKIN :
 - Kasten: Mercredi 7 octobre, 08 h 00 (fett), PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin, [Comment nous trouver]
 - Hinweis: Votre rendez-vous commence à l’heure, en général sans aucune attente. Merci de venir à l’heure convenue ou au plus cinq minutes avant.
-- Zusage: Le rendez-vous vous convient toujours ? Alors confirmez-le en un clic : [Oui, je viens]
+- Zusage (erst ab dem Vortag 10:00 Uhr, vorher fehlt der Block): Le rendez-vous vous convient toujours ? Alors confirmez-le en un clic : [Oui, je viens]
 - Mehr als 24 Stunden: Vous pouvez déplacer ou annuler le rendez-vous jusqu’à 24 heures avant. [Déplacer le rendez-vous] [Annuler le rendez-vous]
 - 24 bis 2 Stunden: Vous ne pouvez pas venir ? Dites-le-nous en un mot, nous pourrons encore proposer le créneau à quelqu’un d’autre. [Déplacer le rendez-vous] [Empêchement]
 - Weniger als 2 Stunden: kein Satz, keine Knöpfe
@@ -520,7 +520,7 @@ Kalenderdatei zusätzlich mit HTML-Fassung (X-ALT-DESC) und Erinnerung 1 Stunde 
 - Anrede: Olá Sebastian, aqui está a sua consulta na PALO SKIN:
 - Kasten: Quarta-feira, 7 de outubro, 08:00 (fett), PALO SKIN by Dr. Vogel, Hagenauer Straße 14, 10435 Berlin, [Como chegar]
 - Hinweis: Sua consulta começa pontualmente, em geral sem nenhuma espera. Por favor, chegue na hora combinada ou no máximo cinco minutos antes.
-- Zusage: A consulta continua boa para você? Então confirme rapidamente com um clique: [Sim, eu vou]
+- Zusage (erst ab dem Vortag 10:00 Uhr, vorher fehlt der Block): A consulta continua boa para você? Então confirme rapidamente com um clique: [Sim, eu vou]
 - Mehr als 24 Stunden: Você pode remarcar ou cancelar a consulta até 24 horas antes. [Remarcar a consulta] [Cancelar a consulta]
 - 24 bis 2 Stunden: Não vai conseguir vir? Avise rapidamente, assim ainda podemos oferecer o horário a outra pessoa. [Remarcar a consulta] [Não consigo ir]
 - Weniger als 2 Stunden: kein Satz, keine Knöpfe

@@ -13,7 +13,8 @@ const env = {};
 for (const line of readFileSync(".env.local", "utf8").split("\n")) { const m = line.match(/^([A-Z_]+)=(.*)$/); if (!m) continue; let v = m[2].trim(); if ((v.startsWith("'") && v.endsWith("'")) || (v.startsWith('"') && v.endsWith('"'))) v = v.slice(1, -1).replace(/'\\''/g, "'"); env[m[1]] = v; }
 const sa = JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_JSON);
 const jwt = new JWT({ email: sa.client_email, key: sa.private_key, scopes: ["https://www.googleapis.com/auth/calendar"] });
-const CAL = encodeURIComponent(env.CALENDAR_BOOKINGS_ID);
+// CAL_ID wählt einen anderen Kalender, zum Beispiel den Testkalender „Palo Skin Test“
+const CAL = encodeURIComponent(process.env.CAL_ID || env.CALENDAR_BOOKINGS_ID);
 async function call(method, path, body) {
   const { token } = await jwt.getAccessToken();
   const r = await fetch("https://www.googleapis.com/calendar/v3" + path, { method, headers: { authorization: `Bearer ${token}`, "content-type": "application/json" }, body: body ? JSON.stringify(body) : undefined });

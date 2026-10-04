@@ -5,6 +5,7 @@ import { getMailer, mailErrorClass, type Mailer } from "./mail";
 import { calendarLinks, CANCEL_LEAD_MS, confirmationMail, reminderMail } from "./mail-content";
 import { isBookableStart } from "./slots";
 import { notifyStudio } from "./studio-mail";
+import { inConfirmWindow } from "./attendance";
 import { isCustomerCancel } from "./cancel-reasons";
 import { terminUrl } from "./links";
 import { bookingRefFor } from "./ref";
@@ -283,10 +284,17 @@ async function removeCalendarEvent(b: BookingRow, deps: Deps): Promise<boolean> 
 }
 
 /** Zusage „Ja, ich komme“. */
+/** Zusage „Ja, ich komme“; erst ab Vortag 10 Uhr, vorher null (lib/attendance.ts). */
 export function confirmAttendance(id: string, deps: Deps = defaultDeps(), now = new Date()): BookingRow | null {
   const row = deps.store.confirmAttendance(id, now);
   if (row) logEvent("info", "attendance_confirmed", { bookingRef: row.reference });
   return row;
+}
+
+/** Darf die Terminseite den Zusage-Block zeigen? Nur im Zusagefenster und solange der Termin aussteht. */
+export function canConfirmAttendance(b: BookingRow, now = new Date()): boolean {
+  const w = terminWindow(b, now);
+  return (w === "open" || w === "short" || w === "closed") && !b.attendance_confirmed_at && inConfirmWindow(new Date(b.starts_at), now);
 }
 
 /** Hintergrundlauf: fehlende Kalendereinträge nachholen, nach 24 Stunden Alarm, alte Idempotenzschlüssel löschen. */

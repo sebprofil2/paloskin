@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { terminWindow } from "@/lib/booking";
+import { canConfirmAttendance, terminWindow } from "@/lib/booking";
 import { verifyTerminToken } from "@/lib/links";
 import { whenLabels } from "@/lib/mail-content";
 import { getStore } from "@/lib/store";
@@ -90,7 +90,7 @@ export default async function TerminPage({ params, searchParams }: { params: Pro
           </form>
         ) : open ? (
           <div style={{ display: "grid", gap: 10 }}>
-            {!confirmed ? (
+            {canConfirmAttendance(booking, now) ? (
               <>
                 <p style={{ margin: 0, fontSize: 17 }}>{l.confirmQ}</p>
                 <form method="post" action="/api/termin" style={{ display: "grid" }}>

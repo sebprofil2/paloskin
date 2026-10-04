@@ -227,4 +227,15 @@ describe("Bestätigungsmail nach Freigabe", () => {
     expect(calendarInput(row()).title).not.toContain("\u{1F535}");
     expect(confirmationMail(row(), booked).subject.startsWith("\u{1F535} ")).toBe(true);
   });
+
+  it("Studio-Mail nennt den Kalender der Instanz: www „Palo Skin Termine“, neu „Palo Skin Test“", async () => {
+    const { studioMailFor } = await import("../studio-mail");
+    expect(studioMailFor("booked", row()).body).toContain("Details im Kalender „Palo Skin Termine“.");
+    process.env.PALOSKIN_INSTANCE = "test";
+    try {
+      expect(studioMailFor("booked", row()).body).toContain("Details im Kalender „Palo Skin Test“.");
+    } finally {
+      delete process.env.PALOSKIN_INSTANCE;
+    }
+  });
 });

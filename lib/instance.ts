@@ -18,6 +18,11 @@ export function isTestInstance(): boolean {
   return instance() === "test";
 }
 
+/** Name des Kalenders, in den diese Instanz Termine schreibt (für Texte an das Studio). */
+export function bookingsCalendarName(): string {
+  return isTestInstance() ? "Palo Skin Test" : "Palo Skin Termine";
+}
+
 /** Fehlende Pflichtwerte als lesbare Liste, ohne Werte auszugeben. Leer heißt: in Ordnung. */
 export function configProblems(): string[] {
   const env = readEnv();

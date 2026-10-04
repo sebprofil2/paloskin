@@ -2,6 +2,7 @@ import { mkdirSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import type { Deps } from "./booking";
 import { readEnv } from "./env";
+import { bookingsCalendarName } from "./instance";
 import { errorClass, logEvent } from "./log";
 import type { BookingRow } from "./store";
 import { berlinDateKey, berlinParts } from "./time";
@@ -96,7 +97,7 @@ export async function exportCalendar(deps: Pick<Deps, "engine">, now = new Date(
   const from = new Date(now.getTime() - 7 * 86400000);
   const to = new Date(now.getTime() + 90 * 86400000);
   const events = await deps.engine.exportEvents(from, to);
-  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//PALO SKIN by Dr. Vogel//Export//DE", "CALSCALE:GREGORIAN", "X-WR-CALNAME:Palo Skin Termine (Export)"];
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//PALO SKIN by Dr. Vogel//Export//DE", "CALSCALE:GREGORIAN", `X-WR-CALNAME:${bookingsCalendarName()} (Export)`];
   for (const e of events) {
     lines.push("BEGIN:VEVENT", `UID:${e.id}@export.paloskin.de`, `DTSTAMP:${icsStamp(now)}`, `DTSTART:${icsStamp(e.start)}`, `DTEND:${icsStamp(e.end)}`, `SUMMARY:${icsEscape(e.summary)}`, `DESCRIPTION:${icsEscape(e.description)}`, "END:VEVENT");
   }

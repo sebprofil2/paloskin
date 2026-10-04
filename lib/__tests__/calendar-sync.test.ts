@@ -6,6 +6,10 @@ import type { MailMessage, Mailer } from "../mail";
 import { runRetention } from "../retention";
 import { openStore, type Store } from "../store";
 import { emptySelection } from "../treatments";
+import { confirmFromFor } from "../attendance";
+/* Zusage erst ab Vortag 10 Uhr: Zeitpunkt eine Minute danach */
+const win = (b: { starts_at: string }) => new Date(confirmFromFor(new Date(b.starts_at)).getTime() + 60000);
+
 
 class FakeMailer implements Mailer {
   readonly enabled = true;
@@ -103,7 +107,7 @@ describe("Kalender als Werkzeug des Studios: Abgleich alle 5 Minuten", () => {
   it("Beginn verschoben: Ereignis rescheduled, Mail C an den Kunden, Studio-Mail mit Bisher und Neu, Zusage zurück, auch außerhalb der Fenster", async () => {
     const [s1] = await freeStarts(1);
     const b = await booked("22222222-2222-4222-8222-222222222222", s1);
-    store.confirmAttendance(b.id);
+    store.confirmAttendance(b.id, win(b));
     // Das Studio zieht den Termin auf 06:05 Uhr, außerhalb jedes Fensters und abseits des Rasters
     const newStart = new Date(s1.getTime() - 4 * 3600000 + 5 * 60000);
     const newEnd = new Date(newStart.getTime() + 30 * 60000);

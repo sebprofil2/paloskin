@@ -9,6 +9,7 @@ import type { Interval } from "./slots";
 import type { Lang, Selection } from "./treatments";
 import { appointmentType, toSharedServiceCodes, toSharedZones, type AppointmentType } from "./service-codes";
 import { ulid } from "./ulid";
+import { confirmFromFor, inConfirmWindow } from "./attendance";
 
 /*
  * Reservierung in der eigenen Datenbank. Jede Buchung belegt alle 10-Minuten-Einheiten ihrer Dauer
@@ -257,8 +258,8 @@ export class Store {
         .prepare(
           `INSERT INTO bookings (id, reference, created_at, starts_at, ends_at, duration_minutes, persons, first_visit, service_codes, zones, checkup,
              status, channel, language, device, reminder_whatsapp, reminder_consent_at, consent_at, first_name, last_name, phone_e164, email, note,
-             referral, selection, test_mode, calendar_event_id, calendar_state, calendar_attempts, calendar_attempted_at, updated_at, deleted_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'web', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, NULL, 'pending', 0, NULL, ?, NULL)`,
+             referral, selection, test_mode, calendar_event_id, calendar_state, calendar_attempts, calendar_attempted_at, updated_at, deleted_at, attendance_confirmed_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'web', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, NULL, 'pending', 0, NULL, ?, NULL, ?)`,
         )
         .run(
           id,
@@ -286,6 +287,8 @@ export class Store {
           JSON.stringify(s),
           i.testMode ? 1 : 0,
           now,
+          // Kurzfristig gebucht (nach Vortag 10 Uhr, keine Erinnerung mehr): gilt automatisch als bestätigt
+          inConfirmWindow(i.start, new Date(now)) ? now : null,
         );
       const insertLock = this.db.prepare("INSERT INTO slot_locks (slot_start, booking_id) VALUES (?, ?)");
       const firstUnit = startMs / 60000;
@@ -433,6 +436,11 @@ export class Store {
         this.db.exec("COMMIT");
         return row;
       }
+      // Erst ab Vortag 10 Uhr (lib/attendance.ts); vorher wird nichts gespeichert
+      if (!inConfirmWindow(new Date(row.starts_at), now)) {
+        this.db.exec("COMMIT");
+        return null;
+      }
       this.db.prepare("UPDATE bookings SET attendance_confirmed_at = ?, updated_at = ? WHERE id = ?").run(at, at, id);
       const updated = this.get(id)!;
       this.appendEvent(updated, "attendance_confirmed", at);
@@ -535,12 +543,12 @@ export class Store {
       const endMs = startMs + row.duration_minutes * 60000;
       this.db
         .prepare(
-          `UPDATE bookings SET previous_starts_at = starts_at, starts_at = ?, ends_at = ?, rescheduled_at = ?, attendance_confirmed_at = NULL,
+          `UPDATE bookings SET previous_starts_at = starts_at, starts_at = ?, ends_at = ?, rescheduled_at = ?, attendance_confirmed_at = ?,
            mail_reminder_sent_at = NULL, mail_reminder_skipped = 0, mail_reminder_attempts = 0,
            mail_confirmation_sent_at = NULL, mail_confirmation_attempts = 0, mail_confirmation_attempted_at = NULL,
            calendar_state = 'pending', calendar_pending_at = ?, calendar_rev = calendar_rev + 1, updated_at = ? WHERE id = ?`,
         )
-        .run(iso(newStart), iso(new Date(endMs)), at, at, at, id);
+        .run(iso(newStart), iso(new Date(endMs)), at, inConfirmWindow(newStart, now) ? at : null, at, at, id);
       const updated = this.get(id)!;
       this.appendEvent(updated, "rescheduled", at);
       this.db.exec("COMMIT");
@@ -584,12 +592,12 @@ export class Store {
       if (kind === "moved") {
         this.db
           .prepare(
-            `UPDATE bookings SET previous_starts_at = starts_at, starts_at = ?, ends_at = ?, duration_minutes = ?, rescheduled_at = ?, attendance_confirmed_at = NULL,
+            `UPDATE bookings SET previous_starts_at = starts_at, starts_at = ?, ends_at = ?, duration_minutes = ?, rescheduled_at = ?, attendance_confirmed_at = ?,
              mail_reminder_sent_at = NULL, mail_reminder_skipped = 0, mail_reminder_attempts = 0,
              mail_confirmation_sent_at = NULL, mail_confirmation_attempts = 0, mail_confirmation_attempted_at = NULL,
              calendar_rev = calendar_rev + 1, updated_at = ? WHERE id = ?`,
           )
-          .run(iso(start), iso(end), minutes, at, at, id);
+          .run(iso(start), iso(end), minutes, at, inConfirmWindow(start, now) ? at : null, at, id);
       } else {
         this.db.prepare("UPDATE bookings SET ends_at = ?, duration_minutes = ?, calendar_rev = calendar_rev + 1, updated_at = ? WHERE id = ?").run(iso(end), minutes, at, id);
       }
@@ -649,6 +657,38 @@ export class Store {
   releaseBookingMail(id: string, kind: "confirmation" | "reminder"): void {
     const col = kind === "confirmation" ? "mail_confirmation_claimed_until" : "mail_reminder_claimed_until";
     this.db.prepare(`UPDATE bookings SET ${col} = NULL WHERE id = ?`).run(id);
+  }
+
+  /**
+   * Zusagen, die vor dem Vortag 10 Uhr ihres Termins gegeben wurden, zurücksetzen (künftige, nicht abgesagte Termine).
+   * Ereignis attendance_confirmed mit attendance_confirmed_at: null (Zusagestand geändert, kein neuer Ereignistyp).
+   * Beliebig oft ausführbar; nach der ersten Bereinigung findet sie nichts mehr, weil zu frühe Zusagen nicht mehr möglich sind.
+   */
+  resetEarlyAttendance(now = new Date()): string[] {
+    const rows = this.db
+      .prepare("SELECT * FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND attendance_confirmed_at IS NOT NULL AND starts_at > ?")
+      .all(iso(now)) as unknown as BookingRow[];
+    const done: string[] = [];
+    for (const r of rows) {
+      if (Date.parse(r.attendance_confirmed_at!) >= confirmFromFor(new Date(r.starts_at)).getTime()) continue;
+      const at = iso(now);
+      this.db.exec("BEGIN IMMEDIATE");
+      try {
+        this.db.prepare("UPDATE bookings SET attendance_confirmed_at = NULL, updated_at = ? WHERE id = ? AND attendance_confirmed_at = ?").run(at, r.id, r.attendance_confirmed_at);
+        const updated = this.get(r.id)!;
+        this.appendEvent(updated, "attendance_confirmed", at);
+        this.db.exec("COMMIT");
+        done.push(r.reference);
+      } catch (e) {
+        try {
+          this.db.exec("ROLLBACK");
+        } catch {
+          /* schon beendet */
+        }
+        throw e;
+      }
+    }
+    return done;
   }
 
   /** Zustand für die Überwachung: offene Arbeiten älter als die Grenze, ohne Kundendaten. */

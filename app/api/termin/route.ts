@@ -30,8 +30,9 @@ export async function POST(req: Request) {
     if (w === "cancelled") return back(token, "abgesagt");
     if (w === "past") return back(token, "vorbei");
     if (action === "ja") {
-      confirmAttendance(id, undefined, now);
-      return back(token, "ja");
+      // Vor dem Vortag 10 Uhr lehnt der Server ab; die Seite zeigt dann einfach ihren Stand ohne Bestätigung
+      const done = confirmAttendance(id, undefined, now);
+      return back(token, done ? "ja" : "");
     }
     if (w === "closed") return back(token, "zuspaet");
     await cancelBooking(id, linkCancelReason(w), undefined, now);

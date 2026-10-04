@@ -5,6 +5,10 @@ import type { MailMessage, Mailer } from "../mail";
 import { openStore, type Store } from "../store";
 import { berlinDateKey, fromBerlinKey } from "../time";
 import { emptySelection } from "../treatments";
+import { confirmFromFor } from "../attendance";
+/* Zusage erst ab Vortag 10 Uhr: Zeitpunkt eine Minute danach */
+const win = (b: { starts_at: string }) => new Date(confirmFromFor(new Date(b.starts_at)).getTime() + 60000);
+
 
 class FakeMailer implements Mailer {
   readonly enabled = true;
@@ -122,9 +126,9 @@ describe("Bestätigungsmail, Zusage, Absage, Erinnerung", () => {
     const row = store.findByRequestId("44444444-4444-4444-8444-444444444444")!;
     expect(mockInternals.events.size).toBe(1);
 
-    const yes = confirmAttendance(row.id, deps());
+    const yes = confirmAttendance(row.id, deps(), win(row));
     expect(yes?.attendance_confirmed_at).not.toBeNull();
-    expect(confirmAttendance(row.id, deps())?.attendance_confirmed_at).toBe(yes?.attendance_confirmed_at);
+    expect(confirmAttendance(row.id, deps(), win(row))?.attendance_confirmed_at).toBe(yes?.attendance_confirmed_at);
     expect(store.eventsForBooking(row.id).map((e) => e.type)).toEqual(["created", "attendance_confirmed"]);
 
     expect(canCancelOnline(row, new Date(Date.parse(row.starts_at) - 25 * 3600000))).toBe(true);

@@ -5,6 +5,10 @@ import type { MailMessage, Mailer } from "../mail";
 import { openStore, type Store } from "../store";
 import { runStudioMailQueue, studioMailFor } from "../studio-mail";
 import { emptySelection } from "../treatments";
+import { confirmFromFor } from "../attendance";
+/* Zusage erst ab Vortag 10 Uhr: Zeitpunkt eine Minute danach */
+const win = (b: { starts_at: string }) => new Date(confirmFromFor(new Date(b.starts_at)).getTime() + 60000);
+
 
 class FakeMailer implements Mailer {
   readonly enabled = true;
@@ -82,7 +86,7 @@ describe("Verschieben, Fristen, Studio-Mails (Block 6 und 8)", () => {
     const [s1, s2, s3] = await freeStarts(3);
     await placeBooking(input("22222222-2222-4222-8222-222222222222", s1), deps());
     const b = store.findByRequestId("22222222-2222-4222-8222-222222222222")!;
-    confirmAttendance(b.id, deps());
+    confirmAttendance(b.id, deps(), win(b));
     mailer.sent = [];
     const eventId = b.calendar_event_id!;
 

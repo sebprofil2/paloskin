@@ -83,7 +83,7 @@ Felder von `booking` (alle Zeiten UTC mit `Z`):
 | `referral` | Text oder null | Empfehlung von der Bestätigungsseite |
 | `test` | bool | Testbuchung (Testbetrieb der Seite); im Kundensystem gesondert behandeln |
 | `calendar_event_id`, `calendar_state` | Text, `pending`/`written`/`failed` | Kalendereintrag des Arztes |
-| `attendance_confirmed_at` | Zeit oder null | Zusage des Kunden über den Mail-Link |
+| `attendance_confirmed_at` | Zeit oder null | Zusage des Kunden („Ja, ich komme“). Frühestens ab dem Vortag des Termins, 10:00 Uhr Berliner Zeit (zeitgleich mit der Erinnerungsmail); vorher lehnt die Buchung eine Zusage ab. Bei Buchung oder Verschiebung nach diesem Zeitpunkt automatisch gesetzt (Zeitpunkt der Buchung oder Verschiebung), weil der Kunde keine Erinnerung mehr bekommt. Siehe Abschnitt 7, attendance_confirmed. |
 | `cancelled_at`, `cancel_reason` | Zeit, Text | Absage; Werte und Bedeutung in Abschnitt 6.1 |
 | `updated_at` | Zeit | letzte Änderung |
 
@@ -162,7 +162,9 @@ Wie `created`, mit `"type": "confirmed"`, `"status": "confirmed"` und neuem `upd
 { "seq": 2, "event_id": "01M3Z2A0J6Q5R9T0WXYZ123456", "type": "confirmed", "occurred_at": "2026-10-02T20:01:11.004Z", "booking": { "id": "01M3Z293MN1KK9BTG42T2BZBJG", "reference": "PS-FFL87G", "status": "confirmed", "updated_at": "2026-10-02T20:01:11.004Z", "...": "übrige Felder wie bei created" } }
 ```
 
-### attendance_confirmed: Kunde hat über den Mail-Link zugesagt
+### attendance_confirmed: Zusagestand geändert
+
+Regel seit 4. Oktober 2026: Eine Zusage ist erst ab dem Vortag des Termins, 10:00 Uhr Berliner Zeit, möglich. Ereignis `attendance_confirmed` mit gesetztem `attendance_confirmed_at`, wenn der Kunde über die Terminseite oder die Erinnerungsmail zusagt. Bei kurzfristigen Buchungen (nach dem Vortag 10 Uhr) steht `attendance_confirmed_at` schon im Ereignis `created`, beim Verschieben in dieses Zeitfenster im Ereignis `rescheduled`; ein eigenes Ereignis `attendance_confirmed` gibt es dann nicht. Zusagen, die vor Einführung der Regel früher gegeben wurden, hat die Buchung am 4. Oktober 2026 einmalig zurückgesetzt: Ereignis `attendance_confirmed` mit `attendance_confirmed_at: null` (Zusage zurückgenommen). Maßgeblich ist immer der Wert in der Nutzlast.
 
 ```json
 { "seq": 3, "event_id": "01M3Z2B3C8D9E0F1G2H3J4K5M6", "type": "attendance_confirmed", "occurred_at": "2026-10-02T19:44:53.668Z", "booking": { "id": "01M3Z293MN1KK9BTG42T2BZBJG", "reference": "PS-FFL87G", "status": "confirmed", "attendance_confirmed_at": "2026-10-02T19:44:53.668Z", "updated_at": "2026-10-02T19:44:53.668Z", "...": "übrige Felder wie bei created" } }

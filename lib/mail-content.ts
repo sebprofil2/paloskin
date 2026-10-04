@@ -1,6 +1,7 @@
 import { terminToken, terminUrl } from "./links";
 import type { MailMessage } from "./mail";
 import { readEnv } from "./env";
+import { confirmFromFor } from "./attendance";
 import type { BookingRow } from "./store";
 import { LANGS, TEXTS } from "./texts";
 import { ADDRESS, MAIL_TEXTS, MAPS_LINK, NB, SIGNER, STUDIO } from "./texts-mail";
@@ -45,8 +46,9 @@ export function whenLabels(start: Date, lang: Lang): WhenLabels {
 }
 
 /** Versandzeitpunkt der Erinnerung: Vortag 10:00 Uhr Berliner Zeit. */
+/** Erinnerung und Zusage beginnen gleichzeitig: Vortag 10:00 Uhr Berliner Zeit (lib/attendance.ts). */
 export function reminderTimeFor(start: Date): Date {
-  return fromBerlinKey(addDaysKey(berlinDateKey(start), -1), "10:00");
+  return confirmFromFor(start);
 }
 
 export const CANCEL_LEAD_MS = 24 * 3600000;

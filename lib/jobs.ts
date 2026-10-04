@@ -50,6 +50,12 @@ export function startBackgroundJobs(): void {
       logEvent("error", "job_failed", { route: "calendar_retry", errorClass: errorClass(e) });
     }
     try {
+      const reset = getStore().resetEarlyAttendance();
+      if (reset.length) logEvent("info", "attendance_reset", { count: reset.length, status: reset.join(", ") });
+    } catch (e) {
+      logEvent("error", "job_failed", { route: "attendance_reset", errorClass: errorClass(e) });
+    }
+    try {
       await syncCalendarChanges({ store: getStore(), engine: getEngine(), mailer: getMailer() });
     } catch (e) {
       logEvent("error", "job_failed", { route: "calendar_sync", errorClass: errorClass(e) });

@@ -7,6 +7,10 @@ import { MockEngine, mockInternals } from "../engine/mock";
 import type { MailMessage, Mailer } from "../mail";
 import { openStore, type Store } from "../store";
 import { emptySelection } from "../treatments";
+import { confirmFromFor } from "../attendance";
+/* Zusage erst ab Vortag 10 Uhr: Zeitpunkt eine Minute danach */
+const win = (b: { starts_at: string }) => new Date(confirmFromFor(new Date(b.starts_at)).getTime() + 60000);
+
 
 class FakeMailer implements Mailer {
   readonly enabled = true;
@@ -84,14 +88,14 @@ describe("Rückfragen des Kundensystems vom 3. Oktober: cancel_reason und Zusage
     await placeBooking(input("33333333-3333-4333-8333-333333333333", s1), deps());
     const b = store.findByRequestId("33333333-3333-4333-8333-333333333333")!;
     await syncCalendarChanges(deps()); // eigene Anlage, ändert nichts
-    confirmAttendance(b.id, deps());
+    confirmAttendance(b.id, deps(), win(b));
     expect((await rescheduleBooking(b.id, s2, deps())).status).toBe("rescheduled");
     let raw = JSON.stringify(store.eventsAfter(0, 50).at(-1));
     expect(raw).toContain('"type":"rescheduled"');
     expect(raw).toContain('"attendance_confirmed_at":null');
 
-    confirmAttendance(b.id, deps());
     const moved = store.findById(b.id)!;
+    expect(confirmAttendance(b.id, deps(), win(moved))).not.toBeNull();
     mockInternals.studioMove(moved.calendar_event_id!, new Date(s2.getTime() + 3600000), new Date(s2.getTime() + 5400000));
     expect((await syncCalendarChanges(deps(), new Date(Date.now() + 60000))).moved).toBe(1);
     raw = JSON.stringify(store.eventsAfter(0, 50).at(-1));
