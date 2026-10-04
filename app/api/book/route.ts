@@ -4,6 +4,7 @@ import { placeBooking, summarize } from "@/lib/booking";
 import { deviceFrom } from "@/lib/device";
 import { durationMinutes } from "@/lib/duration";
 import { readEnv } from "@/lib/env";
+import { configProblems } from "@/lib/instance";
 import { errorClass, logEvent } from "@/lib/log";
 import { notifyOwner } from "@/lib/notify";
 import { allow, clientKey, contactKey, LIMITS } from "@/lib/ratelimit";
@@ -25,6 +26,11 @@ const json = (body: unknown, status = 200) => NextResponse.json(body, { status, 
  */
 export async function POST(req: Request) {
   if (!hasAccess(req)) return json({ error: "no_access" }, 401);
+  const problems = configProblems();
+  if (problems.length) {
+    logEvent("error", "ALARM Konfiguration unvollständig, Buchung verweigert", { route: "book", reason: problems.join("; ") });
+    return json({ error: "config", message: problems.join("; ") }, 503);
+  }
   const parsed = bookRequestSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return json({ error: "invalid" }, 400);
   const body = parsed.data;
@@ -56,6 +62,7 @@ export async function POST(req: Request) {
     });
     logEvent("info", "book_result", { route: "book", bookingRef: ref, status: result.status, engine: env.engine });
     if (result.status === "booked") return json(result);
+    if (result.status === "unavailable") return json(result, 503);
     return json(result, 409);
   } catch (e) {
     logEvent("error", "book_failed", { route: "book", bookingRef: ref, errorClass: errorClass(e), engine: env.engine });

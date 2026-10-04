@@ -132,7 +132,8 @@ describe("Kalenderexport", () => {
     const mailer = { enabled: false, send: async () => {} };
     expect(await runDailyIfDue({ store, engine, mailer }, now)).toBe(true);
     expect(await runDailyIfDue({ store, engine, mailer }, now)).toBe(false);
-    expect(store.getMeta("daily_run_date")).toBe("2026-10-03");
+    expect(store.getMeta("retention_run_date")).toBe("2026-10-03");
+    expect(store.getMeta("export_run_date")).toBe("2026-10-03");
     store.close();
   });
 });

@@ -81,6 +81,8 @@ export interface MailTexts {
   rescheduleLoading: string;
   rescheduleNone: string;
   rescheduleDown: string;
+  /** Verfügbarkeit nicht prüfbar: der bisherige Termin bleibt */
+  rescheduleUnavailable: string;
 }
 
 export const NB = " ";
@@ -144,6 +146,7 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     rescheduleLoading: "Freie Zeiten werden geladen …",
     rescheduleNone: "Online ist gerade keine passende Zeit frei. Schreiben Sie uns gern per WhatsApp.",
     rescheduleDown: "Gerade hakt es bei uns. Bitte versuchen Sie es gleich noch einmal oder schreiben Sie uns per WhatsApp.",
+    rescheduleUnavailable: "Wir können die freien Zeiten gerade nicht prüfen. Ihr bisheriger Termin bleibt unverändert. Bitte versuchen Sie es in ein paar Minuten noch einmal.",
   },
   en: {
     subjectBooked: (d, t) => `Booked: ${d}, ${t}`,
@@ -203,6 +206,7 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     rescheduleLoading: "Loading available times …",
     rescheduleNone: "There is no suitable time available online right now. Feel free to message us on WhatsApp.",
     rescheduleDown: "Something’s not working on our side right now. Please try again in a moment or message us on WhatsApp.",
+    rescheduleUnavailable: "We can’t check availability right now. Your current appointment stays as it is. Please try again in a few minutes.",
   },
   es: {
     subjectBooked: (d, t) => `Reservado: ${d}, ${t}`,
@@ -262,6 +266,7 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     rescheduleLoading: "Cargando horas disponibles …",
     rescheduleNone: "Ahora mismo no hay ninguna hora libre en línea. Escríbanos con gusto por WhatsApp.",
     rescheduleDown: "Ahora mismo algo falla por nuestra parte. Inténtelo de nuevo en un momento o escríbanos por WhatsApp.",
+    rescheduleUnavailable: "En este momento no podemos comprobar la disponibilidad. Su cita actual se mantiene igual. Inténtelo de nuevo en unos minutos.",
   },
   fr: {
     subjectBooked: (d, t) => `Réservé${NB}: ${d}, ${t}`,
@@ -321,6 +326,7 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     rescheduleLoading: "Chargement des créneaux disponibles …",
     rescheduleNone: "Aucun créneau n’est disponible en ligne pour le moment. Écrivez-nous volontiers sur WhatsApp.",
     rescheduleDown: "Quelque chose ne fonctionne pas de notre côté pour le moment. Réessayez dans un instant ou écrivez-nous sur WhatsApp.",
+    rescheduleUnavailable: "Nous ne pouvons pas vérifier les disponibilités pour le moment. Votre rendez-vous actuel reste inchangé. Merci de réessayer dans quelques minutes.",
   },
   pt: {
     subjectBooked: (d, t) => `Marcado: ${d}, ${t}`,
@@ -380,5 +386,6 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     rescheduleLoading: "Carregando horários livres …",
     rescheduleNone: "No momento não há nenhum horário livre online. Fale conosco pelo WhatsApp.",
     rescheduleDown: "Algo não está funcionando do nosso lado agora. Tente de novo em instantes ou fale conosco pelo WhatsApp.",
+    rescheduleUnavailable: "No momento não conseguimos verificar a disponibilidade. Sua consulta atual continua igual. Tente de novo em alguns minutos.",
   },
 };

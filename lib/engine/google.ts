@@ -106,8 +106,11 @@ export class GoogleCalendarEngine implements BookingEngine {
   private async openWindows(from: Date, to: Date): Promise<Interval[]> {
     const g = readEnv().google;
     const events = await this.listEvents(g.calendarOpenId, from, to);
+    // Ein Kalender für alles (Testkalender): Fenster sind die als „verfügbar“ markierten Einträge ohne Buchung
+    const shared = g.calendarOpenId === g.calendarBookingsId;
     const out: Interval[] = [];
     for (const e of events) {
+      if (shared && (e.transparency !== "transparent" || e.extendedProperties?.private?.bookingRef)) continue;
       if (!e.start?.dateTime || !e.end?.dateTime) continue; // ganztägig oder unvollständig
       const s = Date.parse(e.start.dateTime);
       const en = Date.parse(e.end.dateTime);

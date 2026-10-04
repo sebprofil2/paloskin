@@ -57,27 +57,26 @@ services:
         max-file: "5"
 
   # Testinstanz für neu.paloskin.de: gleicher Aufbau, anderes Image-Tag, eigene Datenbank. Läuft nur mit --profile test.
+  # Eigene Umgebungsdatei /etc/paloskin/paloskin-test.env (nie die Datei der Produktion, Vorlage deploy/paloskin-test.env.example).
+  # PALOSKIN_INSTANCE=test sorgt im Code dafür, dass nur TEST_CALENDAR_ID gelesen und beschrieben wird, jede Mail an
+  # MAIL_REDIRECT_TO geht und „[TEST]“ im Betreff trägt; fehlt eines davon, verweigert die Instanz Buchungen (lib/instance.ts).
   app-test:
     image: ghcr.io/sebprofil2/paloskin:${PALOSKIN_TEST_TAG:-stufe2}
     profiles:
       - test
     restart: unless-stopped
     env_file:
-      - /etc/paloskin/paloskin.env
+      - /etc/paloskin/paloskin-test.env
     environment:
       NODE_ENV: production
       PORT: "3000"
       HOSTNAME: "0.0.0.0"
+      PALOSKIN_INSTANCE: test
       GOOGLE_SERVICE_ACCOUNT_FILE: /run/secrets/google_service_account
       BOOKING_DB_PATH: /var/lib/paloskin-test/buchung.sqlite
       PUBLIC_BASE_URL: https://neu.paloskin.de
-      # Alle Mails der Testinstanz gehen an diese Adresse statt an die eingegebene (deploy/.env auf dem Server, nicht im Repository)
-      MAIL_REDIRECT_TO: ${PALOSKIN_TEST_MAIL:-}
-      # Die Testinstanz sendet und bucht verbindlich, unabhängig vom Stand auf www (überschreibbar in deploy/.env)
-      MAIL_MODE: ${PALOSKIN_TEST_MAIL_MODE:-relay}
-      BOOKING_BINDING: ${PALOSKIN_TEST_BINDING:-true}
-      # Die Testinstanz bleibt im Testbetrieb (Testcode, Testbalken, test: true), auch wenn www öffentlich ist
-      TEST_MODE: ${PALOSKIN_TEST_MODE:-true}
+      # Die Testinstanz bleibt immer im Testbetrieb (Testcode, Testbalken, test: true)
+      TEST_MODE: "true"
     secrets:
       - google_service_account
     expose:

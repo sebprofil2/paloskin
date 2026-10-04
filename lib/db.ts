@@ -51,7 +51,11 @@ CREATE TABLE IF NOT EXISTS bookings (
   mail_reminder_attempts INTEGER NOT NULL DEFAULT 0,
   mail_reminder_skipped INTEGER NOT NULL DEFAULT 0,
   previous_starts_at TEXT,
-  rescheduled_at TEXT
+  rescheduled_at TEXT,
+  calendar_rev INTEGER NOT NULL DEFAULT 0,
+  calendar_pending_at TEXT,
+  mail_confirmation_claimed_until TEXT,
+  mail_reminder_claimed_until TEXT
 );
 CREATE INDEX IF NOT EXISTS bookings_starts_at ON bookings (starts_at);
 CREATE INDEX IF NOT EXISTS bookings_reference ON bookings (reference);
@@ -97,7 +101,8 @@ CREATE TABLE IF NOT EXISTS studio_mails (
   created_at TEXT NOT NULL,
   sent_at TEXT,
   attempts INTEGER NOT NULL DEFAULT 0,
-  attempted_at TEXT
+  attempted_at TEXT,
+  claimed_until TEXT
 );
 `;
 
@@ -163,6 +168,20 @@ function migrate(db: DatabaseSync): void {
       COMMIT;
     `);
   }
+  // 4. Oktober 2026 (Reparaturauftrag): Version der Terminzeit für den Kalender, Zeitpunkt „Kalender muss nachgezogen werden“,
+  // Beanspruchung von Mails vor dem Senden (kein doppelter Versand bei parallelen Läufen)
+  if (!columns.has("calendar_rev")) {
+    db.exec(`
+      BEGIN;
+      ALTER TABLE bookings ADD COLUMN calendar_rev INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE bookings ADD COLUMN calendar_pending_at TEXT;
+      ALTER TABLE bookings ADD COLUMN mail_confirmation_claimed_until TEXT;
+      ALTER TABLE bookings ADD COLUMN mail_reminder_claimed_until TEXT;
+      COMMIT;
+    `);
+  }
+  const studioColumns = new Set((db.prepare("PRAGMA table_info(studio_mails)").all() as { name: string }[]).map((r) => r.name));
+  if (!studioColumns.has("claimed_until")) db.exec("ALTER TABLE studio_mails ADD COLUMN claimed_until TEXT");
   // 3. Oktober 2026: kurzfristige Absage heißt customer_short_notice statt customer_link_short (Rückfrage des Kundensystems).
   // Zum Zeitpunkt der Umstellung hatte kein Verbraucher Ereignisse abgeholt; deshalb werden auch die Nutzlasten angeglichen.
   db.exec(`

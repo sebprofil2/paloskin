@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { rescheduleBooking, summarize } from "@/lib/booking";
+import { configProblems } from "@/lib/instance";
 import { verifyTerminToken } from "@/lib/links";
 import { errorClass, logEvent } from "@/lib/log";
 import { allow, clientKey, LIMITS } from "@/lib/ratelimit";
@@ -19,10 +20,16 @@ export async function POST(req: Request) {
   if (!parsed.success) return json({ error: "invalid" }, 400);
   const id = verifyTerminToken(parsed.data.token);
   if (!id) return json({ error: "invalid" }, 400);
+  const problems = configProblems();
+  if (problems.length) {
+    logEvent("error", "ALARM Konfiguration unvollständig, Verschieben verweigert", { route: "termin", reason: problems.join("; ") });
+    return json({ error: "config", message: problems.join("; ") }, 503);
+  }
   try {
     const r = await rescheduleBooking(id, new Date(parsed.data.start));
     if (r.status === "rescheduled") return json({ status: "rescheduled", booking: summarize(r.booking, "") });
     if (r.status === "conflict") return json({ status: "conflict" }, 409);
+    if (r.status === "unavailable") return json({ status: "unavailable" }, 503);
     return json({ error: r.status }, r.status === "missing" ? 404 : 409);
   } catch (e) {
     logEvent("error", "termin_reschedule_failed", { route: "termin", errorClass: errorClass(e) });

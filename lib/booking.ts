@@ -36,7 +36,8 @@ export interface BookingSummary {
   canManage: boolean;
 }
 
-export type BookResult = { status: "booked"; booking: BookingSummary } | { status: "conflict" };
+/** unavailable: die Verfügbarkeit ließ sich bei Google nicht prüfen, deshalb wurde nichts gebucht (Kunde versucht es erneut). */
+export type BookResult = { status: "booked"; booking: BookingSummary } | { status: "conflict" } | { status: "unavailable" };
 
 export interface PlaceInput {
   requestId: string;
@@ -102,14 +103,16 @@ export async function placeBooking(i: PlaceInput, deps: Deps = defaultDeps()): P
   if (existing) return { status: "booked", booking: summarize(existing, i.requestId) };
 
   const reference = bookingRefFor(i.requestId);
-  let free: boolean | null = null;
+  // Ohne erfolgreiche Prüfung der Verfügbarkeit keine verbindliche Buchung (Reparaturauftrag 4. Oktober 2026)
+  let free: boolean;
   try {
     free = await engine.isStartFree({ start: i.start, durationMinutes: i.durationMinutes });
   } catch (e) {
     if (!(e instanceof SlotsUnavailableError)) throw e;
     logEvent("warn", "calendar_check_unavailable", { bookingRef: reference, engine: engine.name, errorClass: errorClass(e) });
+    return { status: "unavailable" };
   }
-  if (free === false) return { status: "conflict" };
+  if (!free) return { status: "conflict" };
 
   const r = store.reserve({
     requestId: i.requestId,
@@ -157,15 +160,23 @@ function calendarInput(b: BookingRow) {
   };
 }
 
-/** Kalendereintrag schreiben und Zustand vermerken. Bei Wiederholung zuerst nach einem vorhandenen Eintrag suchen. */
+/**
+ * Kalendereintrag schreiben und Zustand vermerken. Liest den aktuellen Stand aus der Datenbank (Version calendar_rev);
+ * ein vorhandener Eintrag wird verschoben, nie ein zweiter angelegt. Hat sich die Terminzeit während des Schreibens
+ * geändert, bleibt die Buchung zum Nachziehen vorgemerkt (eine ältere Antwort überschreibt nie die neuere Zeit).
+ */
 export async function writeCalendar(b: BookingRow, deps: Deps = defaultDeps(), lookupFirst = true): Promise<boolean> {
   const { store, engine } = deps;
+  const cur = store.findById(b.id) ?? b;
   try {
-    let eventId = lookupFirst ? await engine.findEventIdByRef(b.reference) : null;
-    if (eventId) await engine.moveEvent(eventId, new Date(b.starts_at), new Date(b.ends_at)); // nach einem Verschieben: Zeiten angleichen, kein zweiter Eintrag
-    if (!eventId) eventId = await engine.createEvent(calendarInput(b));
-    store.calendarWritten(b.id, eventId);
-    logEvent("info", "calendar_written", { bookingRef: b.reference, engine: engine.name });
+    let eventId = cur.calendar_event_id ?? (lookupFirst ? await engine.findEventIdByRef(cur.reference) : null);
+    if (eventId) await engine.moveEvent(eventId, new Date(cur.starts_at), new Date(cur.ends_at)); // Zeiten angleichen, kein zweiter Eintrag
+    if (!eventId) eventId = await engine.createEvent(calendarInput(cur));
+    if (!store.calendarWritten(cur.id, eventId, new Date(), cur.calendar_rev)) {
+      logEvent("warn", "calendar_stale", { bookingRef: cur.reference, engine: engine.name });
+      return false;
+    }
+    logEvent("info", "calendar_written", { bookingRef: cur.reference, engine: engine.name });
     return true;
   } catch (e) {
     store.calendarFailed(b.id);
@@ -178,28 +189,36 @@ export async function writeCalendar(b: BookingRow, deps: Deps = defaultDeps(), l
 export async function sendConfirmation(b: BookingRow, deps: Deps = defaultDeps(), now = new Date()): Promise<boolean> {
   const { store, mailer } = deps;
   if (!mailer.enabled) return false;
+  // Vor dem Senden beanspruchen: Sofortversand und Hintergrundlauf senden dieselbe Mail nie doppelt
+  if (!store.claimBookingMail(b.id, "confirmation", now)) return false;
+  const cur = store.findById(b.id) ?? b;
   try {
-    await mailer.send(confirmationMail(b, now));
+    await mailer.send(confirmationMail(cur, now));
     store.mailConfirmationSent(b.id, now);
+    store.releaseBookingMail(b.id, "confirmation");
     logEvent("info", "mail_sent", { bookingRef: b.reference, mail: "confirmation" });
     return true;
   } catch (e) {
     store.mailConfirmationFailed(b.id, now);
+    store.releaseBookingMail(b.id, "confirmation");
     logEvent("error", "mail_failed", { bookingRef: b.reference, mail: "confirmation", errorClass: mailErrorClass(e) });
     return false;
   }
 }
 
 /** Erinnerungsmail an eine Buchung; Fälligkeit entscheidet lib/reminder-list.ts (Vortag 10:00 Uhr). */
-export async function sendReminder(b: BookingRow, deps: Deps = defaultDeps(), now = new Date()): Promise<"sent" | "failed"> {
+export async function sendReminder(b: BookingRow, deps: Deps = defaultDeps(), now = new Date()): Promise<"sent" | "failed" | "busy"> {
   const { store, mailer } = deps;
+  if (!store.claimBookingMail(b.id, "reminder", now)) return "busy";
   try {
     await mailer.send(reminderMail(b));
     store.mailReminderSent(b.id, now);
+    store.releaseBookingMail(b.id, "reminder");
     logEvent("info", "mail_sent", { bookingRef: b.reference, mail: "reminder" });
     return "sent";
   } catch (e) {
     store.mailReminderFailed(b.id, now);
+    store.releaseBookingMail(b.id, "reminder");
     logEvent("error", "mail_failed", { bookingRef: b.reference, mail: "reminder", errorClass: mailErrorClass(e) });
     return "failed";
   }
@@ -218,7 +237,7 @@ export async function cancelBooking(id: string, reason: string, deps: Deps = def
   return row;
 }
 
-export type RescheduleResult = { status: "rescheduled"; booking: BookingRow } | { status: "conflict" } | { status: "invalid" } | { status: "missing" };
+export type RescheduleResult = { status: "rescheduled"; booking: BookingRow } | { status: "conflict" } | { status: "invalid" } | { status: "missing" } | { status: "unavailable" };
 
 /**
  * Verschieben (bis 2 Stunden vor dem alten Termin, beliebig oft): neue Zeit nach denselben Regeln wie bei der Buchung,
@@ -232,14 +251,16 @@ export async function rescheduleBooking(id: string, newStart: Date, deps: Deps =
   const w = terminWindow(current, now);
   if (w !== "open" && w !== "short") return { status: "invalid" };
   if (newStart.getTime() % 600000 !== 0 || !isBookableStart(newStart, now)) return { status: "invalid" };
-  let free: boolean | null = null;
+  // Ohne erfolgreiche Prüfung keine Verschiebung; der bisherige Termin bleibt unverändert
+  let free: boolean;
   try {
     free = await engine.isStartFree({ start: newStart, durationMinutes: current.duration_minutes, now });
   } catch (e) {
     if (!(e instanceof SlotsUnavailableError)) throw e;
     logEvent("warn", "calendar_check_unavailable", { bookingRef: current.reference, engine: engine.name, errorClass: errorClass(e) });
+    return { status: "unavailable" };
   }
-  if (free === false) return { status: "conflict" };
+  if (!free) return { status: "conflict" };
   const r = store.reschedule(id, newStart, now);
   if (r.outcome !== "rescheduled") return r.outcome === "conflict" ? { status: "conflict" } : { status: "missing" };
   const b = r.booking!;

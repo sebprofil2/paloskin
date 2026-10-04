@@ -54,6 +54,8 @@ export async function runStudioMailQueue(deps: Deps, now = new Date()): Promise<
   let sent = 0;
   let failed = 0;
   for (const m of store.studioMailsPending(now)) {
+    // Beanspruchen, bevor gesendet wird: ein paralleler Lauf überspringt den Eintrag
+    if (!store.claimStudioMail(m.id, now)) continue;
     try {
       await mailer.send({ to, subject: m.subject, text: m.body, html: `<pre style="font-family:Helvetica,Arial,sans-serif;font-size:16px;white-space:pre-wrap">${m.body.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</pre>` });
       store.studioMailSent(m.id, now);

@@ -66,6 +66,12 @@ export interface BookingRow {
   mail_reminder_skipped: number;
   previous_starts_at: string | null;
   rescheduled_at: string | null;
+  /** Version der Terminzeit; jede Änderung von Beginn oder Ende zählt hoch (Schutz vor veralteten Kalenderantworten) */
+  calendar_rev: number;
+  /** gesetzt, wenn der Kalender einer Terminänderung nachgezogen werden muss */
+  calendar_pending_at: string | null;
+  mail_confirmation_claimed_until: string | null;
+  mail_reminder_claimed_until: string | null;
 }
 
 /**
@@ -187,6 +193,8 @@ export function toPayload(r: BookingRow): BookingPayload {
 }
 
 const iso = (d: Date) => d.toISOString();
+/* Beanspruchung einer Mail vor dem Senden; bricht der Prozess ab, ist sie nach dieser Zeit wieder frei */
+const CLAIM_MS = 10 * 60000;
 
 export class Store {
   constructor(readonly db: DatabaseSync) {}
@@ -310,13 +318,33 @@ export class Store {
     return rows.map((r) => ({ start: Date.parse(r.starts_at), end: Date.parse(r.ends_at) }));
   }
 
-  calendarWritten(id: string, eventId: string, now = new Date()): void {
-    this.db
+  /**
+   * Kalendereintrag geschrieben. Mit rev nur dann „written“, wenn sich die Terminzeit seit dem Lesen nicht geändert hat;
+   * sonst bleibt die Buchung zum Nachziehen vorgemerkt und der Hintergrundlauf gleicht mit der neuen Zeit ab.
+   */
+  calendarWritten(id: string, eventId: string, now = new Date(), rev?: number): boolean {
+    const at = iso(now);
+    if (rev === undefined) {
+      this.db
+        .prepare(
+          `UPDATE bookings SET calendar_state = 'written', calendar_event_id = ?, calendar_pending_at = NULL, calendar_attempts = calendar_attempts + 1,
+           calendar_attempted_at = ?, updated_at = ? WHERE id = ?`,
+        )
+        .run(eventId, at, at, id);
+      return true;
+    }
+    const r = this.db
       .prepare(
-        `UPDATE bookings SET calendar_state = 'written', calendar_event_id = ?, calendar_attempts = calendar_attempts + 1,
-         calendar_attempted_at = ?, updated_at = ? WHERE id = ?`,
+        `UPDATE bookings SET calendar_state = 'written', calendar_event_id = ?, calendar_pending_at = NULL, calendar_attempts = calendar_attempts + 1,
+         calendar_attempted_at = ?, updated_at = ? WHERE id = ? AND calendar_rev = ?`,
       )
-      .run(eventId, iso(now), iso(now), id);
+      .run(eventId, at, at, id, rev);
+    if (r.changes === 1) return true;
+    // Zwischendurch geändert: Kennung merken, Abgleich bleibt offen
+    this.db
+      .prepare("UPDATE bookings SET calendar_event_id = ?, calendar_state = 'pending', calendar_pending_at = ?, calendar_attempts = calendar_attempts + 1, calendar_attempted_at = ? WHERE id = ?")
+      .run(eventId, iso(new Date(now.getTime() - 3 * 60000)), at, id);
+    return false;
   }
 
   calendarFailed(id: string, now = new Date()): void {
@@ -334,7 +362,7 @@ export class Store {
     return this.db
       .prepare(
         `SELECT * FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND calendar_state <> 'written'
-         AND (calendar_state = 'failed' OR created_at < ?) ORDER BY created_at LIMIT ?`,
+         AND (calendar_state = 'failed' OR COALESCE(calendar_pending_at, created_at) < ?) ORDER BY created_at LIMIT ?`,
       )
       .all(stale, limit) as unknown as BookingRow[];
   }
@@ -343,7 +371,7 @@ export class Store {
   countCalendarOverdue(now = new Date()): number {
     const limit = iso(new Date(now.getTime() - 24 * 3600000));
     const r = this.db
-      .prepare("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND calendar_state <> 'written' AND created_at < ?")
+      .prepare("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND calendar_state <> 'written' AND COALESCE(calendar_pending_at, created_at) < ?")
       .get(limit) as { n: number };
     return r.n;
   }
@@ -509,9 +537,10 @@ export class Store {
         .prepare(
           `UPDATE bookings SET previous_starts_at = starts_at, starts_at = ?, ends_at = ?, rescheduled_at = ?, attendance_confirmed_at = NULL,
            mail_reminder_sent_at = NULL, mail_reminder_skipped = 0, mail_reminder_attempts = 0,
-           mail_confirmation_sent_at = NULL, mail_confirmation_attempts = 0, mail_confirmation_attempted_at = NULL, updated_at = ? WHERE id = ?`,
+           mail_confirmation_sent_at = NULL, mail_confirmation_attempts = 0, mail_confirmation_attempted_at = NULL,
+           calendar_state = 'pending', calendar_pending_at = ?, calendar_rev = calendar_rev + 1, updated_at = ? WHERE id = ?`,
         )
-        .run(iso(newStart), iso(new Date(endMs)), at, at, id);
+        .run(iso(newStart), iso(new Date(endMs)), at, at, at, id);
       const updated = this.get(id)!;
       this.appendEvent(updated, "rescheduled", at);
       this.db.exec("COMMIT");
@@ -557,11 +586,12 @@ export class Store {
           .prepare(
             `UPDATE bookings SET previous_starts_at = starts_at, starts_at = ?, ends_at = ?, duration_minutes = ?, rescheduled_at = ?, attendance_confirmed_at = NULL,
              mail_reminder_sent_at = NULL, mail_reminder_skipped = 0, mail_reminder_attempts = 0,
-             mail_confirmation_sent_at = NULL, mail_confirmation_attempts = 0, mail_confirmation_attempted_at = NULL, updated_at = ? WHERE id = ?`,
+             mail_confirmation_sent_at = NULL, mail_confirmation_attempts = 0, mail_confirmation_attempted_at = NULL,
+             calendar_rev = calendar_rev + 1, updated_at = ? WHERE id = ?`,
           )
           .run(iso(start), iso(end), minutes, at, at, id);
       } else {
-        this.db.prepare("UPDATE bookings SET ends_at = ?, duration_minutes = ?, updated_at = ? WHERE id = ?").run(iso(end), minutes, at, id);
+        this.db.prepare("UPDATE bookings SET ends_at = ?, duration_minutes = ?, calendar_rev = calendar_rev + 1, updated_at = ? WHERE id = ?").run(iso(end), minutes, at, id);
       }
       const updated = this.get(id)!;
       this.appendEvent(updated, "rescheduled", at);
@@ -586,16 +616,50 @@ export class Store {
   studioMailsPending(now = new Date(), limit = 50): { id: number; subject: string; body: string; attempts: number }[] {
     const retryBefore = iso(new Date(now.getTime() - 4 * 60000));
     return this.db
-      .prepare("SELECT id, subject, body, attempts FROM studio_mails WHERE sent_at IS NULL AND attempts < 20 AND (attempted_at IS NULL OR attempted_at < ?) ORDER BY id LIMIT ?")
-      .all(retryBefore, limit) as { id: number; subject: string; body: string; attempts: number }[];
+      .prepare("SELECT id, subject, body, attempts FROM studio_mails WHERE sent_at IS NULL AND attempts < 20 AND (attempted_at IS NULL OR attempted_at < ?) AND (claimed_until IS NULL OR claimed_until < ?) ORDER BY id LIMIT ?")
+      .all(retryBefore, iso(now), limit) as { id: number; subject: string; body: string; attempts: number }[];
+  }
+
+  /** Eintrag vor dem Senden für zehn Minuten beanspruchen; false, wenn ein anderer Lauf ihn schon bearbeitet oder er gesendet ist. */
+  claimStudioMail(id: number, now = new Date()): boolean {
+    const r = this.db
+      .prepare("UPDATE studio_mails SET claimed_until = ? WHERE id = ? AND sent_at IS NULL AND (claimed_until IS NULL OR claimed_until < ?)")
+      .run(iso(new Date(now.getTime() + CLAIM_MS)), id, iso(now));
+    return r.changes === 1;
   }
 
   studioMailSent(id: number, now = new Date()): void {
-    this.db.prepare("UPDATE studio_mails SET sent_at = ?, attempts = attempts + 1, attempted_at = ? WHERE id = ?").run(iso(now), iso(now), id);
+    this.db.prepare("UPDATE studio_mails SET sent_at = ?, attempts = attempts + 1, attempted_at = ?, claimed_until = NULL WHERE id = ?").run(iso(now), iso(now), id);
   }
 
   studioMailFailed(id: number, now = new Date()): void {
-    this.db.prepare("UPDATE studio_mails SET attempts = attempts + 1, attempted_at = ? WHERE id = ?").run(iso(now), id);
+    this.db.prepare("UPDATE studio_mails SET attempts = attempts + 1, attempted_at = ?, claimed_until = NULL WHERE id = ?").run(iso(now), id);
+  }
+
+  /** Bestätigungs- oder Erinnerungsmail einer Buchung vor dem Senden beanspruchen (gleiches Prinzip wie Studio-Mails). */
+  claimBookingMail(id: string, kind: "confirmation" | "reminder", now = new Date()): boolean {
+    const col = kind === "confirmation" ? "mail_confirmation_claimed_until" : "mail_reminder_claimed_until";
+    const sent = kind === "confirmation" ? "mail_confirmation_sent_at" : "mail_reminder_sent_at";
+    const r = this.db
+      .prepare(`UPDATE bookings SET ${col} = ? WHERE id = ? AND ${sent} IS NULL AND (${col} IS NULL OR ${col} < ?)`)
+      .run(iso(new Date(now.getTime() + CLAIM_MS)), id, iso(now));
+    return r.changes === 1;
+  }
+
+  releaseBookingMail(id: string, kind: "confirmation" | "reminder"): void {
+    const col = kind === "confirmation" ? "mail_confirmation_claimed_until" : "mail_reminder_claimed_until";
+    this.db.prepare(`UPDATE bookings SET ${col} = NULL WHERE id = ?`).run(id);
+  }
+
+  /** Zustand für die Überwachung: offene Arbeiten älter als die Grenze, ohne Kundendaten. */
+  overdueWork(now = new Date(), olderThanMinutes = 30): { calendar: number; confirmation: number; studio: number } {
+    const limit = iso(new Date(now.getTime() - olderThanMinutes * 60000));
+    const one = (sql: string, ...args: (string | number)[]) => (this.db.prepare(sql).get(...args) as { n: number }).n;
+    return {
+      calendar: one("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND calendar_state <> 'written' AND COALESCE(calendar_pending_at, created_at) < ?", limit),
+      confirmation: one("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_confirmation_sent_at IS NULL AND starts_at > ? AND COALESCE(rescheduled_at, created_at) < ?", iso(now), limit),
+      studio: one("SELECT COUNT(*) AS n FROM studio_mails WHERE sent_at IS NULL AND created_at < ?", limit),
+    };
   }
 
   /** Bestätigung durch das Kundensystem: requested wird confirmed, Ereignis confirmed; sonst unverändert. */

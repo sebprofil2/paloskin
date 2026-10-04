@@ -82,9 +82,22 @@ describe("Buchungsablauf mit Datenbank und Kalender", () => {
     expect(store.findByRequestId("44444444-4444-4444-8444-444444444444")).toBeNull();
   });
 
-  it("Kalender nicht erreichbar: Buchung gespeichert, calendar_state failed, Nachtrag holt sie nach", async () => {
+  it("Verfügbarkeit nicht prüfbar: keine Buchung, keine Belegung, kein Kalendereintrag", async () => {
     const start = await freeStart();
     process.env.BOOKING_MOCK_DOWN = "true";
+    const a = await placeBooking(input("55555555-5555-4555-8555-555555555556", start), { store, engine, mailer });
+    expect(a.status).toBe("unavailable");
+    expect(store.findByRequestId("55555555-5555-4555-8555-555555555556")).toBeNull();
+    expect(store.lockedIntervals(new Date(), new Date(Date.now() + 60 * 86400000))).toHaveLength(0);
+    expect(mockInternals.events.size).toBe(0);
+    delete process.env.BOOKING_MOCK_DOWN;
+    // Derselbe Versuch klappt, sobald der Kalender wieder lesbar ist
+    expect((await placeBooking(input("55555555-5555-4555-8555-555555555556", start), { store, engine, mailer })).status).toBe("booked");
+  });
+
+  it("Prüfung gelungen, Kalendereintrag scheitert danach: Buchung gespeichert, calendar_state failed, Nachtrag holt sie nach", async () => {
+    const start = await freeStart();
+    mockInternals.writeState.down = true;
     const a = await placeBooking(input("55555555-5555-4555-8555-555555555555", start), { store, engine, mailer });
     expect(a.status).toBe("booked");
     const row = store.findByRequestId("55555555-5555-4555-8555-555555555555")!;
@@ -98,7 +111,7 @@ describe("Buchungsablauf mit Datenbank und Kalender", () => {
     r = await retryCalendar({ store, engine, mailer }, new Date(Date.now() + 25 * 3600000));
     expect(r.overdue).toBe(1);
     // Kalender wieder da: nachgetragen, genau ein Eintrag
-    delete process.env.BOOKING_MOCK_DOWN;
+    mockInternals.writeState.down = false;
     r = await retryCalendar({ store, engine, mailer });
     expect(r).toEqual({ retried: 1, written: 1, overdue: 0 });
     expect(store.findById(row.id)!.calendar_state).toBe("written");

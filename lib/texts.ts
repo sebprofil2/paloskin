@@ -225,6 +225,8 @@ export interface ExtraTexts {
   pendingP: string;
   conflict: string;
   bookErr: string;
+  /** Verfügbarkeit nicht prüfbar: nichts gebucht, Eingaben bleiben */
+  bookUnavailable: string;
   loading: string;
   noneFree: string;
   refL: string;
@@ -263,6 +265,7 @@ const X: Record<Lang, ExtraTexts> = {
     pendingT: "Wir prüfen Ihre Buchung.", pendingP: "Bitte nicht erneut buchen, wir melden uns.",
     conflict: "Dieser Termin ist online leider nicht mehr buchbar. Bitte wählen Sie eine andere Zeit oder schreiben Sie uns per WhatsApp.",
     bookErr: "Das hat gerade nicht geklappt. Versuchen Sie es bitte noch einmal oder schreiben Sie uns per WhatsApp.",
+    bookUnavailable: "Wir können die freien Zeiten gerade nicht prüfen, deshalb ist noch nichts gebucht. Ihre Angaben bleiben erhalten. Bitte versuchen Sie es in ein paar Minuten noch einmal.",
     loading: "Einen Moment, wir schauen in den Kalender.",
     noneFree: "Online ist gerade nichts frei. Schreiben Sie uns per WhatsApp, wir finden einen Termin für Sie.",
     refL: "Buchungsnummer", durL: "Dauer", minutes: (n) => `${n} Minuten`,
@@ -283,6 +286,7 @@ const X: Record<Lang, ExtraTexts> = {
     pendingT: "We are checking your booking.", pendingP: "Please do not book again, we will get in touch.",
     conflict: "Unfortunately this appointment can no longer be booked online. Please choose another time or message us on WhatsApp.",
     bookErr: "That didn’t work just now. Please try again or message us on WhatsApp.",
+    bookUnavailable: "We can’t check availability right now, so nothing has been booked yet. Your details are still here. Please try again in a few minutes.",
     loading: "One moment, we’re checking the calendar.",
     noneFree: "Nothing is free online right now. Message us on WhatsApp and we’ll find you a time.",
     refL: "Booking number", durL: "Duration", minutes: (n) => `${n} minutes`,
@@ -303,6 +307,7 @@ const X: Record<Lang, ExtraTexts> = {
     pendingT: "Estamos comprobando su reserva.", pendingP: "Por favor, no vuelva a reservar. Nos pondremos en contacto con usted.",
     conflict: "Lamentablemente esta cita ya no se puede reservar en línea. Elija otra hora o escríbanos por WhatsApp.",
     bookErr: "Eso no ha funcionado. Inténtelo de nuevo o escríbanos por WhatsApp.",
+    bookUnavailable: "En este momento no podemos comprobar la disponibilidad, por eso todavía no se ha reservado nada. Sus datos se mantienen. Inténtelo de nuevo en unos minutos.",
     loading: "Un momento, estamos mirando la agenda.",
     noneFree: "Ahora mismo no hay citas libres online. Escríbanos por WhatsApp y le encontramos una.",
     refL: "Número de reserva", durL: "Duración", minutes: (n) => `${n} minutos`,
@@ -323,6 +328,7 @@ const X: Record<Lang, ExtraTexts> = {
     pendingT: "Nous vérifions votre réservation.", pendingP: "Merci de ne pas réserver à nouveau, nous vous recontactons.",
     conflict: "Ce rendez-vous ne peut malheureusement plus être réservé en ligne. Choisissez un autre créneau ou écrivez-nous sur WhatsApp.",
     bookErr: "Cela n’a pas fonctionné. Réessayez ou écrivez-nous sur WhatsApp.",
+    bookUnavailable: "Nous ne pouvons pas vérifier les disponibilités pour le moment, rien n’est donc encore réservé. Vos informations restent saisies. Merci de réessayer dans quelques minutes.",
     loading: "Un instant, nous consultons l’agenda.",
     noneFree: "Aucun créneau libre en ligne pour le moment. Écrivez-nous sur WhatsApp, nous vous trouvons un rendez-vous.",
     refL: "Numéro de réservation", durL: "Durée", minutes: (n) => `${n} minutes`,
@@ -343,6 +349,7 @@ const X: Record<Lang, ExtraTexts> = {
     pendingT: "Estamos verificando a sua reserva.", pendingP: "Por favor, não reserve de novo, nós entramos em contato.",
     conflict: "Infelizmente, esta consulta não pode mais ser marcada online. Escolha outro horário ou fale conosco pelo WhatsApp.",
     bookErr: "Não deu certo agora. Tente de novo ou mande uma mensagem no WhatsApp.",
+    bookUnavailable: "No momento não conseguimos verificar a disponibilidade, por isso ainda nada foi agendado. Seus dados continuam aqui. Tente de novo em alguns minutos.",
     loading: "Um momento, estamos olhando a agenda.",
     noneFree: "No momento não há horários livres online. Mande uma mensagem no WhatsApp e encontramos um para você.",
     refL: "Número da reserva", durL: "Duração", minutes: (n) => `${n} minutos`,

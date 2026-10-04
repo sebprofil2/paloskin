@@ -95,6 +95,13 @@ function failIfDown(): void {
   if (readEnv().mockDown) throw new SlotsUnavailableError("Testmotor: Ausfall simuliert");
 }
 
+/* Nur für Tests: Lesen funktioniert, Schreiben in den Kalender scheitert (Ausfall nach erfolgreicher Prüfung) */
+const writeState = { down: false };
+function failIfWritesDown(): void {
+  failIfDown();
+  if (writeState.down) throw new Error("Testmotor: Schreiben in den Kalender scheitert");
+}
+
 export class MockEngine implements BookingEngine {
   readonly name = "mock" as const;
 
@@ -131,7 +138,7 @@ export class MockEngine implements BookingEngine {
   }
 
   async createEvent(input: CalendarEventInput): Promise<string> {
-    failIfDown();
+    failIfWritesDown();
     const id = `mock-${ulid()}`;
     events.set(id, { reference: input.reference, title: input.title, description: input.description, start: input.start, end: input.end });
     recordChange(id, false);
@@ -145,7 +152,7 @@ export class MockEngine implements BookingEngine {
   }
 
   async deleteEvent(eventId: string): Promise<void> {
-    failIfDown();
+    failIfWritesDown();
     if (events.has(eventId)) {
       recordChange(eventId, true);
       events.delete(eventId);
@@ -168,7 +175,7 @@ export class MockEngine implements BookingEngine {
   }
 
   async moveEvent(eventId: string, start: Date, end: Date): Promise<void> {
-    failIfDown();
+    failIfWritesDown();
     const e = events.get(eventId);
     if (!e) throw new Error("Eintrag nicht gefunden");
     e.start = start;
@@ -189,7 +196,9 @@ export const mockInternals = {
   reset: () => {
     events.clear();
     changes.length = 0;
+    writeState.down = false;
   },
+  writeState,
   events,
   changes,
   /** Das Studio löscht den Eintrag im Kalender. */

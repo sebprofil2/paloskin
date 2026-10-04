@@ -2,6 +2,16 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import nodemailer, { type Transporter } from "nodemailer";
 import { readEnv } from "./env";
+import { isTestInstance } from "./instance";
+
+/** Testinstanz: nur an die Umleitungsadresse, Betreff mit „[TEST]“. Fehlt die Umleitung, wird nichts gesendet. */
+function guardTest(message: MailMessage): MailMessage {
+  if (!isTestInstance()) return message;
+  const to = readEnv().mail.redirectTo;
+  if (!to) throw Object.assign(new Error("Testinstanz ohne MAIL_REDIRECT_TO: Versand verweigert"), { code: "TEST_NO_REDIRECT" });
+  const subject = /^(\[TEST\]|TEST:)/.test(message.subject) ? message.subject : `[TEST] ${message.subject}`;
+  return { ...message, to, subject };
+}
 
 /*
  * Versand über den SMTP-Relay von Google Workspace (smtp-relay.gmail.com, Port 587, STARTTLS, ohne Anmeldung;
@@ -51,7 +61,8 @@ class RelayMailer implements Mailer {
     return this.transport;
   }
 
-  async send(message: MailMessage): Promise<void> {
+  async send(original: MailMessage): Promise<void> {
+    const message = guardTest(original);
     const m = readEnv().mail;
     await this.client().sendMail({
       from: { name: m.fromName, address: m.from },
@@ -70,7 +81,8 @@ class RelayMailer implements Mailer {
 /** Entwicklung: jede Mail als Textdatei unter <Datenbankordner>/mail, nichts geht raus. */
 class FileMailer implements Mailer {
   readonly enabled = true;
-  async send(message: MailMessage): Promise<void> {
+  async send(original: MailMessage): Promise<void> {
+    const message = guardTest(original);
     const env = readEnv();
     const dir = join(dirname(env.dbPath), "mail");
     mkdirSync(dir, { recursive: true, mode: 0o700 });

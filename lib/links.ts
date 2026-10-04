@@ -1,4 +1,4 @@
-import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { readEnv } from "./env";
 import { ULID_PATTERN } from "./ulid";
 
@@ -6,16 +6,16 @@ import { ULID_PATTERN } from "./ulid";
  * Signierte Terminlinks für „Ja, ich komme“ und „Termin absagen“:
  *   /termin/<buchungskennung>.<hmac-sha256 base64url, 27 Zeichen>
  * Der Link verrät nichts über den Termin; die Seite liest alles aus der Datenbank. Gültig, solange die Buchung
- * existiert (Löschung 90 Tage nach dem Termin). Schlüssel aus LINK_SECRET, sonst aus dem Cookie-Schlüssel abgeleitet.
+ * existiert (Löschung 90 Tage nach dem Termin). Schlüssel nur aus LINK_SECRET. Der frühere Rückfall auf TEST_COOKIE_SECRET
+ * oder TEST_ACCESS_CODE ist entfernt (4. Oktober 2026): auf www war LINK_SECRET seit dem 2. Oktober gesetzt, die erste
+ * Bestätigungsmail ging am 3. Oktober hinaus, alle verschickten Links sind mit LINK_SECRET signiert und bleiben gültig.
  */
 const SIG_LENGTH = 27;
 
 function secret(): string {
   const env = readEnv();
-  if (env.linkSecret) return env.linkSecret;
-  const base = env.testCookieSecret || env.testCode;
-  if (!base) throw new Error("LINK_SECRET fehlt");
-  return createHash("sha256").update(`palo-link:${base}`).digest("hex");
+  if (!env.linkSecret) throw new Error("LINK_SECRET fehlt");
+  return env.linkSecret;
 }
 
 function sign(id: string): string {

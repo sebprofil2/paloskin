@@ -65,6 +65,9 @@ async function applyChange(deps: Deps, ev: ChangedEvent, now: Date): Promise<"ca
     logEvent("warn", "calendar_sync_unreadable", { bookingRef: b.reference });
     return "ignored";
   }
+  // Zwischenzustand nach einem Verschieben: die Datenbank hat die neue Zeit, der Kalender wird gerade nachgezogen.
+  // Dann gilt die Datenbank; der Abgleich setzt nichts auf die alte Zeit zurück und verschickt keine Mail.
+  if (b.calendar_state !== "written") return "ignored";
   const startSame = sameMinute(ev.start, new Date(b.starts_at));
   const endSame = sameMinute(ev.end, new Date(b.ends_at));
   if (startSame && endSame) return "ignored"; // eigene Änderung oder nur Titel und Beschreibung
@@ -105,6 +108,8 @@ export async function syncCalendarChanges(deps: Deps, now = new Date()): Promise
   }
   // Marke erst setzen, wenn alles verarbeitet ist; sonst holt der nächste Lauf denselben Zeitraum noch einmal
   if (!failed) store.setMeta(META_KEY, now.toISOString());
+  // Für die Überwachung: Zeitpunkt des letzten erfolgreichen Abgleichs
+  if (!failed) store.setMeta("calendar_sync_ok_at", now.toISOString());
   if (result.cancelled || result.moved || result.resized) {
     logEvent("info", "calendar_sync", { count: result.checked, status: `${result.cancelled} abgesagt, ${result.moved} verschoben, ${result.resized} Dauer geändert` });
   }

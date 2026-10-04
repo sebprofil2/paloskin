@@ -94,8 +94,17 @@ export function readEnv(): Env {
     .split(",")
     .map((x) => x.trim())
     .filter(Boolean);
-  const bookings = (process.env.CALENDAR_BOOKINGS_ID ?? "").trim();
+  let bookings = (process.env.CALENDAR_BOOKINGS_ID ?? "").trim();
   if (bookings && !busy.includes(bookings)) busy.push(bookings);
+  let openId = (process.env.CALENDAR_OPEN_ID ?? "").trim();
+  // Testinstanz: nur der Testkalender, für Fenster, Belegung und Einträge. Die Kalender der Produktion werden nie gelesen.
+  if ((process.env.PALOSKIN_INSTANCE ?? "").trim() === "test") {
+    const testCal = (process.env.TEST_CALENDAR_ID ?? "").trim();
+    bookings = testCal;
+    openId = testCal;
+    busy.length = 0;
+    if (testCal) busy.push(testCal);
+  }
   return {
     engine: process.env.BOOKING_ENGINE === "google" ? "google" : "mock",
     // Standard ist Testbetrieb: erst TEST_MODE=false schaltet die echte Buchung für alle frei
@@ -108,7 +117,7 @@ export function readEnv(): Env {
     google: {
       serviceAccountEmail: sa.email,
       privateKey: sa.key,
-      calendarOpenId: (process.env.CALENDAR_OPEN_ID ?? "").trim(),
+      calendarOpenId: openId,
       calendarBookingsId: bookings,
       calendarBusyIds: busy,
     },

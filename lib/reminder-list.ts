@@ -42,8 +42,10 @@ export async function sendRemindersIfDue(deps: Deps, now = new Date()): Promise<
       skipped++;
       continue;
     }
-    if ((await sendReminder(b, deps, now)) === "sent") sent++;
-    else failed++;
+    const r = await sendReminder(b, deps, now);
+    if (r === "sent") sent++;
+    else if (r === "failed") failed++;
+    else failed++; // gerade von einem anderen Lauf beansprucht: Tag noch nicht abschließen
   }
   if (failed === 0) store.setMeta(META_REMINDER, berlinDateKey(now));
   logEvent("info", "reminders_run", { count: sent, status: `${sent} gesendet, ${skipped} zu spät gebucht, ${failed} gescheitert` });

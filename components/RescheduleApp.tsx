@@ -18,7 +18,7 @@ interface Props {
 }
 
 type Loaded = { status: "loading" } | { status: "ready"; days: SlotDay[] } | { status: "down" } | { status: "none" };
-type Result = { status: "idle" | "sending" | "conflict" | "error" } | { status: "done"; start: string; calendar: { google: string; ics: string; outlook: string } };
+type Result = { status: "idle" | "sending" | "conflict" | "error" | "unavailable" } | { status: "done"; start: string; calendar: { google: string; ics: string; outlook: string } };
 
 const TZ = "Europe/Berlin";
 const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
@@ -72,6 +72,10 @@ export function RescheduleApp({ token, lang, currentDate, currentTime }: Props) 
         setResult({ status: "conflict" });
         setSlot(null);
         setTick((x) => x + 1);
+        return;
+      }
+      if (res.status === 503 && data.status === "unavailable") {
+        setResult({ status: "unavailable" });
         return;
       }
       setResult({ status: "error" });
@@ -144,6 +148,7 @@ export function RescheduleApp({ token, lang, currentDate, currentTime }: Props) 
       <p style={{ margin: 0, fontSize: 17 }}>{l.rescheduleP(currentDate, currentTime)}</p>
       {result.status === "conflict" ? <div className="missing">{l.rescheduleGone}</div> : null}
       {result.status === "error" ? <div className="missing">{l.rescheduleDown}</div> : null}
+      {result.status === "unavailable" ? <div className="missing" role="alert">{l.rescheduleUnavailable}</div> : null}
       {body}
     </div>
   );

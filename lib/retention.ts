@@ -20,7 +20,9 @@ export const FORCE_AFTER_DAYS = 120;
 export const EXPORT_KEEP_DAYS = 30;
 export const DAILY_HOUR = 3;
 export const DAILY_MINUTE = 30;
-const META_KEY = "daily_run_date";
+/* Löschlauf und Kalenderexport werden getrennt verfolgt und erst nach Erfolg als erledigt markiert (Reparaturauftrag 4. Oktober 2026) */
+const META_RETENTION = "retention_run_date";
+const META_EXPORT = "export_run_date";
 
 /** Fällig, wenn es in Berlin nach 03:30 Uhr ist und der Lauf heute noch nicht stattfand (holt verpasste Läufe nach). */
 export function isDailyDue(now: Date, lastRunDate: string | null): boolean {
@@ -113,20 +115,31 @@ export async function exportCalendar(deps: Pick<Deps, "engine">, now = new Date(
   return file;
 }
 
-/** Täglicher Lauf, wenn fällig. Liefert true, wenn er lief. */
+/**
+ * Täglicher Lauf, wenn fällig: Löschlauf und Export je für sich. Ein Teil gilt erst nach Erfolg als erledigt;
+ * scheitert er, versucht der nächste 5-Minuten-Durchgang ihn am selben Tag erneut. Liefert true, wenn etwas lief.
+ */
 export async function runDailyIfDue(deps: Deps, now = new Date()): Promise<boolean> {
   const { store } = deps;
-  if (!isDailyDue(now, store.getMeta(META_KEY))) return false;
-  store.setMeta(META_KEY, berlinDateKey(now));
-  try {
-    await runRetention(deps, now);
-  } catch (e) {
-    logEvent("error", "retention_failed", { errorClass: errorClass(e) });
+  const today = berlinDateKey(now);
+  let ran = false;
+  if (isDailyDue(now, store.getMeta(META_RETENTION))) {
+    ran = true;
+    try {
+      await runRetention(deps, now);
+      store.setMeta(META_RETENTION, today);
+    } catch (e) {
+      logEvent("error", "retention_failed", { errorClass: errorClass(e) });
+    }
   }
-  try {
-    await exportCalendar(deps, now);
-  } catch (e) {
-    logEvent("error", "calendar_export_failed", { errorClass: errorClass(e) });
+  if (isDailyDue(now, store.getMeta(META_EXPORT))) {
+    ran = true;
+    try {
+      await exportCalendar(deps, now);
+      store.setMeta(META_EXPORT, today);
+    } catch (e) {
+      logEvent("error", "calendar_export_failed", { errorClass: errorClass(e) });
+    }
   }
-  return true;
+  return ran;
 }

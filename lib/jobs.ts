@@ -7,6 +7,7 @@ import { runStudioMailQueue } from "./studio-mail";
 import { getEngine } from "./engine";
 import { getMailer } from "./mail";
 import { getStore } from "./store";
+import { configProblems, instance } from "./instance";
 
 /*
  * Hintergrundläufe im Serverprozess, gestartet aus instrumentation.ts.
@@ -24,7 +25,24 @@ export function startBackgroundJobs(): void {
   const g = globalThis as unknown as Record<symbol, boolean>;
   if (g[KEY]) return;
   g[KEY] = true;
+  const problems = configProblems();
+  if (problems.length) logEvent("error", "ALARM Konfiguration unvollständig", { reason: problems.join("; ") });
+  logEvent("info", "instance", { status: instance() });
+  // Ein noch laufender Durchgang darf sich nie mit dem nächsten überschneiden (zum Beispiel bei langsamem Kalender oder Mailserver)
+  let running = false;
   const tick = async () => {
+    if (running) {
+      logEvent("warn", "job_skipped_overlap");
+      return;
+    }
+    running = true;
+    try {
+      await tickOnce();
+    } finally {
+      running = false;
+    }
+  };
+  const tickOnce = async () => {
     try {
       const r = await retryCalendar();
       if (r.retried) logEvent("info", "calendar_retry", { count: r.retried, status: `${r.written} nachgetragen` });
@@ -61,6 +79,12 @@ export function startBackgroundJobs(): void {
       if (m.confirmations) logEvent("info", "mail_jobs", { count: m.confirmations, status: `${m.confirmations} Bestätigungen nachgeholt` });
     } catch (e) {
       logEvent("error", "job_failed", { route: "mail_jobs", errorClass: errorClass(e) });
+    }
+    // Für die Überwachung: Ende des letzten vollständigen Durchgangs
+    try {
+      getStore().setMeta("jobs_tick_at", new Date().toISOString());
+    } catch {
+      /* Überwachung erkennt das Ausbleiben */
     }
   };
   setTimeout(tick, FIRST_DELAY_MS).unref();

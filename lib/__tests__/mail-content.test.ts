@@ -48,6 +48,10 @@ function row(over: Partial<BookingRow> = {}): BookingRow {
     mail_reminder_attempts: 0,
     mail_reminder_skipped: 0,
     previous_starts_at: null,
+    calendar_rev: 0,
+    calendar_pending_at: null,
+    mail_confirmation_claimed_until: null,
+    mail_reminder_claimed_until: null,
     rescheduled_at: null,
     ...over,
   };

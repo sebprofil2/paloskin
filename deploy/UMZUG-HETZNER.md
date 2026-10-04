@@ -310,7 +310,7 @@ Die Buchung reserviert jetzt in einer SQLite-Datei auf dem Server; der Kalender 
 sudo install -d -m 700 -o 10001 -g 10001 /var/lib/paloskin /var/lib/paloskin-test
 ```
 
-- **Testinstanz** `app-test`: gleiches Compose-File, Profil `test`, Image-Tag des Arbeitsbranches (Standard `stufe2`, änderbar mit `PALOSKIN_TEST_TAG`), eigene Datenbank unter `/var/lib/paloskin-test`, erreichbar nur über `neu.paloskin.de`. Sie nutzt dieselben Kalender wie die Seite, Testbuchungen erscheinen also als „TEST Palo Skin: …“ in „Palo Skin Termine“ und werden danach gelöscht (`scripts/google-cleanup.mjs`).
+- **Testinstanz** `app-test`: gleiches Compose-File, Profil `test`, Image-Tag des Arbeitsbranches (Standard `stufe2`, änderbar mit `PALOSKIN_TEST_TAG`), eigene Datenbank unter `/var/lib/paloskin-test`, erreichbar nur über `neu.paloskin.de`. Seit dem 4. Oktober 2026 mit eigener Umgebungsdatei und nur mit dem Testkalender „Palo Skin Test“, siehe Abschnitt 22.
 
 ```bash
 cd /opt/paloskin && git fetch && git checkout stufe2 && git pull && docker compose -f deploy/docker-compose.yml --profile test pull app-test && docker compose -f deploy/docker-compose.yml --profile test up -d app-test && docker compose -f deploy/docker-compose.yml exec caddy caddy reload --config /etc/caddy/Caddyfile
@@ -336,7 +336,7 @@ docker compose -f /opt/paloskin/deploy/docker-compose.yml exec app node -e 'cons
 printf 'LINK_SECRET=%s\n' "$(openssl rand -base64 32)" >> /etc/paloskin/paloskin.env
 ```
 
-- **Testinstanz:** `deploy/.env` (nicht im Repository) mit `PALOSKIN_TEST_MAIL=<Testadresse>`; dann gehen alle Mails von neu.paloskin.de an diese Adresse, egal welche Adresse im Formular steht.
+- **Testinstanz:** Umleitungsadresse steht seit dem 4. Oktober 2026 als `MAIL_REDIRECT_TO` in `/etc/paloskin/paloskin-test.env` (Abschnitt 22); `PALOSKIN_TEST_MAIL` in `deploy/.env` wird nicht mehr gelesen.
 - **Probe von Hand**, falls der Relay ablehnt (die Antwortzeilen zeigen den Grund; wichtig ist `-4`, sonst meldet sich der Server über IPv6):
 
 ```bash
@@ -402,3 +402,21 @@ cd /opt/paloskin && docker compose -f deploy/docker-compose.yml --profile test s
 ## 21. Protokolle höchstens 14 Tage (Datenschutzerklärung Ziffer 2, 3. Oktober 2026)
 
 - Caddy-Zugriffsprotokolle: `roll_keep_for 336h` im Caddyfile. Journal: `/etc/systemd/journald.conf.d/paloskin-14-tage.conf` mit `MaxRetentionSec=14day`. Syslog (`auth.log`, `ufw.log`, `kern.log`) und fail2ban: logrotate täglich, 14 Dateien (`/etc/logrotate.d/rsyslog`, `/etc/logrotate.d/fail2ban`). Die Protokolle der Anwendung (Docker) enthalten keine personenbezogenen Daten.
+
+## 22. Reparaturauftrag Buchung (4. Oktober 2026)
+
+**Testinstanz getrennt.** `app-test` liest nur noch `/etc/paloskin/paloskin-test.env` (Vorlage `deploy/paloskin-test.env.example`) und setzt `PALOSKIN_INSTANCE=test`. Im Code gilt dann: Kalender nur aus `TEST_CALENDAR_ID`, alle Mails an `MAIL_REDIRECT_TO` mit „[TEST]“ im Betreff, ohne Umleitung oder ohne Testkalender (bei `BOOKING_ENGINE=google`) keine Buchung und kein Versand. Solange der Testkalender fehlt, läuft die Instanz mit `BOOKING_ENGINE=mock`.
+
+**Testkalender einrichten (Dr. Vogel):**
+1. In Google Kalender mit dem Konto, dem „Palo Skin Termine“ gehört: links bei „Weitere Kalender“ auf „+“, „Neuen Kalender erstellen“, Name „Palo Skin Test“.
+2. In den Einstellungen dieses Kalenders unter „Für bestimmte Personen oder Gruppen freigeben“ die Adresse des Dienstkontos hinzufügen (dieselbe Adresse, die schon bei „Palo Skin Termine“ eingetragen ist; sie endet auf `.iam.gserviceaccount.com`) mit der Berechtigung „Änderungen an Terminen vornehmen“.
+3. Unter „Kalender integrieren“ die Kalender-ID kopieren und an Claude Code geben (sie ist kein Geheimnis).
+4. Öffnungsfenster für Tests als Termine in „Palo Skin Test“ anlegen und bei „Beschäftigt / Verfügbar“ auf **Verfügbar** stellen.
+Danach in `/etc/paloskin/paloskin-test.env`: `TEST_CALENDAR_ID=<ID>` und `BOOKING_ENGINE=google`, dann `docker compose -f deploy/docker-compose.yml --profile test up -d app-test`.
+
+**Heartbeat erweitert** (`deploy/heartbeat.sh`): fehlende Sicherung ist ein Alarm; zusätzlich letzter vollständiger Hintergrunddurchgang (höchstens 15 Minuten alt), letzter erfolgreicher Kalenderabgleich (höchstens 20 Minuten), überfällige Kalendereinträge, Bestätigungsmails und Studio-Mails (älter als 30 Minuten). Die Abfrage braucht die neuen Spalten, deshalb erst **nach** dem Ausrollen auf www installieren (root):
+`sudo install -m 0755 /opt/paloskin/deploy/heartbeat.sh /usr/local/bin/paloskin-heartbeat`
+
+**Ausrollen auf www (nach Freigabe):** `zonen` vorspulen (`git checkout zonen && git merge --ff-only stufe2 && git push`), auf dem Server `git checkout zonen && git pull`, `docker compose -f deploy/docker-compose.yml pull app && docker compose -f deploy/docker-compose.yml up -d app`. Beim ersten Start legt die App die neuen Spalten an (nur Hinzufügen, nichts wird gelöscht). Danach Heartbeat wie oben installieren.
+
+**Rückkehr zum bisherigen Stand:** Vor dem Ausrollen die Sicherung prüfen (`/var/backups/paloskin`, letzte Nacht). Zurück auf den letzten Stand: `PALOSKIN_IMAGE_TAG=<Commit des Vorstands, zum Beispiel 411cb01>` in `deploy/.env` setzen oder `zonen` auf den alten Commit zurücksetzen und das Image neu bauen lassen, dann `up -d app`. Die neuen Spalten stören die alte Fassung nicht (sie liest sie nicht). Den alten Heartbeat stellt `git show 411cb01:deploy/heartbeat.sh` wieder her.

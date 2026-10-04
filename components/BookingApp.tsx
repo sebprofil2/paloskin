@@ -76,7 +76,7 @@ interface Booking {
 }
 
 type SlotsState = { status: "idle" | "loading" | "ready" | "down"; days: SlotDay[]; durationMinutes: number | null; key: string };
-type BookState = { status: "idle" | "sending" | "error" | "conflict" | "pending" } | { status: "done"; booking: Booking };
+type BookState = { status: "idle" | "sending" | "error" | "unavailable" | "conflict" | "pending" } | { status: "done"; booking: Booking };
 
 const blank = (checkup: boolean): State => ({
   persons: 1,
@@ -384,7 +384,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   }
   function goto(n: Step) {
     setS((p) => ({ ...p, step: n, errors: {} }));
-    if (book.status === "error" || book.status === "conflict") setBook({ status: "idle" });
+    if (book.status === "error" || book.status === "unavailable" || book.status === "conflict") setBook({ status: "idle" });
     setTimeout(toTop, 0);
   }
 
@@ -421,6 +421,11 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
       }
       if (res.status === 202) {
         setBook({ status: "pending" });
+        return;
+      }
+      // Verfügbarkeit nicht prüfbar: nichts gebucht, Eingaben bleiben stehen
+      if (res.status === 503 && data.status === "unavailable") {
+        setBook({ status: "unavailable" });
         return;
       }
       setBook({ status: "error" });
@@ -764,6 +769,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
         </label>
         {s.errors.consent ? <div className="missing">{l.eConsent}</div> : null}
         {book.status === "error" ? <div className="missing">{l.bookErr}</div> : null}
+        {book.status === "unavailable" ? <div className="missing" role="alert">{l.bookUnavailable}</div> : null}
         <div className="note"><strong>{l.cancelT}</strong>{l.cancelP}<br />{l.cancelP2}</div>
       </section>
     );
