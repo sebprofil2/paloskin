@@ -37,9 +37,10 @@ a{color:inherit}
 
 /* Kopf */
 .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:18px}
-.wm{text-decoration:none;display:block;line-height:1.1}
-.wm b{display:block;font-weight:500;font-size:22px;letter-spacing:.09em}
-.wm span{display:block;font-size:13px;letter-spacing:.04em;color:var(--ink-2);margin-top:2px}
+.wm{text-decoration:none;display:block;line-height:0;flex:none}
+/* Kopf-Marke als SVG (Zeichen blau, Wortmarke anthrazit); auf schmalen Handys etwas kleiner als die frühere Textmarke */
+.wm .logo{display:block;height:40px;width:auto}
+@media (max-width:479px){.wm .logo{height:34px}}
 .nav{display:flex;align-items:center;gap:10px}
 .nav .links{display:none;gap:22px;margin-right:16px;font-size:15px}
 .nav .links a{text-decoration:none;color:var(--ink-2)}

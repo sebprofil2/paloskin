@@ -1,5 +1,6 @@
 import { ADDRESS, MAPS_LINK, PHONE, STUDIO, WA_LINK } from "@/lib/texts-mail";
 import type { Lang } from "@/lib/treatments";
+import { LogoKopf } from "@/components/LogoKopf";
 
 /* Rahmen der Terminseiten: Kopf mit Marke, Überschrift, Fußkasten mit Adresse und WhatsApp. */
 export function langFromHint(hint: string): Lang {
@@ -23,8 +24,9 @@ export function Shell({ title, children }: { title: string; children: React.Reac
       <main className="app" style={{ minHeight: "auto" }}>
         <div className="band" />
         <div className="brand">
-          <div className="wm">PALO SKIN</div>
-          <div className="by">by Dr. Vogel</div>
+          <a href="/" aria-label="PALO SKIN by Dr. Vogel, Startseite">
+            <LogoKopf />
+          </a>
         </div>
         <div className="page" style={{ gap: 20, paddingBottom: 8 }}>
           <h2 style={{ marginTop: 8 }}>{title}</h2>

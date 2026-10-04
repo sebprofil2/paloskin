@@ -32,8 +32,8 @@ button,input,textarea{font:inherit;color:inherit}
 .band{height:8px;background:var(--ultramarin)}
 @media (min-width:920px){.band{height:12px}}
 .brand{padding:20px 24px 18px;border-bottom:1px solid var(--line)}
-.brand .wm{font-size:26px;letter-spacing:.09em;line-height:1.14;text-transform:uppercase}
-.brand .by{font-size:14px;letter-spacing:.04em;color:var(--ink-2);margin-top:2px}
+.brand .logo{display:block;height:40px;width:auto}
+.brand a{display:block;line-height:0}
 
 .page{padding:8px 24px 32px;display:flex;flex-direction:column;gap:48px}
 .sec{display:flex;flex-direction:column;gap:16px;scroll-margin-top:16px;padding-top:32px;border-top:1px solid var(--line)}
@@ -165,8 +165,7 @@ textarea{min-height:96px;resize:vertical}
 
 /* ---------- Version 17: drei Schritte, kompakter ---------- */
 .brand{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:16px 20px 14px}
-.brand .wm{font-size:22px}
-.brand .by{font-size:13px}
+.brand .logo{height:34px}
 .lang{position:relative}
 .lang-btn{display:flex;align-items:center;gap:8px;border:0;box-shadow:inset 0 0 0 1px var(--line);background:transparent;padding:7px 10px;font-size:14px;cursor:pointer;white-space:nowrap}
 .lang-btn:hover{box-shadow:inset 0 0 0 1px var(--ink)}

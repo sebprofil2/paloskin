@@ -28,8 +28,9 @@ ws.onmessage = (m) => { const d = JSON.parse(m.data); if (d.id && pending.has(d.
 const send = (method, params = {}) => new Promise((r) => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); });
 const evalJs = async (expression) => (await send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true })).result?.result?.value;
 await send("Page.enable");
-await send("Emulation.setDeviceMetricsOverride", { width, height: 844, deviceScaleFactor: 2, mobile: true });
-await send("Emulation.setUserAgentOverride", { userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1", acceptLanguage: "de-DE,de" });
+const mobile = width < 768;
+await send("Emulation.setDeviceMetricsOverride", { width, height: mobile ? 844 : 900, deviceScaleFactor: mobile ? 2 : 1, mobile });
+await send("Emulation.setUserAgentOverride", { userAgent: mobile ? "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1" : "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0 Safari/537.36", acceptLanguage: "de-DE,de" });
 
 /* Im Browser: Fließtext-Rand bestimmen und alle sichtbaren Elemente dagegen prüfen */
 const CHECK = `(() => {
@@ -81,7 +82,7 @@ for (const st of steps) {
     if (st.sel && st.sel !== "viewport") clip = await evalJs(`(() => { const el = document.querySelector(${JSON.stringify(st.sel)}); if (!el) return null; const b = el.getBoundingClientRect(); return { x: 0, y: b.top + window.scrollY, w: ${width}, h: Math.ceil(b.height) }; })()`);
     const params = { format: "jpeg", quality: 88 };
     if (clip) Object.assign(params, { captureBeyondViewport: true, clip: { x: 0, y: clip.y, width: clip.w, height: clip.h, scale: 1 } });
-    else if (st.sel === "viewport") { const y = await evalJs("window.scrollY"); Object.assign(params, { captureBeyondViewport: true, clip: { x: 0, y, width, height: 844, scale: 1 } }); }
+    else if (st.sel === "viewport") { const y = await evalJs("window.scrollY"); Object.assign(params, { captureBeyondViewport: true, clip: { x: 0, y, width, height: mobile ? 844 : 900, scale: 1 } }); }
     const shot = await send("Page.captureScreenshot", params);
     const file = join(outDir, `${st.shot}-${width}.jpg`);
     writeFileSync(file, Buffer.from(shot.result.data, "base64"));

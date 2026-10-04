@@ -5,6 +5,7 @@ import type { SlotDay } from "@/lib/slots";
 import { FLAGS, LANGS, TEXTS, isLang, type Texts } from "@/lib/texts";
 import { normalizePhoneE164 } from "@/lib/phone";
 import { PRICES, ZONE_IDS, hasBotulinum, hasTreatment, zoneCount, zonePrice, type Lachs, type Lang, type Selection, type Visit, type ZoneId } from "@/lib/treatments";
+import { LogoKopf } from "@/components/LogoKopf";
 
 /* ---------- Feste Angaben ---------- */
 const PHONE = "+49 151 58872566";
@@ -489,9 +490,8 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     <>
       <div className="band" />
       <header className="brand">
-        <a href="/">
-          <div className="wm">PALO SKIN</div>
-          <div className="by">by Dr. Vogel</div>
+        <a href="/" aria-label="PALO SKIN by Dr. Vogel, Startseite">
+          <LogoKopf />
         </a>
         <div className="claim">Goodbye wrinkles.</div>
         <div className="spec">{l.spec}</div>

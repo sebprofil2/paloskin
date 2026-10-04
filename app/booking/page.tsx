@@ -4,20 +4,20 @@ import { BookingApp } from "@/components/BookingApp";
 import { InterimBooking } from "@/components/InterimBooking";
 import { cookieIsValid, TEST_COOKIE } from "@/lib/access";
 import { readEnv } from "@/lib/env";
+import { bookingMetadata } from "@/lib/share-meta";
 import { isLang } from "@/lib/texts";
 import "./booking.css";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Termin buchen · Palo Skin by Dr. Vogel",
-  description:
-    "Termin bei Palo Skin by Dr. Vogel in Berlin Prenzlauer Berg online buchen: Botox-Behandlung, Skin Booster oder Beratung. Sofortige Bestätigung mit Kalendereinladung.",
-  alternates: { canonical: "https://www.paloskin.de/booking" },
-};
-
 type Params = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+
+/* Vorschautexte und Vorschaubild je Sprache (?lang=), Deutsch ohne Angabe; Wortlaut in lib/share-meta.ts */
+export async function generateMetadata({ searchParams }: { searchParams: Promise<Params> }): Promise<Metadata> {
+  const lang = one((await searchParams).lang);
+  return bookingMetadata(isLang(lang) ? lang : "de");
+}
 
 export default async function BookingPage({ searchParams }: { searchParams: Promise<Params> }) {
   const sp = await searchParams;

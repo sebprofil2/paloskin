@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { LogoKopf } from "@/components/LogoKopf";
 
 /* Inhalt und Aufbau wie public/404.html, nichts neu geschrieben */
 export const metadata: Metadata = {
-  title: "Seite nicht gefunden · Palo Skin by Dr. Vogel",
+  title: "Seite nicht gefunden · PALO SKIN by Dr. Vogel",
   robots: { index: false },
 };
 
@@ -15,9 +16,8 @@ export default function NotFound() {
       <script dangerouslySetInnerHTML={{ __html: redirectScript }} />
       <div className="band" />
       <header className="wrap top">
-        <a className="wm" href="/" aria-label="Palo Skin, Startseite">
-          <b>PALO SKIN</b>
-          <span>by Dr. Vogel</span>
+        <a className="wm" href="/" aria-label="PALO SKIN by Dr. Vogel, Startseite">
+          <LogoKopf />
         </a>
         <nav className="nav">
           <a className="btn primary small" href="/booking">Termin buchen</a>

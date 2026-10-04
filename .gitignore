@@ -32,3 +32,6 @@ coverage/
 # Google-Schlüsseldateien
 palo-skin-buchung-*.json
 *gserviceaccount*.json
+
+# Original-Vektordateien von Dr. Vogel (Visitenkarten-Entwürfe mit Porträt, Schild): nur lokal, Repository ist öffentlich
+/design/

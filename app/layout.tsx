@@ -2,8 +2,16 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Palo Skin by Dr. Vogel",
-  icons: { icon: "/assets/favicon.svg", apple: "/assets/apple-touch-icon.png" },
+  metadataBase: new URL("https://www.paloskin.de"),
+  title: "PALO SKIN by Dr. Vogel",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      { url: "/assets/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: { url: "/assets/apple-touch-icon.png", sizes: "180x180" },
+  },
+  manifest: "/site.webmanifest",
 };
 
 export const viewport: Viewport = {

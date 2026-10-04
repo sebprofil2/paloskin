@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { readEnv } from "@/lib/env";
 import "../booking.css";
+import { LogoKopf } from "@/components/LogoKopf";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Testzugang · Palo Skin by Dr. Vogel", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Testzugang · PALO SKIN by Dr. Vogel", robots: { index: false, follow: false } };
 
 type Params = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
@@ -22,9 +23,8 @@ export default async function ZugangPage({ searchParams }: { searchParams: Promi
       <main className="app" id="app">
         <div className="band" />
         <header className="brand">
-          <a href="/">
-            <div className="wm">PALO SKIN</div>
-            <div className="by">by Dr. Vogel</div>
+          <a href="/" aria-label="PALO SKIN by Dr. Vogel, Startseite">
+            <LogoKopf />
           </a>
         </header>
         <div className="page">
