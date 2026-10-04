@@ -390,6 +390,13 @@ sudo apt-get install -y sqlite3 && sudo install -d -m 700 -o root -g root /var/b
 cd /opt/paloskin && docker compose -f deploy/docker-compose.yml --profile test stop app-test && sudo sh -c 'gunzip -c /var/backups/paloskin/buchung-$(date +%F).sqlite.gz > /var/lib/paloskin-test/buchung.sqlite && rm -f /var/lib/paloskin-test/buchung.sqlite-wal /var/lib/paloskin-test/buchung.sqlite-shm && chown 10001:10001 /var/lib/paloskin-test/buchung.sqlite && chmod 644 /var/lib/paloskin-test/buchung.sqlite' && docker compose -f deploy/docker-compose.yml --profile test start app-test
 ```
 
+- **Pflicht seit 4. Oktober 2026: Kennung des Ereignisstroms erneuern**, bevor die App wieder startet. Eine zurückgeholte Datenbank hat einen älteren Ereigniszähler; ohne neue `stream_generation` würde das Kundensystem das nicht merken. Den Befehl im selben `sudo sh -c` direkt nach dem Zurückkopieren ausführen (Pfad je Instanz):
+
+```bash
+sudo sqlite3 /var/lib/paloskin/buchung.sqlite "UPDATE meta SET value = 'gen-$(date +%Y%m%d)-r$(head -c 5 /dev/urandom | od -An -tx1 | tr -d ' \n')' WHERE key = 'stream_generation'; SELECT value FROM meta WHERE key = 'stream_generation';"
+```
+
+  Dasselbe gilt nach einer Wiederherstellung des ganzen Servers aus einem Hetzner-Backup (Abschnitt 8), sobald der wiederhergestellte Server die Buchung übernehmen soll. Danach dem Kundensystem Bescheid geben: Es hält den Abgleich wegen der neuen Kennung an und wartet auf die Bestätigung des Betreibers.
 - Danach Zahlen prüfen (Buchungen, letzte Ereignisnummer) mit dem Befehl aus Abschnitt 16; sie müssen dem Stand der Sicherung entsprechen. Die Datei `-wal` muss vor dem Start gelöscht sein, sonst mischt SQLite alte Schreibvorgänge hinein.
 - **Hetzner-Server-Backup** enthält `/var/backups/paloskin` und `/var/lib/paloskin`; eine Wiederherstellung des ganzen Servers ist in Abschnitt 8 beschrieben.
 
@@ -420,3 +427,9 @@ Danach in `/etc/paloskin/paloskin-test.env`: `TEST_CALENDAR_ID=<ID>` und `BOOKIN
 **Ausrollen auf www (nach Freigabe):** `zonen` vorspulen (`git checkout zonen && git merge --ff-only stufe2 && git push`), auf dem Server `git checkout zonen && git pull`, `docker compose -f deploy/docker-compose.yml pull app && docker compose -f deploy/docker-compose.yml up -d app`. Beim ersten Start legt die App die neuen Spalten an (nur Hinzufügen, nichts wird gelöscht). Danach Heartbeat wie oben installieren.
 
 **Rückkehr zum bisherigen Stand:** Vor dem Ausrollen die Sicherung prüfen (`/var/backups/paloskin`, letzte Nacht). Zurück auf den letzten Stand: `PALOSKIN_IMAGE_TAG=<Commit des Vorstands, zum Beispiel 411cb01>` in `deploy/.env` setzen oder `zonen` auf den alten Commit zurücksetzen und das Image neu bauen lassen, dann `up -d app`. Die neuen Spalten stören die alte Fassung nicht (sie liest sie nicht). Den alten Heartbeat stellt `git show 411cb01:deploy/heartbeat.sh` wieder her.
+
+## 23. Ereignisstrom ohne Lücke (4. Oktober 2026)
+
+`GET /intern/v1/events` und `GET /intern/v1/health` liefern `oldest_seq` und `stream_generation` (docs/SCHNITTSTELLE-KUNDENSYSTEM.md, Abschnitt 2). Ist ein Verbraucher angemeldet, löscht der Löschlauf unbestätigte Ereignisse nie; ein Ereignis, das länger als 3 Tage unbestätigt ist, erzeugt in der App eine Zeile „ALARM …“, die der vorhandene Heartbeat schon erkennt. Die Abfrage in `deploy/heartbeat.sh` prüft dasselbe zusätzlich; nach dieser Änderung bei Gelegenheit neu installieren:
+`sudo install -m 0755 /opt/paloskin/deploy/heartbeat.sh /usr/local/bin/paloskin-heartbeat`
+Nach jeder Wiederherstellung der Datenbank aus einer Sicherung: Kennung erneuern (Abschnitt 19).

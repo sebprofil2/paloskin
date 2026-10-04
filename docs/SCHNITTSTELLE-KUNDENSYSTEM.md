@@ -22,11 +22,19 @@ Stand: 3. Oktober 2026, Fassung 4 des Bauauftrags Stufe 2, Codes verbindlich, Ge
 {
   "events": [ { "seq": 17, "event_id": "01M3Z293MN1KK9BTG42T2BZBJG", "type": "created", "occurred_at": "2026-10-05T07:12:03.412Z", "booking": { } } ],
   "next_after": 17,
+  "oldest_seq": 0,
+  "stream_generation": "gen-20261004-k3j9q2m7x5",
   "server_time": "2026-10-05T07:12:09.001Z"
 }
 ```
 
-Vorgehen des Kundensystems: abholen, verarbeiten, bestätigen (Abschnitt 3), mit `after = next_after` weiter. Ereignisse werden erst nach Bestätigung und frühestens 90 Tage später gelöscht (Löschlauf, Schritt 4).
+- `oldest_seq` (verpflichtend, seit 4. Oktober 2026): kleinste noch vorhandene Ereignisnummer. `0` heißt: es wurde noch nie ein Ereignis gelöscht, der Verlauf ist vollständig. Sind alle Ereignisse gelöscht, die Nummer nach der höchsten gelöschten.
+- `stream_generation` (verpflichtend): Kennung des Ereignisstroms, Kleinbuchstaben, Ziffern und Bindestrich, höchstens 40 Zeichen. Beim ersten Öffnen der Datenbank zufällig erzeugt, im Normalbetrieb unverändert. Wird die Buchungsdatenbank aus einer Sicherung zurückgeholt oder neu angelegt, ändert sie sich (Ablauf in `deploy/UMZUG-HETZNER.md`, Abschnitt 19).
+- Bedeutung für das Kundensystem: Ist `oldest_seq` größer als 0 und der eigene bestätigte Stand kleiner als `oldest_seq - 1`, fehlen Ereignisse. Weicht `stream_generation` von der gespeicherten ab, schließt der Zähler nicht mehr an den bisherigen Verlauf an. In beiden Fällen anhalten und den Betreiber fragen.
+
+Vorgehen des Kundensystems: abholen, verarbeiten, bestätigen (Abschnitt 3), mit `after = next_after` weiter.
+
+**Löschung von Ereignissen** (Entscheidung Dr. Vogel, 4. Oktober 2026: nichts darf verloren gehen): Bestätigte Ereignisse werden frühestens 90 Tage nach ihrem Entstehen gelöscht (täglicher Löschlauf). Ist ein Verbraucher angemeldet (angemeldet ist er mit seiner ersten Empfangsbestätigung über `POST /intern/v1/ack`; bloßes Abholen meldet nicht an), werden unbestätigte Ereignisse nie automatisch gelöscht; gelöscht wird nur, was alle angemeldeten Verbraucher bestätigt haben. Ist ein Ereignis länger als 3 Tage unbestätigt, alarmiert die Überwachung auf paloskin-1. Nur solange kein Verbraucher angemeldet ist, löscht der Löschlauf Ereignisse nach 120 Tagen auch unbestätigt.
 
 ## 3. Empfang bestätigen
 
@@ -49,7 +57,7 @@ Vorgehen des Kundensystems: abholen, verarbeiten, bestätigen (Abschnitt 3), mit
 `GET /intern/v1/health` liefert ohne Kundendaten:
 
 ```json
-{ "server_time": "...", "last_seq": 42, "consumers": [ { "name": "studio-os", "acknowledged_seq": 40, "last_seen_at": "...", "pending_events": 2 } ], "pending_events": 2, "calendar_failed": 0, "mail_unsent": 0 }
+{ "server_time": "...", "last_seq": 42, "oldest_seq": 0, "stream_generation": "gen-20261004-k3j9q2m7x5", "consumers": [ { "name": "studio-os", "acknowledged_seq": 40, "last_seen_at": "...", "pending_events": 2 } ], "pending_events": 2, "calendar_failed": 0, "mail_unsent": 0 }
 ```
 
 ## 6. Umschlag und Buchungsstand

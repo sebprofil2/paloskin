@@ -50,6 +50,13 @@ export function startBackgroundJobs(): void {
       logEvent("error", "job_failed", { route: "calendar_retry", errorClass: errorClass(e) });
     }
     try {
+      // Nichts darf verloren gehen: ein Ereignis länger als 3 Tage unbestätigt (nur mit angemeldetem Verbraucher) ist ein Alarm
+      const stale = getStore().countUnacknowledgedOlderThan(new Date(), 3);
+      if (stale > 0) logEvent("error", "ALARM Ereignis seit über 3 Tagen nicht bestätigt", { count: stale });
+    } catch (e) {
+      logEvent("error", "job_failed", { route: "ack_check", errorClass: errorClass(e) });
+    }
+    try {
       const reset = getStore().resetEarlyAttendance();
       if (reset.length) logEvent("info", "attendance_reset", { count: reset.length, status: reset.join(", ") });
     } catch (e) {

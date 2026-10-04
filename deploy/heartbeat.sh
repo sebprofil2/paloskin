@@ -55,6 +55,12 @@ const studio = n("SELECT COUNT(*) AS n FROM studio_mails WHERE sent_at IS NULL A
 if (cal) out.push(`${cal} Kalendereinträge überfällig`);
 if (conf) out.push(`${conf} Bestätigungsmails überfällig`);
 if (studio) out.push(`${studio} Studio-Mails überfällig`);
+// Ereignis länger als 3 Tage nicht bestätigt, nur wenn ein Verbraucher (Kundensystem) angemeldet ist
+const c = db.prepare("SELECT MIN(acknowledged_seq) AS ack, COUNT(*) AS n FROM consumers").get();
+if (c.n > 0) {
+  const stale = n("SELECT COUNT(*) AS n FROM booking_events WHERE seq > ? AND occurred_at < ?", c.ack ?? 0, new Date(Date.now() - 3 * 86400000).toISOString());
+  if (stale) out.push(`${stale} Ereignisse seit über 3 Tagen nicht bestätigt`);
+}
 console.log(out.length ? out.join("; ") : "OK");
 NODE
 )

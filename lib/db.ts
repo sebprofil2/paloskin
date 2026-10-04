@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
@@ -115,7 +116,17 @@ export function openDatabase(path: string): DatabaseSync {
   db.exec("PRAGMA synchronous = NORMAL");
   db.exec(SCHEMA);
   migrate(db);
+  // Kennung des Ereignisstroms: beim ersten Öffnen zufällig erzeugt, danach unverändert. Nach dem Zurückholen
+  // einer Sicherung wird sie neu gesetzt (deploy/UMZUG-HETZNER.md, Abschnitt 19), damit das Kundensystem es merkt.
+  db.prepare("INSERT OR IGNORE INTO meta (key, value) VALUES ('stream_generation', ?)").run(newStreamGeneration());
   return db;
+}
+
+/** Bezeichner aus Kleinbuchstaben, Ziffern und Bindestrich, 28 Zeichen, zum Beispiel gen-20261004-k3j9q2m7x5w1p8z4. */
+export function newStreamGeneration(now = new Date()): string {
+  const alphabet = "abcdefghjkmnpqrstvwxyz0123456789";
+  const rand = Array.from(randomBytes(10), (b) => alphabet[b % alphabet.length]).join("");
+  return `gen-${now.toISOString().slice(0, 10).replace(/-/g, "")}-${rand}`;
 }
 
 /*

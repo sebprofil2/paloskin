@@ -12,7 +12,10 @@ import { berlinDateKey, berlinParts } from "./time";
  *   1. Buchungen, deren Termin mehr als 90 Tage zurückliegt und deren Ereignisse vom Kundensystem bestätigt sind,
  *      werden gelöscht (Zeile weg, Ereignis deleted nur mit Kennung und Nummer). Nach 120 Tagen auch unbestätigt,
  *      mit Vermerk im Protokoll.
- *   2. Ereignisse werden gelöscht, sobald sie bestätigt und älter als 90 Tage sind; nach 120 Tagen auch unbestätigt.
+ *   2. Ereignisse werden gelöscht, sobald sie bestätigt und älter als 90 Tage sind. Ist ein Verbraucher angemeldet
+ *      (Kundensystem), werden unbestätigte Ereignisse nie automatisch gelöscht (Entscheidung Dr. Vogel, 4. Oktober 2026:
+ *      nichts darf verloren gehen); der Heartbeat alarmiert, wenn eines länger als 3 Tage unbestätigt ist. Ohne
+ *      angemeldeten Verbraucher wie bisher: nach 120 Tagen auch unbestätigt.
  *   3. Export von „Palo Skin Termine“ als Kalenderdatei neben der Datenbank, 30 Tage aufbewahrt.
  * Die SQLite-Sicherung macht der Server um 03:45 Uhr (deploy/backup.sh).
  */
@@ -78,7 +81,7 @@ export async function runRetention(deps: Pick<Deps, "store" | "engine">, now = n
     }
   }
   const eventsPurged = store.purgeEvents(now, DELETE_AFTER_DAYS, ackMin);
-  const eventsPurgedForced = store.purgeEventsForced(now, FORCE_AFTER_DAYS);
+  const eventsPurgedForced = ackMin === null ? store.purgeEventsForced(now, FORCE_AFTER_DAYS) : 0;
   if (eventsPurgedForced > 0) logEvent("warn", "retention_forced_events", { count: eventsPurgedForced, forced: true });
   logEvent("info", "retention_run", { count: deleted + deletedForced, status: `${deleted} gelöscht, ${deletedForced} erzwungen, ${calendarRemoved} Kalendereinträge, ${eventsPurged + eventsPurgedForced} Ereignisse` });
   return { deleted, deletedForced, calendarRemoved, eventsPurged, eventsPurgedForced };

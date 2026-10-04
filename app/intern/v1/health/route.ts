@@ -17,6 +17,8 @@ export async function GET(req: Request) {
     return internJson({
       server_time: now.toISOString(),
       last_seq: last,
+      oldest_seq: store.oldestSeq(),
+      stream_generation: store.streamGeneration(),
       consumers,
       pending_events: consumers.length ? Math.max(...consumers.map((c) => c.pending_events)) : last,
       calendar_failed: store.countCalendarFailed(),

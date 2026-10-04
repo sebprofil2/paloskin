@@ -16,9 +16,11 @@ export async function GET(req: Request) {
   const after = Number(afterRaw);
   const limit = Math.min(Math.max(Number(limitRaw), 1), EVENTS_LIMIT_MAX);
   try {
-    const events = getStore().eventsAfter(after, limit);
+    const store = getStore();
+    const events = store.eventsAfter(after, limit);
     const nextAfter = events.length ? events[events.length - 1].seq : after;
-    return internJson({ events, next_after: nextAfter, server_time: new Date().toISOString() });
+    // oldest_seq und stream_generation: das Kundensystem erkennt daran eine Lücke oder einen zurückgeholten Stand
+    return internJson({ events, next_after: nextAfter, oldest_seq: store.oldestSeq(), stream_generation: store.streamGeneration(), server_time: new Date().toISOString() });
   } catch (e) {
     logEvent("error", "intern_events_failed", { route: "intern", errorClass: errorClass(e) });
     return internJson({ error: "failed" }, 503);

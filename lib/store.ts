@@ -743,9 +743,43 @@ export class Store {
     return rows.map((r) => ({ seq: r.seq, event_id: r.event_id, type: r.type, occurred_at: r.occurred_at, booking: JSON.parse(r.payload) as BookingPayload }));
   }
 
+  /** Höchste je vergebene Ereignisnummer, auch wenn die Ereignisse inzwischen gelöscht sind (AUTOINCREMENT-Zähler). */
   lastSeq(): number {
-    const r = this.db.prepare("SELECT COALESCE(MAX(seq), 0) AS n FROM booking_events").get() as { n: number };
+    const r = this.db
+      .prepare("SELECT MAX(COALESCE((SELECT seq FROM sqlite_sequence WHERE name = 'booking_events'), 0), COALESCE((SELECT MAX(seq) FROM booking_events), 0)) AS n")
+      .get() as { n: number };
     return r.n;
+  }
+
+  /**
+   * Kleinste noch vorhandene Ereignisnummer; 0, solange noch nie ein Ereignis gelöscht wurde (Verlauf vollständig).
+   * Sind alle Ereignisse gelöscht, die Nummer nach der höchsten gelöschten.
+   */
+  oldestSeq(): number {
+    const purged = Number(this.getMeta("events_purged_max") ?? 0);
+    if (!purged) return 0;
+    const r = this.db.prepare("SELECT MIN(seq) AS n FROM booking_events").get() as { n: number | null };
+    return r.n ?? purged + 1;
+  }
+
+  streamGeneration(): string {
+    return this.getMeta("stream_generation") ?? "";
+  }
+
+  /** Höchste gelöschte Nummer merken, bevor Ereignisse gelöscht werden. */
+  private notePurge(where: string, ...args: (string | number)[]): void {
+    const r = this.db.prepare(`SELECT MAX(seq) AS n FROM booking_events WHERE ${where}`).get(...args) as { n: number | null };
+    if (r.n === null) return;
+    const before = Number(this.getMeta("events_purged_max") ?? 0);
+    if (r.n > before) this.setMeta("events_purged_max", String(r.n));
+  }
+
+  /** Anzahl Ereignisse, die ein angemeldeter Verbraucher seit mehr als `days` Tagen nicht bestätigt hat; 0 ohne Verbraucher. */
+  countUnacknowledgedOlderThan(now: Date, days: number): number {
+    const ackMin = this.acknowledgedMin();
+    if (ackMin === null) return 0;
+    const limit = iso(new Date(now.getTime() - days * 86400000));
+    return (this.db.prepare("SELECT COUNT(*) AS n FROM booking_events WHERE seq > ? AND occurred_at < ?").get(ackMin, limit) as { n: number }).n;
   }
 
   /** Empfang bestätigen; die Nummer geht nie rückwärts. */
@@ -839,11 +873,14 @@ export class Store {
   purgeEvents(now: Date, days: number, ackMin: number | null): number {
     const limitAt = iso(new Date(now.getTime() - days * 86400000));
     if (ackMin === null) return 0;
+    this.notePurge("occurred_at < ? AND seq <= ?", limitAt, ackMin);
     return Number(this.db.prepare("DELETE FROM booking_events WHERE occurred_at < ? AND seq <= ?").run(limitAt, ackMin).changes);
   }
 
+  /** Nur ohne angemeldeten Verbraucher (lib/retention.ts): Ereignisse älter als days Tage, ohne Rücksicht auf Bestätigung. */
   purgeEventsForced(now: Date, days: number): number {
     const limitAt = iso(new Date(now.getTime() - days * 86400000));
+    this.notePurge("occurred_at < ?", limitAt);
     return Number(this.db.prepare("DELETE FROM booking_events WHERE occurred_at < ?").run(limitAt).changes);
   }
 
