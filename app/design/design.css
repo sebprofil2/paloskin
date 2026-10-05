@@ -9,7 +9,6 @@
 :root{
   /* Farben */
   --c-bg:#F6F0E6;
-  --c-bg-96:rgba(246,240,230,.96);
   --c-bg-97:rgba(246,240,230,.97);
   --c-card:#FFFDF9;
   --c-card-97:rgba(255,253,249,.97);
@@ -125,7 +124,7 @@ body{margin:0;background:var(--c-bg)}
 .pb .center{align-items:center;text-align:center}
 
 /* Kopfzeile */
-.pb .hd{position:sticky;top:0;z-index:20;background:var(--c-bg-96);border-bottom:var(--sp-1) solid var(--c-line)}
+.pb .hd{position:sticky;top:0;z-index:20;background:var(--c-bg);border-bottom:var(--sp-1) solid var(--c-line)}
 .pb .hd-in{display:flex;align-items:center;gap:var(--sp-24);min-height:var(--sp-80)}
 .pb .logo{display:flex;align-items:center;gap:var(--sp-12);margin-inline-end:auto}
 .pb .logo svg{width:var(--sp-36);height:var(--sp-36);color:var(--c-blue);flex:none}
@@ -433,7 +432,7 @@ body{margin:0;background:var(--c-bg)}
 .pb .bk .times .ch>span{padding:0 var(--sp-4);white-space:nowrap}
 }
 
-/* ---------- Ergänzungen zur Vorlage: Bilder, Logo (echte Logo-Dateien), Studiofotos ---------- */
+/* ---------- Ergänzungen zur Vorlage: Bilder, Logo (echte Logo-Dateien), Studiofotos; Kopfzeile voll deckend (Korrektur Dr. Vogel, 5. Oktober 2026) ---------- */
 .pb .logo img{display:block;height:var(--sp-44);width:auto}
 .pb .ph img{object-fit:cover}
 .pb .ph-hero img{object-position:center 30%}
@@ -486,5 +485,7 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 .pb .bk .after .field{margin-bottom:0}
 @media (max-width:899px){
 .pb .logo img{height:var(--sp-36)}
+/* Studiofotos am Handy zwei je Reihe, damit die Beschriftungen nicht überlappen (Korrektur Dr. Vogel, 5. Oktober 2026) */
+.pb .studio-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-20) var(--sp-12)}
 .pb .bk .donecard{padding:var(--sp-28) var(--sp-20);border-radius:var(--r-m)}
 }
