@@ -18,7 +18,6 @@
   --c-ink:#1B1A1F;
   --c-ink-2:#5A5750;
   --c-ink-3:#3B3E45;
-  --c-ink-4:#565A63;
   --c-line:#E6DCCB;
   --c-line-2:#D9CDB7;
   --c-box:#B9AE9A;
@@ -439,7 +438,6 @@ body{margin:0;background:var(--c-bg)}
 .pb .ph-hand{height:auto}
 .pb .studio-grid figure{margin:0}
 .pb .studio-grid img{display:block;width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:var(--r-s)}
-.pb .studio-grid figcaption{margin-top:var(--sp-6);font-size:var(--fs-s);color:var(--c-ink-4)}
 .pb .ft-l img{display:block;height:var(--sp-28);width:auto}
 .pb .lang summary span[aria-hidden]{margin-inline-start:var(--sp-4)}
 .pb .lang li a[aria-current="true"],.pb .mlang a[aria-current="true"]{color:var(--c-blue);font-weight:600}
@@ -485,7 +483,7 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 .pb .bk .after .field{margin-bottom:0}
 @media (max-width:899px){
 .pb .logo img{height:var(--sp-36)}
-/* Studiofotos am Handy zwei je Reihe, damit die Beschriftungen nicht überlappen (Korrektur Dr. Vogel, 5. Oktober 2026) */
-.pb .studio-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-20) var(--sp-12)}
+/* Studiofotos am Handy zwei je Reihe (Korrektur Dr. Vogel, 5. Oktober 2026) */
+.pb .studio-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-12)}
 .pb .bk .donecard{padding:var(--sp-28) var(--sp-20);border-radius:var(--r-m)}
 }

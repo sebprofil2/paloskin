@@ -129,8 +129,8 @@ export default async function Startseite() {
                 <div className="studio-grid">
                   {photos.map((p) => (
                     <figure key={p.c}>
+                      {/* Ohne sichtbare Beschriftung (Entscheidung Dr. Vogel, 5. Oktober 2026), der Alt-Text bleibt */}
                       <Image src={p.img} alt={p.c} sizes="(max-width: 899px) 50vw, 160px" />
-                      <figcaption>{p.c}</figcaption>
                     </figure>
                   ))}
                 </div>
