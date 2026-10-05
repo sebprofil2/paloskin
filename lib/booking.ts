@@ -6,6 +6,7 @@ import { calendarLinks, CANCEL_LEAD_MS, confirmationMail, reminderMail } from ".
 import { isBookableStart } from "./slots";
 import { notifyStudio } from "./studio-mail";
 import { inConfirmWindow } from "./attendance";
+import { phoneUnusual } from "./phone";
 import { isCustomerCancel } from "./cancel-reasons";
 import { terminUrl } from "./links";
 import { bookingRefFor } from "./ref";
@@ -136,6 +137,12 @@ export async function placeBooking(i: PlaceInput, deps: Deps = defaultDeps()): P
   if (r.outcome === "conflict") return { status: "conflict" };
   if (r.outcome === "created") {
     logEvent("info", "reserved", { bookingRef: reference, status: r.booking.status, engine: engine.name });
+    // Ungewöhnliche Nummer: nur mitzählen, nie die Nummer selbst ins Protokoll
+    if (phoneUnusual(r.booking.phone_e164)) {
+      const count = Number(store.getMeta("phone_unusual_count") ?? 0) + 1;
+      store.setMeta("phone_unusual_count", String(count));
+      logEvent("warn", "phone_unusual", { bookingRef: reference, count });
+    }
     await Promise.all([writeCalendar(r.booking, deps, false), sendConfirmation(r.booking, deps), notifyStudio("booked", r.booking, deps)]);
   }
   return { status: "booked", booking: summarize(r.booking, i.requestId) };

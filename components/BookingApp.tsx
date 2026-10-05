@@ -8,7 +8,7 @@ import Image from "next/image";
 import { Fusszeile, Kopfzeile } from "@/components/Kopfzeile";
 import type { KopfTexte } from "@/lib/kopf";
 import { BILDER } from "@/lib/bilder";
-import { normalizePhoneE164 } from "@/lib/phone";
+import { checkPhone } from "@/lib/phone";
 import { PRICES, ZONE_IDS, hasBotulinum, hasTreatment, totalPrice, zoneCount, zonePrice, type Lachs, type Lang, type Selection, type Visit, type ZoneId } from "@/lib/treatments";
 import { LogoKopf } from "@/components/LogoKopf";
 
@@ -326,7 +326,8 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
     if (n === 3) {
       if (!f.vorname.trim()) e.vorname = "eVorname";
       if (!f.nachname.trim()) e.nachname = "eNachname";
-      if (!normalizePhoneE164(f.handy)) e.handy = "eHandy";
+      // Nur eine Eingabe ohne jede Ziffer hält auf; ungewöhnliche Nummern zeigen einen Hinweis (lib/phone.ts)
+      if (!checkPhone(f.handy)) e.handy = "eHandy";
       if (!/^\S+@\S+\.\S+$/.test(f.email.trim())) e.email = "eEmail";
       if (!f.consent) e.consent = "eConsent";
     }
@@ -764,7 +765,13 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
         </div>
       );
     }
-    const phoneHint = s.visit === "return" ? <p className="note">{l.phoneReturn}</p> : null;
+    const phone = checkPhone(s.f.handy);
+    const phoneHint = (
+      <>
+        {phone && !phone.valid && !s.errors.handy ? <p className="note" role="status">{l.phoneHint}</p> : null}
+        {s.visit === "return" ? <p className="note">{l.phoneReturn}</p> : null}
+      </>
+    );
     return (
       <div id="sec-data">
         <div className="frow">

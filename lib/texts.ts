@@ -331,6 +331,8 @@ export interface ExtraTexts {
   sumFn: string;
   docRole: string;
   moveNote: string;
+  /** Hinweis bei ungewöhnlicher Handynummer; Buchen bleibt möglich (5. Oktober 2026) */
+  phoneHint: string;
   visitFirstSum: string;
   visitReturnSum: string;
   voluntary: string;
@@ -369,6 +371,7 @@ const X: Record<Lang, ExtraTexts> = {
     sumFn: "* Richtwert. Abrechnung nach der Gebührenordnung für Ärzte, inklusive Mehrwertsteuer.",
     docRole: "Arzt und Gründer von PALO SKIN", moveNote: "Verschieben können Sie selbst, bis 24 Stunden vorher.",
     visitFirstSum: "erster Besuch", visitReturnSum: "schon einmal da", voluntary: "Freiwillig", phonePh: "+49",
+    phoneHint: "Die Nummer sieht ungewöhnlich aus. Bitte prüfen Sie sie kurz, Sie können trotzdem buchen.",
   },
   en: {
     testBanner: "Test version. Please enter invented names only and no real treatment wishes. The booking really does go into the calendar.",
@@ -401,6 +404,7 @@ const X: Record<Lang, ExtraTexts> = {
     sumFn: "* Guide price. Billed according to the German fee schedule for physicians (Gebührenordnung für Ärzte), including value added tax.",
     docRole: "Physician and founder of PALO SKIN", moveNote: "You can reschedule yourself up to 24 hours in advance.",
     visitFirstSum: "first visit", visitReturnSum: "returning", voluntary: "Optional", phonePh: "+49",
+    phoneHint: "This number looks unusual. Please check it briefly, you can still book.",
   },
   es: {
     testBanner: "Versión de prueba. Introduzca solo nombres inventados y ningún deseo de tratamiento real. La reserva se registra de verdad en el calendario.",
@@ -433,6 +437,7 @@ const X: Record<Lang, ExtraTexts> = {
     sumFn: "* Precio orientativo. Facturación según el baremo alemán de honorarios médicos (Gebührenordnung für Ärzte), impuesto sobre el valor añadido incluido.",
     docRole: "Médico y fundador de PALO SKIN", moveNote: "Puede cambiar la cita por su cuenta hasta 24 horas antes.",
     visitFirstSum: "primera visita", visitReturnSum: "ya ha estado", voluntary: "Opcional", phonePh: "+49",
+    phoneHint: "El número parece poco habitual. Compruébelo un momento, puede reservar de todos modos.",
   },
   fr: {
     testBanner: "Version de test. Merci de n’indiquer que des noms inventés et aucun souhait de soin réel. La réservation est réellement inscrite dans l’agenda.",
@@ -465,6 +470,7 @@ const X: Record<Lang, ExtraTexts> = {
     sumFn: "* Prix indicatif. Facturation selon le barème allemand des honoraires médicaux (Gebührenordnung für Ärzte), taxe sur la valeur ajoutée comprise.",
     docRole: "Médecin et fondateur de PALO SKIN", moveNote: "Vous pouvez déplacer votre rendez-vous vous-même jusqu’à 24 heures avant.",
     visitFirstSum: "première visite", visitReturnSum: "déjà venu(e)", voluntary: "Facultatif", phonePh: "+49",
+    phoneHint: "Ce numéro semble inhabituel. Merci de le vérifier, vous pouvez quand même réserver.",
   },
   pt: {
     testBanner: "Versão de teste. Use apenas nomes inventados e nenhum desejo real de tratamento. A reserva é registrada de verdade no calendário.",
@@ -497,6 +503,7 @@ const X: Record<Lang, ExtraTexts> = {
     sumFn: "* Valor de referência. Cobrança conforme a tabela alemã de honorários médicos (Gebührenordnung für Ärzte), com imposto sobre o valor agregado incluído.",
     docRole: "Médico e fundador da PALO SKIN", moveNote: "Você pode remarcar por conta própria até 24 horas antes.",
     visitFirstSum: "primeira visita", visitReturnSum: "retorno", voluntary: "Opcional", phonePh: "+49",
+    phoneHint: "Este número parece incomum. Confira rapidamente, você pode agendar mesmo assim.",
   },
   uk: {
     testBanner: "Тестова версія. Будь ласка, вводьте лише вигадані імена і жодних справжніх побажань щодо процедур. Запис справді потрапляє до календаря.",
@@ -529,6 +536,7 @@ const X: Record<Lang, ExtraTexts> = {
     sumFn: "* Орієнтовна ціна. Розрахунок згідно з німецьким тарифом на лікарські послуги (Gebührenordnung für Ärzte), включно з податком на додану вартість.",
     docRole: "Лікар і засновник PALO SKIN", moveNote: "Перенести запис Ви можете самостійно, не пізніше ніж за 24 години.",
     visitFirstSum: "перший візит", visitReturnSum: "повторний візит", voluntary: "За бажанням", phonePh: "+49",
+    phoneHint: "Номер виглядає незвично. Будь ласка, перевірте його, Ви все одно можете записатися.",
   },
   ar: {
     testBanner: "نسخة تجريبية. يرجى إدخال أسماء وهمية فقط، ودون رغبات علاجية حقيقية. الحجز يُسجَّل فعلًا في التقويم.",
@@ -561,6 +569,7 @@ const X: Record<Lang, ExtraTexts> = {
     sumFn: "* سعر استرشادي. تتم المحاسبة وفق لائحة أتعاب الأطباء الألمانية (GOÄ)، شاملًا ضريبة القيمة المضافة.",
     docRole: "طبيب ومؤسس PALO SKIN", moveNote: "يمكنكم تغيير الموعد بأنفسكم حتى 24 ساعة قبله.",
     visitFirstSum: "الزيارة الأولى", visitReturnSum: "ليست الزيارة الأولى", voluntary: "اختياري", phonePh: "+49",
+    phoneHint: "يبدو هذا الرقم غير معتاد. يرجى التحقق منه، ويمكنكم الحجز مع ذلك.",
   },
 
 };

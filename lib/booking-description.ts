@@ -1,4 +1,4 @@
-import { normalizePhoneE164 } from "./phone";
+import { normalizePhoneE164, phoneUnusual } from "./phone";
 import type { Customer } from "./schema";
 import { CONSULT_NAMES_DE, type ConsultLang } from "./i18n";
 import { lineItemsDe, totalPrice, hasTreatment, type Lang, type Selection } from "./treatments";
@@ -55,6 +55,7 @@ export function buildDescription(i: DescriptionInput): string {
   } else rows.push(`Sprache: ${LANG_NAMES[i.lang]}`);
   // Handliste für die WhatsApp-Erinnerung: die Nummer steht nur im Kalender, wenn der Kunde die Erinnerung möchte
   if (i.reminder) rows.push(`WhatsApp-Erinnerung: ja, ${normalizePhone(i.customer.handy)}`);
+  if (phoneUnusual(i.customer.handy)) rows.push("Nummer prüfen: Die Handynummer sieht ungewöhnlich aus.");
   return rows.join("\n");
 }
 

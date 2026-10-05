@@ -2,6 +2,7 @@ import type { Deps } from "./booking";
 import { readEnv } from "./env";
 import { CONSULT_NAMES_DE } from "./i18n";
 import { bookingsCalendarName } from "./instance";
+import { phoneUnusual } from "./phone";
 import { logEvent } from "./log";
 import { mailErrorClass } from "./mail";
 import { whenLabels } from "./mail-content";
@@ -29,7 +30,7 @@ export function studioMailFor(kind: StudioMailKind, b: BookingRow): { subject: s
   const w = whenLabels(new Date(b.starts_at), "de");
   const prefix = b.test_mode === 1 ? "[TEST] " : "";
   const when = `${w.date}, ${w.time}`;
-  if (kind === "booked") return { subject: `${prefix}Neue Buchung: ${w.short}, ${w.time}`, body: [when, who(b), consultLine(b), `Details im Kalender „${bookingsCalendarName()}“.`].filter(Boolean).join("\n") };
+  if (kind === "booked") return { subject: `${prefix}Neue Buchung: ${w.short}, ${w.time}`, body: [when, who(b), consultLine(b), phoneUnusual(b.phone_e164) ? "Nummer prüfen" : null, `Details im Kalender „${bookingsCalendarName()}“.`].filter(Boolean).join("\n") };
   if (kind === "cancelled") return { subject: `${prefix}Abgesagt: ${w.short}, ${w.time}`, body: `${when}\n${who(b)}\nDie Zeit ist wieder frei.` };
   if (kind === "cancelled_short") return { subject: `${prefix}Kurzfristig abgesagt: ${w.short}, ${w.time}`, body: `${when}\n${who(b)}\nDie Zeit ist wieder frei.` };
   if (kind === "cancelled_calendar") return { subject: `${prefix}Im Kalender abgesagt: ${w.short}, ${w.time}`, body: `${when}\n${who(b)}\nDer Eintrag wurde im Kalender gelöscht. Die Zeit ist wieder frei, die Buchung gilt als abgesagt. Der Kunde hat keine Nachricht erhalten.` };

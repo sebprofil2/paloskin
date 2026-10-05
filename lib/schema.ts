@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { normalizePhoneE164 } from "./phone";
+import { checkPhone } from "./phone";
 import { hasTreatment, ZONE_IDS, type Selection } from "./treatments";
 
 /* Nur erlaubte Behandlungskennungen und Werte kommen durch. */
@@ -42,14 +42,18 @@ export const slotsRequestSchema = z.object({
 export const customerSchema = z.object({
   vorname: z.string().trim().min(1).max(60),
   nachname: z.string().trim().min(1).max(60),
-  /* Handynummer in E.164; jede übliche Schreibweise wird angenommen, offensichtlich falsche abgewiesen */
-  handy: z.string().trim().max(30).transform((v, ctx) => {
-    const n = normalizePhoneE164(v);
-    if (!n) {
-      ctx.addIssue({ code: "custom", message: "Handynummer ungültig" });
+  /*
+   * Handynummer: bereinigt (unsichtbare Zeichen, Unicode-Ziffern) und als + und Ziffern gespeichert (lib/phone.ts).
+   * Abgewiesen wird nur eine Eingabe ohne jede Ziffer; ungewöhnliche Nummern gehen durch und tragen für das Studio
+   * den Vermerk „Nummer prüfen“ (Fehler auf www vom 5. Oktober 2026: iPhone-Autofill mit Richtungszeichen).
+   */
+  handy: z.string().trim().max(80).transform((v, ctx) => {
+    const c = checkPhone(v);
+    if (!c) {
+      ctx.addIssue({ code: "custom", message: "Handynummer fehlt" });
       return z.NEVER;
     }
-    return n;
+    return c.value;
   }),
   email: z.email().max(120),
 }).strict();
