@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 /*
  * paloskin.de: Startseite (app/page.tsx) und Buchung (/booking) als Next.js-Seiten, Impressum und Datenschutz
- * als statische Seiten im Ordner public. Weiterleitungen und saubere Adressen stehen nur hier.
+ * als HTML im Ordner public, ausgeliefert über app/impressum/route.ts und app/datenschutz/route.ts (nur der Hinweis der gewählten Sprache). Weiterleitungen und saubere Adressen stehen nur hier.
  */
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -14,8 +14,6 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        { source: "/impressum", destination: "/impressum/index.html" },
-        { source: "/datenschutz", destination: "/datenschutz/index.html" },
       ],
       afterFiles: [],
       fallback: [],
