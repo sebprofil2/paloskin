@@ -3,8 +3,8 @@
   "short_name": "PALO SKIN",
   "start_url": "/",
   "display": "browser",
-  "background_color": "#002FA7",
-  "theme_color": "#002FA7",
+  "background_color": "#1534A6",
+  "theme_color": "#1534A6",
   "icons": [
     {
       "src": "/assets/icon-192.png",

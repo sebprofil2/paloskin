@@ -167,10 +167,10 @@ export function calendarLinks(b: BookingRow, lang: Lang): CalendarLinks {
 }
 
 const p = (s: string) => `<p style="margin:0 0 14px">${escapeHtml(s)}</p>`;
-const a = (href: string, label: string) => `<a href="${escapeHtml(href)}" style="color:#002FA7">${escapeHtml(label)}</a>`;
+const a = (href: string, label: string) => `<a href="${escapeHtml(href)}" style="color:#1534A6">${escapeHtml(label)}</a>`;
 const button = (href: string, label: string, primary = true) =>
   primary
-    ? `<a href="${escapeHtml(href)}" style="display:inline-block;background:#002FA7;color:#ffffff;text-decoration:none;padding:12px 20px;font-weight:500;margin:0 8px 8px 0">${escapeHtml(label)}</a>`
+    ? `<a href="${escapeHtml(href)}" style="display:inline-block;background:#1534A6;color:#ffffff;text-decoration:none;padding:12px 20px;font-weight:500;margin:0 8px 8px 0">${escapeHtml(label)}</a>`
     : `<a href="${escapeHtml(href)}" style="display:inline-block;border:1px solid #1d1f22;color:#1d1f22;text-decoration:none;padding:11px 20px;margin:0 8px 8px 0">${escapeHtml(label)}</a>`;
 
 /* Arabisch von rechts nach links: dir und Ausrichtung an html, body und Inhalt (manche Mailprogramme lesen nur eines davon) */
