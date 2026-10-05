@@ -5,8 +5,10 @@ import { cookieIsValid, TEST_COOKIE } from "@/lib/access";
 import { readEnv } from "@/lib/env";
 import { bookingMetadata } from "@/lib/share-meta";
 import { requestLang } from "@/lib/i18n-server";
-import { LogoKopf } from "@/components/LogoKopf";
-import "./booking.css";
+import { kopfTexte } from "@/lib/kopf";
+import { LANG_IDS } from "@/lib/i18n";
+import { HOME_TEXTS } from "@/lib/texts-home";
+import "../design/design.css";
 
 export const dynamic = "force-dynamic";
 
@@ -29,24 +31,16 @@ export default async function BookingPage({ searchParams }: { searchParams: Prom
   if (!access) return <TestHinweis />;
 
   const checkup = sp.kontrolle !== undefined || sp.checkup !== undefined;
-  return <BookingApp initialLang={await requestLang()} testMode={env.testMode} checkup={checkup} />;
+  // Kopf- und Fußzeile wie auf der Startseite, in allen sieben Sprachen (die Buchung wechselt die Sprache ohne Neuladen)
+  const kopf = Object.fromEntries(LANG_IDS.map((l) => [l, kopfTexte(HOME_TEXTS[l])])) as Record<(typeof LANG_IDS)[number], ReturnType<typeof kopfTexte>>;
+  return <BookingApp initialLang={await requestLang()} testMode={env.testMode} checkup={checkup} kopf={kopf} />;
 }
 
 function TestHinweis() {
   return (
-    <div className="shell">
-      <main className="app" style={{ minHeight: "auto" }}>
-        <div className="band" />
-        <header className="brand">
-          <a href="/" aria-label="PALO SKIN by Dr. Vogel, Startseite">
-            <LogoKopf />
-          </a>
-        </header>
-        <div className="page">
-          <section className="sec">
-            <h2>Testumgebung, nicht öffentlich</h2>
-          </section>
-        </div>
+    <div className="pb">
+      <main className="wrap bk">
+        <h1 className="h2">Testumgebung, <em>nicht öffentlich</em></h1>
       </main>
     </div>
   );

@@ -4,9 +4,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { SlotDay } from "@/lib/slots";
 import { LANGS, TEXTS, type Texts } from "@/lib/texts";
 import { CONSULT_LANGS, defaultConsult, isConsultLang, langDir, type ConsultLang } from "@/lib/i18n";
-import { Sprachwahl } from "@/components/Sprachwahl";
+import Image from "next/image";
+import { Fusszeile, Kopfzeile } from "@/components/Kopfzeile";
+import type { KopfTexte } from "@/lib/kopf";
+import { BILDER } from "@/lib/bilder";
 import { normalizePhoneE164 } from "@/lib/phone";
-import { PRICES, ZONE_IDS, hasBotulinum, hasTreatment, zoneCount, zonePrice, type Lachs, type Lang, type Selection, type Visit, type ZoneId } from "@/lib/treatments";
+import { PRICES, ZONE_IDS, hasBotulinum, hasTreatment, totalPrice, zoneCount, zonePrice, type Lachs, type Lang, type Selection, type Visit, type ZoneId } from "@/lib/treatments";
 import { LogoKopf } from "@/components/LogoKopf";
 
 /* ---------- Feste Angaben ---------- */
@@ -163,34 +166,6 @@ async function fetchJson(url: string, init: RequestInit, timeoutMs: number): Pro
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/* ---------- Bausteine (außerhalb der Komponente, damit Eingabefelder beim Tippen nicht neu entstehen) ---------- */
-function Opt({ t, d, p, on, kind = "radio", onClick }: { t: string; d?: string; p?: string; on: boolean; kind?: "radio" | "checkbox"; onClick: () => void }) {
-  return (
-    <button type="button" className="opt" role={kind} aria-checked={on} onClick={onClick}>
-      <span className="ot">
-        <span className="t">{t}</span>
-        {d ? <span className="d">{d}</span> : null}
-        {p ? <span className="pm">{p}</span> : null}
-      </span>
-      <span className="tick" aria-hidden="true" />
-    </button>
-  );
-}
-
-function Acc({ open, title, meta, chosen, onToggle, children }: { open: boolean; title: string; meta: string; chosen: string; onToggle: () => void; children: React.ReactNode }) {
-  return (
-    <div className={`accw ${chosen ? "has" : ""}`}>
-      <button type="button" className="acc" aria-expanded={open} onClick={onToggle}>
-        <span className="at">{title}</span>
-        {/* Gewählte Einträge stehen nicht doppelt im Kopf: Markierung an den Karten und Zonensumme reichen. Der Einstiegspreis nur, solange nichts gewählt ist. */}
-        <span className="am">{chosen ? "" : meta}</span>
-        <span className="chev" aria-hidden="true" />
-      </button>
-      {open ? <div className="accp">{children}</div> : null}
-    </div>
-  );
-}
-
 /* Das Wort „Datenschutzerklärung“ (je Sprache) im Einwilligungstext verlinken */
 function withPrivacyLink(text: string, word: string, href: string): React.ReactNode {
   const i = text.toLowerCase().indexOf(word.toLowerCase());
@@ -206,7 +181,7 @@ function withPrivacyLink(text: string, word: string, href: string): React.ReactN
 
 /* ---------- Komponente ---------- */
 /* initialLang hat der Server bestimmt (lib/i18n.ts): Die Seite kommt gleich in der richtigen Sprache, nichts springt um */
-export function BookingApp({ initialLang, testMode, checkup }: { initialLang: Lang; testMode: boolean; checkup: boolean }) {
+export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLang: Lang; testMode: boolean; checkup: boolean; kopf: Record<Lang, KopfTexte> }) {
   const [lang, setLangState] = useState<Lang>(initialLang);
   const [s, setS] = useState<State>(() => blank(checkup));
   const [slots, setSlots] = useState<SlotsState>({ status: "idle", days: [], durationMinutes: null, key: "" });
@@ -230,7 +205,7 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
   }, [checkup]);
   const [copyLabel, setCopyLabel] = useState<"copy" | "copied" | "marked">("copy");
   const appRef = useRef<HTMLElement>(null);
-  const numRef = useRef<HTMLDivElement>(null);
+  const numRef = useRef<HTMLSpanElement>(null);
 
   const l = TEXTS[lang];
   /* Preise, Nummern und Uhrzeiten bleiben in arabischer Schrift lesbar: als links-nach-rechts isoliert (LRI … PDI) */
@@ -468,146 +443,183 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     }
   }
 
-  /* ---------- Bausteine ---------- */
-  const miss = (key: string) => (s.errors[key] ? <div className="missing">{String(l[s.errors[key]!])}</div> : null);
+  /* ---------- Darstellung nach Entwurf B (Vorlage vom 5. Oktober 2026); Logik oben unverändert ---------- */
+  const miss = (key: string) => (s.errors[key] ? <div className="missing" role="alert">{String(l[s.errors[key]!])}</div> : null);
+  /* Uhrzeit wie in der Vorlage ohne führende Null („7:30 Uhr“) */
+  const timeLabel = (t: string) => l.at(t.replace(/^0(\d):/, "$1:"));
+  const tick = (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>
+  );
 
   const field = (id: keyof Form & string, label: React.ReactNode, type: string, extra: React.InputHTMLAttributes<HTMLInputElement>, hint?: React.ReactNode) => {
     const inv = s.errors[id];
     return (
-      <label className={`field ${inv ? "invalid" : ""}`} htmlFor={id}>
-        <span className="l">{label}</span>
-        <input id={id} type={type} value={String(s.f[id])} onChange={(e) => setS((p) => ({ ...p, f: { ...p.f, [id]: e.target.value } }))} {...extra} />
+      <div className={`field ${inv ? "invalid" : ""}`}>
+        <label htmlFor={id}>{label}</label>
+        <input id={id} type={type} value={String(s.f[id])} aria-invalid={inv ? true : undefined} onChange={(e) => setS((p) => ({ ...p, f: { ...p.f, [id]: e.target.value } }))} {...extra} />
         {inv ? <span className="err">{String(l[inv])}</span> : null}
         {hint}
-      </label>
+      </div>
     );
   };
 
-  /* ---------- Kopf ---------- */
-  const brand = (
-    <>
-      <div className="band" />
-      <header className="brand">
-        <a href="/" aria-label="PALO SKIN by Dr. Vogel, Startseite">
-          <LogoKopf />
-        </a>
-        <Sprachwahl lang={lang} onChange={setLang} />
-        <div className="spec">{l.spec}</div>
-      </header>
-    </>
-  );
-
-  const stepper = (
-    <nav className="steps">
-      {([[1, l.stepTreat], [2, l.stepSlot], [3, l.stepData]] as [Step, string][])
-        .filter(([n]) => n >= firstStep)
-        .map(([n, t], i) => {
-          const cur = n === s.step;
-          const can = n <= s.maxStep && !cur;
-          return (
-            <button key={n} type="button" className={`st ${cur ? "cur" : ""}`} disabled={!can} aria-current={cur ? "step" : undefined} onClick={() => can && goto(n)}>
-              <span className="num">{i + 1}</span>
-              {t}
-            </button>
-          );
-        })}
-    </nav>
+  /* Auswahlknopf wie in der Vorlage: echtes Eingabefeld (Radio oder Haken) unter der Pille */
+  const choice = (name: string, checked: boolean, onChange: () => void, label: React.ReactNode, opts: { type?: "radio" | "checkbox"; cls?: string; lang?: string; disabled?: boolean } = {}) => (
+    <label className={`ch ${opts.cls ?? ""}`} lang={opts.lang}>
+      <input type={opts.type ?? "radio"} name={name} checked={checked} disabled={opts.disabled} onChange={onChange} />
+      <span>{label}</span>
+    </label>
   );
 
   /* ---------- Beratungssprache: Schritt 1 nach „Waren Sie schon einmal bei uns?“ (beim Kontrolltermin oben in Schritt 2), Pflichtfeld ---------- */
   const consultBlock = (
-    <div className="block" id="sec-consult">
-      <span className="lbl">{l.consultQ}</span>
+    <fieldset className="grp" id="sec-consult">
+      <legend>{l.consultQ}</legend>
       {miss("consult")}
-      <div className="seg seg-consult" role="radiogroup" aria-label={l.consultQ}>
+      <div className="opts">
         {CONSULT_LANGS.map((c) => (
-          <button key={c.id} type="button" className="segb" role="radio" aria-checked={consult === c.id} onClick={() => setConsult(c.id)}><span lang={c.id} dir="ltr">{c.name}</span></button>
+          <span key={c.id} style={{ display: "contents" }}>{choice("beratung", consult === c.id, () => setConsult(c.id), <bdi>{c.name}</bdi>, { lang: c.id })}</span>
         ))}
       </div>
-      {!isConsultLang(lang) ? <p className="hint" style={{ margin: 0 }}>{l.consultHint}</p> : null}
-    </div>
+      {!isConsultLang(lang) ? <p className="note">{l.consultHint}</p> : null}
+    </fieldset>
+  );
+
+  /* ---------- Übersicht „Ihre Buchung“: rechts beim Scrollen sichtbar, auf dem Handy unter der Karte ---------- */
+  const chosenTitles = (): string[] => {
+    if (checkup) return [l.checkupLbl];
+    const out: string[] = [];
+    if (s.beratung) out.push(l.unsureT);
+    if (s.zoneIds.length || s.otherOn || s.zonesUnknown) out.push(l.botGroup);
+    if (s.kaumuskel) out.push(l.kaumuskel);
+    if (s.nefertiti) out.push(l.nefertiti);
+    if (s.achsel) out.push(l.achsel);
+    if (s.lachs) out.push(l.lachsGroup);
+    return out;
+  };
+  const chosenDetail = (): string => {
+    const zones = [...s.zoneIds.map((z) => l.zoneNames[z]), ...(s.otherOn ? [s.otherText.trim() || l.zoneOther] : []), ...(s.zonesUnknown ? [l.zoneUnknown] : [])];
+    const lachs = s.lachs === "single" ? l.lachsOne : s.lachs === "pack" ? l.lachsFour : "";
+    const first = [zones.join(", "), lachs].filter(Boolean).join(", ");
+    const facts = [checkup ? "" : s.persons === 2 ? l.persons2 : l.persons1, checkup ? "" : s.visit === "first" ? l.visitFirstSum : s.visit === "return" ? l.visitReturnSum : "", consult ? l.consultSum(l.consultNames[consult]) : ""].filter(Boolean).join(", ");
+    return [first, facts].filter(Boolean).join(". ");
+  };
+  const total = totalPrice(selection);
+  const summary = (
+    <aside className="sum" aria-label={l.sumH}>
+      <p className="eyebrow">{l.sumH}</p>
+      <dl className="rows">
+        <div>
+          <dt><span>{l.sumTreat}</span>{s.step === 3 && !checkup ? <a href="#" onClick={(e) => { e.preventDefault(); goto(1); }}>{l.change}</a> : null}</dt>
+          {chosenTitles().length ? <dd>{chosenTitles().join(", ")}<span>{chosenDetail()}</span></dd> : <dd className="open">{l.sumOpen}<span>{chosenDetail()}</span></dd>}
+        </div>
+        <div>
+          <dt><span>{l.sumWhen}</span>{s.step === 3 ? <a href="#" onClick={(e) => { e.preventDefault(); goto(2); }}>{l.change}</a> : null}</dt>
+          <dd className={s.day && s.slot ? "" : "open"}>{s.day && s.slot ? `${dayLabel(s.day)}${comma} ${timeLabel(s.slot.time)}` : l.sumOpen}</dd>
+        </div>
+        <div>
+          <dt><span>{l.sumPrice}</span></dt>
+          <dd className={total > 0 ? "" : "open"}>{total > 0 ? priceTag(total) : l.sumOpen}</dd>
+        </div>
+      </dl>
+      <p className="fn">{l.sumFn}</p>
+      <div className="doc">
+        <Image src={BILDER.portraetRund} alt="Dr. med. Sebastian Vogel" width={60} height={60} />
+        <div><b><bdi>Dr. med. Sebastian Vogel</bdi></b><span>{l.docRole}</span></div>
+      </div>
+      <a className="rate" href={MAPS} target="_blank" rel="noopener">{kopf[lang].rateLong}</a>
+      <p className="addr"><bdi>{ADDRESS}, Prenzlauer Berg</bdi></p>
+      <p className="move">{l.moveNote}</p>
+    </aside>
   );
 
   /* ---------- Schritt 1: Behandlung ---------- */
   const stepTreat = () => {
-    const botChosen = [...s.zoneIds.map((z) => l.zoneNames[z]), s.otherOn ? s.otherText.trim() || l.zoneOther : "", s.zonesUnknown ? l.zoneUnknown : "", s.kaumuskel ? l.kaumuskel : "", s.nefertiti ? l.nefertiti : "", s.achsel ? l.achsel : ""]
-      .filter(Boolean)
-      .join(", ");
-    const boostChosen = s.lachs === "single" ? l.lachs : s.lachs === "pack" ? l.lachsPack : "";
     const zoneN = zoneCount({ zones: s.zoneIds, otherZone: s.otherOn ? s.otherText : null });
+    const botOn = s.zoneIds.length > 0 || s.otherOn || s.zonesUnknown;
+    const row = (on: boolean, title: string, desc: string, price: string, onClick: () => void, expanded?: boolean, body?: React.ReactNode) => (
+      <div className={`tr ${on ? "on" : ""}`}>
+        <button type="button" className="tr-h" aria-pressed={on} aria-expanded={expanded} onClick={onClick}>
+          <span className="box">{tick}</span>
+          <span className="tr-t"><b>{title}</b><span>{desc}</span></span>
+          {price ? <span className="tr-p">{price}</span> : null}
+        </button>
+        {expanded && body ? <div className="tr-b">{body}</div> : null}
+      </div>
+    );
     return (
-      <section className="sec" id="sec-treat">
-        {/* Reihenfolge (Dr. Vogel, 4. Oktober 2026): Für wen, schon einmal da, Beratungssprache, Behandlung */}
-        <div className="block" id="sec-persons">
-          <span className="lbl">{l.personsQ}</span>
-          <div className="seg" role="radiogroup">
-            <button type="button" className="segb" role="radio" aria-checked={s.persons === 1} onClick={() => setS((p) => ({ ...p, persons: 1 }))}>{l.persons1}</button>
-            <button type="button" className="segb" role="radio" aria-checked={s.persons === 2} onClick={() => setS((p) => ({ ...p, persons: 2 }))}>{l.persons2}</button>
+      <>
+        <fieldset className="grp" id="sec-persons">
+          <legend>{l.personsQ}</legend>
+          <div className="opts two">
+            {choice("wer", s.persons === 1, () => setS((p) => ({ ...p, persons: 1 })), l.persons1)}
+            {choice("wer", s.persons === 2, () => setS((p) => ({ ...p, persons: 2 })), l.persons2)}
           </div>
-          <p className="hint" style={{ margin: 0 }}>{l.personsMore} <a className="walink" href={WA} target="_blank" rel="noopener">{l.personsWa}</a></p>
-          {s.persons === 2 ? <p className="hint" style={{ margin: 0, color: "var(--ink)" }}>{l.secondPerson}</p> : null}
-        </div>
-        <div className="block" id="sec-visit">
-          <span className="lbl">{l.visitQ}</span>
+          {s.persons === 2 ? <p className="note">{l.secondPerson}</p> : null}
+          <p className="note">{l.personsMore} <a href={WA} target="_blank" rel="noopener">{l.personsWa}</a></p>
+        </fieldset>
+        <fieldset className="grp" id="sec-visit">
+          <legend>{l.visitQ}</legend>
           {miss("visit")}
-          <div className="seg" role="radiogroup">
-            <button type="button" className="segb" role="radio" aria-checked={s.visit === "return"} onClick={() => setVisit("return")}>{l.yesBeen}</button>
-            <button type="button" className="segb" role="radio" aria-checked={s.visit === "first"} onClick={() => setVisit("first")}>{l.noFirst}</button>
+          <div className="opts two">
+            {choice("schon", s.visit === "return", () => setVisit("return"), l.yesBeen)}
+            {choice("schon", s.visit === "first", () => setVisit("first"), l.noFirst)}
           </div>
-        </div>
+        </fieldset>
         {consultBlock}
-        <div className="block">
-          <h2>{l.treatQ}</h2>
-          <p className="nb">{l.noCommitTag}</p>
-          <p className="lead">{l.noCommit}</p>
+        <fieldset className="grp" id="sec-treat">
+          <legend>{l.treatQ}</legend>
+          <p className="hint">{l.treatHint}</p>
           {miss("treat")}
-          <div className="opts">
-            <Opt t={l.unsureT} d={l.unsureD} p={l.consultPrice} on={s.beratung} onClick={toggleBeratung} />
+          <div className="tl">
+            {row(s.beratung, l.unsureT, l.unsureD, l.consultPrice, toggleBeratung)}
+            {row(
+              botOn,
+              l.botGroup,
+              l.botD,
+              ltr(l.priceFrom(`${fmt(PRICES.zone1)}*`)),
+              () => toggleAcc("bot"),
+              s.open.bot || botOn,
+              <>
+                <div className="zones" role="group" aria-label={l.botGroup}>
+                  {ZONE_IDS.map((z) => (
+                    <span key={z} style={{ display: "contents" }}>{choice(`zone-${z}`, s.zoneIds.includes(z), () => toggleZone(z), l.zoneNames[z], { type: "checkbox" })}</span>
+                  ))}
+                  {choice("zone-other", s.otherOn, toggleOther, l.zoneOther, { type: "checkbox" })}
+                  {choice("zone-unknown", s.zonesUnknown, toggleUnknown, l.zoneUnknown, { type: "checkbox" })}
+                </div>
+                {s.otherOn ? (
+                  <div className="sub">
+                    <input id="otherText" type="text" value={s.otherText} placeholder={l.otherPh} aria-label={l.otherPh} maxLength={80} autoFocus onChange={(e) => setS((p) => ({ ...p, otherText: e.target.value }))} />
+                  </div>
+                ) : null}
+                {zoneN > 0 || s.zonesUnknown ? (
+                  <div className="zsum" aria-live="polite">
+                    <span>{zoneN > 0 ? l.zoneCountLabel(zoneN) : l.zonesOpen}</span>
+                    {zoneN > 0 ? <span>{priceTag(zonePrice(zoneN))}</span> : null}
+                  </div>
+                ) : null}
+              </>,
+            )}
+            {row(s.kaumuskel, l.kaumuskel, l.kaumuskelD, priceTag(PRICES.kaumuskel), () => toggleFlag("kaumuskel"))}
+            {row(s.nefertiti, l.nefertiti, l.nefertitiD, priceTag(PRICES.nefertiti), () => toggleFlag("nefertiti"))}
+            {row(s.achsel, l.achsel, l.achselD, priceTag(PRICES.achsel), () => toggleFlag("achsel"))}
+            {row(
+              !!s.lachs,
+              l.lachsGroup,
+              l.lachsGroupD,
+              ltr(l.priceFrom(`${fmt(PRICES.lachs)}*`)),
+              () => toggleAcc("boost"),
+              s.open.boost || !!s.lachs,
+              <div className="opts two">
+                {choice("lachs", s.lachs === "single", () => toggleLachs("single"), <>{l.lachsOne} {priceTag(PRICES.lachs)}</>, { type: "checkbox" })}
+                {choice("lachs", s.lachs === "pack", () => toggleLachs("pack"), <>{l.lachsFour} {priceTag(PRICES.lachsPack)}</>, { type: "checkbox" })}
+              </div>,
+            )}
           </div>
-          <Acc open={s.open.bot} onToggle={() => toggleAcc("bot")} title={l.botGroup} meta={priceTag(PRICES.zone1)} chosen={botChosen}>
-            <div className="interest">{l.interestL}</div>
-            <div className="zones" role="group" aria-label={l.botGroup}>
-              {ZONE_IDS.map((z) => (
-                <button key={z} type="button" className="chip" aria-pressed={s.zoneIds.includes(z)} onClick={() => toggleZone(z)}>{l.zoneNames[z]}</button>
-              ))}
-              <button type="button" className="chip" id="otherChip" aria-pressed={s.otherOn} onClick={toggleOther}>{l.zoneOther}</button>
-              <button type="button" className="chip" id="unknownChip" aria-pressed={s.zonesUnknown} onClick={toggleUnknown}>{l.zoneUnknown}</button>
-              {s.otherOn ? <input id="otherText" type="text" value={s.otherText} placeholder={l.otherPh} maxLength={80} autoFocus onChange={(e) => setS((p) => ({ ...p, otherText: e.target.value }))} /> : null}
-            </div>
-            {zoneN > 0 || s.zonesUnknown ? (
-              <div className="zsum" aria-live="polite">
-                <b>
-                  {zoneN > 0 ? l.zoneCountLabel(zoneN) : l.zonesOpen}
-                  <small>{l.zoneTiers(priceTag(PRICES.zone1), priceTag(PRICES.zone2), priceTag(PRICES.zone3), priceTag(PRICES.zoneMore))}</small>
-                </b>
-                {zoneN > 0 ? <span className="zp">{priceTag(zonePrice(zoneN))}</span> : null}
-              </div>
-            ) : null}
-            <div className="sub"><span>{l.moreGroup}</span></div>
-            <div className="opts">
-              <Opt t={l.kaumuskel} d={l.kaumuskelD} p={priceTag(PRICES.kaumuskel)} on={s.kaumuskel} kind="checkbox" onClick={() => toggleFlag("kaumuskel")} />
-              <Opt t={l.nefertiti} d={l.nefertitiD} p={priceTag(PRICES.nefertiti)} on={s.nefertiti} kind="checkbox" onClick={() => toggleFlag("nefertiti")} />
-              <Opt t={l.achsel} d={l.achselD} p={priceTag(PRICES.achsel)} on={s.achsel} kind="checkbox" onClick={() => toggleFlag("achsel")} />
-            </div>
-          </Acc>
-          <Acc open={s.open.boost} onToggle={() => toggleAcc("boost")} title="Skin Booster" meta={priceTag(PRICES.lachs)} chosen={boostChosen}>
-            <div className="interest">{l.interestL}</div>
-            <div className="opts">
-              <Opt t={l.lachs} d={l.lachsD} p={priceTag(PRICES.lachs)} on={s.lachs === "single"} onClick={() => toggleLachs("single")} />
-              <Opt t={l.lachsPack} d={l.lachsPackD} p={priceTag(PRICES.lachsPack)} on={s.lachs === "pack"} onClick={() => toggleLachs("pack")} />
-            </div>
-          </Acc>
-        </div>
-        {!NOTE_ENABLED ? null : s.noteOpen || s.note ? (
-          <label className="field" htmlFor="note">
-            <span className="l">{l.noteL}</span>
-            <textarea id="note" rows={2} placeholder={l.notePh} value={s.note} maxLength={600} autoFocus={s.noteOpen && !s.note} onChange={(e) => setS((p) => ({ ...p, note: e.target.value }))} />
-          </label>
-        ) : (
-          <button type="button" className="addlink" onClick={() => setS((p) => ({ ...p, noteOpen: true }))}>+ {l.noteAdd}</button>
-        )}
-        <p className="hint">{l.priceHint}</p>
-      </section>
+          <p className="fn">{l.priceHint}</p>
+        </fieldset>
+      </>
     );
   };
 
@@ -616,259 +628,270 @@ export function BookingApp({ initialLang, testMode, checkup }: { initialLang: La
     for (const d of slots.days) if (d.slots.length) return { day: d.date, slot: d.slots[0] };
     return null;
   };
-
+  const [weekShift, setWeekShift] = useState(0);
   const stepSlot = () => {
-    const title = checkup ? l.slotQCheckup : l.slotQ;
-    const chk = checkup ? <div className="note"><strong>{l.checkupLbl}</strong>{l.checkupP}</div> : null;
+    const chk = checkup ? <div className="alert"><b>{l.checkupLbl}</b>{l.checkupP}</div> : null;
     let body: React.ReactNode;
     if (slots.status === "down") {
       body = (
-        <div className="fallback">
-          <strong>{l.downT}</strong>
-          <p className="hint" style={{ margin: "6px 0 0" }}>{l.downP}</p>
-          <div className="num" ref={numRef}><a href={PHONE_TEL} dir="ltr" style={{ color: "inherit", textDecoration: "none" }}>{PHONE}</a></div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button className="btn-ghost" type="button" onClick={copyNumber}>{l[copyLabel]}</button>
-            <a className="btn-ghost" style={{ textDecoration: "none", display: "inline-block" }} href={WA} target="_blank" rel="noopener">WhatsApp</a>
-          </div>
+        <div className="alert" role="alert">
+          <b>{l.downT}</b>
+          {l.downP}
+          <span className="num" ref={numRef}><a href={PHONE_TEL} dir="ltr">{PHONE}</a></span>
+          <span className="row">
+            <button className="btn ghost" type="button" onClick={copyNumber}>{l[copyLabel]}</button>
+            <a className="btn ghost" href={WA} target="_blank" rel="noopener">WhatsApp</a>
+          </span>
         </div>
       );
     } else if (slots.status !== "ready") {
-      body = <p className="slots-wait" aria-live="polite">{l.loading}</p>;
+      body = <p className="wait" aria-live="polite">{l.loading}</p>;
     } else if (!slots.days.length || !slots.days.some((d) => d.slots.length)) {
       body = (
-        <div className="note">
-          <strong>{l.fullT}</strong>
+        <div className="alert">
+          <b>{l.fullT}</b>
           {l.noneFree} <a href={WA} target="_blank" rel="noopener" dir="ltr">{PHONE}</a>
         </div>
       );
     } else {
       const ff = firstFree();
       const day = slots.days.find((d) => d.date === s.day) ?? slots.days[0];
+      /* Wochen ab Montag; gezeigt wird die Woche des gewählten Tages, mit den Pfeilen eine Woche vor oder zurück */
+      const monday = (key: string) => {
+        const d = keyToNoon(key);
+        const wd = (d.getUTCDay() + 6) % 7;
+        return new Date(d.getTime() - wd * 86400000).toISOString().slice(0, 10);
+      };
+      const addDays = (key: string, n: number) => new Date(keyToNoon(key).getTime() + n * 86400000).toISOString().slice(0, 10);
+      const firstWeek = monday(slots.days[0].date);
+      const lastWeek = monday(slots.days[slots.days.length - 1].date);
+      const baseWeek = monday(day.date);
+      let week = addDays(baseWeek, weekShift * 7);
+      if (week < firstWeek) week = firstWeek;
+      if (week > lastWeek) week = lastWeek;
+      const keys = Array.from({ length: 7 }, (_, i) => addDays(week, i));
+      const byKey = new Map(slots.days.map((d) => [d.date, d]));
+      const tomorrowKey = addDays(new Date().toLocaleDateString("sv-SE", { timeZone: TZ }), 1);
       const quick = ff ? (
-        <button type="button" className="quick" onClick={() => setS((p) => clearErr({ ...p, day: ff.day, slot: ff.slot }, "slot"))}>
-          <div><strong>{l.nextFree}</strong><span>{dayLabel(ff.day)}{comma} {l.at(ff.slot.time)}</span></div>
-          <span className="arrow" aria-hidden="true">→</span>
+        <button type="button" className="next" onClick={() => { setWeekShift(0); setS((p) => clearErr({ ...p, day: ff.day, slot: ff.slot }, "slot")); }}>
+          <span>
+            <span className="eyebrow">{l.nextFree}</span>
+            <b>{ff.day === tomorrowKey ? `${l.tomorrow}${comma} ` : ""}{dayLabel(ff.day)}{comma} {timeLabel(ff.slot.time)}</b>
+          </span>
+          <span className="go">{l.take}</span>
         </button>
       ) : null;
-      const slotsBody = day.holiday ? (
-        <div className="note"><strong>{l.closed}</strong>{l.holiday}</div>
+      const times = day.holiday ? (
+        <div className="alert"><b>{l.closed}</b>{l.holiday}</div>
       ) : day.slots.length ? (
-        <div className="slots">
+        <div className="opts times">
           {day.slots.map((t) => (
-            <button key={t.start} type="button" className="slot" aria-pressed={s.slot?.start === t.start} onClick={() => setS((p) => clearErr({ ...p, slot: t, day: day.date }, "slot"))}>{t.time}</button>
+            <span key={t.start} style={{ display: "contents" }}>{choice("zeit", s.slot?.start === t.start, () => setS((p) => clearErr({ ...p, slot: t, day: day.date }, "slot")), <bdi>{timeLabel(t.time)}</bdi>)}</span>
           ))}
         </div>
       ) : (
-        <div className="note"><strong>{l.fullT}</strong>{l.fullP}</div>
+        <div className="alert"><b>{l.fullT}</b>{l.fullP}</div>
       );
       body = (
         <>
           {quick}
-          <div className="lbl">{l.orDay}</div>
-          <div className="days" role="group" aria-label={l.dayAria}>
-            {slots.days.map((d) => (
-              <button key={d.date} type="button" className={`day ${d.holiday || !d.slots.length ? "closed" : ""}`} aria-pressed={d.date === day.date} aria-label={`${dayLabel(d.date)}${d.holiday ? ", " + l.closedAria : ""}`} onClick={() => setS((p) => ({ ...p, day: d.date, slot: null, maxStep: Math.min(p.maxStep, 2) as Step }))}>
-                <div className="w">{dayWd(d.date)}</div>
-                <div className="n">{dayN(d.date)}</div>
-              </button>
-            ))}
-          </div>
-          <div>
-            <div className="lbl" style={{ marginBottom: 10 }}>{dayLabel(day.date)}</div>
-            {slotsBody}
-          </div>
+          <fieldset className="grp">
+            <div className="dayhead">
+              <p>{l.orDayMonth(cap(dfmt(keys[0], { month: "long", year: "numeric" })))}</p>
+              <div className="arrows">
+                <button className="arr" type="button" aria-label={l.prevWeek} disabled={week <= firstWeek} onClick={() => setWeekShift((w) => w - 1)}><span aria-hidden="true">{langDir(lang) === "rtl" ? "›" : "‹"}</span></button>
+                <button className="arr" type="button" aria-label={l.nextWeek} disabled={week >= lastWeek} onClick={() => setWeekShift((w) => w + 1)}><span aria-hidden="true">{langDir(lang) === "rtl" ? "‹" : "›"}</span></button>
+              </div>
+            </div>
+            <div className="days" role="radiogroup" aria-label={l.dayAria}>
+              {keys.map((k) => {
+                const d = byKey.get(k);
+                const closed = !d || d.holiday || !d.slots.length;
+                return (
+                  <label key={k} className={`ch day ${d && closed ? "closed" : ""}`}>
+                    <input
+                      type="radio"
+                      name="tag"
+                      checked={k === day.date}
+                      disabled={!d}
+                      aria-label={`${dayLabel(k)}${d?.holiday ? `${comma} ${l.closedAria}` : ""}`}
+                      onChange={() => { setWeekShift(0); setS((p) => ({ ...p, day: k, slot: null, maxStep: Math.min(p.maxStep, 2) as Step })); }}
+                    />
+                    <span>
+                      <span className="wd">{cap(dfmt(k, { weekday: "long" }))}</span>
+                      <span className="nr">{dayN(k)}</span>
+                      <span className="mo">{dfmt(k, { month: "long" })}</span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+          <fieldset className="grp">
+            <legend>{l.timesFor(dayLabel(day.date))}</legend>
+            {miss("slot")}
+            {times}
+          </fieldset>
         </>
       );
     }
     return (
-      <section className="sec" id="sec-slot">
+      <div id="sec-slot">
         {checkup ? consultBlock : null}
         {chk}
-        <h2>{title}</h2>
         {book.status === "conflict" ? (
-          <div className="missing">
+          <div className="missing" role="alert">
             {l.conflict}
-            <div style={{ marginTop: 10 }}><button type="button" className="btn-ghost" onClick={() => setBook({ status: "idle" })}>{l.otherTime}</button></div>
+            <div style={{ marginTop: "var(--sp-10)" }}><button type="button" className="btn ghost" onClick={() => setBook({ status: "idle" })}>{l.otherTime}</button></div>
           </div>
         ) : null}
-        {miss("slot")}
+        {slots.status !== "ready" ? miss("slot") : null}
         {body}
-        <p className="hint">{withLink(l.noSlotHint, l.noSlotLink, WA)}</p>
-      </section>
+        <p className="note" style={{ marginBottom: "var(--sp-36)" }}>{withLink(l.noSlotHint, l.noSlotLink, WA)}</p>
+      </div>
     );
   };
 
-  /* ---------- Schritt 3: Angaben mit kompakter Übersicht ---------- */
-  const overviewItems = (): string[] => {
-    const out: string[] = [];
-    if (s.persons === 2) out.push(l.personsSum);
-    const n = zoneCount({ zones: s.zoneIds, otherZone: s.otherOn ? s.otherText : null });
-    const names = [...s.zoneIds.map((z) => l.zoneNames[z]), ...(s.otherOn ? [s.otherText.trim() ? `${l.zoneOther}: ${s.otherText.trim()}` : l.zoneOther] : [])];
-    if (n > 0) out.push(`${l.botRow}${l.zoneCountLabel(n)}: ${names.join(", ")}`);
-    else if (s.zonesUnknown) out.push(`${l.botRow}${l.zonesOpen}`);
-    if (s.kaumuskel) out.push(`${l.botRow}${l.kaumuskel}`);
-    if (s.nefertiti) out.push(`${l.botRow}${l.nefertiti}`);
-    if (s.achsel) out.push(`${l.botRow}${l.achsel}`);
-    if (s.lachs === "single") out.push(`${l.boostRow}${l.lachsRow}`);
-    if (s.lachs === "pack") out.push(`${l.boostRow}${l.lachsPack}`);
-    return out;
-  };
-
-  const overview = (
-    <div className="overview">
-      <div className="ov-h">{l.sumHead}</div>
-      <div className="ov-row">
-        <span>{s.day && s.slot ? `${dayLabel(s.day)}${comma} ${l.at(s.slot.time)}` : ""}</span>
-        <button type="button" className="chg" onClick={() => goto(2)}>{l.change}</button>
-      </div>
-      <div className="ov-row">
-        <span>{consult ? l.consultSum(l.consultNames[consult]) : ""}</span>
-        <button type="button" className="chg" onClick={() => goto(firstStep)}>{l.change}</button>
-      </div>
-      {!checkup ? (
-        <div className="ov-row">
-          <div className="ov-lines">
-            <div className="ov-line nb" style={{ margin: 0, fontSize: 14 }}><span>{l.noCommitTag}</span></div>
-            {s.beratung ? <div className="ov-line"><span>{l.beratungRow}</span></div> : null}
-            {overviewItems().map((n, i) => <div key={i} className="ov-line"><span>{n}</span></div>)}
-          </div>
-          <button type="button" className="chg" onClick={() => goto(1)}>{l.change}</button>
-        </div>
-      ) : null}
-    </div>
-  );
-
+  /* ---------- Schritt 3: Angaben ---------- */
   const stepData = () => {
     if (book.status === "pending") {
       return (
-        <section className="sec" id="sec-data">
-          <h2>{l.dataH}</h2>
-          {overview}
-          <div className="pending" role="status">
-            <strong>{l.pendingT}</strong>
-            <span>{l.pendingP}</span>
-            <span>WhatsApp <a href={WA} target="_blank" rel="noopener" dir="ltr">{PHONE}</a></span>
-          </div>
-        </section>
+        <div className="alert" role="status">
+          <b>{l.pendingT}</b>
+          {l.pendingP}
+          <span className="num">WhatsApp <a href={WA} target="_blank" rel="noopener" dir="ltr">{PHONE}</a></span>
+        </div>
       );
     }
-    const phoneHint = s.visit === "return" ? <span className="hint">{l.phoneReturn}</span> : null;
+    const phoneHint = s.visit === "return" ? <p className="note">{l.phoneReturn}</p> : null;
     return (
-      <section className="sec" id="sec-data">
-        <h2>{l.dataH}</h2>
-        {overview}
-        {field("vorname", l.vorname, "text", { autoComplete: "given-name", maxLength: 60 })}
-        {field("nachname", l.nachname, "text", { autoComplete: "family-name", maxLength: 60 })}
-        {field("handy", l.handyWhy ? <>{l.handy} <em>{l.handyWhy}</em></> : l.handy, "tel", { autoComplete: "tel", inputMode: "tel", placeholder: "0151 …", maxLength: 30 }, phoneHint)}
-        {field("email", l.emailWhy ? <>{l.email} <em>{l.emailWhy}</em></> : l.email, "email", { autoComplete: "email", maxLength: 120 })}
+      <div id="sec-data">
+        <div className="frow">
+          {field("vorname", l.vorname, "text", { autoComplete: "given-name", maxLength: 60 })}
+          {field("nachname", l.nachname, "text", { autoComplete: "family-name", maxLength: 60 })}
+        </div>
+        {field("handy", l.handyWhy ? <>{l.handy} <em>{l.handyWhy}</em></> : l.handy, "tel", { autoComplete: "tel", inputMode: "tel", placeholder: l.phonePh, maxLength: 30, dir: "ltr" }, phoneHint)}
+        {field("email", l.emailWhy ? <>{l.email} <em>{l.emailWhy}</em></> : l.email, "email", { autoComplete: "email", maxLength: 120, dir: "ltr" })}
         <div className="hp" aria-hidden="true">
           <label htmlFor="website">Website</label>
           <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" defaultValue="" />
         </div>
-        <label className={`check ${s.errors.consent ? "invalid" : ""}`} htmlFor="consent">
+        <label className={`consent ${s.errors.consent ? "invalid" : ""}`} htmlFor="consent">
           <input id="consent" type="checkbox" checked={s.f.consent} onChange={(e) => setS((p) => clearErr({ ...p, f: { ...p.f, consent: e.target.checked } }, e.target.checked ? "consent" : ""))} />
           <span>{withPrivacyLink(l.consent, l.legalPrivacy, `/datenschutz${langQuery}`)}</span>
         </label>
-        <label className="check" htmlFor="reminder">
+        <label className="consent" htmlFor="reminder">
           <input id="reminder" type="checkbox" checked={s.f.reminder} onChange={(e) => setS((p) => ({ ...p, f: { ...p.f, reminder: e.target.checked } }))} />
-          <span>{l.reminderOpt}</span>
+          <span>{l.reminderOpt}<small>{l.voluntary}</small></span>
         </label>
-        {s.errors.consent ? <div className="missing">{l.eConsent}</div> : null}
-        {book.status === "error" ? <div className="missing">{l.bookErr}</div> : null}
+        {s.errors.consent ? <div className="missing" role="alert">{l.eConsent}</div> : null}
+        {book.status === "error" ? <div className="missing" role="alert">{l.bookErr}</div> : null}
         {book.status === "unavailable" ? <div className="missing" role="alert">{withLink(l.bookUnavailable, l.noSlotLink, WA)}</div> : null}
-        <div className="note"><strong>{l.cancelT}</strong>{l.cancelP}<br />{l.cancelP2}</div>
-      </section>
+        <div className="zeit"><b>{l.cancelT}</b><p>{l.cancelP}</p><p>{l.cancelP2}</p></div>
+      </div>
     );
   };
 
-  /* ---------- Bestätigung (Block 3): keine Buchungsnummer, keine Behandlung, keine Dauer ---------- */
+  /* ---------- Bestätigung: keine Buchungsnummer, keine Behandlung, keine Dauer ---------- */
   const screenDone = (b: Booking) => {
     const dayKey = b.start.slice(0, 10);
     const time = b.start.slice(11, 16);
     return (
-      <>
-        <div className="band" />
-        <div className="confirm">
-          <h1>{b.binding ? l.doneBindingH : l.doneH}</h1>
-          {b.binding ? <p>{l.doneBindingP}</p> : null}
-          <p style={{ fontWeight: 500, fontSize: 20 }}>{dayLabel(dayKey)}{comma} {l.at(time)}</p>
-          <p style={{ margin: 0, lineHeight: 1.2 }}>
-            <span style={{ display: "block", fontSize: 22, letterSpacing: ".09em" }}>PALO SKIN</span>
-            <span style={{ display: "block", fontSize: 14, letterSpacing: ".04em", opacity: 0.85 }}>by Dr. Vogel</span>
-          </p>
-          <p style={{ margin: 0 }}>{ADDRESS}</p>
-          <p style={{ margin: 0 }}><a href={MAPS} target="_blank" rel="noopener" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: 3 }}>{l.mapL}</a></p>
+      <div className="bk-done">
+        <section className="done">
+          <h2 className="h2">{b.binding ? l.doneBindingH : l.doneH}</h2>
+          {b.binding ? <p style={{ marginTop: "var(--sp-12)" }}>{l.doneBindingP}</p> : null}
+          <dl>
+            <dt>{l.sumWhen}</dt>
+            <dd>{dayLabel(dayKey)}{comma} {timeLabel(time)}</dd>
+            <dt>{l.addrL}</dt>
+            <dd><bdi>PALO SKIN by Dr. Vogel</bdi><br /><bdi>{ADDRESS}</bdi><br /><a href={MAPS} target="_blank" rel="noopener">{l.mapL}</a></dd>
+          </dl>
           {b.calendar ? (
             <>
-              <p style={{ marginTop: 10 }}>{l.saveQ}</p>
-              <div className="cal" style={{ marginTop: 0 }}>
-                <a href={b.calendar.google} target="_blank" rel="noopener">{l.gcal} <span aria-hidden="true">↗</span></a>
-                <a href={b.calendar.ics}>{l.ical} <span aria-hidden="true">↓</span></a>
-                <a href={b.calendar.outlook} target="_blank" rel="noopener">{l.ocal} <span aria-hidden="true">↗</span></a>
+              <p>{l.saveQ}</p>
+              <div className="cal">
+                <a className="btn light" href={b.calendar.google} target="_blank" rel="noopener">{l.gcal} <span aria-hidden="true">↗</span></a>
+                <a className="btn light" href={b.calendar.ics}>{l.ical} <span aria-hidden="true">↓</span></a>
+                <a className="btn light" href={b.calendar.outlook} target="_blank" rel="noopener">{l.ocal} <span aria-hidden="true">↗</span></a>
               </div>
             </>
           ) : null}
-        </div>
+        </section>
         <div className="after">
-          <div className="note"><strong>{l.cancelT}</strong>{l.cancelP}{b.canManage !== false ? <><br />{l.cancelP2}</> : null}</div>
+          <div className="zeit" style={{ margin: 0 }}><b>{l.cancelT}</b><p>{l.cancelP}</p>{b.canManage !== false ? <p>{l.cancelP2}</p> : null}</div>
           {s.refSent ? (
-            <p className="hint" style={{ margin: 0 }}>{l.refThanks}</p>
+            <p className="note">{l.refThanks}</p>
           ) : (
-            <div className="refbox">
-              <label className="field" htmlFor="empfohlen">
-                <span className="l">{l.refQ}</span>
+            <div className="fcard">
+              <div className="field">
+                <label htmlFor="empfohlen">{l.refQ}</label>
                 <input id="empfohlen" type="text" value={s.f.empfohlen} placeholder={l.refPh} maxLength={120} onChange={(e) => setS((p) => ({ ...p, f: { ...p.f, empfohlen: e.target.value } }))} />
-              </label>
-              <button type="button" className="btn-ghost" onClick={sendReferral}>{l.refSend}</button>
+              </div>
+              <button type="button" className="btn ghost" onClick={sendReferral}>{l.refSend}</button>
             </div>
           )}
         </div>
-      </>
+      </div>
     );
   };
 
-  /* ---------- Leiste unten ---------- */
-  const bar = () => {
+  /* ---------- Knöpfe unter der Karte; auf dem Handy am unteren Bildschirmrand ---------- */
+  const navRow = () => {
     const label = s.step === 1 ? l.next1 : s.step === 2 ? l.next2 : l.book;
-    const pct = Math.round((100 * (s.step - firstStep + 1)) / (3 - firstStep + 1));
     const hideNext = (s.step === 2 && slots.status === "down") || book.status === "pending";
     const sending = book.status === "sending";
     return (
-      <div className="bar">
-        <div className="prog" aria-hidden="true"><span style={{ width: `${pct}%` }} /></div>
-        {s.step > firstStep && !sending ? <button className="back" type="button" onClick={() => goto(Math.max(firstStep, s.step - 1) as Step)}>{l.back}</button> : null}
+      <div className="nav">
+        {s.step > firstStep && !sending ? <button className="btn ghost" type="button" onClick={() => goto(Math.max(firstStep, s.step - 1) as Step)}>{l.back}</button> : null}
         {hideNext ? null : (
-          <button className="primary" type="button" disabled={sending || (s.step === 2 && slots.status !== "ready")} aria-busy={sending} onClick={next}>{label}</button>
+          <div className="end">
+            <button className="btn" type="button" disabled={sending || (s.step === 2 && slots.status !== "ready")} aria-busy={sending} onClick={next}>{label}</button>
+          </div>
         )}
       </div>
     );
   };
 
-  const foot = (
-    <nav className="foot" aria-label="Palo Skin">
-      <a href={`/${langQuery}`}>{l.home}</a>
-      <a href={`/impressum${langQuery}`}>{l.legalImprint}</a>
-      <a href={`/datenschutz${langQuery}`}>{l.legalPrivacy}</a>
-    </nav>
-  );
-
+  const steps = ([[1, l.stepTreat], [2, l.stepSlot], [3, l.stepData]] as [Step, string][]).filter(([n]) => n >= firstStep);
+  const done = book.status === "done";
   return (
-    <div className="shell">
+    <div className="pb">
       {testMode ? <div className="testbar" role="note"><b>Test.</b> {l.testBanner}</div> : null}
-      <main className="app" id="app" ref={appRef} aria-live="polite">
-        {book.status === "done" ? (
-          screenDone(book.booking)
+      <Kopfzeile lang={lang} t={kopf[lang]} page="booking" onLang={setLang} />
+      <main className="wrap bk" id="app" ref={appRef} aria-live="polite">
+        <h1 className="h2">{l.bookHA} <em>{l.bookHB}</em></h1>
+        {done ? (
+          screenDone((book as { status: "done"; booking: Booking }).booking)
         ) : (
           <>
-            {brand}
-            {stepper}
-            <div className="page">{s.step === 1 ? stepTreat() : s.step === 2 ? stepSlot() : stepData()}</div>
-            {bar()}
+            <ol className="stepper" aria-label={l.stepsAria}>
+              {steps.map(([n, t], i) => {
+                const cur = n === s.step;
+                const can = n <= s.maxStep && !cur;
+                return (
+                  <li key={n} className={`stp ${cur ? "cur" : n < s.step ? "done" : ""}`} aria-current={cur ? "step" : undefined}>
+                    {can ? (
+                      <button type="button" className="snr" onClick={() => goto(n)} aria-label={t}>{i + 1}</button>
+                    ) : (
+                      <span className="snr">{i + 1}</span>
+                    )}
+                    <span className="stl">{t}</span>
+                  </li>
+                );
+              })}
+            </ol>
+            <div className="bk-grid">
+              <section className="fcard">
+                {s.step === 1 ? stepTreat() : s.step === 2 ? stepSlot() : stepData()}
+                {navRow()}
+              </section>
+              {summary}
+            </div>
           </>
         )}
       </main>
-      {foot}
+      <Fusszeile lang={lang} t={kopf[lang]} mobileBar={false} />
     </div>
   );
 }

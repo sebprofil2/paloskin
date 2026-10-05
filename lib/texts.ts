@@ -31,13 +31,13 @@ const T: Record<Lang, DraftTexts> = {
 de:{
   spec:"Spezialisiert auf Faltenbehandlungen",
   otherPh:"Welche Zone?",
-  achsel:"Übermäßiges Schwitzen", achselD:"Achseln (Hyperhidrose)",
+  achsel:"Übermäßiges Schwitzen", achselD:"Achseln",
   interestL:"Ich interessiere mich für:", noCommitTag:"Unverbindliche Vorauswahl", noCommit:"Gerne auch mehreres. Was wir machen, besprechen wir gemeinsam vor Ort.", yesBeen:"Ja", noFirst:"Nein, mein erster Besuch",
   stepTreat:"Behandlung", stepSlot:"Termin", stepData:"Angaben", consultPrice:"", noteAdd:"Notiz hinzufügen",
-  next1:"Weiter: Wann passt es Ihnen?", next2:"Weiter: Fast geschafft", back:"Zurück", change:"Ändern", refThanks:"Danke!", refSend:"Senden",
+  next1:"Weiter: Wann passt es Ihnen?", next2:"Weiter: Ihre Angaben", back:"Zurück", change:"Ändern", refThanks:"Danke!", refSend:"Senden",
   visitQ:"Waren Sie schon einmal bei uns?", visitFirstLbl:"Erster Besuch", visitReturnLbl:"Schon einmal da", checkupLbl:"Kontrolltermin",
-  treatQ:"Wofür interessieren Sie sich?", unsureT:"Ich lasse mich erst beraten", unsureD:"Wir nehmen uns Zeit und entscheiden gemeinsam, was zu Ihnen passt.", botGroup:"Botox-Behandlung", moreGroup:"Weitere Behandlungen",
-  kaumuskel:"Kaumuskel (Masseter)", kaumuskelD:"Facial Slimming, Entspannung bei Zähneknirschen", nefertiti:"Nefertiti-Lift", nefertitiD:"Hals und Kieferkontur",
+  treatQ:"Wofür interessieren Sie sich?", unsureT:"Ich lasse mich erst beraten", unsureD:"Wir nehmen uns Zeit und entscheiden gemeinsam, was zu Ihnen passt.", botGroup:"Faltenbehandlung und mehr", moreGroup:"Weitere Behandlungen",
+  kaumuskel:"Kaumuskel (Masseter)", kaumuskelD:"Gesichtskontur und Zähneknirschen", nefertiti:"Nefertiti-Lift", nefertitiD:"Hals und Kieferkontur",
   lachs:"Lachs-DNA", lachsD:"Dunkle Augenringe, eine Behandlung", lachsPack:"Lachs-DNA, vier Behandlungen", lachsPackD:"Dunkle Augenringe, Augenpartie",
   lachsRow:"Lachs-DNA, eine Behandlung",
   noteL:"Notiz zur Behandlung", optional:"(freiwillig)", notePh:"Zum Beispiel: normalerweise zwei Zonen, diesmal vielleicht den Kaumuskel dazu.",
@@ -52,7 +52,7 @@ de:{
   phoneReturn:"Am besten dieselbe Nummer wie beim letzten Mal, dann erkennen wir Sie gleich wieder.",
   refQ:"Hat Ihnen jemand PALO SKIN empfohlen?", refPh:"Name oder Empfehlungscode",
   consent:"Ich bin einverstanden, dass PALO SKIN meine Angaben für meinen Termin verarbeitet. Mehr in der Datenschutzerklärung.", cancelT:"Zeit für Sie", cancelP:"Ihr Termin beginnt pünktlich, in der Regel ganz ohne Wartezeit. Kommen Sie bitte zur vereinbarten Zeit oder höchstens fünf Minuten vorher.",
-  sumHead:"Ihr Termin", beratungRow:"Beratung, Behandlung noch offen", botRow:"Botox: ", boostRow:"Skin Booster: ", doneH:"Schön, Ihre Terminanfrage ist da. Wir bestätigen sie kurz per WhatsApp.", gcal:"Google Kalender", ocal:"Outlook", ical:"iPhone-Kalender",
+  sumHead:"Ihr Termin", beratungRow:"Beratung, Behandlung noch offen", botRow:"Faltenbehandlung: ", boostRow:"Lachs-DNA: ", doneH:"Schön, Ihre Terminanfrage ist da. Wir bestätigen sie kurz per WhatsApp.", gcal:"Google Kalender", ocal:"Outlook", ical:"iPhone-Kalender",
   addrL:"Adresse", book:"Termin buchen",
   checkupP:"Sie wurden zu einem kurzen Kontrolltermin eingeladen.",
   eVisit:"Kurz noch: Waren Sie schon einmal bei uns?", eTreat:"Kurz noch: Bitte eine Behandlung wählen oder „Ich lasse mich erst beraten“.", eSlot:"Kurz noch: Bitte eine Uhrzeit wählen.",
@@ -306,6 +306,35 @@ export interface ExtraTexts {
   consultSum: (name: string) => string;
   /** Namen der fünf Beratungssprachen in der Seitensprache */
   consultNames: Record<ConsultLang, string>;
+  /* Gestaltung Entwurf B (5. Oktober 2026): Überschrift, Schrittanzeige, Vorauswahl, Terminwahl, Übersicht „Ihre Buchung“ */
+  bookHA: string;
+  bookHB: string;
+  stepsAria: string;
+  treatHint: string;
+  botD: string;
+  lachsGroup: string;
+  lachsGroupD: string;
+  lachsOne: string;
+  lachsFour: string;
+  priceFrom: (price: string) => string;
+  tomorrow: string;
+  take: string;
+  orDayMonth: (monthYear: string) => string;
+  prevWeek: string;
+  nextWeek: string;
+  timesFor: (day: string) => string;
+  sumH: string;
+  sumTreat: string;
+  sumWhen: string;
+  sumPrice: string;
+  sumOpen: string;
+  sumFn: string;
+  docRole: string;
+  moveNote: string;
+  visitFirstSum: string;
+  visitReturnSum: string;
+  voluntary: string;
+  phonePh: string;
 }
 
 const X: Record<Lang, ExtraTexts> = {
@@ -331,6 +360,15 @@ const X: Record<Lang, ExtraTexts> = {
     zoneTiers: (p1, p2, p3, p4) => `1 Zone ${p1}, 2 Zonen ${p2}, 3 Zonen ${p3}, jede weitere ${p4}`,
     consultQ: "In welcher Sprache möchten Sie beraten werden?", consultHint: "Dr. Vogel berät Sie auf Deutsch, Englisch, Spanisch, Französisch oder Portugiesisch.", eConsult: "Kurz noch: Bitte wählen Sie die Sprache für Ihre Beratung.",
     consultSum: (name) => `Beratung auf ${name}`, consultNames: { de: "Deutsch", en: "Englisch", es: "Spanisch", fr: "Französisch", pt: "Portugiesisch" },
+    bookHA: "Termin", bookHB: "buchen.", stepsAria: "Schritte der Buchung",
+    treatHint: "Unverbindliche Vorauswahl. Gerne auch mehreres. Was wir machen, besprechen wir gemeinsam vor Ort.",
+    botD: "Zonen antippen, die Sie interessieren", lachsGroup: "Lachs-DNA (Polynukleotide)", lachsGroupD: "Für die Augenpartie, eine oder vier Behandlungen",
+    lachsOne: "Eine Behandlung", lachsFour: "Vier Behandlungen", priceFrom: (p) => `ab ${p}`,
+    tomorrow: "Morgen", take: "Diesen nehmen", orDayMonth: (m) => `Oder Tag wählen: ${m}`, prevWeek: "Vorherige Woche", nextWeek: "Nächste Woche", timesFor: (d) => `Uhrzeit am ${d}`,
+    sumH: "Ihre Buchung", sumTreat: "Behandlung", sumWhen: "Termin", sumPrice: "Richtpreis", sumOpen: "Noch offen",
+    sumFn: "* Richtwert. Abrechnung nach der Gebührenordnung für Ärzte, inklusive Mehrwertsteuer.",
+    docRole: "Arzt und Gründer von PALO SKIN", moveNote: "Verschieben können Sie selbst, bis 24 Stunden vorher.",
+    visitFirstSum: "erster Besuch", visitReturnSum: "schon einmal da", voluntary: "Freiwillig", phonePh: "+49",
   },
   en: {
     testBanner: "Test version. Please enter invented names only and no real treatment wishes. The booking really does go into the calendar.",
@@ -354,6 +392,15 @@ const X: Record<Lang, ExtraTexts> = {
     zoneTiers: (p1, p2, p3, p4) => `1 area ${p1}, 2 areas ${p2}, 3 areas ${p3}, each additional ${p4}`,
     consultQ: "In which language would you like your consultation?", consultHint: "Dr. Vogel advises you in German, English, Spanish, French or Portuguese.", eConsult: "Just one thing: Please choose the language for your consultation.",
     consultSum: (name) => `Consultation in ${name}`, consultNames: { de: "German", en: "English", es: "Spanish", fr: "French", pt: "Portuguese" },
+    bookHA: "Termin", bookHB: "buchen.", stepsAria: "Schritte der Buchung",
+    treatHint: "Unverbindliche Vorauswahl. Gerne auch mehreres. Was wir machen, besprechen wir gemeinsam vor Ort.",
+    botD: "Zonen antippen, die Sie interessieren", lachsGroup: "Lachs-DNA (Polynukleotide)", lachsGroupD: "Für die Augenpartie, eine oder vier Behandlungen",
+    lachsOne: "Eine Behandlung", lachsFour: "Vier Behandlungen", priceFrom: (p) => `ab ${p}`,
+    tomorrow: "Morgen", take: "Diesen nehmen", orDayMonth: (m) => `Oder Tag wählen: ${m}`, prevWeek: "Vorherige Woche", nextWeek: "Nächste Woche", timesFor: (d) => `Uhrzeit am ${d}`,
+    sumH: "Ihre Buchung", sumTreat: "Behandlung", sumWhen: "Termin", sumPrice: "Richtpreis", sumOpen: "Noch offen",
+    sumFn: "* Richtwert. Abrechnung nach der Gebührenordnung für Ärzte, inklusive Mehrwertsteuer.",
+    docRole: "Arzt und Gründer von PALO SKIN", moveNote: "Verschieben können Sie selbst, bis 24 Stunden vorher.",
+    visitFirstSum: "erster Besuch", visitReturnSum: "schon einmal da", voluntary: "Freiwillig", phonePh: "+49",
   },
   es: {
     testBanner: "Versión de prueba. Introduzca solo nombres inventados y ningún deseo de tratamiento real. La reserva se registra de verdad en el calendario.",
@@ -377,6 +424,15 @@ const X: Record<Lang, ExtraTexts> = {
     zoneTiers: (p1, p2, p3, p4) => `1 zona ${p1}, 2 zonas ${p2}, 3 zonas ${p3}, cada zona adicional ${p4}`,
     consultQ: "¿En qué idioma desea que le asesoremos?", consultHint: "El Dr. Vogel le asesora en alemán, inglés, español, francés o portugués.", eConsult: "Un detalle: Elija el idioma de su consulta.",
     consultSum: (name) => `Consulta en ${name}`, consultNames: { de: "alemán", en: "inglés", es: "español", fr: "francés", pt: "portugués" },
+    bookHA: "Termin", bookHB: "buchen.", stepsAria: "Schritte der Buchung",
+    treatHint: "Unverbindliche Vorauswahl. Gerne auch mehreres. Was wir machen, besprechen wir gemeinsam vor Ort.",
+    botD: "Zonen antippen, die Sie interessieren", lachsGroup: "Lachs-DNA (Polynukleotide)", lachsGroupD: "Für die Augenpartie, eine oder vier Behandlungen",
+    lachsOne: "Eine Behandlung", lachsFour: "Vier Behandlungen", priceFrom: (p) => `ab ${p}`,
+    tomorrow: "Morgen", take: "Diesen nehmen", orDayMonth: (m) => `Oder Tag wählen: ${m}`, prevWeek: "Vorherige Woche", nextWeek: "Nächste Woche", timesFor: (d) => `Uhrzeit am ${d}`,
+    sumH: "Ihre Buchung", sumTreat: "Behandlung", sumWhen: "Termin", sumPrice: "Richtpreis", sumOpen: "Noch offen",
+    sumFn: "* Richtwert. Abrechnung nach der Gebührenordnung für Ärzte, inklusive Mehrwertsteuer.",
+    docRole: "Arzt und Gründer von PALO SKIN", moveNote: "Verschieben können Sie selbst, bis 24 Stunden vorher.",
+    visitFirstSum: "erster Besuch", visitReturnSum: "schon einmal da", voluntary: "Freiwillig", phonePh: "+49",
   },
   fr: {
     testBanner: "Version de test. Merci de n’indiquer que des noms inventés et aucun souhait de soin réel. La réservation est réellement inscrite dans l’agenda.",
@@ -400,6 +456,15 @@ const X: Record<Lang, ExtraTexts> = {
     zoneTiers: (p1, p2, p3, p4) => `1 zone ${p1}, 2 zones ${p2}, 3 zones ${p3}, chaque zone supplémentaire ${p4}`,
     consultQ: "Dans quelle langue souhaitez-vous être conseillé ?", consultHint: "Le Dr Vogel vous conseille en allemand, anglais, espagnol, français ou portugais.", eConsult: "Juste une chose : Choisissez la langue de votre consultation.",
     consultSum: (name) => `Consultation en ${name}`, consultNames: { de: "allemand", en: "anglais", es: "espagnol", fr: "français", pt: "portugais" },
+    bookHA: "Termin", bookHB: "buchen.", stepsAria: "Schritte der Buchung",
+    treatHint: "Unverbindliche Vorauswahl. Gerne auch mehreres. Was wir machen, besprechen wir gemeinsam vor Ort.",
+    botD: "Zonen antippen, die Sie interessieren", lachsGroup: "Lachs-DNA (Polynukleotide)", lachsGroupD: "Für die Augenpartie, eine oder vier Behandlungen",
+    lachsOne: "Eine Behandlung", lachsFour: "Vier Behandlungen", priceFrom: (p) => `ab ${p}`,
+    tomorrow: "Morgen", take: "Diesen nehmen", orDayMonth: (m) => `Oder Tag wählen: ${m}`, prevWeek: "Vorherige Woche", nextWeek: "Nächste Woche", timesFor: (d) => `Uhrzeit am ${d}`,
+    sumH: "Ihre Buchung", sumTreat: "Behandlung", sumWhen: "Termin", sumPrice: "Richtpreis", sumOpen: "Noch offen",
+    sumFn: "* Richtwert. Abrechnung nach der Gebührenordnung für Ärzte, inklusive Mehrwertsteuer.",
+    docRole: "Arzt und Gründer von PALO SKIN", moveNote: "Verschieben können Sie selbst, bis 24 Stunden vorher.",
+    visitFirstSum: "erster Besuch", visitReturnSum: "schon einmal da", voluntary: "Freiwillig", phonePh: "+49",
   },
   pt: {
     testBanner: "Versão de teste. Use apenas nomes inventados e nenhum desejo real de tratamento. A reserva é registrada de verdade no calendário.",
@@ -423,6 +488,15 @@ const X: Record<Lang, ExtraTexts> = {
     zoneTiers: (p1, p2, p3, p4) => `1 área ${p1}, 2 áreas ${p2}, 3 áreas ${p3}, cada área adicional ${p4}`,
     consultQ: "Em qual idioma você gostaria de ser atendido?", consultHint: "O Dr. Vogel atende em alemão, inglês, espanhol, francês ou português.", eConsult: "Só mais uma coisa: Escolha o idioma da sua consulta.",
     consultSum: (name) => `Consulta em ${name}`, consultNames: { de: "alemão", en: "inglês", es: "espanhol", fr: "francês", pt: "português" },
+    bookHA: "Termin", bookHB: "buchen.", stepsAria: "Schritte der Buchung",
+    treatHint: "Unverbindliche Vorauswahl. Gerne auch mehreres. Was wir machen, besprechen wir gemeinsam vor Ort.",
+    botD: "Zonen antippen, die Sie interessieren", lachsGroup: "Lachs-DNA (Polynukleotide)", lachsGroupD: "Für die Augenpartie, eine oder vier Behandlungen",
+    lachsOne: "Eine Behandlung", lachsFour: "Vier Behandlungen", priceFrom: (p) => `ab ${p}`,
+    tomorrow: "Morgen", take: "Diesen nehmen", orDayMonth: (m) => `Oder Tag wählen: ${m}`, prevWeek: "Vorherige Woche", nextWeek: "Nächste Woche", timesFor: (d) => `Uhrzeit am ${d}`,
+    sumH: "Ihre Buchung", sumTreat: "Behandlung", sumWhen: "Termin", sumPrice: "Richtpreis", sumOpen: "Noch offen",
+    sumFn: "* Richtwert. Abrechnung nach der Gebührenordnung für Ärzte, inklusive Mehrwertsteuer.",
+    docRole: "Arzt und Gründer von PALO SKIN", moveNote: "Verschieben können Sie selbst, bis 24 Stunden vorher.",
+    visitFirstSum: "erster Besuch", visitReturnSum: "schon einmal da", voluntary: "Freiwillig", phonePh: "+49",
   },
   uk: {
     testBanner: "Тестова версія. Будь ласка, вводьте лише вигадані імена і жодних справжніх побажань щодо процедур. Запис справді потрапляє до календаря.",
@@ -446,6 +520,15 @@ const X: Record<Lang, ExtraTexts> = {
     zoneTiers: (p1, p2, p3, p4) => `1 зона ${p1}, 2 зони ${p2}, 3 зони ${p3}, кожна наступна ${p4}`,
     consultQ: "Якою мовою Ви бажаєте отримати консультацію?", consultHint: "Dr. Vogel консультує німецькою, англійською, іспанською, французькою або португальською мовою.", eConsult: "Ще одне: будь ласка, оберіть мову консультації.",
     consultSum: (name) => `Мова консультації: ${name}`, consultNames: { de: "німецька", en: "англійська", es: "іспанська", fr: "французька", pt: "португальська" },
+    bookHA: "Termin", bookHB: "buchen.", stepsAria: "Schritte der Buchung",
+    treatHint: "Unverbindliche Vorauswahl. Gerne auch mehreres. Was wir machen, besprechen wir gemeinsam vor Ort.",
+    botD: "Zonen antippen, die Sie interessieren", lachsGroup: "Lachs-DNA (Polynukleotide)", lachsGroupD: "Für die Augenpartie, eine oder vier Behandlungen",
+    lachsOne: "Eine Behandlung", lachsFour: "Vier Behandlungen", priceFrom: (p) => `ab ${p}`,
+    tomorrow: "Morgen", take: "Diesen nehmen", orDayMonth: (m) => `Oder Tag wählen: ${m}`, prevWeek: "Vorherige Woche", nextWeek: "Nächste Woche", timesFor: (d) => `Uhrzeit am ${d}`,
+    sumH: "Ihre Buchung", sumTreat: "Behandlung", sumWhen: "Termin", sumPrice: "Richtpreis", sumOpen: "Noch offen",
+    sumFn: "* Richtwert. Abrechnung nach der Gebührenordnung für Ärzte, inklusive Mehrwertsteuer.",
+    docRole: "Arzt und Gründer von PALO SKIN", moveNote: "Verschieben können Sie selbst, bis 24 Stunden vorher.",
+    visitFirstSum: "erster Besuch", visitReturnSum: "schon einmal da", voluntary: "Freiwillig", phonePh: "+49",
   },
   ar: {
     testBanner: "نسخة تجريبية. يرجى إدخال أسماء وهمية فقط، ودون رغبات علاجية حقيقية. الحجز يُسجَّل فعلًا في التقويم.",
@@ -469,6 +552,15 @@ const X: Record<Lang, ExtraTexts> = {
     zoneTiers: (p1, p2, p3, p4) => `منطقة واحدة ${p1}، منطقتان ${p2}، 3 مناطق ${p3}، كل منطقة إضافية ${p4}`,
     consultQ: "بأي لغة ترغبون في تلقي الاستشارة؟", consultHint: "يقدّم Dr. Vogel الاستشارة باللغة الألمانية أو الإنجليزية أو الإسبانية أو الفرنسية أو البرتغالية.", eConsult: "ملاحظة صغيرة: يرجى اختيار لغة الاستشارة.",
     consultSum: (name) => `الاستشارة باللغة ${name}`, consultNames: { de: "الألمانية", en: "الإنجليزية", es: "الإسبانية", fr: "الفرنسية", pt: "البرتغالية" },
+    bookHA: "Termin", bookHB: "buchen.", stepsAria: "Schritte der Buchung",
+    treatHint: "Unverbindliche Vorauswahl. Gerne auch mehreres. Was wir machen, besprechen wir gemeinsam vor Ort.",
+    botD: "Zonen antippen, die Sie interessieren", lachsGroup: "Lachs-DNA (Polynukleotide)", lachsGroupD: "Für die Augenpartie, eine oder vier Behandlungen",
+    lachsOne: "Eine Behandlung", lachsFour: "Vier Behandlungen", priceFrom: (p) => `ab ${p}`,
+    tomorrow: "Morgen", take: "Diesen nehmen", orDayMonth: (m) => `Oder Tag wählen: ${m}`, prevWeek: "Vorherige Woche", nextWeek: "Nächste Woche", timesFor: (d) => `Uhrzeit am ${d}`,
+    sumH: "Ihre Buchung", sumTreat: "Behandlung", sumWhen: "Termin", sumPrice: "Richtpreis", sumOpen: "Noch offen",
+    sumFn: "* Richtwert. Abrechnung nach der Gebührenordnung für Ärzte, inklusive Mehrwertsteuer.",
+    docRole: "Arzt und Gründer von PALO SKIN", moveNote: "Verschieben können Sie selbst, bis 24 Stunden vorher.",
+    visitFirstSum: "erster Besuch", visitReturnSum: "schon einmal da", voluntary: "Freiwillig", phonePh: "+49",
   },
 
 };
