@@ -6,8 +6,8 @@
 @font-face{font-family:"PALO Noto";src:url("/assets/fonts/NotoSansArabic-Variable.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC}
 
 :root{
-  --ultramarin:#002FA7;
-  --ultramarin-hover:#00268A;
+  --ultramarin:#1534A6;
+  --ultramarin-hover:#0F2780;
   --kalk:#F4F1EA;
   --kalk-2:#EFE9DC;
   --taupe:#DDCFC4;
