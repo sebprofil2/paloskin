@@ -8,8 +8,9 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.paloskin.de"),
   title: "PALO SKIN by Dr. Vogel",
   icons: {
-    /* Nur ICO: 16 Pixel als eigene, größere Fassung (freigegeben 4. Oktober 2026); ein SVG-Favicon würde sie verdrängen */
-    icon: [{ url: "/favicon.ico", sizes: "16x16 32x32 48x48" }],
+    /* Nur ICO: 16 Pixel als eigene, größere Fassung (freigegeben 4. Oktober 2026); ein SVG-Favicon würde sie verdrängen.
+       Seit 5. Oktober 2026 im Knopf-Blau #1534A6 (scripts/logo/web-blau.mjs); public/favicon.ico bleibt als Rückfall für Anfragen ohne Link */
+    icon: [{ url: "/assets/logo/web/favicon.ico", sizes: "16x16 32x32 48x48" }],
     apple: { url: "/assets/apple-touch-icon.png", sizes: "180x180" },
   },
   manifest: "/site.webmanifest",

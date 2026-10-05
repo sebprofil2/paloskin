@@ -135,7 +135,7 @@ export const REVIEWS: { text: string; lang: Lang; name: string; initial: string 
 
 const de: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Ärztliche Faltenbehandlung in Berlin",
-  metaDesc: "PALO SKIN by Dr. Vogel in Berlin Prenzlauer Berg: ärztliche Faltenbehandlung durch Dr. med. Sebastian Vogel. Termine online buchen, auch kurzfristig.",
+  metaDesc: "PALO SKIN by Dr. Vogel in Berlin Prenzlauer Berg: ärztliche Faltenbehandlung durch Dr. med. Sebastian Vogel. Termine vor und nach der Arbeit und am Wochenende.",
   rateLong: "★ 5,0 Kundenbewertungen",
   rateShort: "★ 5,0",
   rateAria: "5,0 Kundenbewertungen auf Google Maps",
@@ -245,7 +245,7 @@ const de: HomeTexts = {
 /* Übersetzungen aus der deutschen Fassung (5. Oktober 2026). Ukrainisch und Arabisch: Muttersprachler-Prüfung offen. */
 const en: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Physician-led wrinkle treatment in Berlin",
-  metaDesc: "PALO SKIN by Dr. Vogel in Berlin Prenzlauer Berg: physician-led wrinkle treatment by Dr. med. Sebastian Vogel. Book appointments online, also at short notice.",
+  metaDesc: "PALO SKIN by Dr. Vogel in Berlin Prenzlauer Berg: physician-led wrinkle treatment by Dr. med. Sebastian Vogel. Open before and after work and at weekends.",
   rateLong: "★ 5.0 client rating",
   rateShort: "★ 5.0",
   rateAria: "5.0 client rating on Google Maps",
@@ -354,7 +354,7 @@ const en: HomeTexts = {
 
 const es: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Tratamiento médico de arrugas en Berlín",
-  metaDesc: "PALO SKIN by Dr. Vogel en Berlín Prenzlauer Berg: tratamiento médico de arrugas por el Dr. med. Sebastian Vogel. Reserve su cita en línea, también con poca antelación.",
+  metaDesc: "PALO SKIN by Dr. Vogel en Berlín Prenzlauer Berg: tratamiento médico de arrugas del Dr. med. Sebastian Vogel. Citas antes y tras el trabajo y el fin de semana.",
   rateLong: "★ 5,0 en valoraciones de clientes",
   rateShort: "★ 5,0",
   rateAria: "Valoración de clientes de 5,0 en Google Maps",
@@ -463,7 +463,7 @@ const es: HomeTexts = {
 
 const fr: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Traitement médical des rides à Berlin",
-  metaDesc: "PALO SKIN by Dr. Vogel à Berlin Prenzlauer Berg : traitement médical des rides par le Dr med. Sebastian Vogel. Réservez en ligne, même à court terme.",
+  metaDesc: "PALO SKIN by Dr. Vogel à Berlin Prenzlauer Berg : traitement médical des rides du Dr med. Sebastian Vogel. Créneaux avant et après le travail et le week-end.",
   rateLong: "★ 5,0 avis clients",
   rateShort: "★ 5,0",
   rateAria: "Note de 5,0 dans les avis clients sur Google Maps",
@@ -572,7 +572,7 @@ const fr: HomeTexts = {
 
 const pt: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Tratamento médico de rugas em Berlim",
-  metaDesc: "PALO SKIN by Dr. Vogel em Berlim Prenzlauer Berg: tratamento médico de rugas pelo Dr. med. Sebastian Vogel. Marque online, também em cima da hora.",
+  metaDesc: "PALO SKIN by Dr. Vogel em Berlim Prenzlauer Berg: tratamento médico de rugas pelo Dr. med. Sebastian Vogel. Horários antes e após o trabalho e no fim de semana.",
   rateLong: "★ 5,0 nas avaliações de clientes",
   rateShort: "★ 5,0",
   rateAria: "5,0 nas avaliações de clientes no Google Maps",
@@ -681,7 +681,7 @@ const pt: HomeTexts = {
 
 const uk: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Лікарська корекція зморшок у Берліні",
-  metaDesc: "PALO SKIN by Dr. Vogel у Берліні, Prenzlauer Berg: лікарська корекція зморшок від Dr. med. Sebastian Vogel. Запис онлайн, також на найближчі дні.",
+  metaDesc: "PALO SKIN by Dr. Vogel у Берліні, Prenzlauer Berg: лікарська корекція зморшок від Dr. med. Sebastian Vogel. Прийом до та після роботи, а також у вихідні.",
   rateLong: "★ 5,0 відгуки клієнтів",
   rateShort: "★ 5,0",
   rateAria: "Оцінка 5,0 у відгуках клієнтів на Google Maps",
@@ -790,7 +790,7 @@ const uk: HomeTexts = {
 
 const ar: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | علاج طبي للتجاعيد في برلين",
-  metaDesc: "PALO SKIN by Dr. Vogel في Prenzlauer Berg ببرلين: علاج طبي للتجاعيد على يد Dr. med. Sebastian Vogel. حجز المواعيد عبر الإنترنت، حتى في وقت قريب.",
+  metaDesc: "PALO SKIN by Dr. Vogel في Prenzlauer Berg ببرلين: علاج طبي للتجاعيد على يد Dr. med. Sebastian Vogel. مواعيد قبل العمل وبعده وفي عطلة نهاية الأسبوع.",
   rateLong: "★ 5.0 في تقييمات العملاء",
   rateShort: "★ 5.0",
   rateAria: "5.0 في تقييمات العملاء على Google Maps",

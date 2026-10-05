@@ -46,7 +46,7 @@ export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte;
         <a className="logo" href={home ? "#top" : "/"} aria-label="PALO SKIN by Dr. Vogel, Startseite">
           {/* Echte Logo-Datei aus dem Auftrag „Logo und Linkvorschau“ (Zeichen blau, Wortmarke anthrazit) */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/logo/logo-kopf.svg" alt="PALO SKIN by Dr. Vogel" width={166} height={40} />
+          <img src="/assets/logo/web/logo-kopf.svg" alt="PALO SKIN by Dr. Vogel" width={166} height={40} />
         </a>
         <nav className="dnav" aria-label={t.navAria}>
           <a className="rate" href={MAPS} target="_blank" rel="noopener">{t.rateLong}</a>
@@ -89,7 +89,7 @@ export function Fusszeile({ lang, t, mobileBar }: { lang: Lang; t: KopfTexte; mo
         <div className="wrap ft-in">
           <div className="ft-l">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/logo/zeichen.svg" alt="" width={20} height={28} />
+            <img src="/assets/logo/web/zeichen.svg" alt="" width={20} height={28} />
             <bdi>{t.copyright}</bdi>
           </div>
           <div className="ft-r">

@@ -4,7 +4,7 @@
  * Im Projekt keine Einzelwerte daneben. Umbruchpunkte wie in den Vorlagen: 1100, 1023 und 899 Pixel (in Media Queries
  * lassen sich keine Variablen verwenden, deshalb stehen dort die Zahlen).
  * Schriften über next/font (app/fonts.ts): Schibsted Grotesk 400 bis 700, Newsreader kursiv für den blauen zweiten Teil
- * der Überschriften; für Ukrainisch und Arabisch Noto Sans und Noto Sans Arabic (nur bei solchen Zeichen geladen).
+ * der Überschriften und aufrecht für das Zitat im Kasten „Ihr Arzt“; für Ukrainisch und Arabisch Noto Sans und Noto Sans Arabic (nur bei solchen Zeichen geladen).
  */
 :root{
   /* Farben */
@@ -173,7 +173,7 @@ body{margin:0;background:var(--c-bg)}
 .pb .panel .h2{color:var(--c-ink)}
 .pb .panel .h2 em{color:var(--c-blue)}
 .pb .ph-hand{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:var(--r-m);margin-top:var(--sp-36)}
-.pb .quote{font-family:var(--font-sans);font-size:var(--fs-l);line-height:1.5;margin:0 0 var(--sp-28)}
+.pb .quote{font-family:var(--font-serif);font-style:normal;font-size:var(--fs-l);line-height:1.5;margin:0 0 var(--sp-28)}
 .pb .contact{list-style:none;display:flex;flex-direction:column;gap:var(--sp-2);margin-bottom:var(--sp-28);font-size:var(--fs-m);color:var(--c-ink-3)}
 .pb .contact .links{display:flex;flex-wrap:wrap;gap:0 var(--sp-24)}
 .pb .contact .links a{display:inline-flex;align-items:center;min-height:var(--sp-44);color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-4);text-decoration-thickness:var(--sp-1)}
