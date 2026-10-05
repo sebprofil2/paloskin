@@ -138,12 +138,14 @@ describe("Kopfangaben je Sprache", () => {
 });
 
 describe("Sitemap und robots.txt", () => {
-  it("sieben Startseiten mit gegenseitigem hreflang, dazu Impressum und Datenschutz ohne", () => {
+  it("sieben Startseiten mit gegenseitigem hreflang und die Buchung; Impressum und Datenschutz nicht (noindex)", () => {
     const s = sitemap();
-    expect(s.map((e) => e.url)).toEqual([...LANG_IDS.map((l) => `${WWW}${PFAD[l]}`), `${WWW}/impressum`, `${WWW}/datenschutz`]);
+    expect(s.map((e) => e.url)).toEqual([...LANG_IDS.map((l) => `${WWW}${PFAD[l]}`), `${WWW}/booking`]);
     const alle = { ...Object.fromEntries(LANG_IDS.map((l) => [l, `${WWW}${PFAD[l]}`])), "x-default": `${WWW}/` };
     for (const e of s.slice(0, 7)) expect(e.alternates?.languages).toEqual(alle);
-    for (const e of s.slice(7)) expect(e.alternates).toBeUndefined();
+    const buchung = { ...Object.fromEntries(LANG_IDS.map((l) => [l, l === "de" ? `${WWW}/booking` : `${WWW}/booking?lang=${l}`])), "x-default": `${WWW}/booking` };
+    expect(s[7].alternates?.languages).toEqual(buchung);
+    expect(JSON.stringify(s)).not.toMatch(/impressum|datenschutz/);
   });
 
   it("robots.txt verweist auf die Sitemap", () => {
