@@ -500,8 +500,9 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
   const chosenDetail = (): string => {
     const zones = [...s.zoneIds.map((z) => l.zoneNames[z]), ...(s.otherOn ? [s.otherText.trim() || l.zoneOther] : []), ...(s.zonesUnknown ? [l.zoneUnknown] : [])];
     const lachs = s.lachs === "single" ? l.lachsOne : s.lachs === "pack" ? l.lachsFour : "";
-    const first = [zones.join(", "), lachs].filter(Boolean).join(", ");
-    const facts = [checkup ? "" : s.persons === 2 ? l.persons2 : l.persons1, checkup ? "" : s.visit === "first" ? l.visitFirstSum : s.visit === "return" ? l.visitReturnSum : "", consult ? l.consultSum(l.consultNames[consult]) : ""].filter(Boolean).join(", ");
+    const sep = `${comma} `;
+    const first = [zones.join(sep), lachs].filter(Boolean).join(sep);
+    const facts = [checkup ? "" : s.persons === 2 ? l.persons2 : l.persons1, checkup ? "" : s.visit === "first" ? l.visitFirstSum : s.visit === "return" ? l.visitReturnSum : "", consult ? l.consultSum(l.consultNames[consult]) : ""].filter(Boolean).join(sep);
     return [first, facts].filter(Boolean).join(". ");
   };
   const total = totalPrice(selection);
@@ -511,7 +512,7 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
       <dl className="rows">
         <div>
           <dt><span>{l.sumTreat}</span>{s.step === 3 && !checkup ? <a href="#" onClick={(e) => { e.preventDefault(); goto(1); }}>{l.change}</a> : null}</dt>
-          {chosenTitles().length ? <dd>{chosenTitles().join(", ")}<span>{chosenDetail()}</span></dd> : <dd className="open">{l.sumOpen}<span>{chosenDetail()}</span></dd>}
+          {chosenTitles().length ? <dd>{chosenTitles().join(`${comma} `)}<span>{chosenDetail()}</span></dd> : <dd className="open">{l.sumOpen}<span>{chosenDetail()}</span></dd>}
         </div>
         <div>
           <dt><span>{l.sumWhen}</span>{s.step === 3 ? <a href="#" onClick={(e) => { e.preventDefault(); goto(2); }}>{l.change}</a> : null}</dt>
@@ -699,8 +700,8 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
             <div className="dayhead">
               <p>{l.orDayMonth(cap(dfmt(keys[0], { month: "long", year: "numeric" })))}</p>
               <div className="arrows">
-                <button className="arr" type="button" aria-label={l.prevWeek} disabled={week <= firstWeek} onClick={() => setWeekShift((w) => w - 1)}><span aria-hidden="true">{langDir(lang) === "rtl" ? "›" : "‹"}</span></button>
-                <button className="arr" type="button" aria-label={l.nextWeek} disabled={week >= lastWeek} onClick={() => setWeekShift((w) => w + 1)}><span aria-hidden="true">{langDir(lang) === "rtl" ? "‹" : "›"}</span></button>
+                <button className="arr" type="button" aria-label={l.prevWeek} disabled={week <= firstWeek} onClick={() => setWeekShift((w) => w - 1)}><span aria-hidden="true">‹</span></button>
+                <button className="arr" type="button" aria-label={l.nextWeek} disabled={week >= lastWeek} onClick={() => setWeekShift((w) => w + 1)}><span aria-hidden="true">›</span></button>
               </div>
             </div>
             <div className="days" role="radiogroup" aria-label={l.dayAria}>
@@ -798,7 +799,7 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
     const time = b.start.slice(11, 16);
     return (
       <div className="bk-done">
-        <section className="done">
+        <section className="donecard">
           <h2 className="h2">{b.binding ? l.doneBindingH : l.doneH}</h2>
           {b.binding ? <p style={{ marginTop: "var(--sp-12)" }}>{l.doneBindingP}</p> : null}
           <dl>
@@ -819,18 +820,20 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
           ) : null}
         </section>
         <div className="after">
-          <div className="zeit" style={{ margin: 0 }}><b>{l.cancelT}</b><p>{l.cancelP}</p>{b.canManage !== false ? <p>{l.cancelP2}</p> : null}</div>
-          {s.refSent ? (
-            <p className="note">{l.refThanks}</p>
-          ) : (
-            <div className="fcard">
-              <div className="field">
-                <label htmlFor="empfohlen">{l.refQ}</label>
-                <input id="empfohlen" type="text" value={s.f.empfohlen} placeholder={l.refPh} maxLength={120} onChange={(e) => setS((p) => ({ ...p, f: { ...p.f, empfohlen: e.target.value } }))} />
+          <div className="fcard">
+            <div className="zeit" style={{ marginTop: 0 }}><b>{l.cancelT}</b><p>{l.cancelP}</p>{b.canManage !== false ? <p>{l.cancelP2}</p> : null}</div>
+            {s.refSent ? (
+              <p className="note" style={{ paddingBottom: "var(--sp-24)" }}>{l.refThanks}</p>
+            ) : (
+              <div className="after" style={{ paddingBottom: "var(--sp-24)" }}>
+                <div className="field">
+                  <label htmlFor="empfohlen">{l.refQ}</label>
+                  <input id="empfohlen" type="text" value={s.f.empfohlen} placeholder={l.refPh} maxLength={120} onChange={(e) => setS((p) => ({ ...p, f: { ...p.f, empfohlen: e.target.value } }))} />
+                </div>
+                <div><button type="button" className="btn ghost" onClick={sendReferral}>{l.refSend}</button></div>
               </div>
-              <button type="button" className="btn ghost" onClick={sendReferral}>{l.refSend}</button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     );

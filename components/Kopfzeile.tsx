@@ -90,7 +90,7 @@ export function Fusszeile({ lang, t, mobileBar }: { lang: Lang; t: KopfTexte; mo
           <div className="ft-l">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/assets/logo/zeichen.svg" alt="" width={20} height={28} />
-            <span>{t.copyright}</span>
+            <bdi>{t.copyright}</bdi>
           </div>
           <div className="ft-r">
             <a href={bookHref(lang)}>{t.book}</a>
