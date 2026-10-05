@@ -486,3 +486,11 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 .pb .studio-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-12)}
 .pb .bk .donecard{padding:var(--sp-28) var(--sp-20);border-radius:var(--r-m)}
 }
+
+/* Hinweis auf die eigene Sprachadresse (components/SprachHinweis.tsx), nur im Browser */
+.pb .shint{background:var(--c-blue-light);border-bottom:var(--sp-1) solid var(--c-blue-line);font-size:var(--fs-s);color:var(--c-ink)}
+.pb .shint-in{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-12);padding-top:var(--sp-8);padding-bottom:var(--sp-8)}
+.pb .shint p{margin:0}
+.pb .shint a{color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-3)}
+.pb .shint button{background:none;border:0;color:var(--c-ink-2);font:inherit;font-size:var(--fs-l);line-height:1;padding:var(--sp-4) var(--sp-8);cursor:pointer;border-radius:var(--r-xs)}
+.pb .shint button:focus-visible{outline:var(--sp-2) solid var(--c-focus);outline-offset:var(--sp-2)}

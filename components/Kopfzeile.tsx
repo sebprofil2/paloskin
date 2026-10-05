@@ -1,19 +1,21 @@
 "use client";
 
 import { useRef } from "react";
+import { homePath } from "@/lib/home-paths";
 import { LANG_LABEL, LANGS, saveLangChoice, type Lang } from "@/lib/i18n";
 import { bookHref, MAPS, type KopfTexte } from "@/lib/kopf";
 
 /*
  * Kopfzeile und Fußzeile nach Entwurf B, gleich auf Startseite und Buchung. Sprachauswahl mit allen sieben Sprachen
  * (details und summary, per Tastatur bedienbar); auf dem Handy Menü hinter „Menü“ und kleiner Bewertungsknopf „★ 5,0“.
- * Ohne onLang lädt die Seite in der gewählten Sprache neu (?lang=); mit onLang wechselt die Seite selbst (Buchung, Eingaben bleiben).
+ * Startseite: Die Sprachwahl führt auf die eigene Adresse der Sprache („/“, /en, /es, /fr, /pt, /uk, /ar).
+ * Mit onLang wechselt die Seite selbst (Buchung, Eingaben bleiben); ohne Skript dort ?lang=.
  */
 export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte; page: "home" | "booking"; onLang?: (id: Lang) => void }) {
   const langRef = useRef<HTMLDetailsElement>(null);
   const menuRef = useRef<HTMLDetailsElement>(null);
   const home = page === "home";
-  const anchor = (id: string) => (home ? `#${id}` : `/#${id}`);
+  const anchor = (id: string) => (home ? `#${id}` : `${homePath(lang)}#${id}`);
   const cur = LANGS.find((x) => x.id === lang)!;
   const close = () => {
     if (langRef.current) langRef.current.open = false;
@@ -28,7 +30,7 @@ export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte;
     }
   };
   const langLink = (x: (typeof LANGS)[number]) => (
-    <a href={`?lang=${x.id}`} lang={x.id} hrefLang={x.id} aria-current={x.id === lang ? "true" : undefined} onClick={(e) => pick(e, x.id)}>
+    <a href={home ? homePath(x.id) : `?lang=${x.id}`} lang={x.id} hrefLang={x.id} aria-current={x.id === lang ? "true" : undefined} onClick={(e) => pick(e, x.id)}>
       {x.name}
     </a>
   );
@@ -43,7 +45,7 @@ export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte;
   return (
     <header className="hd">
       <div className="wrap hd-in">
-        <a className="logo" href={home ? "#top" : "/"} aria-label="PALO SKIN by Dr. Vogel, Startseite">
+        <a className="logo" href={home ? "#top" : homePath(lang)} aria-label="PALO SKIN by Dr. Vogel, Startseite">
           {/* Echte Logo-Datei aus dem Auftrag „Logo und Linkvorschau“ (Zeichen blau, Wortmarke anthrazit) */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/assets/logo/web/logo-kopf.svg" alt="PALO SKIN by Dr. Vogel" width={166} height={40} />
@@ -94,8 +96,8 @@ export function Fusszeile({ lang, t, mobileBar }: { lang: Lang; t: KopfTexte; mo
           </div>
           <div className="ft-r">
             <a href={bookHref(lang)}>{t.book}</a>
-            <a href="/impressum">{t.imprint}</a>
-            <a href="/datenschutz">{t.privacy}</a>
+            <a href={legal("/impressum", lang)}>{t.imprint}</a>
+            <a href={legal("/datenschutz", lang)}>{t.privacy}</a>
           </div>
         </div>
       </footer>
@@ -107,3 +109,6 @@ export function Fusszeile({ lang, t, mobileBar }: { lang: Lang; t: KopfTexte; mo
     </>
   );
 }
+
+/* Impressum und Datenschutz haben keine eigenen Sprachadressen; ?lang= zeigt nur den Hinweis in der gewählten Sprache */
+const legal = (path: string, lang: Lang) => (lang === "de" ? path : `${path}?lang=${lang}`);

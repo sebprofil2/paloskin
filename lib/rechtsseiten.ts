@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { readEnv } from "./env";
 import { isLang, LANG_COOKIE, type Lang } from "./i18n";
+import { isTestInstance } from "./instance";
 
 /*
  * Impressum und Datenschutz: Rechtstext auf Deutsch (public/impressum/index.html, public/datenschutz/index.html).
@@ -33,8 +35,19 @@ export function rechtsseiteLang(req: Request): Lang {
   return isLang(cookie) ? cookie : "de";
 }
 
+/*
+ * Kopf der Seite nach Umgebung: kanonische Adresse aus PUBLIC_BASE_URL; auf der Testinstanz ganz noindex und ohne
+ * kanonische Adresse, damit keine Adresse von neu.paloskin.de bei Suchmaschinen landet.
+ */
+export function rechtsseiteKopf(html: string, seite: Rechtsseite, base: string, test: boolean): string {
+  const canonical = /[ \t]*<link rel="canonical" href="[^"]*">[ \t]*\r?\n?/;
+  if (test) return html.replace(/<meta name="robots" content="[^"]*">/, '<meta name="robots" content="noindex,nofollow">').replace(canonical, "");
+  return html.replace(/(<link rel="canonical" href=")[^"]*(">)/, `$1${base}/${seite}$2`);
+}
+
 export function rechtsseiteAntwort(seite: Rechtsseite, req: Request): Response {
-  return new Response(nurHinweis(datei(seite), rechtsseiteLang(req)), {
+  const html = rechtsseiteKopf(datei(seite), seite, readEnv().publicBaseUrl, isTestInstance());
+  return new Response(nurHinweis(html, rechtsseiteLang(req)), {
     headers: { "content-type": "text/html; charset=utf-8", "cache-control": "private, no-cache" },
   });
 }

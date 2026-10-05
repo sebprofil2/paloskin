@@ -3,9 +3,12 @@ import "./globals.css";
 import { fontVariables } from "./fonts";
 import { langDir, LANG_MIGRATE_SCRIPT } from "@/lib/i18n";
 import { requestLang } from "@/lib/i18n-server";
+import { indexable, site } from "@/lib/share-meta";
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://www.paloskin.de"),
+/* Adresse aus der Umgebung (PUBLIC_BASE_URL); die Testinstanz ist auf jeder Seite noindex */
+export const generateMetadata = (): Metadata => ({
+  metadataBase: new URL(site()),
+  ...(indexable() ? {} : { robots: { index: false, follow: false } }),
   title: "PALO SKIN by Dr. Vogel",
   icons: {
     /* Nur ICO: 16 Pixel als eigene, größere Fassung (freigegeben 4. Oktober 2026); ein SVG-Favicon würde sie verdrängen.
@@ -14,7 +17,7 @@ export const metadata: Metadata = {
     apple: { url: "/assets/apple-touch-icon.png", sizes: "180x180" },
   },
   manifest: "/site.webmanifest",
-};
+});
 
 export const viewport: Viewport = {
   themeColor: "#1534A6",

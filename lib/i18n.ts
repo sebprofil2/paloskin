@@ -86,8 +86,9 @@ export function pickLang({ param, cookie, acceptLanguage }: { param?: string | n
 /*
  * Einmalige Übernahme für Besucher, die ihre Sprache vor der Umstellung nur im localStorage gespeichert haben:
  * Cookie nachtragen und, falls die Seite in einer anderen Sprache kam, einmal neu laden (unsichtbar).
+ * Nicht auf der Startseite: Dort bestimmt die Adresse die Sprache („/“ immer Deutsch).
  */
-export const LANG_MIGRATE_SCRIPT = `(function(){try{var d=document.documentElement,c=/(?:^|; )${LANG_COOKIE}=/.test(document.cookie),s=localStorage.getItem("${LANG_STORAGE}");if(!c&&s&&/^(${LANG_IDS.join("|")})$/.test(s)){document.cookie="${LANG_COOKIE}="+s+";path=/;max-age=${LANG_COOKIE_MAX_AGE};samesite=lax";if(s!==d.lang&&!/[?&]lang=/.test(location.search)){d.style.visibility="hidden";location.reload()}}}catch(e){}})();`;
+export const LANG_MIGRATE_SCRIPT = `(function(){try{var d=document.documentElement,c=/(?:^|; )${LANG_COOKIE}=/.test(document.cookie),s=localStorage.getItem("${LANG_STORAGE}");if(!c&&s&&/^(${LANG_IDS.join("|")})$/.test(s)){document.cookie="${LANG_COOKIE}="+s+";path=/;max-age=${LANG_COOKIE_MAX_AGE};samesite=lax";if(s!==d.lang&&!/[?&]lang=/.test(location.search)&&!/^\\/([a-z]{2})?$/.test(location.pathname)){d.style.visibility="hidden";location.reload()}}}catch(e){}})();`;
 
 /** Im Browser: Wahl speichern (Cookie und localStorage) und Sprache des Dokuments setzen. */
 export function saveLangChoice(lang: Lang): void {
