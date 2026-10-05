@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { fontVariables } from "./fonts";
 import { langDir, LANG_MIGRATE_SCRIPT } from "@/lib/i18n";
 import { requestLang } from "@/lib/i18n-server";
 
@@ -25,7 +26,7 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await requestLang();
   return (
-    <html lang={lang} dir={langDir(lang)} suppressHydrationWarning>
+    <html lang={lang} dir={langDir(lang)} className={fontVariables} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: LANG_MIGRATE_SCRIPT }} />
       </head>
