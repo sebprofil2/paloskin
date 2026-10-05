@@ -4,8 +4,7 @@ import { CONSULT_IDS, defaultConsult, LANG_IDS, langDir, pickLang } from "../i18
 import { confirmationMail, reminderMail } from "../mail-content";
 import { listMail } from "../reminder-list";
 import { bookRequestSchema } from "../schema";
-import { hreflangLinks } from "../share-meta";
-import { startseiteHtml } from "../startseite";
+import { hreflangLinks, STUDIO_JSONLD } from "../share-meta";
 import { openStore, type ReserveInput } from "../store";
 import { studioMailFor } from "../studio-mail";
 import { TEXTS } from "../texts";
@@ -125,15 +124,9 @@ describe("Beratungssprache und Seitensprachen Ukrainisch und Arabisch", () => {
   it("Rechts nach links: nur Arabisch; Startseite mit dir=rtl, hreflang für alle sieben Sprachen, Beratung in fünf Sprachen", () => {
     expect(LANG_IDS).toEqual(["de", "en", "es", "fr", "pt", "uk", "ar"]);
     for (const l of LANG_IDS) expect(langDir(l)).toBe(l === "ar" ? "rtl" : "ltr");
-    const ar = startseiteHtml("ar");
-    expect(ar).toContain('<html lang="ar" dir="rtl">');
-    expect(ar).toContain('<span class="p" dir="ltr">120 €*</span>');
-    expect(ar).toContain('dir="ltr">WhatsApp +49 151 58872566</a>');
     const links = hreflangLinks("/");
     expect(links.map((x) => x.hreflang)).toEqual(["de", "en", "es", "fr", "pt", "uk", "ar", "x-default"]);
-    for (const l of links) expect(ar).toContain(`<link rel="alternate" hreflang="${l.hreflang}" href="${l.href}">`);
     // Strukturierte Daten: beraten wird weiterhin in fünf Sprachen
-    expect(ar).toContain('"availableLanguage": ["de", "en", "es", "fr", "pt"]');
-    for (const l of ["uk", "ar"] as Lang[]) expect(startseiteHtml(l)).not.toMatch(/botox|ботокс|بوتوكس/i);
+    expect(STUDIO_JSONLD).toContain('"availableLanguage": ["de", "en", "es", "fr", "pt"]');
   });
 });

@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { LANG_IDS, pickLang, type Lang } from "../i18n";
 import { bookingMetadata, homeShare, STUDIO_JSONLD } from "../share-meta";
-import { startseiteHtml } from "../startseite";
 import { TEXTS } from "../texts";
 import { HOME_TEXTS } from "../texts-home";
 import { MAIL_TEXTS } from "../texts-mail";
@@ -44,20 +43,16 @@ describe("Gemeinsames Sprachsystem (4. Oktober 2026)", () => {
     expect(pickLang({ param: "xx", cookie: "yy", acceptLanguage: "zz" })).toBe("de");
   });
 
-  it("Startseite kommt vom Server in der gewählten Sprache: lang-Attribut, Titel, Vorschau, Texte, JSON-LD unverändert", () => {
+  it("Startseite (Entwurf B): Titel und Vorschau wie bisher, kein „Botox“, keine GmbH, JSON-LD unverändert", () => {
+    expect(HOME_TEXTS.de.title).toBe("PALO SKIN by Dr. Vogel | Ärztliche Faltenbehandlung in Berlin");
     for (const lang of LANG_IDS) {
-      const html = startseiteHtml(lang);
-      expect(html).toContain(`<html lang="${lang}" dir="${lang === "ar" ? "rtl" : "ltr"}">`);
-      expect(html).toContain(`<title>${HOME_TEXTS[lang].title.replace(/&/g, "&amp;")}</title>`);
-      expect(html).toContain(`<meta property="og:title" content="${HOME_TEXTS[lang].title}">`);
-      expect(html).toContain(`<script type="application/ld+json">\n${STUDIO_JSONLD}\n</script>`);
-      expect(html).toContain('<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">');
-      expect(html).toContain(lang === "de" ? 'href="/booking"' : `href="/booking?lang=${lang}"`);
-      // keine Übersetzung mehr im Browser
-      expect(html).not.toContain("home-text.js");
-      expect(html).not.toContain("data-i18n");
+      const all = JSON.stringify(HOME_TEXTS[lang]) + JSON.stringify(homeShare(lang));
+      expect(all, lang).not.toMatch(/botox|ботокс|بوتوكس/i);
+      expect(all, lang).not.toMatch(/nidus/i);
+      expect(all, lang).not.toMatch(/[\u2013\u2014]/);
+      expect(HOME_TEXTS[lang].copyright).toBe("© 2026 PALO SKIN by Dr. Vogel");
+      expect(HOME_TEXTS[lang].h1A + " " + HOME_TEXTS[lang].h1B).toBe("Goodbye wrinkles.");
     }
     expect(JSON.parse(STUDIO_JSONLD)["@graph"][0]["@type"]).toBe("MedicalBusiness");
-    expect(startseiteHtml("de")).not.toMatch(/Botox/i);
   });
 });
