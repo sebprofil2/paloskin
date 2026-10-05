@@ -13,9 +13,28 @@ const hinweise = (html: string) => [...html.matchAll(/data-hinweis="([a-z]{2})"/
 const ohneAlle = (html: string) => html.replace(/[ \t]*<p\b[^>]*\bdata-hinweis="[a-z]{2}"[^>]*>[\s\S]*?<\/p>[ \t]*\r?\n?/g, "");
 
 describe("Impressum und Datenschutz: nur der Hinweis der gewählten Sprache", () => {
-  it("die Dateien enthalten die markierten Hinweise (Datenschutz: en, uk, ar; Impressum: uk, ar)", () => {
-    expect(hinweise(roh("datenschutz")).sort()).toEqual(["ar", "en", "uk"]);
-    expect(hinweise(roh("impressum")).sort()).toEqual(["ar", "uk"]);
+  it("jede Sprache außer Deutsch hat ihren Hinweis auf beiden Seiten (Entscheidung Dr. Vogel, 5. Oktober 2026)", () => {
+    expect(hinweise(roh("datenschutz")).sort()).toEqual(["ar", "en", "es", "fr", "pt", "uk"]);
+    expect(hinweise(roh("impressum")).sort()).toEqual(["ar", "en", "es", "fr", "pt", "uk"]);
+  });
+
+  it("Wortlaut der Hinweise: Spanisch, Französisch, Portugiesisch auf beiden Seiten, Englisch im Impressum; im Datenschutz die englische Kurzfassung", () => {
+    const satz: Record<string, string> = {
+      es: "Este texto solo tiene validez jurídica en alemán.",
+      fr: "Seule la version allemande de ce texte fait foi.",
+      pt: "Este texto só tem validade jurídica em alemão.",
+    };
+    for (const seite of ["impressum", "datenschutz"]) {
+      for (const [lang, text] of Object.entries(satz)) {
+        const out = nurHinweis(roh(seite), lang as "es" | "fr" | "pt");
+        expect(out, `${seite} ${lang}`).toContain(`<p lang="${lang}" class="small" data-hinweis="${lang}">${text}</p>`);
+        for (const andere of Object.values(satz)) if (andere !== text) expect(out).not.toContain(andere);
+      }
+    }
+    expect(nurHinweis(roh("impressum"), "en")).toContain('<p lang="en" class="small" data-hinweis="en">This text is legally binding only in German.</p>');
+    const dsEn = nurHinweis(roh("datenschutz"), "en");
+    expect(dsEn).toContain("This privacy policy is provided in German.");
+    expect(dsEn).not.toContain("This text is legally binding only in German.");
   });
 
   for (const seite of ["impressum", "datenschutz"]) {
