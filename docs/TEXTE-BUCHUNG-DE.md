@@ -20,7 +20,7 @@ Stelle, dann aktueller Text. Zeilen mit „Altbestand“ sind im Code noch vorha
 14. **Schritt 1, Karte Beratung, Preiszeile** (consultPrice): 
 15. **Schritt 1, Knopf Notiz hinzufügen (ausgeblendet)** (noteAdd): Notiz hinzufügen
 16. **Leiste unten, Knopf in Schritt 1** (next1): Weiter: Wann passt es Ihnen?
-17. **Leiste unten, Knopf in Schritt 2** (next2): Weiter: Fast geschafft
+17. **Leiste unten, Knopf in Schritt 2** (next2): Weiter: Ihre Angaben
 18. **Leiste unten, Knopf Zurück** (back): Zurück
 19. **Schritt 3, Übersicht, Knopf Ändern** (change): Ändern
 20. **Bestätigung, nach dem Senden** (refThanks): Danke!
@@ -30,10 +30,10 @@ Stelle, dann aktueller Text. Zeilen mit „Altbestand“ sind im Code noch vorha
 24. **Schritt 1, Überschrift Behandlung** (treatQ): Wofür interessieren Sie sich?
 25. **Schritt 1, Karte Beratung, Titel** (unsureT): Ich lasse mich erst beraten
 26. **Schritt 1, Karte Beratung, Untertitel** (unsureD): Wir nehmen uns Zeit und entscheiden gemeinsam, was zu Ihnen passt.
-27. **Schritt 1, Aufklappbereich Botox, Titel** (botGroup): Botox-Behandlung
+27. **Schritt 1, Zeile Faltenbehandlung, Titel** (botGroup): Faltenbehandlung und mehr
 28. **Schritt 1, Zwischentitel weitere Behandlungen** (moreGroup): Weitere Behandlungen
 29. **Schritt 1, Karte Kaumuskel, Titel** (kaumuskel): Kaumuskel (Masseter)
-30. **Schritt 1, Karte Kaumuskel, Untertitel** (kaumuskelD): Facial Slimming, Entspannung bei Zähneknirschen
+30. **Schritt 1, Karte Kaumuskel, Untertitel** (kaumuskelD): Gesichtskontur und Zähneknirschen
 31. **Schritt 1, Karte Nefertiti-Lift, Titel** (nefertiti): Nefertiti-Lift
 32. **Schritt 1, Karte Nefertiti-Lift, Untertitel** (nefertitiD): Hals und Kieferkontur
 33. **Schritt 1, Skin Booster, Karte 1, Titel** (lachs): Lachs-DNA
@@ -75,8 +75,8 @@ Stelle, dann aktueller Text. Zeilen mit „Altbestand“ sind im Code noch vorha
 69. **Schritt 3, Kasten Absage, Text** (cancelP): Sagen Sie uns bitte mindestens 48 Stunden vorher Bescheid, dann freut sich jemand anderes über den Termin.
 70. **Schritt 3, Übersicht, Kopfzeile** (sumHead): Ihr Termin
 71. **Schritt 3, Übersicht, Zeile Beratung** (beratungRow): Beratung, Behandlung noch offen
-72. **Schritt 3, Übersicht, Vorsatz Botox-Zeile** (botRow): Botox: 
-73. **Schritt 3, Übersicht, Vorsatz Skin-Booster-Zeile** (boostRow): Skin Booster: 
+72. **Schritt 3, Übersicht, Vorsatz Faltenbehandlung** (botRow): Faltenbehandlung: 
+73. **Schritt 3, Übersicht, Vorsatz Lachs-DNA** (boostRow): Lachs-DNA: 
 74. **Bestätigung, Überschrift** (doneH): Schön, Ihre Terminanfrage ist da. Wir bestätigen sie kurz per WhatsApp.
 75. **Bestätigung, Knopf Google** (gcal): In Google Kalender eintragen
 76. **Bestätigung, Knopf Outlook** (ocal): In Outlook-Kalender eintragen
@@ -130,3 +130,7 @@ Die Zwischenlösung (Anfrage per WhatsApp unter /booking ohne Testcode) ist seit
 
 141. **(intern, Besuchsart)** (visitFirstLbl): Erster Besuch
 142. **(intern, Besuchsart)** (visitReturnLbl): Schon einmal da
+
+## E. Entwurf B (5. Oktober 2026)
+
+Neue Texte der Buchung nach der Vorlage (Überschrift „Termin buchen.“, Schrittanzeige, Übersicht „Ihre Buchung“, Terminwahl) stehen in `lib/texts.ts` unter den Schlüsseln `bookHA` bis `phonePh`; die Startseite vollständig in `lib/texts-home.ts`.
