@@ -227,7 +227,6 @@ body{margin:0;background:var(--c-bg)}
 .pb .by{display:flex;align-items:center;gap:var(--sp-12);margin-top:auto;font-size:var(--fs-s);font-weight:500;color:var(--c-ink-2)}
 .pb .av{flex:none;width:var(--sp-40);height:var(--sp-40);border-radius:50%;background:var(--c-blue-light);color:var(--c-blue);font-weight:700;display:flex;align-items:center;justify-content:center}
 .pb .rev-foot{display:flex;flex-direction:column;align-items:flex-start;gap:var(--sp-20);margin-top:var(--sp-40)}
-.pb .note{max-width:72ch;font-size:var(--fs-s);line-height:1.5;color:var(--c-ink-2)}
 
 /* Fragen */
 .pb .faq-list{max-width:var(--sp-820);margin:var(--sp-44) auto 0;display:flex;flex-direction:column;gap:var(--sp-12)}

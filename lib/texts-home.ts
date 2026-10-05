@@ -106,7 +106,6 @@ export interface HomeTexts {
   revHA: string;
   revHB: string;
   allReviews: string;
-  revNote: string;
   /* Fragen */
   faqHA: string;
   faqHB: string;
@@ -224,7 +223,6 @@ const de: HomeTexts = {
   revHA: "Was Kunden",
   revHB: "über uns sagen.",
   allReviews: "Alle Bewertungen auf Google Maps",
-  revNote: "Ausgewählte Auszüge aus Google-Bewertungen, zum Teil gekürzt. Die Verfasser sind Kunden des Studios. Google selbst prüft nicht, ob Bewertungen von Kunden stammen.",
   faqHA: "Häufige",
   faqHB: "Fragen.",
   q1: "Was ist eine Zone?",
@@ -334,7 +332,6 @@ const en: HomeTexts = {
   revHA: "What clients",
   revHB: "say about us.",
   allReviews: "All reviews on Google Maps",
-  revNote: "Selected excerpts from Google reviews, some of them shortened. The authors are clients of the studio. Google itself does not check whether reviews come from clients.",
   faqHA: "Common",
   faqHB: "questions.",
   q1: "What is a zone?",
@@ -443,7 +440,6 @@ const es: HomeTexts = {
   revHA: "Qué dicen",
   revHB: "nuestros clientes.",
   allReviews: "Todas las opiniones en Google Maps",
-  revNote: "Extractos seleccionados de opiniones de Google, en parte abreviados. Sus autores son clientes del estudio. Google no comprueba si las opiniones proceden de clientes.",
   faqHA: "Dudas",
   faqHB: "frecuentes.",
   q1: "¿Qué es una zona?",
@@ -552,7 +548,6 @@ const fr: HomeTexts = {
   revHA: "Ce que disent",
   revHB: "nos clients.",
   allReviews: "Tous les avis sur Google Maps",
-  revNote: "Extraits choisis d’avis Google, en partie raccourcis. Leurs auteurs sont des clients du studio. Google ne vérifie pas lui-même si les avis proviennent de clients.",
   faqHA: "Vos",
   faqHB: "questions.",
   q1: "Qu’est-ce qu’une zone ?",
@@ -661,7 +656,6 @@ const pt: HomeTexts = {
   revHA: "O que dizem",
   revHB: "sobre nós.",
   allReviews: "Todas as avaliações no Google Maps",
-  revNote: "Trechos selecionados de avaliações do Google, alguns encurtados. Os autores são clientes do estúdio. O próprio Google não verifica se as avaliações vêm de clientes.",
   faqHA: "Dúvidas",
   faqHB: "comuns.",
   q1: "O que é uma zona?",
@@ -770,7 +764,6 @@ const uk: HomeTexts = {
   revHA: "Що клієнти",
   revHB: "кажуть про нас.",
   allReviews: "Усі відгуки на Google Maps",
-  revNote: "Вибрані уривки з відгуків на Google, частково скорочені. Їхні автори є клієнтами студії. Сам Google не перевіряє, чи відгуки залишили клієнти.",
   faqHA: "Часті",
   faqHB: "запитання.",
   q1: "Що таке зона?",
@@ -879,7 +872,6 @@ const ar: HomeTexts = {
   revHA: "ما يقوله عملاؤنا",
   revHB: "عنّا.",
   allReviews: "جميع التقييمات على Google Maps",
-  revNote: "مقتطفات مختارة من تقييمات Google، وبعضها مختصر. كتّابها من عملاء المركز. لا تتحقق Google بنفسها مما إذا كانت التقييمات صادرة عن عملاء.",
   faqHA: "أسئلة",
   faqHB: "شائعة.",
   q1: "ما المقصود بالمنطقة؟",

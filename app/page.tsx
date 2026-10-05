@@ -248,7 +248,6 @@ export default async function Startseite() {
           </div>
           <div className="rev-foot">
             <a className="btn ghost" href={MAPS} target="_blank" rel="noopener">{t.allReviews}</a>
-            <p className="note">{t.revNote}</p>
           </div>
         </div>
       </section>
