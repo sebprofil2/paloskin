@@ -59,9 +59,10 @@ describe("Impressum und Datenschutz: nur der Hinweis der gewählten Sprache", ()
     });
   }
 
-  it("Impressum: Umsatzsteuer-Identifikationsnummer unter den Angaben zur GmbH, keine Steuernummer (6. Oktober 2026)", () => {
+  it("Impressum: Umsatzsteuer-Identifikationsnummer direkt nach dem Handelsregister, keine Steuernummer (6. Oktober 2026)", () => {
     const html = roh("impressum");
-    expect(html).toContain("<p>Vertreten durch den Geschäftsführer: Dr. med. Sebastian Vogel</p>\n  <p>Umsatzsteuer-Identifikationsnummer gemäß Paragraf 27a Umsatzsteuergesetz: DE465531020</p>");
+    expect(html).toContain("Registernummer: HRB 290965 B</p>\n  <p>Umsatzsteuer-Identifikationsnummer gemäß Paragraf 27a Umsatzsteuergesetz: DE465531020</p>");
+    expect(html.match(/DE465531020/g)).toHaveLength(1);
     for (const seite of ["impressum", "datenschutz"]) expect(roh(seite)).not.toMatch(/Steuernummer|St\.-?Nr/);
   });
 
