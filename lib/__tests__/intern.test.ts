@@ -2,7 +2,9 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { cancelBooking, placeBooking, type PlaceInput } from "../booking";
 import { crmCancelReason } from "../cancel-reasons";
 import { MockEngine, mockInternals } from "../engine/mock";
-import { internGuard } from "../intern";
+import { internEvents, internGuard, withPortalUrl } from "../intern";
+import { terminUrl, verifyTerminToken } from "../links";
+import { confirmationMail, reminderMail } from "../mail-content";
 import { appointmentType, SERVICE_CODE_TABLE, toSharedServiceCodes, toSharedZones, ZONE_CODE_TABLE } from "../service-codes";
 import { openStore, toPayload, type Store } from "../store";
 import { emptySelection, ZONE_IDS } from "../treatments";
@@ -97,6 +99,35 @@ describe("Endpunkt: Ereignisse, Bestätigung, Rückweg", () => {
     expect(mockInternals.events.size).toBe(0);
     expect(store.eventsAfter(0, 10).map((e) => e.type)).toEqual(["created", "confirmed", "cancelled"]);
     expect(store.confirmByCrm("01M3YWQ51D0EPJ4VSS2B2MQT7H").outcome).toBe("missing");
+  });
+
+  it("customer_portal_url: derselbe Link wie in den Mails, in jedem Ereignis außer deleted, nie gespeichert", async () => {
+    const [s1] = await freeStarts(1);
+    await placeBooking(input("44444444-4444-4444-8444-444444444444", s1), deps());
+    const row = store.findByRequestId("44444444-4444-4444-8444-444444444444")!;
+    store.confirmByCrm(row.id);
+    await cancelBooking(row.id, crmCancelReason("studio_cancelled"), deps());
+    const roh = store.eventsAfter(0, 10);
+    const ausgeliefert = internEvents([...roh, { seq: 99, event_id: "01M3YWQ51D0EPJ4VSS2B2MQT7X", type: "deleted", occurred_at: "2027-01-05T02:30:00.000Z", booking: { id: row.id, reference: row.reference } }]);
+    const link = `https://www.paloskin.de/termin/${row.id}.`;
+    for (const e of ausgeliefert.slice(0, 3)) {
+      const url = (e.booking as unknown as { customer_portal_url: string }).customer_portal_url;
+      expect(url).toBe(terminUrl(row.id));
+      expect(url.startsWith(link)).toBe(true);
+      expect(verifyTerminToken(url.split("/termin/")[1])).toBe(row.id);
+    }
+    expect(ausgeliefert.map((e) => e.type)).toEqual(["created", "confirmed", "cancelled", "deleted"]);
+    expect(ausgeliefert[3].booking).toEqual({ id: row.id, reference: row.reference });
+    // Bestätigungsmail enthält genau diesen Link, die Erinnerung baut ihre Knöpfe darauf auf (?a=ja, /verschieben)
+    const fresh = store.findById(row.id)!;
+    expect(confirmationMail(fresh).text).toContain(terminUrl(row.id));
+    expect(reminderMail(fresh).text).toContain(`${terminUrl(row.id)}?a=ja`);
+    expect(reminderMail(fresh).text).toContain(`${terminUrl(row.id)}/verschieben`);
+    // In der Ereignistabelle steht der Link nicht
+    for (const e of roh) expect("customer_portal_url" in e.booking).toBe(false);
+    expect(JSON.stringify(store.eventsForBooking(row.id))).not.toContain("/termin/");
+    // Statusantwort: vollständiger Stand plus Link
+    expect(withPortalUrl(toPayload(fresh))).toEqual({ ...toPayload(fresh), customer_portal_url: terminUrl(row.id) });
   });
 });
 

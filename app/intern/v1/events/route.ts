@@ -1,4 +1,4 @@
-import { EVENTS_LIMIT_DEFAULT, EVENTS_LIMIT_MAX, internGuard, internJson } from "@/lib/intern";
+import { EVENTS_LIMIT_DEFAULT, EVENTS_LIMIT_MAX, internEvents, internGuard, internJson } from "@/lib/intern";
 import { errorClass, logEvent } from "@/lib/log";
 import { getStore } from "@/lib/store";
 
@@ -20,7 +20,7 @@ export async function GET(req: Request) {
     const events = store.eventsAfter(after, limit);
     const nextAfter = events.length ? events[events.length - 1].seq : after;
     // oldest_seq und stream_generation: das Kundensystem erkennt daran eine Lücke oder einen zurückgeholten Stand
-    return internJson({ events, next_after: nextAfter, oldest_seq: store.oldestSeq(), stream_generation: store.streamGeneration(), server_time: new Date().toISOString() });
+    return internJson({ events: internEvents(events), next_after: nextAfter, oldest_seq: store.oldestSeq(), stream_generation: store.streamGeneration(), server_time: new Date().toISOString() });
   } catch (e) {
     logEvent("error", "intern_events_failed", { route: "intern", errorClass: errorClass(e) });
     return internJson({ error: "failed" }, 503);

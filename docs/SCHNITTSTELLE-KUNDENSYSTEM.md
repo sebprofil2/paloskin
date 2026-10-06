@@ -1,6 +1,6 @@
 # Schnittstelle Buchung zu Kundensystem (Studio OS)
 
-Stand: 3. Oktober 2026, Fassung 4 des Bauauftrags Stufe 2, Codes verbindlich, Gegenprüfung des CRM-Projekts eingearbeitet. Dieses Dokument ist die verbindliche Beschreibung des Endpunkts auf paloskin-1; bei Abweichungen zwischen Attrappe und Dokument gilt das Dokument.
+Stand: 6. Oktober 2026 (Erweiterung `customer_portal_url`, Abschnitt 6.3), Fassung 4 des Bauauftrags Stufe 2, Codes verbindlich, Gegenprüfung des CRM-Projekts eingearbeitet. Dieses Dokument ist die verbindliche Beschreibung des Endpunkts auf paloskin-1; bei Abweichungen zwischen Attrappe und Dokument gilt das Dokument.
 
 ## 1. Zugang
 
@@ -50,7 +50,7 @@ Vorgehen des Kundensystems: abholen, verarbeiten, bestätigen (Abschnitt 3), mit
 - `{id}` ist die ULID der Buchung (Feld `id`). `reason` ist einer der festen Bezeichner `studio_confirmed` oder `studio_cancelled` (kein Freitext, andere Werte ergeben 400). Bei Absage speichert die Buchung `cancel_reason` als `crm:studio_cancelled` (Präfix `crm:` plus Bezeichner).
 - `confirmed`: eine Terminanfrage (`requested`) wird `confirmed`, Ereignis `confirmed`, Kalendereintrag unverändert. Ist die Buchung schon `confirmed`, passiert nichts (`changed: false`). Ist sie abgesagt, 409 `already_cancelled`.
 - `cancelled`: Status `cancelled`, Belegung frei, Ereignis `cancelled`, Kalendereintrag gelöscht. Mehrfach aufrufbar (`changed: false` ab dem zweiten Mal).
-- Antwort: `{ "booking": { vollständiger Stand }, "changed": true }`. Unbekannte Kennung 404. Nichts anderes ist über den Rückweg änderbar.
+- Antwort: `{ "booking": { vollständiger Stand }, "changed": true }`, auch bei 409 `already_cancelled`. Der Stand enthält wie im Ereignisstrom `customer_portal_url` (Abschnitt 6.3). Unbekannte Kennung 404. Nichts anderes ist über den Rückweg änderbar. Eine eigene Statusabfrage ohne Änderung gibt es nicht.
 
 ## 5. Zustand
 
@@ -95,6 +95,7 @@ Felder von `booking` (alle Zeiten UTC mit `Z`):
 | `attendance_confirmed_at` | Zeit oder null | Zusage des Kunden („Ja, ich komme“). Frühestens ab dem Vortag des Termins, 10:00 Uhr Berliner Zeit (zeitgleich mit der Erinnerungsmail); vorher lehnt die Buchung eine Zusage ab. Bei Buchung oder Verschiebung nach diesem Zeitpunkt automatisch gesetzt (Zeitpunkt der Buchung oder Verschiebung), weil der Kunde keine Erinnerung mehr bekommt. Siehe Abschnitt 7, attendance_confirmed. |
 | `cancelled_at`, `cancel_reason` | Zeit, Text | Absage; Werte und Bedeutung in Abschnitt 6.1 |
 | `updated_at` | Zeit | letzte Änderung |
+| `customer_portal_url` | Text | Neu (6. Oktober 2026): persönlicher Link zur Terminseite der Buchung, derselbe wie in Bestätigungs- und Erinnerungsmail. Siehe Abschnitt 6.3 |
 
 ### 6.0 Seitensprache und Beratungssprache (Erweiterung, Entscheidung Dr. Vogel vom 4. Oktober 2026)
 
@@ -121,6 +122,21 @@ Bis zum 3. Oktober 2026 hieß die kurzfristige Absage `customer_link_short`. Die
 ### 6.2 Vollständige Nutzlast, `null` statt Weglassen
 
 Jedes Ereignis außer `deleted` trägt in `booking` immer alle Felder aus Abschnitt 6. Ein Feld ohne Wert steht ausdrücklich als `null` in der Nutzlast und wird nie weggelassen. Das gilt besonders beim Verschieben (Kunde über die Terminseite oder Studio im Kalender): `attendance_confirmed_at` ist danach `null`, weil eine Zusage nur für den Termin gilt, für den sie gegeben wurde.
+
+### 6.3 Persönlicher Link `customer_portal_url` (Erweiterung, Auftrag Dr. Vogel vom 6. Oktober 2026)
+
+Zweck: Das Studio kann am Vorabend per WhatsApp von Hand erinnern und den Link der Kundin oder des Kunden mitschicken.
+
+| Feld | Typ | Wann vorhanden | Beispielwert |
+| --- | --- | --- | --- |
+| `customer_portal_url` | Text, vollständige Adresse mit `https://` | in jedem Ereignis außer `deleted` (dort enthält `booking` wie bisher nur `id` und `reference`), außerdem in der Antwort auf `POST /intern/v1/bookings/{id}/status` | `"https://www.paloskin.de/termin/01M3Z293MN1KK9BTG42T2BZBJG.k3V9xQ2mP7tR4wY8zA1bC5dE6fG"` |
+
+- Inhalt: genau der Link aus der Bestätigungsmail (Terminseite: bestätigen, verschieben, absagen). Die Knöpfe der Erinnerungsmail bauen darauf auf: „Ja, ich komme“ ist derselbe Link mit `?a=ja`, „Verschieben“ derselbe Link mit `/verschieben`.
+- Aufbau: `<öffentliche Adresse>/termin/<id>.<Signatur>`, die Signatur hat 27 Zeichen. Auf www beginnt der Link mit `https://www.paloskin.de/`, auf der Testinstanz mit `https://neu.paloskin.de/`. Das Kundensystem verwendet den Wert unverändert und baut ihn nicht selbst zusammen.
+- Für jede Buchung immer derselbe Wert, in allen Ereignissen dieser Buchung gleich, auch in Ereignissen, die vor der Einführung entstanden sind. Gültig, solange die Buchung besteht (Löschung 90 Tage nach dem Termin); an Gültigkeit, Mails und Ablauf ändert sich nichts.
+- Übertragung nur über diese interne, mit Token gesicherte Verbindung. Der Link wird bei der Auslieferung angehängt und nicht in der Ereignistabelle gespeichert. Wer ihn hat, kann den Termin der Kundin oder des Kunden bestätigen, verschieben oder absagen: im Kundensystem wie Kontaktdaten behandeln, nicht protokollieren und nur an die Kundin oder den Kunden selbst weitergeben.
+
+Das Schema ist nur erweitert: kein bestehendes Feld entfällt oder ändert seine Bedeutung, Ereignistypen bleiben gleich.
 
 ## 7. Ereignistypen mit Beispielen
 
@@ -168,7 +184,8 @@ Gemeinsame Werte der Beispiele: Buchung `01M3Z293MN1KK9BTG42T2BZBJG`, Nummer `PS
     "attendance_confirmed_at": null,
     "cancelled_at": null,
     "cancel_reason": null,
-    "updated_at": "2026-10-02T19:43:23.801Z"
+    "updated_at": "2026-10-02T19:43:23.801Z",
+    "customer_portal_url": "https://www.paloskin.de/termin/01M3Z293MN1KK9BTG42T2BZBJG.k3V9xQ2mP7tR4wY8zA1bC5dE6fG"
   }
 }
 ```

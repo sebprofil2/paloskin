@@ -1,8 +1,10 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { readEnv } from "./env";
+import { terminUrl } from "./links";
 import { logEvent } from "./log";
 import { allow, clientKey, LIMITS } from "./ratelimit";
+import type { BookingPayload, EventEnvelope } from "./store";
 
 /*
  * Endpunkt für das Kundensystem, nur im privaten Hetzner-Netz: Caddy lauscht an 10.0.0.2:8443 (tls internal) und setzt
@@ -36,3 +38,18 @@ export function internGuard(req: Request): NextResponse | null {
 export const CONSUMER_PATTERN = /^[a-z0-9][a-z0-9-]{0,39}$/;
 export const EVENTS_LIMIT_DEFAULT = 100;
 export const EVENTS_LIMIT_MAX = 500;
+
+/*
+ * Persönlicher Link der Buchung (Auftrag Dr. Vogel, 6. Oktober 2026): customer_portal_url, genau der Link zur Terminseite
+ * aus Bestätigungs- und Erinnerungsmail (lib/links.ts, terminUrl). Er wird erst bei der Auslieferung über diese interne
+ * Verbindung angehängt und nie in der Ereignistabelle gespeichert; er hängt nur von Buchungskennung und LINK_SECRET ab,
+ * ist also für jedes Ereignis derselbe. Nie protokollieren.
+ */
+export function withPortalUrl(booking: BookingPayload): BookingPayload & { customer_portal_url: string } {
+  return { ...booking, customer_portal_url: terminUrl(booking.id) };
+}
+
+/** Ereignisse für den Endpunkt: jedes außer deleted mit customer_portal_url; deleted bleibt bei id und reference. */
+export function internEvents(events: EventEnvelope[]): EventEnvelope[] {
+  return events.map((e) => (e.type === "deleted" ? e : { ...e, booking: withPortalUrl(e.booking as BookingPayload) }));
+}
