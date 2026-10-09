@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { terminWindow } from "@/lib/booking";
+import { dbSlotInputs, terminWindow } from "@/lib/booking";
 import { getEngine, SlotsUnavailableError } from "@/lib/engine";
 import { verifyTerminToken } from "@/lib/links";
 import { errorClass, logEvent } from "@/lib/log";
 import { allow, clientKey, LIMITS } from "@/lib/ratelimit";
-import { bookingRange } from "@/lib/slots";
 import { getStore } from "@/lib/store";
 
 export const runtime = "nodejs";
@@ -25,8 +24,8 @@ export async function GET(req: Request) {
     if (!booking || booking.deleted_at) return json({ error: "invalid" }, 404);
     const w = terminWindow(booking);
     if (w !== "open" && w !== "short") return json({ error: "closed" }, 409);
-    const { from, to } = bookingRange();
-    const result = await getEngine().getSlots({ durationMinutes: booking.duration_minutes, extraBusy: store.lockedIntervals(from, to) });
+    // Anschlusszeiten wie bei der Buchung; das Ende des eigenen Termins zählt nicht
+    const result = await getEngine().getSlots({ durationMinutes: booking.duration_minutes, ...dbSlotInputs(store, booking.id) });
     return json({ ...result, durationMinutes: booking.duration_minutes });
   } catch (e) {
     if (!(e instanceof SlotsUnavailableError)) logEvent("error", "termin_slots_failed", { route: "termin", errorClass: errorClass(e) });

@@ -105,7 +105,7 @@ function failIfWritesDown(): void {
 export class MockEngine implements BookingEngine {
   readonly name = "mock" as const;
 
-  async getSlots(input: { durationMinutes: number; now?: Date; extraBusy?: Interval[] }): Promise<SlotsResult> {
+  async getSlots(input: { durationMinutes: number; now?: Date; extraBusy?: Interval[]; anchors?: number[] }): Promise<SlotsResult> {
     const env = readEnv();
     failIfDown();
     const { from, to } = bookingRange(input.now);
@@ -113,6 +113,7 @@ export class MockEngine implements BookingEngine {
     const days: SlotDay[] = computeSlots({
       windows,
       busy: [...busy, ...(input.extraBusy ?? [])],
+      anchors: input.anchors,
       durationMinutes: input.durationMinutes,
       bufferMinutes: env.bufferMinutes,
       stepMinutes: env.stepMinutes,

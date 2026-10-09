@@ -5,7 +5,7 @@ import { getEngine, SlotsUnavailableError } from "@/lib/engine";
 import { errorClass, logEvent } from "@/lib/log";
 import { allow, clientKey, LIMITS } from "@/lib/ratelimit";
 import { slotsRequestSchema } from "@/lib/schema";
-import { bookingRange } from "@/lib/slots";
+import { dbSlotInputs } from "@/lib/booking";
 import { getStore } from "@/lib/store";
 
 export const runtime = "nodejs";
@@ -25,9 +25,8 @@ export async function POST(req: Request) {
   if (!parsed.success) return json({ error: "invalid" }, 400);
   const minutes = durationMinutes(parsed.data.selection);
   try {
-    const { from, to } = bookingRange();
-    const extraBusy = getStore().lockedIntervals(from, to);
-    const result = await getEngine().getSlots({ durationMinutes: minutes, extraBusy });
+    // Belegt laut Datenbank und Anschlusszeiten an den Enden eigener Termine
+    const result = await getEngine().getSlots({ durationMinutes: minutes, ...dbSlotInputs(getStore()) });
     return json({ ...result, durationMinutes: minutes });
   } catch (e) {
     if (!(e instanceof SlotsUnavailableError)) logEvent("error", "slots_failed", { route: "slots", errorClass: errorClass(e) });

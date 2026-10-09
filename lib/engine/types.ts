@@ -30,8 +30,8 @@ export interface CalendarEventInput {
  */
 export interface BookingEngine {
   readonly name: "mock" | "google";
-  /** Freie Zeiten aus Fenstern minus belegt; extraBusy sind die Reservierungen der Datenbank. */
-  getSlots(input: { durationMinutes: number; now?: Date; extraBusy?: Interval[] }): Promise<SlotsResult>;
+  /** Freie Zeiten aus Fenstern minus belegt; extraBusy sind die Reservierungen der Datenbank, anchors die Anschlusszeiten (lib/slots.ts). */
+  getSlots(input: { durationMinutes: number; now?: Date; extraBusy?: Interval[]; anchors?: number[] }): Promise<SlotsResult>;
   /** Liegt der Beginn in einem offenen Fenster und ist die Zeit laut Kalender frei? Wirft SlotsUnavailableError, wenn der Kalender nicht lesbar ist. */
   isStartFree(input: { start: Date; durationMinutes: number; now?: Date }): Promise<boolean>;
   /** Eintrag anlegen; liefert die Kennung des Eintrags. Fehler werden geworfen und vom Aufrufer als „failed“ vermerkt. */

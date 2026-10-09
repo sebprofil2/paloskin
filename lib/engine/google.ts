@@ -139,7 +139,7 @@ export class GoogleCalendarEngine implements BookingEngine {
     return out;
   }
 
-  async getSlots(input: { durationMinutes: number; now?: Date; extraBusy?: Interval[] }): Promise<SlotsResult> {
+  async getSlots(input: { durationMinutes: number; now?: Date; extraBusy?: Interval[]; anchors?: number[] }): Promise<SlotsResult> {
     const env = readEnv();
     const { from, to } = bookingRange(input.now);
     try {
@@ -147,6 +147,7 @@ export class GoogleCalendarEngine implements BookingEngine {
       const days = computeSlots({
         windows,
         busy: [...busy, ...(input.extraBusy ?? [])],
+        anchors: input.anchors,
         durationMinutes: input.durationMinutes,
         bufferMinutes: env.bufferMinutes,
         stepMinutes: env.stepMinutes,

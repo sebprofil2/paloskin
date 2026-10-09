@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { hasAccess } from "@/lib/access";
-import { placeBooking, summarize } from "@/lib/booking";
+import { dbSlotInputs, placeBooking, summarize } from "@/lib/booking";
 import { deviceFrom } from "@/lib/device";
 import { durationMinutes } from "@/lib/duration";
 import { readEnv } from "@/lib/env";
@@ -10,7 +10,7 @@ import { notifyOwner } from "@/lib/notify";
 import { allow, clientKey, contactKey, LIMITS } from "@/lib/ratelimit";
 import { bookingRefFor } from "@/lib/ref";
 import { bookRequestSchema } from "@/lib/schema";
-import { isBookableStart } from "@/lib/slots";
+import { isBookableStart, isOfferedStart } from "@/lib/slots";
 import { getStore } from "@/lib/store";
 
 export const runtime = "nodejs";
@@ -41,9 +41,9 @@ export async function POST(req: Request) {
   const env = readEnv();
   const minutes = durationMinutes(body.selection);
   const start = new Date(body.start);
-  // Raster, Vorlauf, Horizont und Nachtregel gelten beim Absenden, nicht beim Laden der Seite
-  const onGrid = start.getTime() % (env.stepMinutes * 60000) === 0;
-  if (!onGrid || !isBookableStart(start, new Date())) return json({ status: "conflict" }, 409);
+  // Raster (volle und halbe Stunden oder Anschlusszeit), Vorlauf, Horizont und Nachtregel gelten beim Absenden, nicht beim Laden der Seite
+  const offered = isOfferedStart(start, env.stepMinutes, dbSlotInputs(getStore()).anchors);
+  if (!offered || !isBookableStart(start, new Date())) return json({ status: "conflict" }, 409);
 
   const ref = bookingRefFor(body.requestId);
   try {

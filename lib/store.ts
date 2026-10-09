@@ -402,13 +402,18 @@ export class Store {
 
   /** Belegte Zeiten aus der Datenbank im Zeitraum, als Intervalle in Millisekunden. */
   lockedIntervals(from: Date, to: Date): Interval[] {
+    return this.bookedIntervals(from, to).map(({ start, end }) => ({ start, end }));
+  }
+
+  /** Wie lockedIntervals, mit Buchungskennung (Anschlusszeiten: beim Verschieben zählt der eigene Termin nicht). */
+  bookedIntervals(from: Date, to: Date): (Interval & { id: string })[] {
     const rows = this.db
       .prepare(
-        `SELECT DISTINCT b.starts_at, b.ends_at FROM slot_locks l JOIN bookings b ON b.id = l.booking_id
+        `SELECT DISTINCT b.id, b.starts_at, b.ends_at FROM slot_locks l JOIN bookings b ON b.id = l.booking_id
          WHERE l.slot_start >= ? AND l.slot_start < ?`,
       )
-      .all(Math.floor(from.getTime() / 60000) - 24 * 60, Math.ceil(to.getTime() / 60000)) as { starts_at: string; ends_at: string }[];
-    return rows.map((r) => ({ start: Date.parse(r.starts_at), end: Date.parse(r.ends_at) }));
+      .all(Math.floor(from.getTime() / 60000) - 24 * 60, Math.ceil(to.getTime() / 60000)) as { id: string; starts_at: string; ends_at: string }[];
+    return rows.map((r) => ({ id: r.id, start: Date.parse(r.starts_at), end: Date.parse(r.ends_at) }));
   }
 
   /**

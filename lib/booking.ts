@@ -3,7 +3,8 @@ import { getEngine, SlotsUnavailableError, type BookingEngine } from "./engine";
 import { errorClass, logEvent } from "./log";
 import { getMailer, mailErrorClass, type Mailer } from "./mail";
 import { calendarLinks, CANCEL_LEAD_MS, confirmationMail, reminderMail } from "./mail-content";
-import { isBookableStart } from "./slots";
+import { anchorStarts, bookingRange, isBookableStart, type Interval } from "./slots";
+import { readEnv } from "./env";
 import { notifyStudio } from "./studio-mail";
 import { inConfirmWindow } from "./attendance";
 import { phoneUnusual } from "./phone";
@@ -99,6 +100,19 @@ export function summarize(b: BookingRow, requestId: string, now = new Date()): B
     manageUrl: terminUrl(b.id),
     calendar: calendarLinks(b, b.language),
     canManage: Date.parse(b.starts_at) - now.getTime() >= CANCEL_LEAD_MS,
+  };
+}
+
+/**
+ * Was die Datenbank zur Zeitauswahl beiträgt: belegte Zeiten (blockieren) und Anschlusszeiten an den Enden eigener
+ * Termine (lib/slots.ts). Beim Verschieben zählt der eigene Termin nicht als Anknüpfungspunkt.
+ */
+export function dbSlotInputs(store: Store, exceptId?: string, now = new Date()): { extraBusy: Interval[]; anchors: number[] } {
+  const { from, to } = bookingRange(now);
+  const booked = store.bookedIntervals(from, to);
+  return {
+    extraBusy: booked.map(({ start, end }) => ({ start, end })),
+    anchors: anchorStarts(booked.filter((b) => b.id !== exceptId), readEnv().stepMinutes),
   };
 }
 
