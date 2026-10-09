@@ -15,8 +15,8 @@ USE=$(df --output=pcent / | tail -1 | tr -dc '0-9')
 
 # 2. Container laufen und App ist healthy
 STATE=$($COMPOSE ps --format '{{.Service}} {{.State}} {{.Health}}' 2>/dev/null)
-echo "$STATE" | grep -q '^app running healthy' || PROBLEMS+=("app nicht healthy")
-echo "$STATE" | grep -q '^caddy running' || PROBLEMS+=("caddy nicht running")
+echo "$STATE" | grep -q '^app running healthy' || PROBLEMS+=("Anwendung antwortet nicht")
+echo "$STATE" | grep -q '^caddy running' || PROBLEMS+=("Webserver läuft nicht")
 
 # 3. Fehlerrate der Anwendung in den letzten 10 Minuten (JSON-Zeilen mit level error, ohne Inhalte)
 APP_LOG=$($COMPOSE logs --since 10m app 2>/dev/null)
@@ -77,7 +77,7 @@ ALARMS=$(printf '%s\n' "$APP_LOG" | grep -c '"event":"ALARM')
 if [ ${#PROBLEMS[@]} -eq 0 ]; then
   SENT="kein Monitor konfiguriert"
   if [ -n "${HEARTBEAT_URL:-}" ]; then
-    if curl -fsS -m 10 -o /dev/null "$HEARTBEAT_URL"; then SENT="Heartbeat gesendet"; else SENT="Heartbeat FEHLGESCHLAGEN"; fi
+    if curl -fsS -m 10 -o /dev/null "$HEARTBEAT_URL"; then SENT="Lebenszeichen gesendet"; else SENT="Lebenszeichen konnte nicht gesendet werden"; fi
   fi
   logger -t paloskin-heartbeat "ok (disk ${USE}%, Fehler ${ERRORS:-0}), ${SENT}"
 else

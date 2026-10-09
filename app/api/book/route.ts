@@ -82,7 +82,7 @@ export async function GET(req: Request) {
     const booking = getStore().findByRequestId(requestId);
     if (!booking) {
       // Der Browser hat den Ausgang nicht erfahren und die Buchung nicht gefunden: Dr. Vogel informieren
-      if (url.searchParams.get("report") === "1") await notifyOwner("Unklarer Buchungsausgang (Browser)", { bookingRef: bookingRefFor(requestId), status: "not_found" });
+      if (url.searchParams.get("report") === "1") await notifyOwner("Ausgang einer Buchung unklar, Buchung nicht gefunden", { bookingRef: bookingRefFor(requestId), status: "not_found" });
       return json({ status: "not_found" }, 404);
     }
     return json({ status: "booked", booking: summarize(booking, requestId) });

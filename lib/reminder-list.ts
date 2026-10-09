@@ -4,7 +4,7 @@ import { logEvent } from "./log";
 import { mailErrorClass } from "./mail";
 import type { BookingRow } from "./store";
 import { consultLine } from "./studio-mail";
-import { phoneUnusual } from "./phone";
+import { formatPhone, phoneUnusual } from "./phone";
 import { addDaysKey, berlinDateKey, berlinParts, berlinTimeLabel, fromBerlinKey } from "./time";
 
 /*
@@ -63,15 +63,17 @@ export function listMail(rows: BookingRow[], now: Date): { subject: string; text
     const consult = consultLine(b);
     const t = `${berlinTimeLabel(new Date(b.starts_at))} Uhr, ${b.first_name} ${b.last_name}${consult ? `, ${consult}` : ""}${phoneUnusual(b.phone_e164) ? ", Nummer prüfen" : ""}`;
     if (b.attendance_confirmed_at) return { t: `${t}, bestätigt`, link: null };
-    const link = b.reminder_whatsapp === 1 ? `https://wa.me/${b.phone_e164.replace(/^\+/, "")}` : `tel:${b.phone_e164}`;
-    return { t: `${t}, noch offen`, link };
+    // Links in Klartext (Sprachleitfaden, 10. Oktober 2026): in der Mail „Per WhatsApp schreiben“ oder „Anrufen“
+    const wa = b.reminder_whatsapp === 1;
+    const link = wa ? `https://wa.me/${b.phone_e164.replace(/^\+/, "")}` : `tel:${b.phone_e164}`;
+    return { t: `${t}, noch offen`, link, label: wa ? "Per WhatsApp schreiben" : "Anrufen", plain: wa ? `WhatsApp: ${link}` : `Anrufen: ${formatPhone(b.phone_e164)}` };
   };
-  const lines = rows.map(line);
+  const lines: { t: string; link: string | null; label?: string; plain?: string }[] = rows.map(line);
   const day = tomorrow.split("-").reverse().join(".");
-  const text = [`Termine am ${day}:`, "", ...lines.map((l) => (l.link ? `${l.t}, ${l.link}` : l.t)), "", "PALO SKIN Buchung"].join("\n");
+  const text = [`Termine am ${day}:`, "", ...lines.map((l) => (l.plain ? `${l.t}, ${l.plain}` : l.t)), "", "PALO SKIN Buchung"].join("\n");
   const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const html = `<!doctype html><html lang="de"><body style="font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6"><p>Termine am ${esc(day)}:</p><ul>${lines
-    .map((l) => `<li>${esc(l.t)}${l.link ? `, <a href="${esc(l.link)}">${esc(l.link)}</a>` : ""}</li>`)
+    .map((l) => `<li>${esc(l.t)}${l.link ? `, <a href="${esc(l.link)}">${esc(l.label ?? "")}</a>` : ""}</li>`)
     .join("")}</ul><p>PALO SKIN Buchung</p></body></html>`;
   return { subject, text, html };
 }

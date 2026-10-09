@@ -58,19 +58,22 @@ export function buildDescription(i: DescriptionInput): string {
   // Beratungssprache ausgeschrieben (Entscheidung 4. Oktober 2026); die Seitensprache nur, wenn sie davon abweicht (Mails gehen in der Seitensprache)
   if (i.consultLang) {
     rows.push(`Beratung: ${CONSULT_NAMES_DE[i.consultLang]}`);
-    if (i.lang !== i.consultLang) rows.push(`Seitensprache und Mails: ${LANG_NAMES[i.lang]}`);
+    if (i.lang !== i.consultLang) rows.push(`Hat auf ${LANG_NAMES[i.lang]} gebucht, Mails auf ${LANG_NAMES[i.lang]}`);
   } else rows.push(`Sprache: ${LANG_NAMES[i.lang]}`);
   // Handliste für die WhatsApp-Erinnerung: die Nummer steht nur im Kalender, wenn der Kunde die Erinnerung möchte
   if (i.reminder) rows.push(`WhatsApp-Erinnerung: ja, ${normalizePhone(i.customer.handy)}`);
-  if (phoneUnusual(i.customer.handy)) rows.push("Nummer prüfen: Die Handynummer sieht ungewöhnlich aus.");
+  if (phoneUnusual(i.customer.handy)) rows.push(PHONE_CHECK_NOTE);
   return rows.join("\n");
 }
 
-/** Titel „Palo Skin: Vorname N.“, Nachname nur als Initiale (Großbuchstabe nach den Regeln der Buchungssprache, Türkisch i zu İ) */
+/** Hinweis für das Studio bei ungewöhnlicher Handynummer (Sprachleitfaden: ruhig und mit Lösung, 10. Oktober 2026) */
+export const PHONE_CHECK_NOTE = "Die Handynummer sieht ungewöhnlich aus. Bitte vor dem Termin kurz prüfen.";
+
+/** Titel „PALO SKIN: Vorname N.“, Testbuchungen „Testbuchung, PALO SKIN: …“; Nachname nur als Initiale (Großbuchstabe nach den Regeln der Buchungssprache, Türkisch i zu İ) */
 export function buildTitle(customer: Customer, testMode: boolean, lang: Lang = "de"): string {
   const initial = initialOf(customer.nachname, lang);
   const name = `${customer.vorname.trim()}${initial ? ` ${initial}.` : ""}`;
-  return `${testMode ? "TEST " : ""}Palo Skin: ${name}`;
+  return `${testMode ? "Testbuchung, " : ""}PALO SKIN: ${name}`;
 }
 
 /** Leistungscode für extendedProperties, zum Beispiel BOT+LDN */

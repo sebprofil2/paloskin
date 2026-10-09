@@ -88,7 +88,7 @@ Was die Buchung daraus macht:
 - `attendance_confirmed_at` und `consent_at` sind die Check-in-Zeit (der Kunde ist da; die Einwilligung liegt im Studio vor).
 - Weitere Felder: `reminder_whatsapp.consented` ist `false`, `language` ist `de`, `consultation_language` ist `null`, `service_codes` und `zones` sind leer, `persons` ist 1, `note` ist leer.
 - Die Zeit ist für Online-Buchungen belegt.
-- Kalendereintrag wie bei allen Terminen. Titel: `Palo Skin: Erika M. (Walk-in, Check-in vor Ort)`. Die Beschreibung beginnt mit „Walk-in, Check-in vor Ort“, danach folgen Buchungsnummer und Besuch.
+- Kalendereintrag wie bei allen Terminen. Titel: `PALO SKIN: Erika M. (ohne Termin gekommen, vor Ort eingetragen)`. Die Beschreibung beginnt mit „Ohne Termin gekommen, vor Ort eingetragen“, danach folgen Buchungsnummer und Besuch. (Wortlaut seit 10. Oktober 2026, vorher „Walk-in, Check-in vor Ort“.)
 - Ereignis `created` im Ereignisstrom mit dem vollständigen Stand (Abschnitt 6), kein neuer Ereignistyp.
 - Keine Mail und keine Erinnerung an den Kunden, keine Studio-Mail, kein Eintrag in der WhatsApp-Handliste.
 - Überschneidung: Was im Studio geschieht, gilt. Ist die Zeit schon durch eine andere Buchung belegt, wird der Walk-in trotzdem angelegt; die andere Buchung bleibt unverändert und steht in `overlaps`.

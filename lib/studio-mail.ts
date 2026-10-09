@@ -1,7 +1,7 @@
 import type { Deps } from "./booking";
 import { readEnv } from "./env";
 import { CONSULT_NAMES_DE } from "./i18n";
-import { initialOf } from "./booking-description";
+import { initialOf, PHONE_CHECK_NOTE } from "./booking-description";
 import { bookingsCalendarName } from "./instance";
 import { phoneUnusual } from "./phone";
 import { logEvent } from "./log";
@@ -12,7 +12,7 @@ import type { BookingRow } from "./store";
 /*
  * Sofort-Mails an das Studio (Block 8): neue Buchung, Absage, kurzfristige Absage, Verschiebung; dazu die Rückmeldungen
  * des Kalenderabgleichs („Im Kalender abgesagt“, „Im Kalender verschoben“, lib/calendar-sync.ts). Nur Deutsch, ohne
- * Behandlung, Nummer, Adresse oder Buchungsnummer. Testbuchungen mit „[TEST]“ vorn. Jede Mail landet erst in der
+ * Behandlung, Nummer, Adresse oder Buchungsnummer. Testbuchungen mit „Testbuchung:“ vorn. Jede Mail landet erst in der
  * Warteschlange der Datenbank und wird sofort versucht; scheitert der Versand, wiederholt der Hintergrundlauf.
  */
 export type StudioMailKind = "booked" | "cancelled" | "cancelled_short" | "rescheduled" | "cancelled_calendar" | "rescheduled_calendar";
@@ -29,9 +29,9 @@ function who(b: BookingRow): string {
 
 export function studioMailFor(kind: StudioMailKind, b: BookingRow): { subject: string; body: string } {
   const w = whenLabels(new Date(b.starts_at), "de");
-  const prefix = b.test_mode === 1 ? "[TEST] " : "";
+  const prefix = b.test_mode === 1 ? "Testbuchung: " : "";
   const when = `${w.date}, ${w.time}`;
-  if (kind === "booked") return { subject: `${prefix}Neue Buchung: ${w.short}, ${w.time}`, body: [when, who(b), consultLine(b), phoneUnusual(b.phone_e164) ? "Nummer prüfen" : null, `Details im Kalender „${bookingsCalendarName()}“.`].filter(Boolean).join("\n") };
+  if (kind === "booked") return { subject: `${prefix}Neue Buchung: ${w.short}, ${w.time}`, body: [when, who(b), consultLine(b), phoneUnusual(b.phone_e164) ? PHONE_CHECK_NOTE : null, `Details im Kalender „${bookingsCalendarName()}“.`].filter(Boolean).join("\n") };
   if (kind === "cancelled") return { subject: `${prefix}Abgesagt: ${w.short}, ${w.time}`, body: `${when}\n${who(b)}\nDie Zeit ist wieder frei.` };
   if (kind === "cancelled_short") return { subject: `${prefix}Kurzfristig abgesagt: ${w.short}, ${w.time}`, body: `${when}\n${who(b)}\nDie Zeit ist wieder frei.` };
   if (kind === "cancelled_calendar") return { subject: `${prefix}Im Kalender abgesagt: ${w.short}, ${w.time}`, body: `${when}\n${who(b)}\nDer Eintrag wurde im Kalender gelöscht. Die Zeit ist wieder frei, die Buchung gilt als abgesagt. Der Kunde hat keine Nachricht erhalten.` };

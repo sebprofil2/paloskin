@@ -156,17 +156,17 @@ describe("Verschieben, Fristen, Studio-Mails (Block 6 und 8)", () => {
     const r = await runStudioMailQueue(deps(), new Date(Date.now() + 5 * 60000));
     expect(r.sent).toBe(1);
     const m = mailer.sent.find((x) => x.to === "studio@example.com")!;
-    expect(m.subject).toMatch(/^\[TEST\] Neue Buchung: /);
+    expect(m.subject).toMatch(/^Testbuchung: Neue Buchung: /);
     expect(m.text).toContain("Sebastian V., zu zweit\nDetails im Kalender „Palo Skin Termine“.");
     for (const f of ["PS-", "58872566", "example.com", "Botox", "Stirn"]) expect(m.text, f).not.toContain(f);
     // Absage-Betreffe
     const w = studioMailFor("cancelled", b);
-    expect(w.subject).toMatch(/^\[TEST\] Abgesagt: /);
+    expect(w.subject).toMatch(/^Testbuchung: Abgesagt: /);
     expect(w.body).toContain("Die Zeit ist wieder frei.");
-    expect(studioMailFor("cancelled_short", b).subject).toMatch(/^\[TEST\] Kurzfristig abgesagt: /);
+    expect(studioMailFor("cancelled_short", b).subject).toMatch(/^Testbuchung: Kurzfristig abgesagt: /);
     // Absage über die Route 24 bis 2 Stunden vorher ergibt „Kurzfristig abgesagt“
     mailer.sent = [];
     await cancelBooking(b.id, "customer_short_notice", deps(), new Date(Date.parse(b.starts_at) - 10 * 3600000));
-    expect(mailer.sent.find((x) => x.to === "studio@example.com")!.subject).toMatch(/^\[TEST\] Kurzfristig abgesagt: /);
+    expect(mailer.sent.find((x) => x.to === "studio@example.com")!.subject).toMatch(/^Testbuchung: Kurzfristig abgesagt: /);
   });
 });

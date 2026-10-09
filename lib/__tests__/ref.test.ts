@@ -11,7 +11,7 @@ describe("Buchungsnummer und Kalendereintrag", () => {
     expect(a).not.toBe(bookingRefFor("22222222-2222-4222-8222-222222222222"));
   });
   it("Titel mit Initiale, Leistungscode ohne Namen", () => {
-    expect(buildTitle({ vorname: "Erika", nachname: "Musterfrau", handy: "0", email: "e@x.de" }, true)).toBe("TEST Palo Skin: Erika M.");
+    expect(buildTitle({ vorname: "Erika", nachname: "Musterfrau", handy: "0", email: "e@x.de" }, true)).toBe("Testbuchung, PALO SKIN: Erika M.");
     expect(serviceCode({ ...emptySelection(), visit: "first", zones: ["stirn"], lachs: "single", persons: 2 })).toBe("BOT+LDN+P2");
   });
 });

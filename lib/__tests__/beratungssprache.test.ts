@@ -88,7 +88,7 @@ describe("Beratungssprache und Seitensprachen Ukrainisch und Arabisch", () => {
     if (r.outcome !== "created") throw new Error("nicht angelegt");
     const desc = calendarInput(r.booking).description;
     expect(desc).toContain("Beratung: Englisch");
-    expect(desc).toContain("Seitensprache und Mails: Arabisch");
+    expect(desc).toContain("Hat auf Arabisch gebucht, Mails auf Arabisch");
     expect(studioMailFor("booked", r.booking).body).toContain("Beratung auf Englisch");
     const list = listMail([r.booking], new Date(Date.parse(r.booking.starts_at) - 86400000));
     expect(list.text).toContain("Beratung auf Englisch");

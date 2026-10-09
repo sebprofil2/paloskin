@@ -143,8 +143,8 @@ describe("Italienisch und Türkisch: Mails, Kalender, Sonderzeichen", () => {
     expect(initialOf("işler", "tr")).toBe("İ");
     expect(initialOf("ışık", "tr")).toBe("I");
     expect(initialOf("işler", "de")).toBe("I");
-    expect(buildTitle({ vorname: "Şule", nachname: "işler", handy: "", email: "" }, false, "tr")).toBe("Palo Skin: Şule İ.");
-    expect(calendarInput(buchung("tr", "ılık")).title).toBe("Palo Skin: Şule I.");
+    expect(buildTitle({ vorname: "Şule", nachname: "işler", handy: "", email: "" }, false, "tr")).toBe("PALO SKIN: Şule İ.");
+    expect(calendarInput(buchung("tr", "ılık")).title).toBe("PALO SKIN: Şule I.");
     expect(whenLabels(new Date("2026-10-07T06:00:00.000Z"), "tr").date).toBe("7 Ekim Çarşamba");
     expect(whenLabels(new Date("2026-10-07T06:00:00.000Z"), "it").date).toBe("Mercoledì 7 ottobre");
   });
@@ -152,7 +152,7 @@ describe("Italienisch und Türkisch: Mails, Kalender, Sonderzeichen", () => {
   it("Studio bleibt Deutsch: Kalenderbeschreibung nennt die Seitensprache auf Deutsch", () => {
     expect(LANG_NAMES.it).toBe("Italienisch");
     expect(LANG_NAMES.tr).toBe("Türkisch");
-    expect(calendarInput(buchung("tr")).description).toContain("Seitensprache und Mails: Türkisch");
+    expect(calendarInput(buchung("tr")).description).toContain("Hat auf Türkisch gebucht, Mails auf Türkisch");
   });
 
   it("alle Sprachen links nach rechts außer Arabisch", () => {

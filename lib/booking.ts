@@ -1,4 +1,4 @@
-import { buildDescription, buildTitle, serviceCode } from "./booking-description";
+import { buildDescription, buildTitle, PHONE_CHECK_NOTE, serviceCode } from "./booking-description";
 import { getEngine, SlotsUnavailableError, type BookingEngine } from "./engine";
 import { errorClass, logEvent } from "./log";
 import { getMailer, mailErrorClass, type Mailer } from "./mail";
@@ -162,16 +162,16 @@ export async function placeBooking(i: PlaceInput, deps: Deps = defaultDeps()): P
   return { status: "booked", booking: summarize(r.booking, i.requestId) };
 }
 
-/** Zusatz im Kalender für Walk-ins (Auftrag Dr. Vogel, 9. Oktober 2026) */
-export const WALK_IN_NOTE = "Walk-in, Check-in vor Ort";
+/** Zusatz im Kalender für Walk-ins (Auftrag Dr. Vogel, 9. Oktober 2026; Wortlaut nach dem Sprachleitfaden seit 10. Oktober 2026) */
+export const WALK_IN_NOTE = "ohne Termin gekommen, vor Ort eingetragen";
 
 export function calendarInput(b: BookingRow) {
   const selection = JSON.parse(b.selection) as Selection;
   const customer: Customer = { vorname: b.first_name, nachname: b.last_name, handy: b.phone_e164, email: b.email };
   if (b.channel === CHANNEL_WALK_IN) {
     // Walk-in: nur, was das Studio im Kalender braucht; keine Vorauswahl, keine Sprache, keine Erinnerung
-    const rows = [WALK_IN_NOTE, `Buchungsnummer: ${b.reference}`, `Besuch: ${b.first_visit === 1 ? "Erster Besuch" : "Schon einmal da"}`];
-    if (phoneUnusual(b.phone_e164)) rows.push("Nummer prüfen: Die Handynummer sieht ungewöhnlich aus.");
+    const rows = [WALK_IN_NOTE.charAt(0).toUpperCase() + WALK_IN_NOTE.slice(1), `Buchungsnummer: ${b.reference}`, `Besuch: ${b.first_visit === 1 ? "Erster Besuch" : "Schon einmal da"}`];
+    if (phoneUnusual(b.phone_e164)) rows.push(PHONE_CHECK_NOTE);
     return {
       reference: b.reference,
       title: `${buildTitle(customer, b.test_mode === 1, b.language)} (${WALK_IN_NOTE})`,
@@ -246,7 +246,7 @@ export type WalkInOutcome = { created: boolean; booking: BookingRow; overlaps: {
 
 /**
  * Walk-in nachtragen: bestätigter Termin (Kanal walk_in), Belegung, Ereignis created, Kalendereintrag mit Zusatz
- * „Walk-in, Check-in vor Ort“. Keine Mail an den Kunden, keine Erinnerung, keine Studio-Mail (das Studio hat ihn selbst
+ * „ohne Termin gekommen, vor Ort eingetragen“. Keine Mail an den Kunden, keine Erinnerung, keine Studio-Mail (das Studio hat ihn selbst
  * gemeldet). Scheitert der Kalendereintrag, holt ihn der Hintergrundlauf nach.
  */
 export async function recordWalkIn(i: WalkInRequest, deps: Deps = defaultDeps()): Promise<WalkInOutcome> {

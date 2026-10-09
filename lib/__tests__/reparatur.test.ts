@@ -224,6 +224,11 @@ describe("Reparaturauftrag 4. Oktober 2026: Ausfälle, Abbrüche, parallele Läu
       expect(written).toContain("To: umleitung@example.com");
       expect(written).toContain("Subject: [TEST] Morgen: 2 Termine");
       expect(written).not.toContain("studio@example.com");
+      // Studio-Mail einer Testbuchung trägt schon „Testbuchung:“ (Sprachleitfaden): kein zweiter Vermerk
+      await getMailer().send({ to: "studio@example.com", subject: "Testbuchung: Neue Buchung: Dienstag, 13.10., 10:00 Uhr", text: "x", html: "x" });
+      const alle = readdirSync(join(dbDir, "mail")).map((f) => readFileSync(join(dbDir, "mail", f), "utf8")).join("\n");
+      expect(alle).toContain("Subject: Testbuchung: Neue Buchung: Dienstag, 13.10., 10:00 Uhr");
+      expect(alle).not.toContain("[TEST] Testbuchung");
       rmSync(dbDir, { recursive: true, force: true });
     } finally {
       for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k];

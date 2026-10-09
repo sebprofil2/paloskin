@@ -62,8 +62,11 @@ describe("Handliste für WhatsApp-Erinnerungen", () => {
     expect(sent).toHaveLength(1);
     expect(sent[0].to).toBe("sebastian@example.com");
     expect(sent[0].subject).toBe("Morgen: 3 Termine, davon 2 noch nicht bestätigt");
-    expect(sent[0].text).toContain("10:00 Uhr, Erika Muster, noch offen, https://wa.me/491511234567");
-    expect(sent[0].text).toContain("14:00 Uhr, Erika Muster, noch offen, tel:+491511234567");
+    expect(sent[0].text).toContain("10:00 Uhr, Erika Muster, noch offen, WhatsApp: https://wa.me/491511234567");
+    expect(sent[0].text).toContain("14:00 Uhr, Erika Muster, noch offen, Anrufen: +49 151 1234567");
+    // In der Mail Links in Klartext statt sichtbarer Technikadressen (Sprachleitfaden)
+    expect(sent[0].html).toContain('<a href="https://wa.me/491511234567">Per WhatsApp schreiben</a>');
+    expect(sent[0].html).toContain('<a href="tel:+491511234567">Anrufen</a>');
     expect(sent[0].text).toContain("16:30 Uhr, Max Beispiel, bestätigt\n");
     expect(sent[0].text).not.toContain("491527654321");
     expect(sent[0].text).not.toContain("Botox");

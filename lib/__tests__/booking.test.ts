@@ -55,7 +55,7 @@ describe("Buchungsablauf mit Datenbank und Kalender", () => {
     const ev = mockInternals.events.get(row.calendar_event_id!)!;
     expect(ev.description).toContain(`Buchungsnummer: ${a.booking.ref}`);
     expect(ev.description).not.toContain("Nur für die Datenbank"); // Notiz nie im Kalender
-    expect(ev.title).toBe("TEST Palo Skin: Erika M.");
+    expect(ev.title).toBe("Testbuchung, PALO SKIN: Erika M.");
 
     const b = await placeBooking(input("11111111-1111-4111-8111-111111111111", start), { store, engine, mailer });
     expect(b).toEqual(a);

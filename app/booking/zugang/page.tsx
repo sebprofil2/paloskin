@@ -32,20 +32,20 @@ export default async function ZugangPage({ searchParams }: { searchParams: Promi
             <h2>Testzugang</h2>
             {testMode ? (
               <>
-                <p className="lead">Bitte geben Sie den Testcode ein, den Sie von Dr. Vogel erhalten haben. Test access: please enter the code you received from Dr. Vogel.</p>
-                {fehler ? <div className="missing">Der Code ist nicht richtig. The code is not correct.</div> : null}
+                <p className="lead">Bitte geben Sie den Testcode ein, den Sie von Dr. Vogel erhalten haben.</p>
+                {fehler ? <div className="missing">Der Code ist nicht richtig.</div> : null}
                 <form method="post" action="/api/zugang" autoComplete="off">
                   <input type="hidden" name="lang" value={lang} />
                   <label className="field" htmlFor="code">
                     <span className="l">Testcode</span>
                     <input id="code" name="code" type="password" autoComplete="off" required maxLength={80} />
                   </label>
-                  <p className="hint">Der Code wird nur einmal übertragen und bleibt 7 Tage als Cookie auf diesem Gerät.</p>
+                  <p className="hint">Der Code wird nur einmal übertragen und bleibt 7 Tage auf diesem Gerät gespeichert.</p>
                   <button type="submit" className="primary" style={{ marginTop: 12 }}>Weiter zur Buchung</button>
                 </form>
               </>
             ) : (
-              <p className="lead">Die Buchung ist ohne Code erreichbar: <a href="/booking">/booking</a></p>
+              <p className="lead">Die Buchung ist ohne Code erreichbar: <a href="/booking">Zur Buchung</a></p>
             )}
           </section>
         </div>

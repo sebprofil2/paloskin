@@ -13,7 +13,7 @@ function guardTest(message: MailMessage): MailMessage {
   const parts = /^(\u{1F535} )?([\s\S]*)$/u.exec(message.subject)!;
   const kugel = parts[1] ?? "";
   const rest = parts[2];
-  const subject = /^(\[TEST\]|TEST:)/.test(rest) ? message.subject : `${kugel}[TEST] ${rest}`;
+  const subject = /^(\[TEST\]|TEST:|Testbuchung:)/.test(rest) ? message.subject : `${kugel}[TEST] ${rest}`;
   return { ...message, to, subject };
 }
 

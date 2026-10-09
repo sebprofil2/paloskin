@@ -126,12 +126,13 @@ describe("Walk-in: Termin, Kalender, Ereignis, keine Mail", () => {
     expect(ev[0].booking).toMatchObject({ id: r.booking.id, channel: "walk_in", status: "confirmed" });
   });
 
-  it("Kalendereintrag wie bei allen Terminen, mit Zusatz „Walk-in, Check-in vor Ort“ in Titel und Beschreibung", async () => {
+  it("Kalendereintrag wie bei allen Terminen, mit Zusatz „ohne Termin gekommen, vor Ort eingetragen“ in Titel und Beschreibung", async () => {
     const r = await walkIn({ firstVisit: true });
     const ev = [...mockInternals.events.values()];
     expect(ev).toHaveLength(1);
-    expect(ev[0].title).toBe("Palo Skin: Erika M. (Walk-in, Check-in vor Ort)");
-    expect(ev[0].description.split("\n")).toEqual([WALK_IN_NOTE, `Buchungsnummer: ${r.booking.reference}`, "Besuch: Erster Besuch"]);
+    expect(ev[0].title).toBe("PALO SKIN: Erika M. (ohne Termin gekommen, vor Ort eingetragen)");
+    expect(ev[0].description.split("\n")).toEqual(["Ohne Termin gekommen, vor Ort eingetragen", `Buchungsnummer: ${r.booking.reference}`, "Besuch: Erster Besuch"]);
+    expect(WALK_IN_NOTE).toBe("ohne Termin gekommen, vor Ort eingetragen");
     expect(ev[0].start).toEqual(new Date("2026-10-09T12:07:00.000Z"));
     expect(ev[0].end).toEqual(new Date("2026-10-09T12:37:00.000Z"));
     expect(calendarInput(store.findById(r.booking.id)!).reminder).toBe(false);

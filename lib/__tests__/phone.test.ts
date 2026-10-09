@@ -102,7 +102,7 @@ describe("Handynummer: Buchung nie an der Nummer scheitern lassen", () => {
     expect(phoneUnusual("+493012345678")).toBe(true);
     const desc = (handy: string) =>
       buildDescription({ bookingRef: "PS-TEST01", selection: { ...emptySelection(), visit: "first", beratung: true }, durationMinutes: 30, customer: kunde(handy), lang: "de", consentAt: new Date(), reminder: false });
-    expect(desc(STUDIO)).not.toContain("Nummer prüfen");
-    expect(desc("+493012345678")).toContain("Nummer prüfen");
+    expect(desc(STUDIO)).not.toContain("Die Handynummer sieht ungewöhnlich aus. Bitte vor dem Termin kurz prüfen.");
+    expect(desc("+493012345678")).toContain("Die Handynummer sieht ungewöhnlich aus. Bitte vor dem Termin kurz prüfen.");
   });
 });

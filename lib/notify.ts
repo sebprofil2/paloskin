@@ -7,7 +7,7 @@ import { logEvent, type LogFields } from "./log";
  * Nie mit Namen, Nummern oder Adressen: nur Kennungen, Status und Fehlerklasse.
  */
 export async function notifyOwner(subject: string, fields: LogFields): Promise<void> {
-  logEvent("error", `MELDUNG ${subject}`, fields);
+  logEvent("error", `Meldung: ${subject}`, fields);
   const url = readEnv().ownerWebhookUrl;
   if (!url) return;
   try {
