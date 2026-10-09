@@ -20,6 +20,18 @@ export const LANGS: { id: Lang; name: string; loc: string }[] = [
 /** Beschriftung der Sprachauswahl für Vorlesehilfen, in der Seitensprache */
 export const LANG_LABEL: Record<Lang, string> = { de: "Sprache", en: "Language", es: "Idioma", fr: "Langue", pt: "Idioma", uk: "Мова", ar: "اللغة" };
 
+/*
+ * Kürzel im Sprachknopf der Kopfzeile (Auftrag Dr. Vogel, 9. Oktober 2026). Nur Anzeige: Ukrainisch zeigt „UA“, damit es
+ * nicht wie United Kingdom aussieht; intern bleibt es überall „uk“ (Adresse, Cookie, Ereignisstrom, hreflang).
+ * Arabisch bleibt „AR“ in lateinischen Buchstaben.
+ */
+export const LANG_SHORT: Record<Lang, string> = { de: "DE", en: "EN", es: "ES", fr: "FR", pt: "PT", uk: "UA", ar: "AR" };
+
+/** Beschriftung des Sprachknopfs für Bildschirmleser, zum Beispiel „Sprache: Deutsch“, „Language: English“ */
+export function langButtonLabel(lang: Lang): string {
+  return `${LANG_LABEL[lang]}: ${LANGS.find((x) => x.id === lang)!.name}`;
+}
+
 /* Beratungssprachen: in diesen fünf Sprachen berät Dr. Vogel; getrennt von der Seitensprache (Entscheidung 4. Oktober 2026) */
 export type ConsultLang = "de" | "en" | "es" | "fr" | "pt";
 export const CONSULT_LANGS: { id: ConsultLang; name: string }[] = [

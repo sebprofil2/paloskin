@@ -137,7 +137,8 @@ body{margin:0;background:var(--c-bg)}
 .pb .mrate,.pb .mmenu,.pb .bar{display:none}
 .pb .cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-14) var(--sp-16)}
 .pb .lang{position:relative}
-.pb .lang summary{white-space:nowrap;display:flex;align-items:center;min-height:var(--sp-44);padding:0 var(--sp-4);cursor:pointer;font-size:var(--fs-m);font-weight:500}
+/* Sprachknopf mit Kürzel (9. Oktober 2026): Pillenform und Rahmen wie der Menü-Knopf */
+.pb .lang summary.pill{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;min-height:var(--sp-44);min-width:var(--sp-44);padding:0 var(--sp-16);border:var(--sp-1-5) solid var(--c-ink);border-radius:var(--r-pill);cursor:pointer;font-size:var(--fs-s);font-weight:600;letter-spacing:.04em}
 .pb .lang ul{position:absolute;inset-inline-end:0;top:var(--sp-48);list-style:none;min-width:var(--sp-180);padding:var(--sp-8);background:var(--c-white);border:var(--sp-1) solid var(--c-line);border-radius:var(--r-s);box-shadow:0 var(--sp-12) var(--sp-28) var(--c-shadow)}
 .pb .lang li a{display:flex;align-items:center;min-height:var(--sp-44);padding:0 var(--sp-14);border-radius:var(--r-xs)}
 .pb .lang li a:hover{background:var(--c-bg)}
@@ -260,7 +261,11 @@ body{margin:0;background:var(--c-bg)}
 .pb .wrap{padding:0 var(--sp-20)}
 .pb .sec{padding:var(--sp-64) 0}
 .pb .hd-in{min-height:var(--sp-64);gap:var(--sp-10)}
-.pb .dnav,.pb .lang,.pb .hd .dbook{display:none}
+.pb .dnav,.pb .hd .dbook{display:none}
+/* Handy: Logo, Bewertung, Sprache, Menü; Sprache direkt links neben dem Menü (bei Arabisch gespiegelt wie die ganze Zeile) */
+.pb .hd .mrate{order:1}
+.pb .hd .lang{order:2}
+.pb .hd .mmenu{order:3}
 .pb .mrate{display:inline-flex}
 .pb .cta-row .btn{flex:1 1 100%}
 .pb .bar{display:block;position:sticky;bottom:0;z-index:30;padding:var(--sp-10) var(--sp-20);background:var(--c-bg-97);border-top:var(--sp-1) solid var(--c-line)}
@@ -438,7 +443,6 @@ body{margin:0;background:var(--c-bg)}
 .pb .studio-grid figure{margin:0}
 .pb .studio-grid img{display:block;width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:var(--r-s)}
 .pb .ft-l img{display:block;height:var(--sp-28);width:auto}
-.pb .lang summary span[aria-hidden]{margin-inline-start:var(--sp-4)}
 .pb .lang li a[aria-current="true"],.pb .mlang a[aria-current="true"]{color:var(--c-blue);font-weight:600}
 .pb :focus-visible{outline:var(--sp-3) solid var(--c-focus);outline-offset:var(--sp-2)}
 .pb .sr{position:absolute;width:var(--sp-1);height:var(--sp-1);overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -494,3 +498,26 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 .pb .shint a{color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-3)}
 .pb .shint button{background:none;border:0;color:var(--c-ink-2);font:inherit;font-size:var(--fs-l);line-height:1;padding:var(--sp-4) var(--sp-8);cursor:pointer;border-radius:var(--r-xs)}
 .pb .shint button:focus-visible{outline:var(--sp-2) solid var(--c-focus);outline-offset:var(--sp-2)}
+
+/*
+ * Kopfzeile am Handy mit Sprachknopf (9. Oktober 2026): nichts darf umbrechen oder überlappen. Die Pillen behalten
+ * Schrift, Farbe und Rahmen; wird es eng, werden zuerst ihre Innenabstände und die Abstände dazwischen kleiner. Das Logo
+ * passt sich der verbleibenden Breite an (höchstens 36 Pixel hoch) und bleibt immer sichtbar, ebenso die Bewertung.
+ */
+@media (max-width:899px){
+.pb .hd .logo{flex:0 1 auto;min-width:0}
+.pb .hd .logo img{width:auto;height:auto;max-width:100%;max-height:var(--sp-36)}
+.pb .hd .mrate,.pb .hd .lang,.pb .hd .mmenu{flex:none}
+}
+@media (max-width:419px){
+.pb .hd .mrate,.pb .hd .lang summary.pill,.pb .hd .mbtn{padding:0 var(--sp-12)}
+.pb .hd-in{gap:var(--sp-8)}
+}
+@media (max-width:379px){
+.pb .hd .mrate,.pb .hd .lang summary.pill,.pb .hd .mbtn{padding:0 var(--sp-10)}
+.pb .hd-in{gap:var(--sp-6);padding:0 var(--sp-16)}
+}
+@media (max-width:339px){
+.pb .hd .mrate,.pb .hd .lang summary.pill,.pb .hd .mbtn{padding:0 var(--sp-8)}
+.pb .hd-in{gap:var(--sp-4)}
+}

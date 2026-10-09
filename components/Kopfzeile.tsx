@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { homePath } from "@/lib/home-paths";
-import { LANG_LABEL, LANGS, saveLangChoice, type Lang } from "@/lib/i18n";
+import { LANG_LABEL, LANG_SHORT, LANGS, langButtonLabel, saveLangChoice, type Lang } from "@/lib/i18n";
 import { bookHref, MAPS, type KopfTexte } from "@/lib/kopf";
 
 /*
@@ -10,6 +10,8 @@ import { bookHref, MAPS, type KopfTexte } from "@/lib/kopf";
  * (details und summary, per Tastatur bedienbar); auf dem Handy Menü hinter „Menü“ und kleiner Bewertungsknopf „★ 5,0“.
  * Startseite: Die Sprachwahl führt auf die eigene Adresse der Sprache („/“, /en, /es, /fr, /pt, /uk, /ar).
  * Mit onLang wechselt die Seite selbst (Buchung, Eingaben bleiben); ohne Skript dort ?lang=.
+ * Sprachknopf (9. Oktober 2026): Pille mit dem Kürzel der Seitensprache (DE, EN, ES, FR, PT, UA, AR), auf dem Handy direkt
+ * links neben „Menü“, im Stil des Menü-Knopfs; dieselbe Liste wie bisher. Im Menü bleibt die Auswahl zusätzlich.
  */
 export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte; page: "home" | "booking"; onLang?: (id: Lang) => void }) {
   const langRef = useRef<HTMLDetailsElement>(null);
@@ -20,6 +22,10 @@ export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte;
   const close = () => {
     if (langRef.current) langRef.current.open = false;
     if (menuRef.current) menuRef.current.open = false;
+  };
+  // Immer nur eine Liste offen: Sprache oder Menü
+  const only = (other: React.RefObject<HTMLDetailsElement | null>) => (e: React.SyntheticEvent<HTMLDetailsElement>) => {
+    if (e.currentTarget.open && other.current) other.current.open = false;
   };
   const pick = (e: React.MouseEvent, id: Lang) => {
     saveLangChoice(id);
@@ -54,10 +60,9 @@ export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte;
           <a className="rate" href={MAPS} target="_blank" rel="noopener">{t.rateLong}</a>
           {links}
         </nav>
-        <details className="lang" ref={langRef}>
-          <summary aria-label={`${LANG_LABEL[lang]}: ${cur.name}`}>
-            <span lang={cur.id}>{cur.name}</span>
-            <span aria-hidden="true">▾</span>
+        <details className="lang" ref={langRef} onToggle={only(menuRef)}>
+          <summary className="pill" aria-label={langButtonLabel(lang)} title={cur.name}>
+            <span aria-hidden="true" dir="ltr">{LANG_SHORT[lang]}</span>
           </summary>
           <ul>
             {LANGS.map((x) => (
@@ -67,8 +72,8 @@ export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte;
         </details>
         <a className="btn dbook" href={home ? bookHref(lang) : "#"} aria-current={home ? undefined : "page"}>{t.book}</a>
         <a className="rate mrate" href={MAPS} target="_blank" rel="noopener" aria-label={t.rateAria}>{t.rateShort}</a>
-        <details className="mmenu" ref={menuRef}>
-          <summary className="mbtn">{t.menu}</summary>
+        <details className="mmenu" ref={menuRef} onToggle={only(langRef)}>
+          <summary className="mbtn pill">{t.menu}</summary>
           <div className="mpanel">
             <a className="rate" href={MAPS} target="_blank" rel="noopener">{t.rateLong}</a>
             {links}
