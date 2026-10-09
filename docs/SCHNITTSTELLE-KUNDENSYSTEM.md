@@ -196,7 +196,8 @@ Das Schema ist nur erweitert: kein bestehendes Feld entfällt oder ändert seine
 
 - `consultation_language` bleibt unverändert bei `de`, `en`, `es`, `fr`, `pt`. Italienisch und Türkisch sind keine Beratungssprachen und kommen dort nie vor; Kunden mit Seitensprache `it` oder `tr` wählen eine der fünf Beratungssprachen (wie bei `uk` und `ar`).
 - Kein neues Feld, kein neuer Ereignistyp, kein bestehender Wert ändert seine Bedeutung. Ein Kundensystem, das bei `language` unbekannte Werte toleriert, läuft unverändert weiter.
-- Stand: zuerst nur auf der Testinstanz neu.paloskin.de, auf www erst nach Freigabe durch Dr. Vogel.
+- Anzeige auf der Website: Der Sprachknopf zeigt für Ukrainisch das Kürzel „UA“; der Wert in `language` bleibt `uk`.
+- Stand: live auf www seit 9. Oktober 2026 (Freigabe Dr. Vogel), vorher auf der Testinstanz neu.paloskin.de geprüft.
 
 ## 7. Ereignistypen mit Beispielen
 
