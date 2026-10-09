@@ -121,11 +121,11 @@ describe("Beratungssprache und Seitensprachen Ukrainisch und Arabisch", () => {
     store.close();
   });
 
-  it("Rechts nach links: nur Arabisch; Startseite mit dir=rtl, hreflang für alle sieben Sprachen, Beratung in fünf Sprachen", () => {
-    expect(LANG_IDS).toEqual(["de", "en", "es", "fr", "pt", "uk", "ar"]);
+  it("Rechts nach links: nur Arabisch; Startseite mit dir=rtl, hreflang für alle Seitensprachen (seit 9. Oktober 2026 neun), Beratung in fünf Sprachen", () => {
+    expect(LANG_IDS).toEqual(["de", "en", "es", "fr", "pt", "it", "tr", "uk", "ar"]);
     for (const l of LANG_IDS) expect(langDir(l)).toBe(l === "ar" ? "rtl" : "ltr");
     const links = hreflangLinks("/");
-    expect(links.map((x) => x.hreflang)).toEqual(["de", "en", "es", "fr", "pt", "uk", "ar", "x-default"]);
+    expect(links.map((x) => x.hreflang)).toEqual(["de", "en", "es", "fr", "pt", "it", "tr", "uk", "ar", "x-default"]);
     // Strukturierte Daten: beraten wird weiterhin in fünf Sprachen
     expect(STUDIO_JSONLD).toContain('"availableLanguage": ["de", "en", "es", "fr", "pt"]');
   });

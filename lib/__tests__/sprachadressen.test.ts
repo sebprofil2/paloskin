@@ -15,7 +15,7 @@ import { HOME_TEXTS } from "../texts-home";
  * Testinstanz komplett noindex.
  */
 const WWW = "https://www.paloskin.de";
-const PFAD: Record<Lang, string> = { de: "/", en: "/en", es: "/es", fr: "/fr", pt: "/pt", uk: "/uk", ar: "/ar" };
+const PFAD: Record<Lang, string> = { de: "/", en: "/en", es: "/es", fr: "/fr", pt: "/pt", it: "/it", tr: "/tr", uk: "/uk", ar: "/ar" };
 const TITEL_DE = "PALO SKIN by Dr. Vogel | Ärztliche Faltenbehandlung in Berlin";
 const BESCHREIBUNG_DE = "PALO SKIN by Dr. Vogel in Berlin Prenzlauer Berg: ärztliche Faltenbehandlung durch Dr. med. Sebastian Vogel. Termine vor und nach der Arbeit und am Wochenende.";
 const GOOGLEBOT = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
@@ -109,7 +109,7 @@ describe("Kopfangaben je Sprache", () => {
       expect(m.robots).toBeUndefined();
       expect(JSON.stringify(m)).not.toMatch(/botox/i);
     }
-    expect(new Set(LANG_IDS.map((l) => homeMetadata(l).title)).size).toBe(7);
+    expect(new Set(LANG_IDS.map((l) => homeMetadata(l).title)).size).toBe(9);
   });
 
   it("strukturierte Daten: Studio und Arzt unverändert, Seite mit passender Sprache", () => {
@@ -138,13 +138,13 @@ describe("Kopfangaben je Sprache", () => {
 });
 
 describe("Sitemap und robots.txt", () => {
-  it("sieben Startseiten mit gegenseitigem hreflang und die Buchung; Impressum und Datenschutz nicht (noindex)", () => {
+  it("alle Startseiten (neun Sprachen) mit gegenseitigem hreflang und die Buchung; Impressum und Datenschutz nicht (noindex)", () => {
     const s = sitemap();
     expect(s.map((e) => e.url)).toEqual([...LANG_IDS.map((l) => `${WWW}${PFAD[l]}`), `${WWW}/booking`]);
     const alle = { ...Object.fromEntries(LANG_IDS.map((l) => [l, `${WWW}${PFAD[l]}`])), "x-default": `${WWW}/` };
-    for (const e of s.slice(0, 7)) expect(e.alternates?.languages).toEqual(alle);
+    for (const e of s.slice(0, LANG_IDS.length)) expect(e.alternates?.languages).toEqual(alle);
     const buchung = { ...Object.fromEntries(LANG_IDS.map((l) => [l, l === "de" ? `${WWW}/booking` : `${WWW}/booking?lang=${l}`])), "x-default": `${WWW}/booking` };
-    expect(s[7].alternates?.languages).toEqual(buchung);
+    expect(s[LANG_IDS.length].alternates?.languages).toEqual(buchung);
     expect(JSON.stringify(s)).not.toMatch(/impressum|datenschutz/);
   });
 
@@ -163,9 +163,11 @@ describe("Sitemap und robots.txt", () => {
 describe("Hinweis auf die eigene Sprachadresse (nur im Browser)", () => {
   it("erste angebotene Browsersprache; Deutsch oder fremde Sprachen ohne Hinweis", () => {
     expect(hinweisSprache(["en-US", "en"])).toBe("en");
-    expect(hinweisSprache(["it-IT", "uk-UA"])).toBe("uk");
+    expect(hinweisSprache(["nl-NL", "uk-UA"])).toBe("uk");
+    expect(hinweisSprache(["it-IT", "uk-UA"])).toBe("it");
+    expect(hinweisSprache(["tr-TR"])).toBe("tr");
     expect(hinweisSprache(["de-DE", "en"])).toBeNull();
-    expect(hinweisSprache(["it", "ja"])).toBeNull();
+    expect(hinweisSprache(["nl", "ja"])).toBeNull();
     expect(hinweisSprache([])).toBeNull();
   });
 });

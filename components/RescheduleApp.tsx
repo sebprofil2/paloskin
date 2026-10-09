@@ -23,7 +23,8 @@ type Loaded = { status: "loading" } | { status: "ready"; days: SlotDay[] } | { s
 type Result = { status: "idle" | "sending" | "conflict" | "error" | "unavailable" } | { status: "done"; start: string; calendar: { google: string; ics: string; outlook: string } };
 
 const TZ = "Europe/Berlin";
-const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+/* Großbuchstabe am Anfang nach den Regeln der Sprache (Türkisch: i wird İ) */
+const cap = (t: string, loc: string) => t.charAt(0).toLocaleUpperCase(loc) + t.slice(1);
 
 export function RescheduleApp({ token, lang, langQuery = "", currentDate, currentTime }: Props) {
   const l = MAIL_TEXTS[lang];
@@ -36,8 +37,8 @@ export function RescheduleApp({ token, lang, langQuery = "", currentDate, curren
   const [tick, setTick] = useState(0);
 
   const dfmt = useMemo(() => (key: string, o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(loc, { ...o, timeZone: TZ }).format(new Date(`${key}T12:00:00Z`)), [loc]);
-  const dayLabel = (key: string) => cap(dfmt(key, { weekday: "long", day: "numeric", month: "long" }));
-  const dayWd = (key: string) => cap(dfmt(key, { weekday: "short" }).replace(/\.$/, ""));
+  const dayLabel = (key: string) => cap(dfmt(key, { weekday: "long", day: "numeric", month: "long" }), loc);
+  const dayWd = (key: string) => cap(dfmt(key, { weekday: "short" }).replace(/\.$/, ""), loc);
   const dayN = (key: string) => dfmt(key, { day: "numeric" });
 
   useEffect(() => {

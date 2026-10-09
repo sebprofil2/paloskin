@@ -22,7 +22,7 @@ const WA = "https://wa.me/4915158872566";
 const TZ = "Europe/Berlin";
 /* Notizfeld erst mit der eigenen Ablage (Stufe 2): im Kalender steht keine Notiz */
 const NOTE_ENABLED = false;
-const THOUSANDS: Record<Lang, string> = { de: ".", en: ",", es: ".", fr: "\u00A0", pt: ".", uk: "\u00A0", ar: "," };
+const THOUSANDS: Record<Lang, string> = { de: ".", en: ",", es: ".", fr: "\u00A0", pt: ".", it: ".", tr: ".", uk: "\u00A0", ar: "," };
 
 type Step = 1 | 2 | 3;
 type ErrorKey = keyof Texts;
@@ -137,7 +137,8 @@ function durationKey(sel: Selection): string {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const keyToNoon = (key: string) => new Date(`${key}T12:00:00Z`);
-const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+/* Großbuchstabe am Anfang nach den Regeln der Sprache (Türkisch: i wird İ) */
+const cap = (t: string, loc: string) => t.charAt(0).toLocaleUpperCase(loc) + t.slice(1);
 
 /** Teilsatz als Link, zum Beispiel „per WhatsApp“ */
 function withLink(text: string, part: string, href: string): React.ReactNode {
@@ -218,9 +219,9 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
   /* Sichtbare Preise: „ab“ und Sternchen, Fußnote unter der Liste */
   const priceTag = (n: number) => ltr(`${fmt(n)}*`);
   const dfmt = useCallback((key: string, o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(loc, { ...o, timeZone: TZ }).format(keyToNoon(key)), [loc]);
-  const dayWd = (key: string) => cap(dfmt(key, { weekday: "short" }).replace(/\.$/, ""));
+  const dayWd = (key: string) => cap(dfmt(key, { weekday: "short" }).replace(/\.$/, ""), loc);
   const dayN = (key: string) => Number(key.slice(8));
-  const dayLabel = (key: string) => cap(dfmt(key, { weekday: "long", day: "numeric", month: "long" }));
+  const dayLabel = (key: string) => cap(dfmt(key, { weekday: "long", day: "numeric", month: "long" }), loc);
 
   /* Seitensprache wechseln (Sprachwahl speichert die Wahl); Eingaben bleiben erhalten */
   const setLang = (id: Lang) => setLangState(id);
@@ -698,7 +699,7 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
           {quick}
           <fieldset className="grp">
             <div className="dayhead">
-              <p>{l.orDayMonth(cap(dfmt(keys[0], { month: "long", year: "numeric" })))}</p>
+              <p>{l.orDayMonth(cap(dfmt(keys[0], { month: "long", year: "numeric" }), loc))}</p>
               <div className="arrows">
                 <button className="arr" type="button" aria-label={l.prevWeek} disabled={week <= firstWeek} onClick={() => setWeekShift((w) => w - 1)}><span aria-hidden="true">‹</span></button>
                 <button className="arr" type="button" aria-label={l.nextWeek} disabled={week >= lastWeek} onClick={() => setWeekShift((w) => w + 1)}><span aria-hidden="true">›</span></button>
@@ -719,7 +720,7 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
                       onChange={() => { setWeekShift(0); setS((p) => ({ ...p, day: k, slot: null, maxStep: Math.min(p.maxStep, 2) as Step })); }}
                     />
                     <span>
-                      <span className="wd">{cap(dfmt(k, { weekday: "long" }))}</span>
+                      <span className="wd">{cap(dfmt(k, { weekday: "long" }), loc)}</span>
                       <span className="nr">{dayN(k)}</span>
                       <span className="mo">{dfmt(k, { month: "long" })}</span>
                     </span>

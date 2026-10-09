@@ -32,6 +32,8 @@ const BOOKING: Record<Lang, { title: string; description: string; locale: string
   es: { title: "Reservar cita · PALO SKIN by Dr. Vogel", description: "Reserve en línea su cita en PALO SKIN by Dr. Vogel en Berlín Prenzlauer Berg: tratamiento de arrugas, skin booster o consulta. Confirmación inmediata por correo electrónico.", locale: "es_ES" },
   fr: { title: "Prendre rendez-vous · PALO SKIN by Dr. Vogel", description: "Réservez en ligne votre rendez-vous chez PALO SKIN by Dr. Vogel à Berlin Prenzlauer Berg : traitement des rides, skin booster ou consultation. Confirmation immédiate par e-mail.", locale: "fr_FR" },
   pt: { title: "Agendar consulta · PALO SKIN by Dr. Vogel", description: "Agende online sua consulta na PALO SKIN by Dr. Vogel em Berlim Prenzlauer Berg: tratamento de rugas, skin booster ou avaliação. Confirmação imediata por e-mail.", locale: "pt_BR" },
+  it: { title: "Prenotazione appuntamento · PALO SKIN by Dr. Vogel", description: "Prenoti l’appuntamento da PALO SKIN by Dr. Vogel a Berlino Prenzlauer Berg: trattamento delle rughe, Skin Booster o consulenza. Conferma immediata via e-mail.", locale: "it_IT" },
+  tr: { title: "Randevu al · PALO SKIN by Dr. Vogel", description: "Berlin Prenzlauer Berg’deki PALO SKIN by Dr. Vogel’den randevu alın: kırışıklık tedavisi, Skin Booster veya danışma. E-posta ile anında onay.", locale: "tr_TR" },
   uk: { title: "Записатися на прийом · PALO SKIN by Dr. Vogel", description: "Запишіться онлайн до PALO SKIN by Dr. Vogel у Берліні, Prenzlauer Berg: корекція зморшок, Skin Booster або консультація. Миттєве підтвердження електронною поштою.", locale: "uk_UA" },
   ar: { title: "حجز موعد · PALO SKIN by Dr. Vogel", description: "حجز موعد عبر الإنترنت في PALO SKIN by Dr. Vogel في Prenzlauer Berg ببرلين: علاج التجاعيد، أو سكين بوستر، أو استشارة. تأكيد فوري بالبريد الإلكتروني.", locale: "ar_AR" },
 
@@ -52,7 +54,7 @@ export function bookingMetadata(lang: Lang): Metadata {
   };
 }
 
-export const LOCALE: Record<Lang, string> = { de: "de_DE", en: "en_GB", es: "es_ES", fr: "fr_FR", pt: "pt_BR", uk: "uk_UA", ar: "ar_AR" };
+export const LOCALE: Record<Lang, string> = { de: "de_DE", en: "en_GB", es: "es_ES", fr: "fr_FR", pt: "pt_BR", it: "it_IT", tr: "tr_TR", uk: "uk_UA", ar: "ar_AR" };
 
 /* Adresse einer Seite in einer Sprache (Buchung): Deutsch ohne Angabe, sonst ?lang= */
 export function langUrl(path: string, lang: Lang): string {

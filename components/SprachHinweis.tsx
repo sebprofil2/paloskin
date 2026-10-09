@@ -10,11 +10,14 @@ import { langDir, type Lang } from "@/lib/i18n";
  * Keine automatische Weiterleitung. Nur im Browser: Der Server liefert ihn nie aus, Suchmaschinen sehen ihn nicht.
  * Geschlossen bleibt geschlossen (localStorage).
  */
-const TEXT: Record<Exclude<Lang, "de">, { text: string; link: string; close: string }> = {
+/* after: Text nach dem Link, wenn der Sprachname mitten im Satz steht (Türkisch) */
+const TEXT: Record<Exclude<Lang, "de">, { text: string; link: string; close: string; after?: string }> = {
   en: { text: "This page is also available in", link: "English", close: "Close" },
   es: { text: "Esta página también está disponible en", link: "español", close: "Cerrar" },
   fr: { text: "Cette page est aussi disponible en", link: "français", close: "Fermer" },
   pt: { text: "Esta página também está disponível em", link: "português", close: "Fechar" },
+  it: { text: "Questa pagina è disponibile anche in", link: "italiano", close: "Chiudi" },
+  tr: { text: "Bu sayfa", link: "Türkçe", after: "olarak da mevcuttur.", close: "Kapat" },
   uk: { text: "Ця сторінка також доступна", link: "українською", close: "Закрити" },
   ar: { text: "هذه الصفحة متوفرة أيضًا", link: "باللغة العربية", close: "إغلاق" },
 };
@@ -47,7 +50,7 @@ export function SprachHinweis() {
     <div className="shint" lang={lang} dir={langDir(lang)} role="note">
       <div className="wrap shint-in">
         <p>
-          {t.text} <a href={homePath(lang)} hrefLang={lang}>{t.link}</a>
+          {t.text} <a href={homePath(lang)} hrefLang={lang}>{t.link}</a>{t.after ? ` ${t.after}` : null}
         </p>
         <button type="button" onClick={zu} aria-label={t.close}>×</button>
       </div>

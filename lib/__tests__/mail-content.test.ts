@@ -205,6 +205,8 @@ describe("Bestätigungsmail nach Freigabe", () => {
       es: ["Reservado: miércoles, 7/10, 08:00 h", "Por favor, confirme: mañana, 08:00 h", "Cambiado: jueves, 8/10, 09:00 h"],
       fr: ["Réservé\u00A0: mercredi 7/10, 08 h 00", "Merci de confirmer\u00A0: demain, 08 h 00", "Déplacé\u00A0: jeudi 8/10, 09 h 00"],
       pt: ["Marcado: quarta-feira, 7/10, 08:00", "Confirme, por favor: amanhã, 08:00", "Remarcado: quinta-feira, 8/10, 09:00"],
+      it: ["Prenotato: mercoledì 7/10, ore 08:00", "Confermi, per favore: domani, ore 08:00", "Spostato: giovedì 8/10, ore 09:00"],
+      tr: ["Randevu alındı: 7.10 Çarşamba, 08:00", "Lütfen onaylayın: yarın, 08:00", "Yeni randevu: 8.10 Perşembe, 09:00"],
       uk: ["Заброньовано: середа, 7.10, 08:00", "Просимо підтвердити: завтра, 08:00", "Перенесено: четвер, 8.10, 09:00"],
       ar: ["محجوز: الأربعاء 7/10 الساعة 08:00", "يرجى التأكيد: غدًا الساعة 08:00", "تعديل: الخميس 8/10 الساعة 09:00"],
     };

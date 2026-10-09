@@ -15,7 +15,8 @@ import type { Lang } from "./treatments";
  * abgekürzt. Reiner Text und einfache HTML-Fassung ohne Bilder.
  */
 
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+/* Großbuchstabe am Anfang nach den Regeln der Sprache (Türkisch: i wird İ, ı wird I) */
+const cap = (s: string, loc = "de-DE") => s.charAt(0).toLocaleUpperCase(loc) + s.slice(1);
 
 /** „Datum, Uhrzeit“ mit dem Komma der Sprache (Arabisch „،“) */
 export function dateTime(lang: Lang, date: string, time: string): string {
@@ -28,7 +29,7 @@ export interface WhenLabels {
   dateYear: string;
   /** mitten im Satz: Spanisch, Französisch und Portugiesisch schreiben den Wochentag klein */
   dateIn: string;
-  /** für den Betreff: „Mittwoch, 7.10.“, „Wednesday, 7 October“, „miércoles, 7/10“, „mercredi 7/10“, „quarta-feira, 7/10“ */
+  /** für den Betreff: „Mittwoch, 7.10.“, „Wednesday, 7 October“, „miércoles, 7/10“, „mercredi 7/10“, „quarta-feira, 7/10“, „mercoledì 7/10“, „7.10 Çarşamba“ */
   short: string;
   /** in der Schreibweise der Sprache, zum Beispiel „08:00 Uhr“ */
   time: string;
@@ -41,15 +42,17 @@ export function whenLabels(start: Date, lang: Lang): WhenLabels {
   const p = berlinParts(start);
   const weekday = raw({ weekday: "long" });
   const short =
-    lang === "de" ? `${cap(weekday)}, ${p.day}.${p.month}.`
+    lang === "de" ? `${cap(weekday, loc)}, ${p.day}.${p.month}.`
     : lang === "en" ? `${weekday}, ${p.day} ${raw({ month: "long" })}`
     : lang === "fr" ? `${weekday} ${p.day}/${p.month}`
+    : lang === "it" ? `${weekday} ${p.day}/${p.month}`
+    : lang === "tr" ? `${p.day}.${p.month} ${weekday}`
     : lang === "uk" ? `${weekday}, ${p.day}.${String(p.month).padStart(2, "0")}`
     : lang === "ar" ? `${weekday} ${p.day}/${p.month}`
     : `${weekday}, ${p.day}/${p.month}`;
   return {
-    date: cap(date),
-    dateYear: cap(raw({ weekday: "long", day: "numeric", month: "long", year: "numeric" })),
+    date: cap(date, loc),
+    dateYear: cap(raw({ weekday: "long", day: "numeric", month: "long", year: "numeric" }), loc),
     dateIn: date,
     short,
     time: TEXTS[lang].at(berlinTimeLabel(start)),

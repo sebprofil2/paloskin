@@ -160,7 +160,7 @@ export function calendarInput(b: BookingRow) {
     if (phoneUnusual(b.phone_e164)) rows.push("Nummer prüfen: Die Handynummer sieht ungewöhnlich aus.");
     return {
       reference: b.reference,
-      title: `${buildTitle(customer, b.test_mode === 1)} (${WALK_IN_NOTE})`,
+      title: `${buildTitle(customer, b.test_mode === 1, b.language)} (${WALK_IN_NOTE})`,
       description: rows.join("\n"),
       start: new Date(b.starts_at),
       end: new Date(b.ends_at),
@@ -181,7 +181,7 @@ export function calendarInput(b: BookingRow) {
   if (b.referral) description += `\nEmpfehlung: ${b.referral}`;
   return {
     reference: b.reference,
-    title: buildTitle(customer, b.test_mode === 1),
+    title: buildTitle(customer, b.test_mode === 1, b.language),
     description,
     start: new Date(b.starts_at),
     end: new Date(b.ends_at),

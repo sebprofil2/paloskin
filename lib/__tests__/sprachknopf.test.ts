@@ -4,8 +4,8 @@ import { LANG_IDS, LANG_SHORT, langButtonLabel, pickLang } from "../i18n";
 
 /* Sprachknopf in der Kopfzeile (Auftrag Dr. Vogel, 9. Oktober 2026): Kürzel nur zur Anzeige, interne Codes unverändert */
 describe("Sprachknopf: Kürzel und Beschriftung", () => {
-  it("Kürzel DE, EN, ES, FR, PT, UA, AR in der Reihenfolge der Sprachen", () => {
-    expect(LANG_IDS.map((l) => LANG_SHORT[l])).toEqual(["DE", "EN", "ES", "FR", "PT", "UA", "AR"]);
+  it("Kürzel DE, EN, ES, FR, PT, IT, TR, UA, AR in der Reihenfolge der Sprachen", () => {
+    expect(LANG_IDS.map((l) => LANG_SHORT[l])).toEqual(["DE", "EN", "ES", "FR", "PT", "IT", "TR", "UA", "AR"]);
   });
 
   it("Ukrainisch zeigt UA, intern bleibt es uk (Adresse, gespeicherte Wahl, hreflang)", () => {
@@ -24,6 +24,8 @@ describe("Sprachknopf: Kürzel und Beschriftung", () => {
     expect(langButtonLabel("es")).toBe("Idioma: Español");
     expect(langButtonLabel("fr")).toBe("Langue: Français");
     expect(langButtonLabel("pt")).toBe("Idioma: Português");
+    expect(langButtonLabel("it")).toBe("Lingua: Italiano");
+    expect(langButtonLabel("tr")).toBe("Dil: Türkçe");
     expect(langButtonLabel("uk")).toBe("Мова: Українська");
     expect(langButtonLabel("ar")).toBe("اللغة: العربية");
   });

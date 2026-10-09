@@ -4,7 +4,7 @@
  * lib/texts-home.ts (Startseite), lib/texts.ts (Buchung), lib/texts-mail.ts (Mails, Terminseite, Verschieben)
  * und lib/share-meta.ts (Titel, Beschreibung, Vorschau).
  */
-export type Lang = "de" | "en" | "es" | "fr" | "pt" | "uk" | "ar";
+export type Lang = "de" | "en" | "es" | "fr" | "pt" | "it" | "tr" | "uk" | "ar";
 
 export const LANGS: { id: Lang; name: string; loc: string }[] = [
   { id: "de", name: "Deutsch", loc: "de-DE" },
@@ -12,20 +12,23 @@ export const LANGS: { id: Lang; name: string; loc: string }[] = [
   { id: "es", name: "Español", loc: "es-ES" },
   { id: "fr", name: "Français", loc: "fr-FR" },
   { id: "pt", name: "Português", loc: "pt-BR" },
+  // Italienisch und Türkisch: Seitensprachen seit 9. Oktober 2026, keine Beratungssprachen
+  { id: "it", name: "Italiano", loc: "it-IT" },
+  { id: "tr", name: "Türkçe", loc: "tr-TR" },
   { id: "uk", name: "Українська", loc: "uk-UA" },
   // Arabisch mit lateinischen Ziffern (Uhrzeiten, Daten, Preise wie auf dem Schild und im Kalender)
   { id: "ar", name: "العربية", loc: "ar-u-nu-latn" },
 ];
 
 /** Beschriftung der Sprachauswahl für Vorlesehilfen, in der Seitensprache */
-export const LANG_LABEL: Record<Lang, string> = { de: "Sprache", en: "Language", es: "Idioma", fr: "Langue", pt: "Idioma", uk: "Мова", ar: "اللغة" };
+export const LANG_LABEL: Record<Lang, string> = { de: "Sprache", en: "Language", es: "Idioma", fr: "Langue", pt: "Idioma", it: "Lingua", tr: "Dil", uk: "Мова", ar: "اللغة" };
 
 /*
  * Kürzel im Sprachknopf der Kopfzeile (Auftrag Dr. Vogel, 9. Oktober 2026). Nur Anzeige: Ukrainisch zeigt „UA“, damit es
  * nicht wie United Kingdom aussieht; intern bleibt es überall „uk“ (Adresse, Cookie, Ereignisstrom, hreflang).
  * Arabisch bleibt „AR“ in lateinischen Buchstaben.
  */
-export const LANG_SHORT: Record<Lang, string> = { de: "DE", en: "EN", es: "ES", fr: "FR", pt: "PT", uk: "UA", ar: "AR" };
+export const LANG_SHORT: Record<Lang, string> = { de: "DE", en: "EN", es: "ES", fr: "FR", pt: "PT", it: "IT", tr: "TR", uk: "UA", ar: "AR" };
 
 /** Beschriftung des Sprachknopfs für Bildschirmleser, zum Beispiel „Sprache: Deutsch“, „Language: English“ */
 export function langButtonLabel(lang: Lang): string {

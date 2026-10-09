@@ -10,9 +10,16 @@ export const LANG_NAMES: Record<Lang, string> = {
   es: "Spanisch",
   fr: "Französisch",
   pt: "Portugiesisch",
+  it: "Italienisch",
+  tr: "Türkisch",
   uk: "Ukrainisch",
   ar: "Arabisch",
 };
+
+/** Erster Buchstabe des Nachnamens als Großbuchstabe; bei türkischen Buchungen nach türkischen Regeln (i zu İ, ı zu I) */
+export function initialOf(name: string, lang: Lang): string {
+  return name.trim().charAt(0).toLocaleUpperCase(lang === "tr" ? "tr-TR" : "de-DE");
+}
 
 export function normalizePhone(v: string): string {
   return normalizePhoneE164(v) ?? v;
@@ -59,9 +66,9 @@ export function buildDescription(i: DescriptionInput): string {
   return rows.join("\n");
 }
 
-/** Titel „Palo Skin: Vorname N.“, Nachname nur als Initiale */
-export function buildTitle(customer: Customer, testMode: boolean): string {
-  const initial = customer.nachname.trim().charAt(0).toUpperCase();
+/** Titel „Palo Skin: Vorname N.“, Nachname nur als Initiale (Großbuchstabe nach den Regeln der Buchungssprache, Türkisch i zu İ) */
+export function buildTitle(customer: Customer, testMode: boolean, lang: Lang = "de"): string {
+  const initial = initialOf(customer.nachname, lang);
   const name = `${customer.vorname.trim()}${initial ? ` ${initial}.` : ""}`;
   return `${testMode ? "TEST " : ""}Palo Skin: ${name}`;
 }

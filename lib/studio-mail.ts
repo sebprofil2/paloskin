@@ -1,6 +1,7 @@
 import type { Deps } from "./booking";
 import { readEnv } from "./env";
 import { CONSULT_NAMES_DE } from "./i18n";
+import { initialOf } from "./booking-description";
 import { bookingsCalendarName } from "./instance";
 import { phoneUnusual } from "./phone";
 import { logEvent } from "./log";
@@ -22,7 +23,7 @@ export function consultLine(b: BookingRow): string | null {
 }
 
 function who(b: BookingRow): string {
-  const initial = b.last_name.trim().charAt(0).toUpperCase();
+  const initial = initialOf(b.last_name, b.language);
   return `${b.first_name.trim()}${initial ? ` ${initial}.` : ""}, ${b.persons === 2 ? "zu zweit" : "allein"}`;
 }
 

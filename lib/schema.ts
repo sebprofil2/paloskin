@@ -32,7 +32,7 @@ export const selectionSchema = z
   });
 
 /* Seitensprache (sieben) und Beratungssprache (fünf, Entscheidung 4. Oktober 2026), Listen aus lib/i18n.ts */
-export const langSchema = z.enum(["de", "en", "es", "fr", "pt", "uk", "ar"]);
+export const langSchema = z.enum(["de", "en", "es", "fr", "pt", "it", "tr", "uk", "ar"]);
 export const consultLangSchema = z.enum(["de", "en", "es", "fr", "pt"]);
 
 export const slotsRequestSchema = z.object({

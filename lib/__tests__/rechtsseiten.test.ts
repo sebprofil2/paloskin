@@ -14,8 +14,8 @@ const ohneAlle = (html: string) => html.replace(/[ \t]*<p\b[^>]*\bdata-hinweis="
 
 describe("Impressum und Datenschutz: nur der Hinweis der gewählten Sprache", () => {
   it("jede Sprache außer Deutsch hat ihren Hinweis auf beiden Seiten (Entscheidung Dr. Vogel, 5. Oktober 2026)", () => {
-    expect(hinweise(roh("datenschutz")).sort()).toEqual(["ar", "en", "es", "fr", "pt", "uk"]);
-    expect(hinweise(roh("impressum")).sort()).toEqual(["ar", "en", "es", "fr", "pt", "uk"]);
+    expect(hinweise(roh("datenschutz")).sort()).toEqual(["ar", "en", "es", "fr", "it", "pt", "tr", "uk"]);
+    expect(hinweise(roh("impressum")).sort()).toEqual(["ar", "en", "es", "fr", "it", "pt", "tr", "uk"]);
   });
 
   it("Wortlaut der Hinweise: Spanisch, Französisch, Portugiesisch auf beiden Seiten, Englisch im Impressum; im Datenschutz die englische Kurzfassung", () => {
@@ -23,10 +23,12 @@ describe("Impressum und Datenschutz: nur der Hinweis der gewählten Sprache", ()
       es: "Este texto solo tiene validez jurídica en alemán.",
       fr: "Seule la version allemande de ce texte fait foi.",
       pt: "Este texto só tem validade jurídica em alemão.",
+      it: "Solo il testo in lingua tedesca è giuridicamente vincolante.",
+      tr: "Bu metin yalnızca Almanca hâliyle hukuken bağlayıcıdır.",
     };
     for (const seite of ["impressum", "datenschutz"]) {
       for (const [lang, text] of Object.entries(satz)) {
-        const out = nurHinweis(roh(seite), lang as "es" | "fr" | "pt");
+        const out = nurHinweis(roh(seite), lang as "es" | "fr" | "pt" | "it" | "tr");
         expect(out, `${seite} ${lang}`).toContain(`<p lang="${lang}" class="small" data-hinweis="${lang}">${text}</p>`);
         for (const andere of Object.values(satz)) if (andere !== text) expect(out).not.toContain(andere);
       }

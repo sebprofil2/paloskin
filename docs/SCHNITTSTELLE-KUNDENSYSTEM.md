@@ -134,7 +134,7 @@ Felder von `booking` (alle Zeiten UTC mit `Z`):
 | `zones_unknown` | bool | „Ich weiß es noch nicht“ |
 | `status` | `requested`, `confirmed`, `cancelled`, `rescheduled`, `no_show`, `completed` | Buchungsstatus; beim Verschieben bleibt er unverändert, `rescheduled` als Status wird derzeit nicht gesetzt |
 | `channel` | `web`, `walk_in` | Kanal: Online-Buchung oder Walk-in vor Ort (neu 9. Oktober 2026, Abschnitt 4a) |
-| `language` | `de`, `en`, `es`, `fr`, `pt`, `uk`, `ar` | Seitensprache des Kunden: in dieser Sprache hat er gebucht und bekommt er seine Mails. Neu (Ukrainisch, Arabisch): `uk`, `ar` |
+| `language` | `de`, `en`, `es`, `fr`, `pt`, `uk`, `ar`, `it`, `tr` | Seitensprache des Kunden: in dieser Sprache hat er gebucht und bekommt er seine Mails. Neu (Ukrainisch, Arabisch): `uk`, `ar`; neu seit 9. Oktober 2026 (Italienisch, Türkisch, Abschnitt 6.4): `it`, `tr` |
 | `consultation_language` | `de`, `en`, `es`, `fr`, `pt` oder null | Neu: Sprache, in der Dr. Vogel berät (Pflichtfrage in der Buchung, getrennt von `language`). `null` bei Buchungen von vor der Einführung. Ukrainisch und Arabisch kommen hier nie vor |
 | `device` | `mobile`, `desktop`, `on_site` | Gerät bei der Buchung; `on_site` beim Walk-in |
 | `reminder_whatsapp` | `{ "consented": bool, "consented_at": Zeit oder null }` | Einwilligung zur Erinnerung per WhatsApp |
@@ -189,6 +189,14 @@ Zweck: Das Studio kann am Vorabend per WhatsApp von Hand erinnern und den Link d
 - Übertragung nur über diese interne, mit Token gesicherte Verbindung. Der Link wird bei der Auslieferung angehängt und nicht in der Ereignistabelle gespeichert. Wer ihn hat, kann den Termin der Kundin oder des Kunden bestätigen, verschieben oder absagen: im Kundensystem wie Kontaktdaten behandeln, nicht protokollieren und nur an die Kundin oder den Kunden selbst weitergeben.
 
 Das Schema ist nur erweitert: kein bestehendes Feld entfällt oder ändert seine Bedeutung, Ereignistypen bleiben gleich.
+
+### 6.4 Seitensprachen Italienisch und Türkisch (Erweiterung, Auftrag Dr. Vogel vom 9. Oktober 2026)
+
+`language` kann zusätzlich `it` (Italienisch) und `tr` (Türkisch) sein. Die Seite gibt es damit in neun Sprachen; Kundenmails gehen in dieser Sprache.
+
+- `consultation_language` bleibt unverändert bei `de`, `en`, `es`, `fr`, `pt`. Italienisch und Türkisch sind keine Beratungssprachen und kommen dort nie vor; Kunden mit Seitensprache `it` oder `tr` wählen eine der fünf Beratungssprachen (wie bei `uk` und `ar`).
+- Kein neues Feld, kein neuer Ereignistyp, kein bestehender Wert ändert seine Bedeutung. Ein Kundensystem, das bei `language` unbekannte Werte toleriert, läuft unverändert weiter.
+- Stand: zuerst nur auf der Testinstanz neu.paloskin.de, auf www erst nach Freigabe durch Dr. Vogel.
 
 ## 7. Ereignistypen mit Beispielen
 

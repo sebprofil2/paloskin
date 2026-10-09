@@ -17,7 +17,7 @@ import "@/app/design/design.css";
  */
 const WA = "https://wa.me/4915158872566";
 const IG = "https://www.instagram.com/palo.skin";
-const THOUSANDS: Record<Lang, string> = { de: ".", en: ",", es: ".", fr: " ", pt: ".", uk: " ", ar: "," };
+const THOUSANDS: Record<Lang, string> = { de: ".", en: ",", es: ".", fr: " ", pt: ".", it: ".", tr: ".", uk: " ", ar: "," };
 const price = (lang: Lang, n: number) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, THOUSANDS[lang])} €*`;
 
 /* Zweiteilige Überschrift: zweiter Teil kursiv in Blau */
