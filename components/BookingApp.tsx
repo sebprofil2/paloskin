@@ -558,7 +558,6 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
             {choice("wer", s.persons === 2, () => setS((p) => ({ ...p, persons: 2 })), l.persons2)}
           </div>
           {s.persons === 2 ? <p className="note">{l.secondPerson}</p> : null}
-          <p className="note">{l.personsMore} <a href={WA} target="_blank" rel="noopener">{l.personsWa}</a></p>
         </fieldset>
         <fieldset className="grp" id="sec-visit">
           <legend>{l.visitQ}</legend>
