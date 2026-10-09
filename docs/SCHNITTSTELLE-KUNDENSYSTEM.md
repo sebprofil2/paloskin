@@ -102,7 +102,7 @@ Antwort `201` beim Anlegen, `200` bei Wiederholung derselben `request_id`:
 
 `overlaps` ist bei Wiederholung und ohne Überschneidung eine leere Liste. Fehler: 400 `invalid`, 401 `unauthorized`, 429 `rate_limited`, 503 `failed` (Abschnitt 9).
 
-Das Schema ist nur erweitert: neuer Endpunkt, neue Werte `walk_in` bei `channel` und `on_site` bei `device`, kein neues Feld im Ereignis und kein neuer Ereignistyp. Ein Kundensystem, das bei `channel` und `device` unbekannte Werte toleriert, läuft unverändert weiter; Walk-ins aus dem eigenen Haus erkennt es an `channel: "walk_in"` und an der eigenen `request_id` nicht, deshalb die Buchungskennung `booking.id` aus der Antwort speichern.
+Das Schema ist nur erweitert: neuer Endpunkt, neue Werte `walk_in` bei `channel` und `on_site` bei `device`, kein neues Feld im Ereignis und kein neuer Ereignistyp. Ein Kundensystem, das bei `channel` und `device` unbekannte Werte toleriert, läuft unverändert weiter. Walk-ins erkennt es im Ereignisstrom an `channel: "walk_in"`. Die `request_id` steht im Ereignis nicht; zur Zuordnung die Buchungskennung `booking.id` aus der Antwort speichern.
 
 ## 5. Zustand
 
