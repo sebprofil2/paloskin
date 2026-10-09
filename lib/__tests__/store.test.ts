@@ -127,9 +127,21 @@ describe("Reservierung in der Datenbank", () => {
     expect(s.purgeIdempotency(new Date(t0.getTime() + 8 * 86400000))).toBe(1);
   });
 
-  it("weist Zeiten außerhalb des Rasters zurück", () => {
+  it("weist Zeiten außerhalb des 5-Minuten-Rasters zurück (seit 10. Oktober 2026 Beginn auf 5 Minuten genau)", () => {
     const s = openStore(":memory:");
-    expect(() => s.reserve(input("99999999-1111-4111-8111-111111111111", { start: new Date("2026-10-05T08:05:00Z") }))).toThrow(/Raster/);
+    expect(() => s.reserve(input("99999999-1111-4111-8111-111111111111", { start: new Date("2026-10-05T08:07:00Z") }))).toThrow(/Raster/);
+    expect(s.reserve(input("99999999-1111-4111-8111-111111111112", { start: new Date("2026-10-05T08:05:00Z") })).outcome).toBe("created");
+  });
+
+  it("aneinander anschließende Termine teilen sich eine Einheit, Überschneidungen bleiben gesperrt", () => {
+    const s = openStore(":memory:");
+    const at = (iso: string, id: string, minutes: number) => s.reserve(input(id, { start: new Date(iso), durationMinutes: minutes })).outcome;
+    expect(at("2026-10-05T08:00:00Z", "99999999-1111-4111-8111-111111111121", 15)).toBe("created");
+    expect(at("2026-10-05T08:15:00Z", "99999999-1111-4111-8111-111111111122", 15)).toBe("created");
+    expect(at("2026-10-05T08:10:00Z", "99999999-1111-4111-8111-111111111123", 15)).toBe("conflict");
+    expect(at("2026-10-05T08:25:00Z", "99999999-1111-4111-8111-111111111124", 30)).toBe("conflict");
+    expect(at("2026-10-05T08:30:00Z", "99999999-1111-4111-8111-111111111125", 30)).toBe("created");
+    expect(s.lockedIntervals(new Date("2026-10-05T07:00:00Z"), new Date("2026-10-05T10:00:00Z"))).toHaveLength(3);
   });
 
   it("leitet Leistungscodes ohne Personen und Kontrolle ab", () => {

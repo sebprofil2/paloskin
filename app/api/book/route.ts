@@ -42,7 +42,8 @@ export async function POST(req: Request) {
   const minutes = durationMinutes(body.selection);
   const start = new Date(body.start);
   // Raster (volle und halbe Stunden oder Anschlusszeit), Vorlauf, Horizont und Nachtregel gelten beim Absenden, nicht beim Laden der Seite
-  const offered = isOfferedStart(start, env.stepMinutes, dbSlotInputs(getStore()).anchors);
+  const db = dbSlotInputs(getStore(), undefined, new Date(), body.selection.checkup);
+  const offered = isOfferedStart(start, env.stepMinutes, db.anchors, db.quarterFill ? { own: db.quarterFill, durationMinutes: minutes } : undefined);
   if (!offered || !isBookableStart(start, new Date())) return json({ status: "conflict" }, 409);
 
   const ref = bookingRefFor(body.requestId);

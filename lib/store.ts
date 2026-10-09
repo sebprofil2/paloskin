@@ -19,6 +19,16 @@ import { confirmFromFor, inConfirmWindow } from "./attendance";
  */
 export const UNIT_MINUTES = 10;
 const UNIT_MS = UNIT_MINUTES * 60000;
+/*
+ * Beginn im 5-Minuten-Raster (seit 10. Oktober 2026): Kontrollen um :15 und :45 und Anschlusszeiten genau am Terminende.
+ * Doppelbuchungen verhindert seitdem zuerst der Vergleich mit den tatsächlichen Zeiten der bestehenden Termine (in der
+ * Transaktion), dann die Eindeutigkeit der 10-Minuten-Einheiten, die eine Buchung ganz ausfüllt. So stehen 10:00 bis 10:15
+ * und 10:15 bis 10:30 nebeneinander, obwohl sich beide die Einheit 10:10 teilen.
+ */
+const START_GRID_MS = 5 * 60000;
+
+/** Zeit belegt: ein anderer aktiver Termin überschneidet sich (Abbruch der Transaktion, Ergebnis „conflict“). */
+class TimeTakenError extends Error {}
 
 export type BookingStatus = "requested" | "confirmed" | "cancelled" | "rescheduled" | "no_show" | "completed";
 export type CalendarState = "pending" | "written" | "failed";
@@ -271,7 +281,7 @@ export class Store {
    */
   reserve(i: ReserveInput): ReserveResult {
     const startMs = i.start.getTime();
-    if (startMs % UNIT_MS !== 0) throw new Error("Beginn liegt nicht im 10-Minuten-Raster");
+    if (startMs % START_GRID_MS !== 0) throw new Error("Beginn liegt nicht im 5-Minuten-Raster");
     if (!Number.isInteger(i.durationMinutes) || i.durationMinutes <= 0) throw new Error("Dauer ungültig");
     const now = iso(i.now ?? new Date());
     const key = requestKey(i.requestId);
@@ -322,10 +332,7 @@ export class Store {
           // Kurzfristig gebucht (nach Vortag 10 Uhr, keine Erinnerung mehr): gilt automatisch als bestätigt
           inConfirmWindow(i.start, new Date(now)) ? now : null,
         );
-      const insertLock = this.db.prepare("INSERT INTO slot_locks (slot_start, booking_id) VALUES (?, ?)");
-      const firstUnit = startMs / 60000;
-      const units = Math.ceil(i.durationMinutes / UNIT_MINUTES);
-      for (let u = 0; u < units; u++) insertLock.run(firstUnit + u * UNIT_MINUTES, id);
+      this.claimTime(id, startMs, endMs);
       this.db.prepare("INSERT INTO idempotency (request_key, booking_id, created_at) VALUES (?, ?, ?)").run(key, id, now);
       const row = this.get(id)!;
       this.appendEvent(row, "created", now);
@@ -337,9 +344,24 @@ export class Store {
       } catch {
         /* Transaktion war schon beendet */
       }
-      if (isUniqueViolation(e)) return { outcome: "conflict" };
+      if (isUniqueViolation(e) || e instanceof TimeTakenError) return { outcome: "conflict" };
       throw e;
     }
+  }
+
+  /**
+   * Zeit für eine Buchung belegen, in der laufenden Transaktion: erst Vergleich mit den tatsächlichen Zeiten aller aktiven
+   * Termine (ohne exceptId), dann die 10-Minuten-Einheiten, die der Termin ganz ausfüllt (Eindeutigkeit als zweite Sperre).
+   */
+  private claimTime(id: string, startMs: number, endMs: number, exceptId: string = id): void {
+    const hit = this.db
+      .prepare("SELECT 1 FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND id <> ? AND starts_at < ? AND ends_at > ? LIMIT 1")
+      .get(exceptId, iso(new Date(endMs)), iso(new Date(startMs)));
+    if (hit) throw new TimeTakenError("Zeit belegt");
+    const insertLock = this.db.prepare("INSERT INTO slot_locks (slot_start, booking_id) VALUES (?, ?)");
+    const firstUnit = Math.ceil(startMs / UNIT_MS) * UNIT_MINUTES;
+    const lastUnit = Math.floor(endMs / UNIT_MS) * UNIT_MINUTES;
+    for (let u = firstUnit; u < lastUnit; u += UNIT_MINUTES) insertLock.run(u, id);
   }
 
   /**
@@ -621,7 +643,7 @@ export class Store {
    */
   reschedule(id: string, newStart: Date, now = new Date()): { outcome: "rescheduled" | "conflict" | "missing"; booking: BookingRow | null } {
     const startMs = newStart.getTime();
-    if (startMs % UNIT_MS !== 0) throw new Error("Beginn liegt nicht im 10-Minuten-Raster");
+    if (startMs % START_GRID_MS !== 0) throw new Error("Beginn liegt nicht im 5-Minuten-Raster");
     const at = iso(now);
     this.db.exec("BEGIN IMMEDIATE");
     try {
@@ -631,11 +653,8 @@ export class Store {
         return { outcome: "missing", booking: null };
       }
       this.db.prepare("DELETE FROM slot_locks WHERE booking_id = ?").run(id);
-      const insertLock = this.db.prepare("INSERT INTO slot_locks (slot_start, booking_id) VALUES (?, ?)");
-      const firstUnit = startMs / 60000;
-      const units = Math.ceil(row.duration_minutes / UNIT_MINUTES);
-      for (let u = 0; u < units; u++) insertLock.run(firstUnit + u * UNIT_MINUTES, id);
       const endMs = startMs + row.duration_minutes * 60000;
+      this.claimTime(id, startMs, endMs);
       this.db
         .prepare(
           `UPDATE bookings SET previous_starts_at = starts_at, starts_at = ?, ends_at = ?, rescheduled_at = ?, attendance_confirmed_at = ?,
@@ -654,7 +673,7 @@ export class Store {
       } catch {
         /* schon beendet */
       }
-      if (isUniqueViolation(e)) return { outcome: "conflict", booking: null };
+      if (isUniqueViolation(e) || e instanceof TimeTakenError) return { outcome: "conflict", booking: null };
       throw e;
     }
   }

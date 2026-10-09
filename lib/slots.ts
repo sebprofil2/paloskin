@@ -71,10 +71,24 @@ export function overlaps(a: Interval, b: Interval): boolean {
  * Anschlusszeiten (Auftrag Dr. Vogel, 9. Oktober 2026): Zusätzlich zum Raster der vollen und halben Stunden wird direkt am
  * Ende jedes eigenen Termins aus der Buchungsdatenbank eine Startzeit angeboten (online gebucht, Walk-in, vom Studio
  * verschoben), wenn dieses Ende nicht ohnehin im Raster liegt. Private Kalendereinträge blockieren nur, sie sind nie
- * Anknüpfungspunkt. Kein Puffer, keine Lückenregel, keine Zeiten vor einem Termin. Enden außerhalb des
- * 10-Minuten-Rasters der Belegung (zum Beispiel ein Walk-in bis 14:37) werden auf die nächste Einheit aufgerundet (14:40).
+ * Anknüpfungspunkt. Kein Puffer, keine Lückenregel, keine Zeiten vor einem Termin. Startzeiten liegen auf 5 Minuten
+ * genau (seit 10. Oktober 2026, vorher 10): ein Ende um 10:15 ergibt 10:15, ein Walk-in bis 14:37 ergibt 14:40.
  */
-export const ANCHOR_UNIT_MINUTES = 10;
+export const ANCHOR_UNIT_MINUTES = 5;
+
+/*
+ * Kontrolltermin, Lückenfüller (Auftrag Dr. Vogel, 10. Oktober 2026): zusätzlich :15 und :45, aber nur, wenn die
+ * Kontrolle direkt an einen eigenen Termin anschließt (er endet genau zu Beginn) oder genau endet, wenn ein eigener Termin
+ * beginnt. Eine Viertelstunde, die eine sonst freie halbe Stunde zerschneiden würde, entsteht so nie. Private Einträge
+ * blockieren nur. Gilt nur für die Kontrolle.
+ */
+const QUARTER_MS = 15 * 60000;
+
+/** Liegt die Viertelstunden-Startzeit direkt an einem eigenen Termin (davor endet einer genau, danach beginnt einer genau)? */
+export function isQuarterFill(t: number, needMs: number, own: Interval[]): boolean {
+  if (t % QUARTER_MS !== 0 || t % (2 * QUARTER_MS) === 0) return false;
+  return own.some((b) => b.end === t) || own.some((b) => b.start === t + needMs);
+}
 
 /** Anschlusszeiten aus den Enden eigener Termine, ohne Zeiten, die im Raster liegen; aufsteigend, ohne Doppelte. */
 export function anchorStarts(booked: Interval[], stepMinutes: number): number[] {
@@ -88,10 +102,11 @@ export function anchorStarts(booked: Interval[], stepMinutes: number): number[] 
   return [...out].sort((a, b) => a - b);
 }
 
-/** Darf eine Startzeit gewählt werden: im Raster oder eine Anschlusszeit? (Prüfung beim Absenden; frei prüft die Buchung danach) */
-export function isOfferedStart(start: Date, stepMinutes: number, anchors: number[]): boolean {
+/** Darf eine Startzeit gewählt werden: im Raster, eine Anschlusszeit oder (nur Kontrolle) ein Lückenfüller? (Prüfung beim Absenden; frei prüft die Buchung danach) */
+export function isOfferedStart(start: Date, stepMinutes: number, anchors: number[], quarterFill?: { own: Interval[]; durationMinutes: number }): boolean {
   const t = start.getTime();
-  return t % (stepMinutes * 60000) === 0 || anchors.includes(t);
+  if (t % (stepMinutes * 60000) === 0 || anchors.includes(t)) return true;
+  return quarterFill ? isQuarterFill(t, quarterFill.durationMinutes * 60000, quarterFill.own) : false;
 }
 
 export interface SlotInput {
@@ -99,6 +114,8 @@ export interface SlotInput {
   busy: Interval[];
   /** Anschlusszeiten (anchorStarts); werden zusätzlich zum Raster angeboten, wenn frei */
   anchors?: number[];
+  /** Nur Kontrolle: eigene Termine für die Lückenfüller um :15 und :45 (isQuarterFill) */
+  quarterFill?: Interval[];
   durationMinutes: number;
   bufferMinutes: number;
   stepMinutes: number;
@@ -157,6 +174,10 @@ export function computeSlots(input: SlotInput): SlotDay[] {
     for (let t = Math.ceil(wStart / stepMs) * stepMs; t + needMs <= wEnd; t += stepMs) add(t);
     // Anschlusszeiten im selben Fenster, nach denselben Regeln
     for (const a of input.anchors ?? []) if (a >= wStart && a + needMs <= wEnd && a % stepMs !== 0) add(a);
+    // Kontrolle: Viertelstunden direkt an eigenen Terminen
+    if (input.quarterFill) {
+      for (let t = Math.ceil(wStart / QUARTER_MS) * QUARTER_MS; t + needMs <= wEnd; t += QUARTER_MS) if (isQuarterFill(t, needMs, input.quarterFill)) add(t);
+    }
   }
 
   const out: SlotDay[] = [];

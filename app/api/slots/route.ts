@@ -26,7 +26,8 @@ export async function POST(req: Request) {
   const minutes = durationMinutes(parsed.data.selection);
   try {
     // Belegt laut Datenbank und Anschlusszeiten an den Enden eigener Termine
-    const result = await getEngine().getSlots({ durationMinutes: minutes, ...dbSlotInputs(getStore()) });
+    // Kontrolle: zusätzlich Lückenfüller um :15 und :45 an eigenen Terminen
+    const result = await getEngine().getSlots({ durationMinutes: minutes, ...dbSlotInputs(getStore(), undefined, new Date(), parsed.data.selection.checkup) });
     return json({ ...result, durationMinutes: minutes });
   } catch (e) {
     if (!(e instanceof SlotsUnavailableError)) logEvent("error", "slots_failed", { route: "slots", errorClass: errorClass(e) });

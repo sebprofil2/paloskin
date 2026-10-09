@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { dbSlotInputs, placeBooking, type PlaceInput } from "../booking";
 import { MockEngine, mockInternals } from "../engine/mock";
-import { anchorStarts, computeSlots, isOfferedStart, windowFromBerlin, type Interval } from "../slots";
+import { anchorStarts, computeSlots, isOfferedStart, isQuarterFill, windowFromBerlin, type Interval } from "../slots";
 import { openStore, type Store } from "../store";
 import { fromBerlinKey } from "../time";
 import { emptySelection } from "../treatments";
@@ -17,11 +17,12 @@ const at = (hhmm: string) => fromBerlinKey(TAG, hhmm).getTime();
 const iv = (a: string, b: string): Interval => ({ start: at(a), end: at(b) });
 
 /** Startzeiten am Testtag; eigene Termine blockieren und sind Anknüpfungspunkt, private Einträge blockieren nur */
-function zeiten(dauer: number, eigene: Interval[], privat: Interval[] = [], fenster: Interval = windowFromBerlin(TAG, "09:00", "20:00")): string[] {
+function zeiten(dauer: number, eigene: Interval[], privat: Interval[] = [], fenster: Interval = windowFromBerlin(TAG, "09:00", "20:00"), kontrolle = false): string[] {
   const days = computeSlots({
     windows: [fenster],
     busy: [...eigene, ...privat],
     anchors: anchorStarts(eigene, 30),
+    ...(kontrolle ? { quarterFill: eigene } : {}),
     durationMinutes: dauer,
     bufferMinutes: 0,
     stepMinutes: 30,
@@ -71,8 +72,9 @@ describe("Anschlusszeiten in der Zeitauswahl", () => {
     const k = zeiten(15, [iv("16:00", "16:15")]);
     expect(k).toContain("16:30");
     expect(k).toContain("15:30");
-    // 16:15 liegt im 10-Minuten-Raster der Belegung auf 16:20
-    expect(k).toContain("16:20");
+    // Startzeiten auf 5 Minuten genau (seit 10. Oktober 2026): Anschlusszeit genau am Ende
+    expect(k).toContain("16:15");
+    expect(k).not.toContain("16:20");
   });
 
   it("keine Zeiten vor einem Termin, keine Lückenregel: halbe Stunden bleiben, kurze Lücken sind in Ordnung", () => {
@@ -144,5 +146,78 @@ describe("Anschlusszeiten aus der Buchungsdatenbank", () => {
     expect(dbSlotInputs(store, erste.id).anchors).not.toContain(ende);
     // Das Ende der zweiten Buchung (Beginn :20 oder :50 plus 30 Minuten) liegt nie im Raster und bleibt Anknüpfungspunkt
     expect(dbSlotInputs(store, erste.id).anchors).toContain(ende + 30 * 60000);
+  });
+});
+
+describe("Kontrolle: Lückenfüller mit der echten Buchung", () => {
+  it("Kontrolle buchen, dann direkt danach eine zweite um :15; Überschneidung bleibt gesperrt", async () => {
+    const store = openStore(":memory:");
+    mockInternals.reset();
+    const engine = new MockEngine();
+    const deps = { store, engine, mailer: { enabled: false, send: async () => {} } };
+    const k = (id: string, start: Date): PlaceInput => ({ requestId: id, selection: { ...emptySelection(), checkup: true }, start, durationMinutes: 15, customer: { vorname: "Test", nachname: "Kontrolle", handy: "0151 1234567", email: "k@example.com" }, lang: "de", consentAt: new Date(), reminder: false, device: "mobile", testMode: true, binding: true });
+    const frei = await engine.getSlots({ durationMinutes: 15 });
+    const start = new Date(frei.days.find((d) => d.slots.length >= 4 && Date.parse(d.date) > Date.now() + 3 * 86400000)!.slots[0].start);
+    expect((await placeBooking(k("7d2a8c5e-1f4b-4e63-8a99-3b4c5d6e7f81", start), deps)).status).toBe("booked");
+    const viertel = start.getTime() + 15 * 60000;
+    const db = dbSlotInputs(store, undefined, new Date(), true);
+    const z = await engine.getSlots({ durationMinutes: 15, ...db });
+    expect(z.days.flatMap((d) => d.slots).some((x) => Date.parse(x.start) === viertel)).toBe(true);
+    expect((await placeBooking(k("7d2a8c5e-1f4b-4e63-8a99-3b4c5d6e7f82", new Date(viertel)), deps)).status).toBe("booked");
+    expect((await placeBooking(k("7d2a8c5e-1f4b-4e63-8a99-3b4c5d6e7f83", new Date(viertel - 5 * 60000)), deps)).status).toBe("conflict");
+    // Behandlungen bekommen keine Viertelstunden
+    const behandlung = await engine.getSlots({ durationMinutes: 15, ...dbSlotInputs(store) });
+    expect(behandlung.days.flatMap((d) => d.slots).filter((x) => /:(15|45)$/.test(x.time) && Date.parse(x.start) !== viertel + 15 * 60000)).toEqual([]);
+    store.close();
+  });
+});
+
+describe("Kontrolle: Lückenfüller um :15 und :45 (Auftrag Dr. Vogel, 10. Oktober 2026)", () => {
+  const kontrolle = (eigene: Interval[], privat: Interval[] = []) => zeiten(15, eigene, privat, windowFromBerlin(TAG, "09:00", "20:00"), true);
+  const viertel = (z: string[]) => z.filter((t) => /:(15|45)$/.test(t));
+
+  it("Termin 10:00 bis 10:30 gebucht: Kontrolle um 10:30 wie bisher; davor 09:45 (endet genau, wenn der Termin beginnt)", () => {
+    const z = kontrolle([iv("10:00", "10:30")]);
+    expect(z).toContain("10:30");
+    expect(viertel(z)).toEqual(["09:45"]);
+  });
+
+  it("Termin 10:00 bis 10:15 gebucht (Kontrolle): 10:15", () => {
+    const z = kontrolle([iv("10:00", "10:15")]);
+    expect(z).toContain("10:15");
+    expect(z).toContain("10:30");
+  });
+
+  it("Termin ab 11:00 gebucht: 10:45, endet genau, wenn der nächste Termin beginnt", () => {
+    const z = kontrolle([iv("11:00", "11:30")]);
+    expect(z).toContain("10:45");
+    expect(z).toContain("10:30");
+    expect(z).not.toContain("10:15");
+  });
+
+  it("alles frei: nur volle und halbe Stunden; 10:15 zerschneidet die freie halbe Stunde nicht", () => {
+    const z = kontrolle([]);
+    expect(viertel(z)).toEqual([]);
+    expect(z).toContain("10:00");
+    expect(z.every((t) => /:(00|30)$/.test(t))).toBe(true);
+  });
+
+  it("private Einträge blockieren nur, sie sind kein Anknüpfungspunkt", () => {
+    const z = kontrolle([], [iv("10:00", "10:15"), iv("11:00", "11:30")]);
+    expect(z).not.toContain("10:15");
+    expect(z).not.toContain("10:45");
+  });
+
+  it("gilt nur für die Kontrolle, nicht für Behandlungen", () => {
+    expect(zeiten(30, [iv("11:00", "11:30")])).not.toContain("10:30".replace("30", "45"));
+    expect(viertel(zeiten(15, [iv("11:00", "11:30")]))).toEqual([]);
+  });
+
+  it("Prüfung beim Absenden: Lückenfüller nur mit passendem eigenen Termin", () => {
+    const eigen = [iv("11:00", "11:30")];
+    expect(isOfferedStart(new Date(at("10:45")), 30, [], { own: eigen, durationMinutes: 15 })).toBe(true);
+    expect(isOfferedStart(new Date(at("10:15")), 30, [], { own: eigen, durationMinutes: 15 })).toBe(false);
+    expect(isOfferedStart(new Date(at("10:45")), 30, [])).toBe(false);
+    expect(isQuarterFill(at("10:30"), 15 * 60000, [iv("10:00", "10:30")])).toBe(false);
   });
 });

@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     const w = terminWindow(booking);
     if (w !== "open" && w !== "short") return json({ error: "closed" }, 409);
     // Anschlusszeiten wie bei der Buchung; das Ende des eigenen Termins zählt nicht
-    const result = await getEngine().getSlots({ durationMinutes: booking.duration_minutes, ...dbSlotInputs(store, booking.id) });
+    const result = await getEngine().getSlots({ durationMinutes: booking.duration_minutes, ...dbSlotInputs(store, booking.id, new Date(), booking.checkup === 1) });
     return json({ ...result, durationMinutes: booking.duration_minutes });
   } catch (e) {
     if (!(e instanceof SlotsUnavailableError)) logEvent("error", "termin_slots_failed", { route: "termin", errorClass: errorClass(e) });

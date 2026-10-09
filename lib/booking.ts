@@ -107,12 +107,15 @@ export function summarize(b: BookingRow, requestId: string, now = new Date()): B
  * Was die Datenbank zur Zeitauswahl beiträgt: belegte Zeiten (blockieren) und Anschlusszeiten an den Enden eigener
  * Termine (lib/slots.ts). Beim Verschieben zählt der eigene Termin nicht als Anknüpfungspunkt.
  */
-export function dbSlotInputs(store: Store, exceptId?: string, now = new Date()): { extraBusy: Interval[]; anchors: number[] } {
+export function dbSlotInputs(store: Store, exceptId?: string, now = new Date(), checkup = false): { extraBusy: Interval[]; anchors: number[]; quarterFill?: Interval[] } {
   const { from, to } = bookingRange(now);
   const booked = store.bookedIntervals(from, to);
+  const own = booked.filter((b) => b.id !== exceptId).map(({ start, end }) => ({ start, end }));
   return {
     extraBusy: booked.map(({ start, end }) => ({ start, end })),
-    anchors: anchorStarts(booked.filter((b) => b.id !== exceptId), readEnv().stepMinutes),
+    anchors: anchorStarts(own, readEnv().stepMinutes),
+    // Nur Kontrolle: Lückenfüller um :15 und :45 an eigenen Terminen
+    ...(checkup ? { quarterFill: own } : {}),
   };
 }
 
@@ -334,7 +337,7 @@ export async function rescheduleBooking(id: string, newStart: Date, deps: Deps =
   if (!current || current.deleted_at || current.status === "cancelled") return { status: "missing" };
   const w = terminWindow(current, now);
   if (w !== "open" && w !== "short") return { status: "invalid" };
-  if (newStart.getTime() % 600000 !== 0 || !isBookableStart(newStart, now)) return { status: "invalid" };
+  if (newStart.getTime() % 300000 !== 0 || !isBookableStart(newStart, now)) return { status: "invalid" };
   // Ohne erfolgreiche Prüfung keine Verschiebung; der bisherige Termin bleibt unverändert
   let free: boolean;
   try {
