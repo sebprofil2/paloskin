@@ -11,7 +11,7 @@ PROBLEMS=()
 
 # 1. Speicherplatz: Alarm ab 85 Prozent Belegung auf /
 USE=$(df --output=pcent / | tail -1 | tr -dc '0-9')
-[ "${USE:-0}" -ge 85 ] && PROBLEMS+=("disk ${USE}%")
+[ "${USE:-0}" -ge 85 ] && PROBLEMS+=("Speicherplatz zu ${USE} Prozent belegt")
 
 # 2. Container laufen und App ist healthy
 STATE=$($COMPOSE ps --format '{{.Service}} {{.State}} {{.Health}}' 2>/dev/null)
@@ -79,7 +79,7 @@ if [ ${#PROBLEMS[@]} -eq 0 ]; then
   if [ -n "${HEARTBEAT_URL:-}" ]; then
     if curl -fsS -m 10 -o /dev/null "$HEARTBEAT_URL"; then SENT="Lebenszeichen gesendet"; else SENT="Lebenszeichen konnte nicht gesendet werden"; fi
   fi
-  logger -t paloskin-heartbeat "ok (disk ${USE}%, Fehler ${ERRORS:-0}), ${SENT}"
+  logger -t paloskin-heartbeat "In Ordnung (Speicherplatz zu ${USE} Prozent belegt, Fehler: ${ERRORS:-0}), ${SENT}"
 else
-  logger -t paloskin-heartbeat "PROBLEM: ${PROBLEMS[*]}"
+  logger -t paloskin-heartbeat "Problem: ${PROBLEMS[*]}"
 fi

@@ -92,3 +92,19 @@ describe("Handliste für WhatsApp-Erinnerungen", () => {
     expect(await sendReminderListIfDue({ store, engine, mailer }, now)).toBe(1);
   });
 });
+
+describe("Tagesliste: Hinweis zur Handynummer (Sprachleitfaden, Freigabe 10. Oktober 2026)", () => {
+  it("ungewöhnliche Nummer: eigener Satz unter dem Termin, wie in Kalender und Studio-Mail; sonst kein Hinweis", () => {
+    const store = openStore(":memory:");
+    const base = { durationMinutes: 30, selection: { ...emptySelection(), visit: "first" as const, beratung: true }, lang: "de" as const, consultLang: "de" as const, consentAt: new Date(), reminder: false, device: "mobile" as const, testMode: false, status: "confirmed" as const };
+    const a = store.reserve({ ...base, requestId: crypto.randomUUID(), reference: "PS-LISTE1", start: new Date("2026-10-13T08:00:00Z"), customer: { vorname: "Erika", nachname: "Muster", handy: "030 12345678", email: "a@example.com" } });
+    const b = store.reserve({ ...base, requestId: crypto.randomUUID(), reference: "PS-LISTE2", start: new Date("2026-10-13T09:00:00Z"), customer: { vorname: "Max", nachname: "Beispiel", handy: "0151 7654321", email: "b@example.com" } });
+    if (a.outcome === "conflict" || b.outcome === "conflict") throw new Error("Konflikt");
+    const m = listMail([a.booking, b.booking], new Date("2026-10-12T16:00:00Z"));
+    expect(m.text).toContain("Anrufen: +493012345678\nDie Handynummer sieht ungewöhnlich aus. Bitte vor dem Termin kurz prüfen.");
+    expect(m.html).toContain("<br>Die Handynummer sieht ungewöhnlich aus. Bitte vor dem Termin kurz prüfen.</li>");
+    expect(m.text.match(/Die Handynummer sieht ungewöhnlich aus/g)).toHaveLength(1);
+    expect(m.text).not.toContain("Nummer prüfen");
+    store.close();
+  });
+});
