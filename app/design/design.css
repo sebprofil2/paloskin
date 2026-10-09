@@ -36,7 +36,7 @@
   --c-error:#A3392A;
   /* Schriften */
   --font-sans:var(--font-schibsted),var(--font-noto-kyr),var(--font-noto-ar),system-ui,sans-serif;
-  --font-serif:var(--font-newsreader),var(--font-noto-kyr),var(--font-noto-ar),Georgia,serif;
+  --font-serif:var(--font-newsreader-ext),var(--font-newsreader),var(--font-noto-kyr),var(--font-noto-ar),Georgia,serif;
   /* Schriftgrößen */
   --fs-s:14px;
   --fs-m:17px;
