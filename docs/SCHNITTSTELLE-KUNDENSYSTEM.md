@@ -1,6 +1,6 @@
 # Schnittstelle Buchung zu Kundensystem (Studio OS)
 
-Stand: 6. Oktober 2026 (Erweiterung `customer_portal_url`, Abschnitt 6.3), Fassung 4 des Bauauftrags Stufe 2, Codes verbindlich, Gegenprüfung des CRM-Projekts eingearbeitet. Dieses Dokument ist die verbindliche Beschreibung des Endpunkts auf paloskin-1; bei Abweichungen zwischen Attrappe und Dokument gilt das Dokument.
+Stand: 9. Oktober 2026 (Walk-in melden, Abschnitt 4a; davor `customer_portal_url`, Abschnitt 6.3), Fassung 4 des Bauauftrags Stufe 2, Codes verbindlich, Gegenprüfung des CRM-Projekts eingearbeitet. Dieses Dokument ist die verbindliche Beschreibung des Endpunkts auf paloskin-1; bei Abweichungen zwischen Attrappe und Dokument gilt das Dokument.
 
 ## 1. Zugang
 
@@ -52,6 +52,58 @@ Vorgehen des Kundensystems: abholen, verarbeiten, bestätigen (Abschnitt 3), mit
 - `cancelled`: Status `cancelled`, Belegung frei, Ereignis `cancelled`, Kalendereintrag gelöscht. Mehrfach aufrufbar (`changed: false` ab dem zweiten Mal).
 - Antwort: `{ "booking": { vollständiger Stand }, "changed": true }`, auch bei 409 `already_cancelled`. Der Stand enthält wie im Ereignisstrom `customer_portal_url` (Abschnitt 6.3). Unbekannte Kennung 404. Nichts anderes ist über den Rückweg änderbar. Eine eigene Statusabfrage ohne Änderung gibt es nicht.
 
+## 4a. Walk-in melden (Erweiterung, Auftrag Dr. Vogel vom 9. Oktober 2026)
+
+`POST /intern/v1/walk-ins`: Ein Kunde kam ohne Buchung ins Studio. Das Kundensystem meldet ihn, die Buchung trägt ihn als Termin nach.
+
+```json
+{
+  "request_id": "5b0e6a3c-9d2f-4c41-8a77-1f2e3d4c5b6a",
+  "first_name": "Erika",
+  "last_name": "Muster",
+  "phone": "+49 151 1234567",
+  "email": "erika@example.com",
+  "checked_in_at": "2026-10-09T14:07:00+02:00",
+  "duration_minutes": 30,
+  "first_visit": false
+}
+```
+
+| Feld | Typ | Pflicht | Bedeutung |
+| --- | --- | --- | --- |
+| `request_id` | UUID | ja | Vom Kundensystem je Walk-in einmal erzeugt. Schützt vor doppelten Einträgen: Dieselbe Kennung liefert die schon angelegte Buchung (Antwort 200, `created: false`), auch wenn die übrigen Felder abweichen. Gilt 7 Tage. |
+| `first_name` | Text, 1 bis 60 Zeichen | ja | Vorname |
+| `last_name` | Text, bis 60 Zeichen | nein, Standard leer | Nachname |
+| `phone` | Text | ja | Handynummer in beliebiger Schreibweise; gespeichert als `+` und Ziffern wie bei der Online-Buchung. Ohne jede Ziffer 400. Eine ungewöhnliche Nummer wird angenommen und im Kalender mit „Nummer prüfen“ vermerkt. |
+| `email` | E-Mail oder null | nein | Ohne Angabe steht in `booking.email` ein leerer Text. Es geht nie eine Mail an diese Adresse. |
+| `checked_in_at` | Zeit mit Versatz (`Z` oder `+02:00`) | ja | Check-in-Zeit, auf die Minute abgerundet, ist der Beginn des Termins. Höchstens 10 Minuten in der Zukunft, höchstens 7 Tage zurück, sonst 400. |
+| `duration_minutes` | ganze Zahl 5 bis 240 | nein, Standard 30 | Dauer |
+| `first_visit` | bool | nein, Standard `false` | Erster Besuch; bestimmt `appointment_type` (`first` oder `follow_up`) |
+
+Andere Felder ergeben 400.
+
+Was die Buchung daraus macht:
+
+- Bestätigter Termin (`status: "confirmed"`) mit `channel: "walk_in"` (Quelle „vor Ort“) und `device: "on_site"`.
+- `attendance_confirmed_at` und `consent_at` sind die Check-in-Zeit (der Kunde ist da; die Einwilligung liegt im Studio vor).
+- Weitere Felder: `reminder_whatsapp.consented` ist `false`, `language` ist `de`, `consultation_language` ist `null`, `service_codes` und `zones` sind leer, `persons` ist 1, `note` ist leer.
+- Die Zeit ist für Online-Buchungen belegt.
+- Kalendereintrag wie bei allen Terminen. Titel: `Palo Skin: Erika M. (Walk-in, Check-in vor Ort)`. Die Beschreibung beginnt mit „Walk-in, Check-in vor Ort“, danach folgen Buchungsnummer und Besuch.
+- Ereignis `created` im Ereignisstrom mit dem vollständigen Stand (Abschnitt 6), kein neuer Ereignistyp.
+- Keine Mail und keine Erinnerung an den Kunden, keine Studio-Mail, kein Eintrag in der WhatsApp-Handliste.
+- Überschneidung: Was im Studio geschieht, gilt. Ist die Zeit schon durch eine andere Buchung belegt, wird der Walk-in trotzdem angelegt; die andere Buchung bleibt unverändert und steht in `overlaps`.
+- Weitere Änderungen wie bei jeder Buchung: Absage über `POST /intern/v1/bookings/{id}/status`, Verschieben oder Löschen im Kalender.
+
+Antwort `201` beim Anlegen, `200` bei Wiederholung derselben `request_id`:
+
+```json
+{ "booking": { "id": "01M4A2…", "reference": "PS-8CN7SC", "status": "confirmed", "channel": "walk_in", "device": "on_site", "...": "vollständiger Stand wie in Abschnitt 6, mit customer_portal_url" }, "created": true, "overlaps": [ { "id": "01M49Z…", "reference": "PS-FFL87G" } ] }
+```
+
+`overlaps` ist bei Wiederholung und ohne Überschneidung eine leere Liste. Fehler: 400 `invalid`, 401 `unauthorized`, 429 `rate_limited`, 503 `failed` (Abschnitt 9).
+
+Das Schema ist nur erweitert: neuer Endpunkt, neue Werte `walk_in` bei `channel` und `on_site` bei `device`, kein neues Feld im Ereignis und kein neuer Ereignistyp. Ein Kundensystem, das bei `channel` und `device` unbekannte Werte toleriert, läuft unverändert weiter; Walk-ins aus dem eigenen Haus erkennt es an `channel: "walk_in"` und an der eigenen `request_id` nicht, deshalb die Buchungskennung `booking.id` aus der Antwort speichern.
+
 ## 5. Zustand
 
 `GET /intern/v1/health` liefert ohne Kundendaten:
@@ -81,13 +133,13 @@ Felder von `booking` (alle Zeiten UTC mit `Z`):
 | `other_zone` | Text oder null | frei eingetragene Zone des Kunden |
 | `zones_unknown` | bool | „Ich weiß es noch nicht“ |
 | `status` | `requested`, `confirmed`, `cancelled`, `rescheduled`, `no_show`, `completed` | Buchungsstatus; beim Verschieben bleibt er unverändert, `rescheduled` als Status wird derzeit nicht gesetzt |
-| `channel` | `web` | Kanal |
+| `channel` | `web`, `walk_in` | Kanal: Online-Buchung oder Walk-in vor Ort (neu 9. Oktober 2026, Abschnitt 4a) |
 | `language` | `de`, `en`, `es`, `fr`, `pt`, `uk`, `ar` | Seitensprache des Kunden: in dieser Sprache hat er gebucht und bekommt er seine Mails. Neu (Ukrainisch, Arabisch): `uk`, `ar` |
 | `consultation_language` | `de`, `en`, `es`, `fr`, `pt` oder null | Neu: Sprache, in der Dr. Vogel berät (Pflichtfrage in der Buchung, getrennt von `language`). `null` bei Buchungen von vor der Einführung. Ukrainisch und Arabisch kommen hier nie vor |
-| `device` | `mobile`, `desktop` | Gerät bei der Buchung |
+| `device` | `mobile`, `desktop`, `on_site` | Gerät bei der Buchung; `on_site` beim Walk-in |
 | `reminder_whatsapp` | `{ "consented": bool, "consented_at": Zeit oder null }` | Einwilligung zur Erinnerung per WhatsApp |
 | `consent_at` | Zeit | Einwilligung zur Verarbeitung |
-| `first_name`, `last_name`, `phone_e164`, `email` | Text | Kontakt |
+| `first_name`, `last_name`, `phone_e164`, `email` | Text | Kontakt; beim Walk-in ohne Angabe sind `last_name` und `email` leerer Text |
 | `note` | Text | Notiz des Kunden, nur hier und in der Datenbank, nie im Kalender |
 | `referral` | Text oder null | Empfehlung von der Bestätigungsseite |
 | `test` | bool | Testbuchung (Testbetrieb der Seite); im Kundensystem gesondert behandeln |

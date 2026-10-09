@@ -149,6 +149,29 @@ export interface ReserveInput {
 
 export type ReserveResult = { outcome: "created" | "existing"; booking: BookingRow } | { outcome: "conflict" };
 
+/** Walk-in aus dem Kundensystem (POST /intern/v1/walk-ins): Kunde kam ohne Buchung, Termin wird nachgetragen. */
+export interface WalkInInput {
+  requestId: string;
+  reference: string;
+  /** Check-in-Zeit, auf die Minute */
+  start: Date;
+  durationMinutes: number;
+  firstName: string;
+  lastName: string;
+  /** + und Ziffern (lib/phone.ts) */
+  phone: string;
+  /** leer, wenn keine angegeben */
+  email: string;
+  firstVisit: boolean;
+  testMode: boolean;
+  now?: Date;
+}
+
+export type WalkInResult = { outcome: "created" | "existing"; booking: BookingRow; overlaps: { id: string; reference: string }[] };
+
+/** Kanal einer Buchung: web (Online-Buchung) oder walk_in (vor Ort, vom Kundensystem gemeldet) */
+export const CHANNEL_WALK_IN = "walk_in";
+
 /** Die Anfragekennung selbst wird nicht gespeichert, nur ihr Hash. */
 export function requestKey(requestId: string): string {
   return createHash("sha256").update(`paloskin-request:${requestId}`).digest("base64url");
@@ -315,6 +338,64 @@ export class Store {
         /* Transaktion war schon beendet */
       }
       if (isUniqueViolation(e)) return { outcome: "conflict" };
+      throw e;
+    }
+  }
+
+  /**
+   * Walk-in nachtragen (Auftrag Dr. Vogel, 9. Oktober 2026): bestätigter Termin ab der Check-in-Zeit, Kanal walk_in,
+   * Gerät on_site, Zusage zur Check-in-Zeit (der Kunde ist da), keine WhatsApp-Erinnerung. Wie bei der Übernahme aus dem
+   * Kalender gilt, was im Studio geschieht: kein Raster, Einheiten von der angefangenen bis zur letzten angebrochenen
+   * belegen; liegt eine schon bei einer anderen Buchung, bleibt sie dort und die Überschneidung wird gemeldet.
+   * Ereignis created in derselben Transaktion. Dieselbe Anfragekennung liefert die bestehende Buchung.
+   */
+  reserveWalkIn(i: WalkInInput): WalkInResult {
+    const startMs = i.start.getTime();
+    if (startMs % 60000 !== 0) throw new Error("Beginn nicht auf die Minute");
+    if (!Number.isInteger(i.durationMinutes) || i.durationMinutes <= 0) throw new Error("Dauer ungültig");
+    const now = iso(i.now ?? new Date());
+    this.db.exec("BEGIN IMMEDIATE");
+    try {
+      const existing = this.findByRequestId(i.requestId);
+      if (existing) {
+        this.db.exec("COMMIT");
+        return { outcome: "existing", booking: existing, overlaps: [] };
+      }
+      const id = ulid();
+      const endMs = startMs + i.durationMinutes * 60000;
+      const selection: Selection = { persons: 1, visit: i.firstVisit ? "first" : "return", checkup: false, beratung: false, zones: [], otherZone: null, zonesUnknown: false, kaumuskel: false, nefertiti: false, achsel: false, lachs: null, note: "" };
+      const checkIn = iso(i.start);
+      this.db
+        .prepare(
+          `INSERT INTO bookings (id, reference, created_at, starts_at, ends_at, duration_minutes, persons, first_visit, service_codes, zones, checkup,
+             status, channel, language, consultation_language, device, reminder_whatsapp, reminder_consent_at, consent_at, first_name, last_name, phone_e164, email, note,
+             referral, selection, test_mode, calendar_event_id, calendar_state, calendar_attempts, calendar_attempted_at, updated_at, deleted_at, attendance_confirmed_at,
+             mail_reminder_skipped)
+           VALUES (?, ?, ?, ?, ?, ?, 1, ?, '[]', '[]', 0, 'confirmed', ?, 'de', NULL, 'on_site', 0, NULL, ?, ?, ?, ?, ?, '', NULL, ?, ?, NULL, 'pending', 0, NULL, ?, NULL, ?, 1)`,
+        )
+        .run(id, i.reference, now, checkIn, iso(new Date(endMs)), i.durationMinutes, i.firstVisit ? 1 : 0, CHANNEL_WALK_IN, checkIn, i.firstName, i.lastName, i.phone, i.email, JSON.stringify(selection), i.testMode ? 1 : 0, now, checkIn);
+      const insertLock = this.db.prepare("INSERT OR IGNORE INTO slot_locks (slot_start, booking_id) VALUES (?, ?)");
+      const holder = this.db.prepare("SELECT b.id, b.reference FROM slot_locks l JOIN bookings b ON b.id = l.booking_id WHERE l.slot_start = ?");
+      const overlaps = new Map<string, string>();
+      const firstUnit = Math.floor(startMs / UNIT_MS) * UNIT_MINUTES;
+      const lastUnit = Math.ceil(endMs / UNIT_MS) * UNIT_MINUTES;
+      for (let u = firstUnit; u < lastUnit; u += UNIT_MINUTES) {
+        if (insertLock.run(u, id).changes === 0) {
+          const h = holder.get(u) as { id: string; reference: string } | undefined;
+          if (h) overlaps.set(h.id, h.reference);
+        }
+      }
+      this.db.prepare("INSERT INTO idempotency (request_key, booking_id, created_at) VALUES (?, ?, ?)").run(requestKey(i.requestId), id, now);
+      const row = this.get(id)!;
+      this.appendEvent(row, "created", now);
+      this.db.exec("COMMIT");
+      return { outcome: "created", booking: row, overlaps: [...overlaps].map(([oid, reference]) => ({ id: oid, reference })) };
+    } catch (e) {
+      try {
+        this.db.exec("ROLLBACK");
+      } catch {
+        /* Transaktion war schon beendet */
+      }
       throw e;
     }
   }
@@ -496,16 +577,16 @@ export class Store {
     const stale = iso(new Date(now.getTime() - 2 * 60000));
     return this.db
       .prepare(
-        `SELECT * FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_confirmation_sent_at IS NULL
+        `SELECT * FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_confirmation_sent_at IS NULL AND channel <> 'walk_in'
          AND starts_at > ? AND (mail_confirmation_attempts > 0 OR created_at < ?) ORDER BY created_at LIMIT ?`,
       )
       .all(iso(now), stale, limit) as unknown as BookingRow[];
   }
 
-  /** Nicht abgesagte Termine im Zeitraum, nach Beginn sortiert (Erinnerung, Handliste). */
+  /** Nicht abgesagte Termine im Zeitraum, nach Beginn sortiert (Erinnerung, Handliste); Walk-ins nie (keine Erinnerung). */
   bookingsBetween(from: Date, to: Date): BookingRow[] {
     return this.db
-      .prepare("SELECT * FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND starts_at >= ? AND starts_at < ? ORDER BY starts_at")
+      .prepare("SELECT * FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND channel <> 'walk_in' AND starts_at >= ? AND starts_at < ? ORDER BY starts_at")
       .all(iso(from), iso(to)) as unknown as BookingRow[];
   }
 
@@ -524,7 +605,7 @@ export class Store {
   countMailOverdue(now = new Date()): number {
     const limit = iso(new Date(now.getTime() - 24 * 3600000));
     const r = this.db
-      .prepare("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_confirmation_sent_at IS NULL AND starts_at > ? AND created_at < ?")
+      .prepare("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_confirmation_sent_at IS NULL AND channel <> 'walk_in' AND starts_at > ? AND created_at < ?")
       .get(iso(now), limit) as { n: number };
     return r.n;
   }
@@ -706,7 +787,7 @@ export class Store {
     const one = (sql: string, ...args: (string | number)[]) => (this.db.prepare(sql).get(...args) as { n: number }).n;
     return {
       calendar: one("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND calendar_state <> 'written' AND COALESCE(calendar_pending_at, created_at) < ?", limit),
-      confirmation: one("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_confirmation_sent_at IS NULL AND starts_at > ? AND COALESCE(rescheduled_at, created_at) < ?", iso(now), limit),
+      confirmation: one("SELECT COUNT(*) AS n FROM bookings WHERE deleted_at IS NULL AND status <> 'cancelled' AND mail_confirmation_sent_at IS NULL AND channel <> 'walk_in' AND starts_at > ? AND COALESCE(rescheduled_at, created_at) < ?", iso(now), limit),
       studio: one("SELECT COUNT(*) AS n FROM studio_mails WHERE sent_at IS NULL AND created_at < ?", limit),
     };
   }

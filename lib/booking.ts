@@ -11,7 +11,7 @@ import { isCustomerCancel } from "./cancel-reasons";
 import { terminUrl } from "./links";
 import { bookingRefFor } from "./ref";
 import type { Customer } from "./schema";
-import { getStore, type BookingRow, type Store } from "./store";
+import { CHANNEL_WALK_IN, getStore, type BookingRow, type Store } from "./store";
 import { toBerlinIso } from "./time";
 import type { ConsultLang } from "./i18n";
 import type { Lang, Selection } from "./treatments";
@@ -148,9 +148,26 @@ export async function placeBooking(i: PlaceInput, deps: Deps = defaultDeps()): P
   return { status: "booked", booking: summarize(r.booking, i.requestId) };
 }
 
+/** Zusatz im Kalender für Walk-ins (Auftrag Dr. Vogel, 9. Oktober 2026) */
+export const WALK_IN_NOTE = "Walk-in, Check-in vor Ort";
+
 export function calendarInput(b: BookingRow) {
   const selection = JSON.parse(b.selection) as Selection;
   const customer: Customer = { vorname: b.first_name, nachname: b.last_name, handy: b.phone_e164, email: b.email };
+  if (b.channel === CHANNEL_WALK_IN) {
+    // Walk-in: nur, was das Studio im Kalender braucht; keine Vorauswahl, keine Sprache, keine Erinnerung
+    const rows = [WALK_IN_NOTE, `Buchungsnummer: ${b.reference}`, `Besuch: ${b.first_visit === 1 ? "Erster Besuch" : "Schon einmal da"}`];
+    if (phoneUnusual(b.phone_e164)) rows.push("Nummer prüfen: Die Handynummer sieht ungewöhnlich aus.");
+    return {
+      reference: b.reference,
+      title: `${buildTitle(customer, b.test_mode === 1)} (${WALK_IN_NOTE})`,
+      description: rows.join("\n"),
+      start: new Date(b.starts_at),
+      end: new Date(b.ends_at),
+      serviceCode: serviceCode(selection),
+      reminder: false,
+    };
+  }
   let description = buildDescription({
     bookingRef: b.reference,
     selection,
@@ -198,10 +215,50 @@ export async function writeCalendar(b: BookingRow, deps: Deps = defaultDeps(), l
   }
 }
 
+export interface WalkInRequest {
+  requestId: string;
+  checkedInAt: Date;
+  durationMinutes: number;
+  firstName: string;
+  lastName: string;
+  /** schon bereinigt: + und Ziffern */
+  phone: string;
+  email: string;
+  firstVisit: boolean;
+  testMode: boolean;
+}
+
+export type WalkInOutcome = { created: boolean; booking: BookingRow; overlaps: { id: string; reference: string }[] };
+
+/**
+ * Walk-in nachtragen: bestätigter Termin (Kanal walk_in), Belegung, Ereignis created, Kalendereintrag mit Zusatz
+ * „Walk-in, Check-in vor Ort“. Keine Mail an den Kunden, keine Erinnerung, keine Studio-Mail (das Studio hat ihn selbst
+ * gemeldet). Scheitert der Kalendereintrag, holt ihn der Hintergrundlauf nach.
+ */
+export async function recordWalkIn(i: WalkInRequest, deps: Deps = defaultDeps()): Promise<WalkInOutcome> {
+  const { store, engine } = deps;
+  const r = store.reserveWalkIn({
+    requestId: i.requestId,
+    reference: bookingRefFor(i.requestId),
+    start: i.checkedInAt,
+    durationMinutes: i.durationMinutes,
+    firstName: i.firstName,
+    lastName: i.lastName,
+    phone: i.phone,
+    email: i.email,
+    firstVisit: i.firstVisit,
+    testMode: i.testMode,
+  });
+  if (r.outcome === "existing") return { created: false, booking: r.booking, overlaps: [] };
+  logEvent("info", "walk_in_recorded", { bookingRef: r.booking.reference, engine: engine.name, status: r.overlaps.length ? "überlappt" : "frei" });
+  await writeCalendar(r.booking, deps, false);
+  return { created: true, booking: store.findById(r.booking.id) ?? r.booking, overlaps: r.overlaps };
+}
+
 /** Bestätigungsmail sofort nach dem Commit; bei Fehler bleibt die Buchung gültig, der Hintergrundlauf wiederholt. */
 export async function sendConfirmation(b: BookingRow, deps: Deps = defaultDeps(), now = new Date()): Promise<boolean> {
   const { store, mailer } = deps;
-  if (!mailer.enabled) return false;
+  if (!mailer.enabled || b.channel === CHANNEL_WALK_IN) return false;
   // Vor dem Senden beanspruchen: Sofortversand und Hintergrundlauf senden dieselbe Mail nie doppelt
   if (!store.claimBookingMail(b.id, "confirmation", now)) return false;
   const cur = store.findById(b.id) ?? b;
