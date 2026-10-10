@@ -657,6 +657,7 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 @media (hover:hover) and (pointer:fine){.pb .studio-zoom{cursor:zoom-in}}
 .pb .galerie{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;color:var(--c-white);overscroll-behavior:contain}
 .pb .galerie::backdrop{background:var(--c-galerie)}
+html.galerie-offen .pb .bar{visibility:hidden}
 .pb .galerie[open]{display:block}
 .pb .galerie-buehne{position:absolute;inset:var(--sp-72) var(--sp-80);display:flex;align-items:center;justify-content:center}
 .pb .galerie-buehne img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:var(--r-s)}

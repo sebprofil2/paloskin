@@ -23,6 +23,8 @@ export function StudioGalerie({ photos, t, rtl }: { photos: GaleriePhoto[]; t: G
 
   const open = (i: number, e: React.MouseEvent<HTMLButtonElement>) => {
     openerRef.current = e.currentTarget;
+    // Fester Balken „Termin buchen“ am Handy: ausgeblendet, solange die Großansicht offen ist
+    document.documentElement.classList.add("galerie-offen");
     setIndex(i);
     dialogRef.current?.showModal();
     closeRef.current?.focus();
@@ -35,6 +37,7 @@ export function StudioGalerie({ photos, t, rtl }: { photos: GaleriePhoto[]; t: G
     if (!dlg) return;
     // Nach dem Schließen (Knopf, Escape, Tippen daneben): Fokus zurück auf das Foto, das geöffnet wurde
     const onClose = () => {
+      document.documentElement.classList.remove("galerie-offen");
       setIndex(null);
       openerRef.current?.focus();
     };
