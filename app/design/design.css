@@ -450,6 +450,11 @@ body{margin:0;background:var(--c-bg)}
 .pb .studio-grid figure{margin:0}
 .pb .studio-grid img{display:block;width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:var(--r-s)}
 .pb .ft-l img{display:block;height:var(--sp-28);width:auto}
+/* Fußzeile mit paloskin.de (10. Oktober 2026): auf schmalen Handys steht die Domain ohne Punkt in einer eigenen Zeile */
+@media (max-width:519px){
+.pb .ft-sep{display:none}
+.pb .ft-dom{display:block}
+}
 .pb .lang li a[aria-current="true"],.pb .mlang a[aria-current="true"]{color:var(--c-blue);font-weight:600}
 .pb :focus-visible{outline:var(--sp-3) solid var(--c-focus);outline-offset:var(--sp-2)}
 .pb .sr{position:absolute;width:var(--sp-1);height:var(--sp-1);overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}

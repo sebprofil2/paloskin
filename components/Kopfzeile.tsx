@@ -99,7 +99,15 @@ export function Fusszeile({ lang, t, mobileBar, domain = false }: { lang: Lang; 
           <div className="ft-l">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/assets/logo/web/zeichen.svg" alt="" width={20} height={28} />
-            <bdi>{t.copyright}{domain ? ` · ${STUDIO.domain}` : null}</bdi>
+            {domain ? (
+              <span className="ft-name">
+                <bdi>{t.copyright}</bdi>
+                <span className="ft-sep" aria-hidden="true"> · </span>
+                <bdi className="ft-dom">{STUDIO.domain}</bdi>
+              </span>
+            ) : (
+              <bdi>{t.copyright}</bdi>
+            )}
           </div>
           <div className="ft-r">
             <a href={bookHref(lang)}>{t.book}</a>
