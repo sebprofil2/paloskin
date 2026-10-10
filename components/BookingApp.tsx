@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Fusszeile, Kopfzeile } from "@/components/Kopfzeile";
 import type { KopfTexte } from "@/lib/kopf";
 import { BILDER } from "@/lib/bilder";
+import { bewertungPille } from "@/lib/bewertungen";
 import { checkPhone } from "@/lib/phone";
 import { PRICES, ZONE_IDS, hasBotulinum, hasTreatment, totalPrice, zoneCount, zonePrice, type Lachs, type Lang, type Selection, type Visit, type ZoneId } from "@/lib/treatments";
 import { LogoKopf } from "@/components/LogoKopf";
@@ -508,6 +509,7 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
     return [first, facts].filter(Boolean).join(". ");
   };
   const total = totalPrice(selection);
+  const pille = bewertungPille(lang, kopf[lang].googleB);
   const summary = (
     <aside className="sum" aria-label={l.sumH}>
       <p className="eyebrow">{l.sumH}</p>
@@ -530,7 +532,8 @@ export function BookingApp({ initialLang, testMode, checkup, kopf }: { initialLa
         <Image src={BILDER.portraetRund} alt="Dr. med. Sebastian Vogel" width={60} height={60} />
         <div><b><bdi>Dr. med. Sebastian Vogel</bdi></b><span>{l.docRole}</span></div>
       </div>
-      <a className="rate" href={MAPS} target="_blank" rel="noopener">{kopf[lang].rateLong}</a>
+      {/* Bewertungspille wie in der Kopfzeile, aus lib/bewertungen.ts (Freigabe Dr. Vogel nur für Text und Link, 10. Oktober 2026) */}
+      <a className="rate" href={pille.href} target="_blank" rel="noopener" aria-label={pille.aria}><span className="rate-lang">{pille.lang}</span><span className="rate-kurz" aria-hidden="true">{pille.kurz}</span></a>
       <p className="addr"><bdi>{ADDRESS}, Prenzlauer Berg</bdi></p>
       <p className="move">{l.moveNote}</p>
     </aside>

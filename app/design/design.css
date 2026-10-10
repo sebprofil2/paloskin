@@ -616,11 +616,12 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 .pb .bh-kurz p{font-size:var(--fs-m)}
 }
 
-/* Bewertungspille (10. Oktober 2026): Sterne und Anzahl; unter 1180 Pixeln (gemessen, alle Sprachen) nur die Kurzform „★ 5,0 · 28“ */
-.pb .hd .rate-kurz{display:none}
+/* Bewertungspille (10. Oktober 2026): Sterne und Anzahl; unter 1180 Pixeln (gemessen, alle Sprachen) nur die Kurzform „★ 5,0 · 28“.
+   Gilt für die Kopfzeile und die Pille im Kasten „Ihre Buchung“. */
+.pb .hd .rate-kurz,.pb .bk .sum .rate-kurz{display:none}
 @media (max-width:1179px){
-.pb .hd .dnav .rate-lang{display:none}
-.pb .hd .dnav .rate-kurz{display:inline}
+.pb .hd .dnav .rate-lang,.pb .bk .sum .rate-lang{display:none}
+.pb .hd .dnav .rate-kurz,.pb .bk .sum .rate-kurz{display:inline}
 }
 
 /* Google-Badge mit Anzahl (10. Oktober 2026): auf schmalen Bildschirmen zweizeilig, Sterne oben, Anzahl und Quelle darunter */
