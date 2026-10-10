@@ -7,3 +7,5 @@ Bestehende Texte und Gestaltung (Festlegung Dr. Vogel, 10. Oktober 2026):
 - Die Startseite darf gegen den Sprachleitfaden überarbeitet werden, aber jede Änderung erst als Vorschlag mit Bildern, dann nach Freigabe.
 - Alle anderen bestehenden Texte werden nur nach ausdrücklicher Freigabe geändert. Prüflisten mit Vorschlägen sind erwünscht.
 - Keine großgeschriebenen Etiketten über Überschriften (Sprachleitfaden, Form 3). Auf der Startseite in allen Sprachen entfernt (10. Oktober 2026); die Buchungsseite bleibt davon unberührt.
+
+Weiterleitung /wallet: absichtlich unverlinkte 302-Weiterleitung zum Wallet-Pass (paloskin.de, www und neu, auch /wallet/). Steht in deploy/Caddyfile im Baustein „wallet“; das Ziel bei Bedarf dort ändern. Nirgends verlinken, nicht in die Sitemap. Nach einer Änderung an deploy/Caddyfile auf dem Server Caddy neu erstellen (docker compose -f deploy/docker-compose.yml up -d --force-recreate caddy), ein Neuladen allein sieht die neue Datei nicht.
