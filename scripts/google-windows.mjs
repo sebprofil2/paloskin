@@ -1,4 +1,4 @@
-/* Zwei Testfenster „Offen“ in „Palo Skin offen“ anlegen: morgen und übermorgen, 10 bis 18 Uhr Berliner Zeit */
+/* Zwei Testfenster „Offen“ in „PALO SKIN offen“ anlegen: morgen und übermorgen, 10 bis 18 Uhr Berliner Zeit */
 import { readFileSync } from "node:fs";
 import { JWT } from "google-auth-library";
 const env = {};

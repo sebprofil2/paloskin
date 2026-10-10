@@ -33,7 +33,7 @@ if (mode === "list" || mode === "open-id") {
   const list = await call("GET", "/users/me/calendarList?minAccessRole=freeBusyReader");
   const items = list.items ?? [];
   if (mode === "open-id") {
-    const open = items.find((c) => c.summary === "Palo Skin offen");
+    const open = items.find((c) => c.summary === "PALO SKIN offen");
     console.log(open ? open.id : "");
   } else {
     console.log("Kalenderliste des Dienstkontos:");

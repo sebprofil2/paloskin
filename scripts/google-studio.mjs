@@ -1,5 +1,5 @@
 /*
- * Änderungen des Studios im Kalender „Palo Skin Termine“ nachstellen (Prüfung des Abgleichs, lib/calendar-sync.ts):
+ * Änderungen des Studios im Kalender „PALO SKIN Termine“ nachstellen (Prüfung des Abgleichs, lib/calendar-sync.ts):
  *   node scripts/google-studio.mjs list                      künftige Einträge: Zeiten, Buchungsnummer, TEST oder echt
  *   node scripts/google-studio.mjs show <Nummer>             Eintrag zur Buchungsnummer
  *   node scripts/google-studio.mjs extend <Nummer> [Minuten] nur das Ende verlängern (Vorgabe 20)
@@ -13,7 +13,7 @@ const env = {};
 for (const line of readFileSync(".env.local", "utf8").split("\n")) { const m = line.match(/^([A-Z_]+)=(.*)$/); if (!m) continue; let v = m[2].trim(); if ((v.startsWith("'") && v.endsWith("'")) || (v.startsWith('"') && v.endsWith('"'))) v = v.slice(1, -1).replace(/'\\''/g, "'"); env[m[1]] = v; }
 const sa = JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_JSON);
 const jwt = new JWT({ email: sa.client_email, key: sa.private_key, scopes: ["https://www.googleapis.com/auth/calendar"] });
-// CAL_ID wählt einen anderen Kalender, zum Beispiel den Testkalender „Palo Skin Test“
+// CAL_ID wählt einen anderen Kalender, zum Beispiel den Testkalender „PALO SKIN Test“
 const CAL = encodeURIComponent(process.env.CAL_ID || env.CALENDAR_BOOKINGS_ID);
 async function call(method, path, body) {
   const { token } = await jwt.getAccessToken();

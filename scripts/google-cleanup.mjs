@@ -1,4 +1,4 @@
-/* Testbuchungen im Kalender „Palo Skin Termine“ anzeigen und löschen: node scripts/google-cleanup.mjs [show|delete] [Buchungsnummer] */
+/* Testbuchungen im Kalender „PALO SKIN Termine“ anzeigen und löschen: node scripts/google-cleanup.mjs [show|delete] [Buchungsnummer] */
 import { readFileSync } from "node:fs";
 import { JWT } from "google-auth-library";
 const env = {};

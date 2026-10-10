@@ -80,9 +80,9 @@ Außerdem (Stand damals): `TEST_MODE` galt standardmäßig als eingeschaltet. Se
 ## Google-Anbindung eingerichtet (1. Oktober 2026, spät)
 
 - Google-Cloud-Projekt `palo-skin-buchung`, Dienstkonto `buchung-website@palo-skin-buchung.iam.gserviceaccount.com`. Schlüsseldatei nur lokal in `.env.local` als `GOOGLE_SERVICE_ACCOUNT_JSON` (eine Zeile JSON in einfachen Anführungszeichen), nie im Repository. Auf Vercel dieselbe Variable setzen.
-- Kalender „Palo Skin Termine“: `c_5c073fe9d8b5b448d61cba6ab7573c5f61a7fc012d969ff103a6a91f7c2d17ad@group.calendar.google.com`, Dienstkonto hat Schreibrecht (`writer`). Hauptkalender `sebastian@paloskin.de`: nur frei/belegt (`freeBusyReader`). Beide geprüft.
+- Kalender „PALO SKIN Termine“: `c_5c073fe9d8b5b448d61cba6ab7573c5f61a7fc012d969ff103a6a91f7c2d17ad@group.calendar.google.com`, Dienstkonto hat Schreibrecht (`writer`). Hauptkalender `sebastian@paloskin.de`: nur frei/belegt (`freeBusyReader`). Beide geprüft.
 - Freigegebene Kalender erscheinen in der Kalenderliste eines Dienstkontos erst, wenn sie einmal aufgenommen wurden: `node scripts/google-check.mjs add-open <Kalender-ID>`. Für den Betrieb ist das nicht nötig, der Motor arbeitet direkt mit den Kennungen aus den Umgebungsvariablen.
-- Die Kennung von „Palo Skin offen“ steht in Google Kalender unter Einstellungen, Kalender „Palo Skin offen“, Abschnitt „Kalender integrieren“, Feld „Kalender-ID“. Sie gehört in `CALENDAR_OPEN_ID`.
+- Die Kennung von „PALO SKIN offen“ steht in Google Kalender unter Einstellungen, Kalender „PALO SKIN offen“, Abschnitt „Kalender integrieren“, Feld „Kalender-ID“. Sie gehört in `CALENDAR_OPEN_ID`.
 - Testlauf: `node scripts/google-check.mjs list|busy|event` (Kalenderliste, frei/belegt der nächsten 7 Tage, Probetermin eintragen, lesen, löschen).
 
 ## Notiz Bezahlung (1. Oktober 2026)

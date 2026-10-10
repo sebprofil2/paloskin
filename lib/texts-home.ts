@@ -31,7 +31,8 @@ export interface HomeTexts {
   heroAlt: string;
   docRole: string;
   /* Ihr Arzt */
-  docEyebrow: string;
+  /** Zusatz in der Zeile unter dem Foto: „Dr. med. Sebastian Vogel · chirurgisch geschult“ (seit 10. Oktober 2026 statt Etikett) */
+  surgical: string;
   docHA: string;
   docHB: string;
   handAlt: string;
@@ -45,7 +46,6 @@ export interface HomeTexts {
   photoStudio: string;
   photoEntrance: string;
   /* Für wen */
-  whyEyebrow: string;
   whyHA: string;
   whyHB: string;
   why1H: string;
@@ -61,7 +61,6 @@ export interface HomeTexts {
   why6H: string;
   why6P: string;
   /* Behandlungen */
-  treatEyebrow: string;
   treatHA: string;
   treatHB: string;
   t1H: string;
@@ -92,7 +91,6 @@ export interface HomeTexts {
   pLachs4: string;
   pnote: string;
   /* Ablauf */
-  howEyebrow: string;
   howHA: string;
   howHB: string;
   s1H: string;
@@ -102,7 +100,6 @@ export interface HomeTexts {
   s3H: string;
   s3P: string;
   /* Bewertungen */
-  revEyebrow: string;
   revHA: string;
   revHB: string;
   allReviews: string;
@@ -153,7 +150,7 @@ const de: HomeTexts = {
   googleB: "bei Google",
   heroAlt: "Dr. med. Sebastian Vogel im Studio PALO SKIN",
   docRole: "Arzt und Gründer von PALO SKIN",
-  docEyebrow: "Ihr Arzt · chirurgisch geschult",
+  surgical: "chirurgisch geschult",
   docHA: "Eine ruhige",
   docHB: "Hand.",
   handAlt: "Ruhig übereinanderliegende Hände von Dr. Vogel auf dem schwarzen Tisch im Studio",
@@ -166,7 +163,6 @@ const de: HomeTexts = {
   photoTreat: "Behandlungsraum",
   photoStudio: "Im Studio",
   photoEntrance: "Eingang",
-  whyEyebrow: "Für wen",
   whyHA: "Für wen ich PALO SKIN",
   whyHB: "gegründet habe.",
   why1H: "Pünktlich statt Wartezimmer.",
@@ -181,7 +177,6 @@ const de: HomeTexts = {
   why5P: "Für alle, die eine möglichst sanfte Behandlung möchten.",
   why6H: "Nur Originalpräparate.",
   why6P: "Für Menschen, die wissen wollen, was sie bekommen: aus deutschen Apotheken.",
-  treatEyebrow: "Behandlungen und Preise",
   treatHA: "Genau, was Sie brauchen.",
   treatHB: "Zu fairen Preisen.",
   t1H: "Faltenbehandlung und mehr",
@@ -210,7 +205,6 @@ const de: HomeTexts = {
   pLachs1: "Eine Behandlung",
   pLachs4: "Vier Behandlungen",
   pnote: "* Richtwerte. Abrechnung nach der Gebührenordnung für Ärzte. Preise inklusive Mehrwertsteuer.",
-  howEyebrow: "Ihr Termin",
   howHA: "Erst das Gespräch.",
   howHB: "Dann die Behandlung.",
   s1H: "Wann es Ihnen passt.",
@@ -219,7 +213,6 @@ const de: HomeTexts = {
   s2P: "Was möchten Sie verändern? Wir besprechen Möglichkeiten, Grenzen, Risiken und Kosten.",
   s3H: "Ganz ohne Druck.",
   s3P: "Passt die Behandlung zu Ihnen, ist sie direkt im selben Termin möglich. Und wenn Sie lieber noch einmal nachdenken möchten, sind Sie genauso willkommen.",
-  revEyebrow: "Bewertungen",
   revHA: "Was Kunden",
   revHB: "über uns sagen.",
   allReviews: "Alle Bewertungen auf Google Maps",
@@ -262,7 +255,7 @@ const en: HomeTexts = {
   googleB: "on Google",
   heroAlt: "Dr. med. Sebastian Vogel in the PALO SKIN studio",
   docRole: "Physician and founder of PALO SKIN",
-  docEyebrow: "Your physician · trained in surgery",
+  surgical: "trained in surgery",
   docHA: "A steady",
   docHB: "hand.",
   handAlt: "Dr. Vogel’s hands resting calmly on top of each other on the black table in the studio",
@@ -275,7 +268,6 @@ const en: HomeTexts = {
   photoTreat: "Treatment room",
   photoStudio: "In the studio",
   photoEntrance: "Entrance",
-  whyEyebrow: "Who it is for",
   whyHA: "Who I founded PALO SKIN",
   whyHB: "for.",
   why1H: "On time, no waiting room.",
@@ -290,7 +282,6 @@ const en: HomeTexts = {
   why5P: "For everyone who would like the gentlest possible treatment.",
   why6H: "Original products only.",
   why6P: "For people who want to know what they are getting: from German pharmacies.",
-  treatEyebrow: "Treatments and prices",
   treatHA: "Exactly what you need.",
   treatHB: "At fair prices.",
   t1H: "Wrinkle treatment and more",
@@ -319,7 +310,6 @@ const en: HomeTexts = {
   pLachs1: "One treatment",
   pLachs4: "Four treatments",
   pnote: "* Guide prices. Billed according to the German fee schedule for physicians (Gebührenordnung für Ärzte). Prices include value added tax.",
-  howEyebrow: "Your appointment",
   howHA: "First we talk.",
   howHB: "Then the treatment.",
   s1H: "Whenever suits you.",
@@ -328,7 +318,6 @@ const en: HomeTexts = {
   s2P: "What would you like to change? We discuss the options, limits, risks and costs.",
   s3H: "No pressure at all.",
   s3P: "If the treatment suits you, it can be done in the same appointment. And if you would rather think it over, you are just as welcome.",
-  revEyebrow: "Reviews",
   revHA: "What clients",
   revHB: "say about us.",
   allReviews: "All reviews on Google Maps",
@@ -370,7 +359,7 @@ const es: HomeTexts = {
   googleB: "en Google",
   heroAlt: "El Dr. med. Sebastian Vogel en el estudio PALO SKIN",
   docRole: "Médico y fundador de PALO SKIN",
-  docEyebrow: "Su médico · formación quirúrgica",
+  surgical: "formación quirúrgica",
   docHA: "Una mano",
   docHB: "serena.",
   handAlt: "Las manos del Dr. Vogel, cruzadas con calma sobre la mesa negra del estudio",
@@ -383,7 +372,6 @@ const es: HomeTexts = {
   photoTreat: "Sala de tratamiento",
   photoStudio: "En el estudio",
   photoEntrance: "Entrada",
-  whyEyebrow: "Para quién",
   whyHA: "Para quién he creado",
   whyHB: "PALO SKIN.",
   why1H: "Puntualidad, sin sala de espera.",
@@ -398,7 +386,6 @@ const es: HomeTexts = {
   why5P: "Para quienes desean un tratamiento lo más suave posible.",
   why6H: "Solo preparados originales.",
   why6P: "Para quienes quieren saber qué reciben: de farmacias alemanas.",
-  treatEyebrow: "Tratamientos y precios",
   treatHA: "Exactamente lo que necesita.",
   treatHB: "A precios justos.",
   t1H: "Tratamiento de arrugas y más",
@@ -427,7 +414,6 @@ const es: HomeTexts = {
   pLachs1: "Un tratamiento",
   pLachs4: "Cuatro tratamientos",
   pnote: "* Precios orientativos. Facturación según el baremo alemán de honorarios médicos (Gebührenordnung für Ärzte). Precios con el impuesto sobre el valor añadido incluido.",
-  howEyebrow: "Su cita",
   howHA: "Primero hablamos.",
   howHB: "Después, el tratamiento.",
   s1H: "Cuando le venga bien.",
@@ -436,7 +422,6 @@ const es: HomeTexts = {
   s2P: "¿Qué le gustaría cambiar? Hablamos de las posibilidades, los límites, los riesgos y los costes.",
   s3H: "Sin ninguna presión.",
   s3P: "Si el tratamiento es adecuado para usted, puede hacerse en la misma cita. Y si prefiere pensarlo con calma, le recibimos con el mismo gusto.",
-  revEyebrow: "Opiniones",
   revHA: "Qué dicen",
   revHB: "nuestros clientes.",
   allReviews: "Todas las opiniones en Google Maps",
@@ -478,7 +463,7 @@ const fr: HomeTexts = {
   googleB: "sur Google",
   heroAlt: "Le Dr. med. Sebastian Vogel au studio PALO SKIN",
   docRole: "Médecin et fondateur de PALO SKIN",
-  docEyebrow: "Votre médecin · formation chirurgicale",
+  surgical: "formation chirurgicale",
   docHA: "Une main",
   docHB: "sûre.",
   handAlt: "Les mains du Dr Vogel posées calmement l’une sur l’autre sur la table noire du studio",
@@ -491,7 +476,6 @@ const fr: HomeTexts = {
   photoTreat: "Salle de soin",
   photoStudio: "Au studio",
   photoEntrance: "Entrée",
-  whyEyebrow: "Pour qui",
   whyHA: "Pour qui j’ai fondé",
   whyHB: "PALO SKIN.",
   why1H: "À l’heure, sans salle d’attente.",
@@ -506,7 +490,6 @@ const fr: HomeTexts = {
   why5P: "Pour toutes celles et tous ceux qui souhaitent un soin aussi doux que possible.",
   why6H: "Uniquement des produits originaux.",
   why6P: "Pour les personnes qui veulent savoir ce qu’elles reçoivent : des produits issus de pharmacies allemandes.",
-  treatEyebrow: "Soins et tarifs",
   treatHA: "Exactement ce qu’il vous faut.",
   treatHB: "Au juste prix.",
   t1H: "Traitement des rides et plus",
@@ -535,7 +518,6 @@ const fr: HomeTexts = {
   pLachs1: "Une séance",
   pLachs4: "Quatre séances",
   pnote: "* Prix indicatifs. Facturation selon le barème allemand des honoraires médicaux (Gebührenordnung für Ärzte). Prix taxe sur la valeur ajoutée comprise.",
-  howEyebrow: "Votre rendez-vous",
   howHA: "D’abord, l’échange.",
   howHB: "Ensuite, le soin.",
   s1H: "Quand cela vous convient.",
@@ -544,7 +526,6 @@ const fr: HomeTexts = {
   s2P: "Que souhaitez-vous changer ? Nous parlons des possibilités, des limites, des risques et des coûts.",
   s3H: "Sans aucune pression.",
   s3P: "Si le soin vous convient, il peut avoir lieu directement lors du même rendez-vous. Et si vous préférez y réfléchir encore, nous vous accueillons tout aussi volontiers.",
-  revEyebrow: "Avis",
   revHA: "Ce que disent",
   revHB: "nos clients.",
   allReviews: "Tous les avis sur Google Maps",
@@ -586,7 +567,7 @@ const pt: HomeTexts = {
   googleB: "no Google",
   heroAlt: "Dr. med. Sebastian Vogel no estúdio PALO SKIN",
   docRole: "Médico e fundador da PALO SKIN",
-  docEyebrow: "Seu médico · formação cirúrgica",
+  surgical: "formação cirúrgica",
   docHA: "Uma mão",
   docHB: "firme.",
   handAlt: "Mãos do Dr. Vogel pousadas calmamente uma sobre a outra na mesa preta do estúdio",
@@ -599,7 +580,6 @@ const pt: HomeTexts = {
   photoTreat: "Sala de tratamento",
   photoStudio: "No estúdio",
   photoEntrance: "Entrada",
-  whyEyebrow: "Para quem",
   whyHA: "Para quem eu fundei",
   whyHB: "a PALO SKIN.",
   why1H: "Pontual, sem sala de espera.",
@@ -614,7 +594,6 @@ const pt: HomeTexts = {
   why5P: "Para quem deseja um tratamento o mais suave possível.",
   why6H: "Somente produtos originais.",
   why6P: "Para quem quer saber o que está recebendo: de farmácias alemãs.",
-  treatEyebrow: "Tratamentos e preços",
   treatHA: "Exatamente o que você precisa.",
   treatHB: "A preços justos.",
   t1H: "Tratamento de rugas e mais",
@@ -643,7 +622,6 @@ const pt: HomeTexts = {
   pLachs1: "Uma sessão",
   pLachs4: "Quatro sessões",
   pnote: "* Valores de referência. Cobrança conforme a tabela alemã de honorários médicos (Gebührenordnung für Ärzte). Preços com imposto sobre o valor agregado incluído.",
-  howEyebrow: "Sua consulta",
   howHA: "Primeiro, a conversa.",
   howHB: "Depois, o tratamento.",
   s1H: "Quando for melhor para você.",
@@ -652,7 +630,6 @@ const pt: HomeTexts = {
   s2P: "O que você gostaria de mudar? Falamos sobre possibilidades, limites, riscos e custos.",
   s3H: "Sem nenhuma pressão.",
   s3P: "Se o tratamento for adequado para você, ele pode ser feito na mesma consulta. E se você preferir pensar mais um pouco, receberemos você com o mesmo prazer.",
-  revEyebrow: "Avaliações",
   revHA: "O que dizem",
   revHB: "sobre nós.",
   allReviews: "Todas as avaliações no Google Maps",
@@ -694,7 +671,7 @@ const it: HomeTexts = {
   googleB: "su Google",
   heroAlt: "Il Dr. med. Sebastian Vogel nello studio PALO SKIN",
   docRole: "Medico e fondatore di PALO SKIN",
-  docEyebrow: "Il Suo medico · formazione chirurgica",
+  surgical: "formazione chirurgica",
   docHA: "Una mano",
   docHB: "ferma.",
   handAlt: "Le mani del Dr. Vogel, posate con calma l’una sull’altra sul tavolo nero dello studio",
@@ -707,7 +684,6 @@ const it: HomeTexts = {
   photoTreat: "Sala trattamenti",
   photoStudio: "Nello studio",
   photoEntrance: "Ingresso",
-  whyEyebrow: "Per chi",
   whyHA: "Per chi ho fondato",
   whyHB: "PALO SKIN.",
   why1H: "Puntualità invece della sala d’attesa.",
@@ -722,7 +698,6 @@ const it: HomeTexts = {
   why5P: "Per chi desidera un trattamento il più delicato possibile.",
   why6H: "Solo preparati originali.",
   why6P: "Per chi vuole sapere che cosa riceve: da farmacie tedesche.",
-  treatEyebrow: "Trattamenti e prezzi",
   treatHA: "Esattamente ciò di cui ha bisogno.",
   treatHB: "A prezzi equi.",
   t1H: "Trattamento delle rughe e altro",
@@ -751,7 +726,6 @@ const it: HomeTexts = {
   pLachs1: "Un trattamento",
   pLachs4: "Quattro trattamenti",
   pnote: "* Prezzi indicativi. Fatturazione secondo il tariffario tedesco degli onorari medici (Gebührenordnung für Ärzte). Prezzi comprensivi di imposta sul valore aggiunto.",
-  howEyebrow: "Il Suo appuntamento",
   howHA: "Prima il colloquio.",
   howHB: "Poi il trattamento.",
   s1H: "Quando Le è più comodo.",
@@ -760,7 +734,6 @@ const it: HomeTexts = {
   s2P: "Che cosa vorrebbe cambiare? Parliamo di possibilità, limiti, rischi e costi.",
   s3H: "Senza alcuna pressione.",
   s3P: "Se il trattamento fa per Lei, è possibile farlo subito nello stesso appuntamento. E se preferisce pensarci ancora, La accogliamo altrettanto volentieri.",
-  revEyebrow: "Recensioni",
   revHA: "Che cosa dicono",
   revHB: "i nostri clienti.",
   allReviews: "Tutte le recensioni su Google Maps",
@@ -802,7 +775,7 @@ const tr: HomeTexts = {
   googleB: "Google’da",
   heroAlt: "Dr. med. Sebastian Vogel, PALO SKIN stüdyosunda",
   docRole: "Hekim ve PALO SKIN’in kurucusu",
-  docEyebrow: "Hekiminiz · cerrahi eğitimli",
+  surgical: "cerrahi eğitimli",
   docHA: "Sakin bir",
   docHB: "el.",
   handAlt: "Dr. Vogel’in stüdyodaki siyah masanın üzerinde sakince üst üste duran elleri",
@@ -815,7 +788,6 @@ const tr: HomeTexts = {
   photoTreat: "Tedavi odası",
   photoStudio: "Stüdyoda",
   photoEntrance: "Giriş",
-  whyEyebrow: "Kimler için",
   whyHA: "PALO SKIN’i kimler için",
   whyHB: "kurdum.",
   why1H: "Bekleme salonu yerine dakiklik.",
@@ -830,7 +802,6 @@ const tr: HomeTexts = {
   why5P: "Olabildiğince nazik bir tedavi isteyen herkes için.",
   why6H: "Yalnızca orijinal ürünler.",
   why6P: "Ne aldığını bilmek isteyenler için: Alman eczanelerinden.",
-  treatEyebrow: "Tedaviler ve fiyatlar",
   treatHA: "Tam ihtiyacınız olan.",
   treatHB: "Adil fiyatlarla.",
   t1H: "Kırışıklık tedavisi ve dahası",
@@ -859,7 +830,6 @@ const tr: HomeTexts = {
   pLachs1: "Tek seans",
   pLachs4: "Dört seans",
   pnote: "* Yaklaşık fiyatlar. Ücretlendirme, Alman hekim ücret tarifesine (Gebührenordnung für Ärzte) göre yapılır. Fiyatlara katma değer vergisi dahildir.",
-  howEyebrow: "Randevunuz",
   howHA: "Önce görüşme.",
   howHB: "Sonra tedavi.",
   s1H: "Size ne zaman uygunsa.",
@@ -868,7 +838,6 @@ const tr: HomeTexts = {
   s2P: "Neyi değiştirmek istersiniz? Olanakları, sınırları, riskleri ve maliyetleri konuşuruz.",
   s3H: "Hiçbir baskı olmadan.",
   s3P: "Tedavi size uygunsa aynı randevuda hemen yapılabilir. Biraz daha düşünmek isterseniz, sizi de aynı şekilde memnuniyetle karşılıyoruz.",
-  revEyebrow: "Değerlendirmeler",
   revHA: "Danışanlarımız",
   revHB: "hakkımızda ne diyor.",
   allReviews: "Google Maps’teki tüm değerlendirmeler",
@@ -910,7 +879,7 @@ const uk: HomeTexts = {
   googleB: "на Google",
   heroAlt: "Dr. med. Sebastian Vogel у студії PALO SKIN",
   docRole: "Лікар і засновник PALO SKIN",
-  docEyebrow: "Ваш лікар · хірургічна підготовка",
+  surgical: "хірургічна підготовка",
   docHA: "Спокійна",
   docHB: "рука.",
   handAlt: "Спокійно складені руки Dr. Vogel на чорному столі в студії",
@@ -923,7 +892,6 @@ const uk: HomeTexts = {
   photoTreat: "Кімната для процедур",
   photoStudio: "У студії",
   photoEntrance: "Вхід",
-  whyEyebrow: "Для кого",
   whyHA: "Для кого я заснував",
   whyHB: "PALO SKIN.",
   why1H: "Вчасно, а не в черзі.",
@@ -938,7 +906,6 @@ const uk: HomeTexts = {
   why5P: "Для всіх, хто бажає якомога делікатнішої процедури.",
   why6H: "Лише оригінальні препарати.",
   why6P: "Для тих, хто хоче знати, що отримує: препарати з німецьких аптек.",
-  treatEyebrow: "Процедури та ціни",
   treatHA: "Саме те, що Вам потрібно.",
   treatHB: "За чесними цінами.",
   t1H: "Корекція зморшок і не тільки",
@@ -967,7 +934,6 @@ const uk: HomeTexts = {
   pLachs1: "Одна процедура",
   pLachs4: "Чотири процедури",
   pnote: "* Орієнтовні ціни. Розрахунок згідно з німецьким тарифом на лікарські послуги (Gebührenordnung für Ärzte). Ціни включають податок на додану вартість.",
-  howEyebrow: "Ваш візит",
   howHA: "Спершу розмова.",
   howHB: "Потім процедура.",
   s1H: "Коли Вам зручно.",
@@ -976,7 +942,6 @@ const uk: HomeTexts = {
   s2P: "Що Ви хотіли б змінити? Ми обговорюємо можливості, межі, ризики та вартість.",
   s3H: "Без жодного тиску.",
   s3P: "Якщо процедура Вам підходить, її можна провести одразу під час того самого візиту. А якщо Ви хочете ще подумати, ми раді Вам так само.",
-  revEyebrow: "Відгуки",
   revHA: "Що клієнти",
   revHB: "кажуть про нас.",
   allReviews: "Усі відгуки на Google Maps",
@@ -1018,7 +983,7 @@ const ar: HomeTexts = {
   googleB: "على Google",
   heroAlt: "Dr. med. Sebastian Vogel في مركز PALO SKIN",
   docRole: "طبيب ومؤسس PALO SKIN",
-  docEyebrow: "طبيبكم · بتدريب جراحي",
+  surgical: "بتدريب جراحي",
   docHA: "يد",
   docHB: "ثابتة.",
   handAlt: "يدا Dr. Vogel موضوعتان بهدوء إحداهما فوق الأخرى على الطاولة السوداء في المركز",
@@ -1031,7 +996,6 @@ const ar: HomeTexts = {
   photoTreat: "غرفة العلاج",
   photoStudio: "داخل المركز",
   photoEntrance: "المدخل",
-  whyEyebrow: "لمن هذا المركز",
   whyHA: "لمن أسّستُ",
   whyHB: "PALO SKIN.",
   why1H: "في الموعد بدل غرفة الانتظار.",
@@ -1046,7 +1010,6 @@ const ar: HomeTexts = {
   why5P: "لكل من يرغب في علاج لطيف قدر الإمكان.",
   why6H: "مستحضرات أصلية فقط.",
   why6P: "لمن يريد أن يعرف ما يحصل عليه: من صيدليات ألمانية.",
-  treatEyebrow: "العلاجات والأسعار",
   treatHA: "ما تحتاجونه بالضبط.",
   treatHB: "بأسعار عادلة.",
   t1H: "علاج التجاعيد والمزيد",
@@ -1075,7 +1038,6 @@ const ar: HomeTexts = {
   pLachs1: "جلسة واحدة",
   pLachs4: "أربع جلسات",
   pnote: "* أسعار استرشادية. تتم المحاسبة وفق لائحة أتعاب الأطباء الألمانية (Gebührenordnung für Ärzte). الأسعار شاملة ضريبة القيمة المضافة.",
-  howEyebrow: "موعدكم",
   howHA: "أولًا نتحدث معًا.",
   howHB: "ثم العلاج.",
   s1H: "في الوقت الذي يناسبكم.",
@@ -1084,7 +1046,6 @@ const ar: HomeTexts = {
   s2P: "ما الذي ترغبون في تغييره؟ نناقش معًا الإمكانيات والحدود والمخاطر والتكاليف.",
   s3H: "دون أي ضغط.",
   s3P: "إذا كان العلاج مناسبًا لكم، يمكن إجراؤه مباشرة في الموعد نفسه. وإذا فضّلتم التفكير مرة أخرى، فأنتم مرحَّب بكم بالقدر نفسه.",
-  revEyebrow: "التقييمات",
   revHA: "ما يقوله عملاؤنا",
   revHB: "عنّا.",
   allReviews: "جميع التقييمات على Google Maps",

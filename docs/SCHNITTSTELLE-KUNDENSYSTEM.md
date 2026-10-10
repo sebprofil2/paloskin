@@ -166,7 +166,7 @@ Vollständige Liste, Stand 3. Oktober 2026. Andere Werte schreibt die Buchung ni
 |---|---|
 | `customer_link` | Der Kunde hat über die Terminseite abgesagt, mehr als 24 Stunden vor dem Termin („Termin absagen“). Sofort-Mail an das Studio „Abgesagt“. |
 | `customer_short_notice` | Der Kunde hat über die Terminseite abgesagt, 24 bis 2 Stunden vor dem Termin („Leider verhindert“). Sofort-Mail an das Studio „Kurzfristig abgesagt“. Unter 2 Stunden ist online keine Absage möglich. |
-| `studio_calendar` | Das Studio hat den Eintrag im Kalender „Palo Skin Termine“ gelöscht. Keine Mail an den Kunden, Studio-Mail „Im Kalender abgesagt“. |
+| `studio_calendar` | Das Studio hat den Eintrag im Kalender „PALO SKIN Termine“ gelöscht. Keine Mail an den Kunden, Studio-Mail „Im Kalender abgesagt“. |
 | `crm:studio_cancelled` | Das Kundensystem hat über `POST /intern/v1/bookings/{id}/status` mit `reason: "studio_cancelled"` abgesagt. Präfix `crm:` plus Bezeichner; andere Bezeichner nimmt der Endpunkt nicht an (400). |
 
 Bis zum 3. Oktober 2026 hieß die kurzfristige Absage `customer_link_short`. Die Buchung hat diesen Wert beim Start der neuen Fassung in Buchungen und Ereignissen auf `customer_short_notice` umgestellt; zu diesem Zeitpunkt hatte noch kein Verbraucher Ereignisse abgeholt. Die Absage des Kundensystems wurde bis dahin als `studio_cancelled` ohne Präfix gespeichert; in der Datenbank gab es keinen solchen Fall.

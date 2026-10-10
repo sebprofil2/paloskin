@@ -16,7 +16,7 @@ import { berlinDateKey, berlinParts } from "./time";
  *      (Kundensystem), werden unbestätigte Ereignisse nie automatisch gelöscht (Entscheidung Dr. Vogel, 4. Oktober 2026:
  *      nichts darf verloren gehen); der Heartbeat alarmiert, wenn eines länger als 3 Tage unbestätigt ist. Ohne
  *      angemeldeten Verbraucher wie bisher: nach 120 Tagen auch unbestätigt.
- *   3. Export von „Palo Skin Termine“ als Kalenderdatei neben der Datenbank, 30 Tage aufbewahrt.
+ *   3. Export von „PALO SKIN Termine“ als Kalenderdatei neben der Datenbank, 30 Tage aufbewahrt.
  * Die SQLite-Sicherung macht der Server um 03:45 Uhr (deploy/backup.sh).
  */
 export const DELETE_AFTER_DAYS = 90;
@@ -95,7 +95,7 @@ function exportDir(): string {
 const icsStamp = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 const icsEscape = (t: string) => t.replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
 
-/** Kalenderdatei aus „Palo Skin Termine“: 7 Tage zurück bis 90 Tage voraus. */
+/** Kalenderdatei aus „PALO SKIN Termine“: 7 Tage zurück bis 90 Tage voraus. */
 export async function exportCalendar(deps: Pick<Deps, "engine">, now = new Date()): Promise<string> {
   const from = new Date(now.getTime() - 7 * 86400000);
   const to = new Date(now.getTime() + 90 * 86400000);

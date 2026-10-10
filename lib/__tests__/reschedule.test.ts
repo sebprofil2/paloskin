@@ -157,7 +157,7 @@ describe("Verschieben, Fristen, Studio-Mails (Block 6 und 8)", () => {
     expect(r.sent).toBe(1);
     const m = mailer.sent.find((x) => x.to === "studio@example.com")!;
     expect(m.subject).toMatch(/^Testbuchung: Neue Buchung: /);
-    expect(m.text).toContain("Sebastian V., zu zweit\nDetails im Kalender „Palo Skin Termine“.");
+    expect(m.text).toContain("Sebastian V., zu zweit\nDetails im Kalender „PALO SKIN Termine“.");
     for (const f of ["PS-", "58872566", "example.com", "Botox", "Stirn"]) expect(m.text, f).not.toContain(f);
     // Absage-Betreffe
     const w = studioMailFor("cancelled", b);

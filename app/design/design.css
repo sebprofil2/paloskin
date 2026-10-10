@@ -522,3 +522,7 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 .pb .hd .mrate,.pb .hd .lang summary.pill,.pb .hd .mbtn{padding:0 var(--sp-8)}
 .pb .hd-in{gap:var(--sp-4)}
 }
+
+/* Zeile unter dem Foto: Name und Zusatz bleiben jeweils zusammen, umgebrochen wird nur nach dem Punkt (10. Oktober 2026) */
+.pb .nameplate .nw{white-space:nowrap}
+.pb .nameplate b .nw{font-size:inherit;color:inherit}

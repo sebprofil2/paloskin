@@ -16,7 +16,7 @@ const json = (body: unknown, status = 200) => NextResponse.json(body, { status, 
 
 /*
  * Nur buchbare Startzeiten verlassen den Server, nie Google-Rohdaten.
- * Frei = Fenster in „Palo Skin offen“ minus belegt laut Kalender minus Reservierungen der Datenbank.
+ * Frei = Fenster in „PALO SKIN offen“ minus belegt laut Kalender minus Reservierungen der Datenbank.
  */
 export async function POST(req: Request) {
   if (!hasAccess(req)) return json({ error: "no_access" }, 401);

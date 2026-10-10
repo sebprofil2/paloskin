@@ -6,7 +6,7 @@ import type { BookingRow } from "./store";
 import { notifyStudio } from "./studio-mail";
 
 /*
- * Der Kalender „Palo Skin Termine“ ist das Werkzeug des Studios. Alle 5 Minuten gleicht dieser Lauf Änderungen,
+ * Der Kalender „PALO SKIN Termine“ ist das Werkzeug des Studios. Alle 5 Minuten gleicht dieser Lauf Änderungen,
  * die direkt im Kalender gemacht wurden, mit den eigenen Buchungen ab (Google events.list mit updatedMin und showDeleted):
  *   Eintrag gelöscht: Buchung gilt als vom Studio abgesagt (cancel_reason studio_calendar), Zeit frei, Erinnerung entfällt,
  *     Ereignis cancelled, keine Mail an den Kunden, Studio-Mail „Im Kalender abgesagt“.

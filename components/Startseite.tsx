@@ -87,7 +87,8 @@ export function Startseite({ lang }: { lang: Lang }) {
           <div className="ph ph-hero">
             <Image src={BILDER.startbild} alt={t.heroAlt} fill priority sizes="(max-width: 899px) 100vw, (max-width: 1200px) 45vw, 520px" />
             <div className="nameplate">
-              <b>Dr. med. Sebastian Vogel</b>
+              {/* „Dr. med. Sebastian Vogel · chirurgisch geschult“ (Entscheidung Dr. Vogel, 10. Oktober 2026, statt Etikett über dem Abschnitt) */}
+              <b><bdi className="nw">Dr. med. Sebastian Vogel</bdi> · <span className="nw">{t.surgical}</span></b>
               <span>{t.docRole}</span>
             </div>
           </div>
@@ -98,7 +99,6 @@ export function Startseite({ lang }: { lang: Lang }) {
         <div className="wrap">
           <div className="panel">
             <div className="panel-head">
-              <p className="eyebrow">{t.docEyebrow}</p>
               <H a={t.docHA} b={t.docHB} />
               <Image className="ph-hand" src={BILDER.haende} alt={t.handAlt} sizes="(max-width: 899px) 100vw, 400px" />
             </div>
@@ -131,7 +131,6 @@ export function Startseite({ lang }: { lang: Lang }) {
       <section style={{ paddingBottom: "var(--sp-104)" }}>
         <div className="wrap">
           <div className="sec-head center">
-            <p className="eyebrow">{t.whyEyebrow}</p>
             <H a={t.whyHA} b={t.whyHB} />
           </div>
           <div className="why">
@@ -151,7 +150,6 @@ export function Startseite({ lang }: { lang: Lang }) {
       <section id="behandlungen" style={{ paddingBottom: "var(--sp-104)" }}>
         <div className="wrap">
           <div className="sec-head center">
-            <p className="eyebrow">{t.treatEyebrow}</p>
             <H a={t.treatHA} b={t.treatHB} />
           </div>
           <div className="treat">
@@ -200,7 +198,6 @@ export function Startseite({ lang }: { lang: Lang }) {
         <div className="wrap">
           <div className="ablauf">
             <div className="sec-head center">
-              <p className="eyebrow">{t.howEyebrow}</p>
               <H a={t.howHA} b={t.howHB} />
             </div>
             <div className="steps">
@@ -221,7 +218,6 @@ export function Startseite({ lang }: { lang: Lang }) {
         <div className="wrap">
           <div className="rev-head">
             <div className="sec-head">
-              <p className="eyebrow">{t.revEyebrow}</p>
               <H a={t.revHA} b={t.revHB} />
             </div>
             <Google t={t} />

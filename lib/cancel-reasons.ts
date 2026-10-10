@@ -2,7 +2,7 @@
  * Alle Werte von cancel_reason an einer Stelle (Liste mit Bedeutung in docs/SCHNITTSTELLE-KUNDENSYSTEM.md):
  *   customer_link          Kunde über die Terminseite, mehr als 24 Stunden vor dem Termin
  *   customer_short_notice  Kunde über „Leider verhindert“, 24 bis 2 Stunden vor dem Termin
- *   studio_calendar        Studio hat den Eintrag im Kalender „Palo Skin Termine“ gelöscht
+ *   studio_calendar        Studio hat den Eintrag im Kalender „PALO SKIN Termine“ gelöscht
  *   crm:studio_cancelled   Kundensystem über POST /intern/v1/bookings/{id}/status
  */
 export const CANCEL_REASON = {

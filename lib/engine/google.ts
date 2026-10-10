@@ -7,9 +7,9 @@ import { SlotsUnavailableError, type BookingEngine, type CalendarEventInput, typ
 
 /*
  * Echter Motor: Google Calendar API über ein Dienstkonto. Alle Zugriffe nur hier, auf dem Server.
- *   Palo Skin offen (CALENDAR_OPEN_ID): Zeitfenster lesen, singleEvents, ganztägige Einträge ignorieren
+ *   PALO SKIN offen (CALENDAR_OPEN_ID): Zeitfenster lesen, singleEvents, ganztägige Einträge ignorieren
  *   Belegt (CALENDAR_BUSY_IDS): nur frei/belegt über freebusy; ein Fehler gilt nie als frei
- *   Palo Skin Termine (CALENDAR_BOOKINGS_ID): Einträge anlegen, ohne Gäste, ohne Einladungen
+ *   PALO SKIN Termine (CALENDAR_BOOKINGS_ID): Einträge anlegen, ohne Gäste, ohne Einladungen
  * Reservierung und Buchungsstand liegen in der Datenbank; der Kalender ist die Sicht des Arztes auf den Tag.
  */
 
@@ -102,7 +102,7 @@ export class GoogleCalendarEngine implements BookingEngine {
     return items.filter((e) => e.status !== "cancelled");
   }
 
-  /** Zeitfenster aus „Palo Skin offen“. Ganztägige Einträge schalten nie etwas frei. */
+  /** Zeitfenster aus „PALO SKIN offen“. Ganztägige Einträge schalten nie etwas frei. */
   private async openWindows(from: Date, to: Date): Promise<Interval[]> {
     const g = readEnv().google;
     const events = await this.listEvents(g.calendarOpenId, from, to);
@@ -218,7 +218,7 @@ export class GoogleCalendarEngine implements BookingEngine {
   }
 
   /**
-   * Änderungen des Studios im Kalender „Palo Skin Termine“: events.list mit updatedMin und showDeleted, nur Einzeltermine.
+   * Änderungen des Studios im Kalender „PALO SKIN Termine“: events.list mit updatedMin und showDeleted, nur Einzeltermine.
    * Gelöschte Einträge kommen mit status cancelled. Zeitfenster gibt es hier nicht; der Abgleich sortiert vergangene Termine selbst aus.
    */
   async changedEvents(since: Date): Promise<ChangedEvent[]> {

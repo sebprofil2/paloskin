@@ -206,7 +206,7 @@ describe("Reparaturauftrag 4. Oktober 2026: Ausfälle, Abbrüche, parallele Läu
       const env2 = readEnv();
       expect([env2.google.calendarBookingsId, env2.google.calendarOpenId, env2.google.calendarBusyIds]).toEqual(["test@group.calendar.google.com", "test@group.calendar.google.com", ["test@group.calendar.google.com"]]);
       expect(configProblems()).toEqual([]);
-      // Öffnungsfenster aus dem echten „Palo Skin offen“ (nur lesen); Belegung und Einträge bleiben im Testkalender (4. Oktober 2026)
+      // Öffnungsfenster aus dem echten „PALO SKIN offen“ (nur lesen); Belegung und Einträge bleiben im Testkalender (4. Oktober 2026)
       process.env.TEST_OPEN_CALENDAR_ID = "offen-echt@group.calendar.google.com";
       const env3 = readEnv();
       expect(env3.google.calendarOpenId).toBe("offen-echt@group.calendar.google.com");

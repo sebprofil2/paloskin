@@ -4,7 +4,7 @@ import { readEnv } from "./env";
  * Produktion oder Testinstanz (neu.paloskin.de). Die Testinstanz setzt PALOSKIN_INSTANCE=test in der Compose-Datei.
  * Für die Testinstanz gilt (Reparaturauftrag 4. Oktober 2026):
  *   Belegung und Einträge nur in TEST_CALENDAR_ID; Öffnungsfenster aus TEST_OPEN_CALENDAR_ID (nur gelesen, der echte
- *   Kalender „Palo Skin offen“), ohne Angabe aus dem Testkalender. CALENDAR_* der Produktion werden nie gelesen (lib/env.ts).
+ *   Kalender „PALO SKIN offen“), ohne Angabe aus dem Testkalender. CALENDAR_* der Produktion werden nie gelesen (lib/env.ts).
  *   Jede Mail geht an MAIL_REDIRECT_TO und trägt „[TEST]“ im Betreff (lib/mail.ts). Ohne Umleitung wird nichts gesendet.
  *   Fehlt etwas davon, verweigert sie Buchungen mit eindeutiger Meldung; ein Rückfall auf die Produktion ist ausgeschlossen.
  * Für die Produktion: LINK_SECRET ist Pflicht (kein Rückfall auf Testschlüssel mehr, lib/links.ts).
@@ -21,7 +21,7 @@ export function isTestInstance(): boolean {
 
 /** Name des Kalenders, in den diese Instanz Termine schreibt (für Texte an das Studio). */
 export function bookingsCalendarName(): string {
-  return isTestInstance() ? "Palo Skin Test" : "Palo Skin Termine";
+  return isTestInstance() ? "PALO SKIN Test" : "PALO SKIN Termine";
 }
 
 /** Fehlende Pflichtwerte als lesbare Liste, ohne Werte auszugeben. Leer heißt: in Ordnung. */

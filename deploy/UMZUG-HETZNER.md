@@ -183,7 +183,7 @@ Notfall ohne GitHub Actions: `docker compose -f deploy/docker-compose.yml -f dep
 
 ## 8. Test unter neu.paloskin.de, vor der DNS-Umstellung (am 2. Oktober 2026 erledigt bis auf die Wiederherstellung aus dem Backup)
 
-Ergebnis: alle Seiten 200, `/termine` 308 auf `/booking`, 404 korrekt, Schrift mit Cache-Regel, Sicherheitsheader gesetzt, Zertifikat von Let's Encrypt für neu.paloskin.de, Zugangs-Cookie HttpOnly, SameSite=Strict, Secure, 7 Tage, falscher Code ohne Cookie. Serverneustart: beide Dienste wieder da, Swap aktiv. Kalenderausfall simuliert: freie Zeiten 503 „unavailable“, Buchungsversuch 503, keine Erfolgsmeldung, Protokoll nur `google_slots_failed` und `book_failed` ohne Inhalte, nach Rückbau wieder 200. Echte Terminanfrage über die Domain im Kalender „Palo Skin Termine“ eingetragen (Titel „TEST Palo Skin: Erika S.“) und gelöscht. Heartbeat-Cron installiert (`ok (disk 13%, Fehler 0)`), Monitor-URL folgt mit dem Better-Stack-Konto. Offen: Wiederherstellung aus einem Hetzner-Backup auf einen Testserver (Hetzner-Konsole, siehe unten).
+Ergebnis: alle Seiten 200, `/termine` 308 auf `/booking`, 404 korrekt, Schrift mit Cache-Regel, Sicherheitsheader gesetzt, Zertifikat von Let's Encrypt für neu.paloskin.de, Zugangs-Cookie HttpOnly, SameSite=Strict, Secure, 7 Tage, falscher Code ohne Cookie. Serverneustart: beide Dienste wieder da, Swap aktiv. Kalenderausfall simuliert: freie Zeiten 503 „unavailable“, Buchungsversuch 503, keine Erfolgsmeldung, Protokoll nur `google_slots_failed` und `book_failed` ohne Inhalte, nach Rückbau wieder 200. Echte Terminanfrage über die Domain im Kalender „PALO SKIN Termine“ eingetragen (Titel „TEST Palo Skin: Erika S.“) und gelöscht. Heartbeat-Cron installiert (`ok (disk 13%, Fehler 0)`), Monitor-URL folgt mit dem Better-Stack-Konto. Offen: Wiederherstellung aus einem Hetzner-Backup auf einen Testserver (Hetzner-Konsole, siehe unten).
 
 Bei GoDaddy einen Eintrag `A` mit Name `neu` und Wert `2.31.2.192` anlegen (TTL 600). Nach wenigen Minuten holt Caddy ein echtes Zertifikat für `neu.paloskin.de`; der Block dafür steht im `Caddyfile` und wird nach dem Umzug entfernt. Dann auf dem Mac, alles mit echtem HTTPS:
 
@@ -211,7 +211,7 @@ Zugangs-Cookie (muss `HttpOnly`, `Secure`, `SameSite=Strict` tragen und ohne Cod
 curl -s -o /dev/null -D - -X POST https://neu.paloskin.de/api/zugang -d "code=falsch" | grep -i "^HTTP\|location\|set-cookie"
 ```
 
-Erwartet: `303` auf `/booking/zugang?fehler=1`, kein `set-cookie`. Mit richtigem Code (im Browser unter https://neu.paloskin.de/booking/zugang): Weiterleitung auf `/booking`, danach Terminanfrage mit erfundenem Namen bis zur Bestätigung, Eintrag in „Palo Skin Termine“ prüfen und löschen (`node scripts/google-cleanup.mjs delete <Nummer>` auf dem Mac).
+Erwartet: `303` auf `/booking/zugang?fehler=1`, kein `set-cookie`. Mit richtigem Code (im Browser unter https://neu.paloskin.de/booking/zugang): Weiterleitung auf `/booking`, danach Terminanfrage mit erfundenem Namen bis zur Bestätigung, Eintrag in „PALO SKIN Termine“ prüfen und löschen (`node scripts/google-cleanup.mjs delete <Nummer>` auf dem Mac).
 
 Kompletter Serverneustart:
 
@@ -310,7 +310,7 @@ Die Buchung reserviert jetzt in einer SQLite-Datei auf dem Server; der Kalender 
 sudo install -d -m 700 -o 10001 -g 10001 /var/lib/paloskin /var/lib/paloskin-test
 ```
 
-- **Testinstanz** `app-test`: gleiches Compose-File, Profil `test`, Image-Tag des Arbeitsbranches (Standard `stufe2`, änderbar mit `PALOSKIN_TEST_TAG`), eigene Datenbank unter `/var/lib/paloskin-test`, erreichbar nur über `neu.paloskin.de`. Seit dem 4. Oktober 2026 mit eigener Umgebungsdatei und nur mit dem Testkalender „Palo Skin Test“, siehe Abschnitt 22.
+- **Testinstanz** `app-test`: gleiches Compose-File, Profil `test`, Image-Tag des Arbeitsbranches (Standard `stufe2`, änderbar mit `PALOSKIN_TEST_TAG`), eigene Datenbank unter `/var/lib/paloskin-test`, erreichbar nur über `neu.paloskin.de`. Seit dem 4. Oktober 2026 mit eigener Umgebungsdatei und nur mit dem Testkalender „PALO SKIN Test“, siehe Abschnitt 22.
 
 ```bash
 cd /opt/paloskin && git fetch && git checkout stufe2 && git pull && docker compose -f deploy/docker-compose.yml --profile test pull app-test && docker compose -f deploy/docker-compose.yml --profile test up -d app-test && docker compose -f deploy/docker-compose.yml exec caddy caddy reload --config /etc/caddy/Caddyfile
@@ -415,10 +415,10 @@ sudo sqlite3 /var/lib/paloskin/buchung.sqlite "UPDATE meta SET value = 'gen-$(da
 **Testinstanz getrennt.** `app-test` liest nur noch `/etc/paloskin/paloskin-test.env` (Vorlage `deploy/paloskin-test.env.example`) und setzt `PALOSKIN_INSTANCE=test`. Im Code gilt dann: Kalender nur aus `TEST_CALENDAR_ID`, alle Mails an `MAIL_REDIRECT_TO` mit „[TEST]“ im Betreff, ohne Umleitung oder ohne Testkalender (bei `BOOKING_ENGINE=google`) keine Buchung und kein Versand. Solange der Testkalender fehlt, läuft die Instanz mit `BOOKING_ENGINE=mock`.
 
 **Testkalender einrichten (Dr. Vogel):**
-1. In Google Kalender mit dem Konto, dem „Palo Skin Termine“ gehört: links bei „Weitere Kalender“ auf „+“, „Neuen Kalender erstellen“, Name „Palo Skin Test“.
-2. In den Einstellungen dieses Kalenders unter „Für bestimmte Personen oder Gruppen freigeben“ die Adresse des Dienstkontos hinzufügen (dieselbe Adresse, die schon bei „Palo Skin Termine“ eingetragen ist; sie endet auf `.iam.gserviceaccount.com`) mit der Berechtigung „Änderungen an Terminen vornehmen“.
+1. In Google Kalender mit dem Konto, dem „PALO SKIN Termine“ gehört: links bei „Weitere Kalender“ auf „+“, „Neuen Kalender erstellen“, Name „PALO SKIN Test“.
+2. In den Einstellungen dieses Kalenders unter „Für bestimmte Personen oder Gruppen freigeben“ die Adresse des Dienstkontos hinzufügen (dieselbe Adresse, die schon bei „PALO SKIN Termine“ eingetragen ist; sie endet auf `.iam.gserviceaccount.com`) mit der Berechtigung „Änderungen an Terminen vornehmen“.
 3. Unter „Kalender integrieren“ die Kalender-ID kopieren und an Claude Code geben (sie ist kein Geheimnis).
-4. Öffnungsfenster für Tests als Termine in „Palo Skin Test“ anlegen und bei „Beschäftigt / Verfügbar“ auf **Verfügbar** stellen.
+4. Öffnungsfenster für Tests als Termine in „PALO SKIN Test“ anlegen und bei „Beschäftigt / Verfügbar“ auf **Verfügbar** stellen.
 Danach in `/etc/paloskin/paloskin-test.env`: `TEST_CALENDAR_ID=<ID>` und `BOOKING_ENGINE=google`, dann `docker compose -f deploy/docker-compose.yml --profile test up -d app-test`.
 
 **Heartbeat erweitert** (`deploy/heartbeat.sh`): fehlende Sicherung ist ein Alarm; zusätzlich letzter vollständiger Hintergrunddurchgang (höchstens 15 Minuten alt), letzter erfolgreicher Kalenderabgleich (höchstens 20 Minuten), überfällige Kalendereinträge, Bestätigungsmails und Studio-Mails (älter als 30 Minuten). Die Abfrage braucht die neuen Spalten, deshalb erst **nach** dem Ausrollen auf www installieren (root):

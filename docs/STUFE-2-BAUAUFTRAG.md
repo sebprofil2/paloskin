@@ -9,7 +9,7 @@ Dieses Dokument ersetzt den früheren Entwurf `STUFE-2-DATENBANK-ENTWURF.md`. De
 1. Die Buchung bekommt eine eigene Datenbank auf paloskin-1 mit atomarer Reservierung, damit zwei Kunden nie dieselbe Zeit bekommen und die Buchung später verbindlich werden kann.
 2. Jede Buchungsänderung landet in derselben Transaktion in einer Ereignistabelle mit fortlaufender Nummer. Das Kundensystem auf paloskin-2 holt diese Ereignisse über einen Endpunkt im privaten Hetzner-Netz ab und bestätigt den Empfang.
 3. paloskin-1 hält nur Buchungsdaten: Kontakt, Termin, Leistungswunsch, Notiz. Keine Behandlungsdokumentation, keine Fotos. Buchungsdaten werden 90 Tage nach dem Termin gelöscht.
-4. Der Google Kalender bleibt die Sicht des Arztes auf den Tag: Die Buchung schreibt weiterhin den Termin in „Palo Skin Termine“ und respektiert belegte Zeiten aus dem Hauptkalender. Die Notiz des Kunden geht nie in den Kalender, nur in die Datenbank.
+4. Der Google Kalender bleibt die Sicht des Arztes auf den Tag: Die Buchung schreibt weiterhin den Termin in „PALO SKIN Termine“ und respektiert belegte Zeiten aus dem Hauptkalender. Die Notiz des Kunden geht nie in den Kalender, nur in die Datenbank.
 
 ## 2. Datenbank
 
@@ -23,7 +23,7 @@ Tabellen (Feldnamen Englisch, Oberfläche Deutsch):
 4. `consumers`: name (zum Beispiel studio-os), acknowledged_seq, last_seen_at. Ein Eintrag je abholendem System.
 5. `idempotency`: request_key, booking_id, created_at (ersetzt die heutige Ableitung, bleibt 7 Tage).
 
-Freie Zeiten berechnen sich künftig aus: Fenster in „Palo Skin offen“ minus frei/belegt aus Hauptkalender und „Palo Skin Termine“ (wie heute) minus `slot_locks`. Ein Google-Fehler führt weiterhin nie zu „frei“.
+Freie Zeiten berechnen sich künftig aus: Fenster in „PALO SKIN offen“ minus frei/belegt aus Hauptkalender und „PALO SKIN Termine“ (wie heute) minus `slot_locks`. Ein Google-Fehler führt weiterhin nie zu „frei“.
 
 Ablauf einer Buchung: Eingaben prüfen (Schemas wie heute), Transaktion: Idempotenz prüfen, `slot_locks` einfügen, `bookings` einfügen mit status requested und calendar_state pending, `booking_events` created schreiben, Commit. Danach Kalendereintrag schreiben; bei Erfolg calendar_state written und calendar_event_id setzen (kein eigenes Ereignis), bei Fehler calendar_state failed, Wiederholung durch einen Hintergrundlauf alle 5 Minuten bis maximal 24 Stunden, danach Alarm über den Heartbeat. Der Kunde sieht in beiden Fällen die Bestätigungsseite, denn die Reservierung in der Datenbank ist maßgeblich.
 
@@ -44,7 +44,7 @@ Nur im privaten Hetzner-Netz erreichbar, nie über 2.31.2.192 oder die Domain.
 
 1. Täglicher Lauf um 03:30 Uhr Berliner Zeit: Buchungen, deren Termin mehr als 90 Tage zurückliegt und deren letztes Ereignis vom Kundensystem bestätigt wurde, werden gelöscht (Zeile entfernt, Ereignis deleted mit nur booking_id und reference, kein Inhalt). Ereignisse werden gelöscht, sobald sie bestätigt und älter als 90 Tage sind. Ist nach 120 Tagen noch nichts bestätigt (Kundensystem nie angeschlossen), wird trotzdem gelöscht und im Protokoll vermerkt.
 2. Nächtlich `sqlite3 .backup` nach /var/backups/paloskin/, 14 Tage behalten, im Hetzner-Server-Backup enthalten. Sobald der Sicherungsserver aus dem CRM-Projekt existiert: zusätzlich restic dorthin, Nur-Anfügen, 30 Tage. Wiederherstellungstest in der Anleitung.
-3. Export „Palo Skin Termine“ (nächtlicher Kalenderexport als ICS auf den Server, 30 Tage), damit der Kalender einen Wiederherstellungsweg hat.
+3. Export „PALO SKIN Termine“ (nächtlicher Kalenderexport als ICS auf den Server, 30 Tage), damit der Kalender einen Wiederherstellungsweg hat.
 
 ## 5. Sichtbare Änderungen für Kunden (Entscheidung Dr. Vogel, 2. Oktober abends)
 
@@ -134,7 +134,7 @@ Kurzfassung der „Entscheidungen Schnittstelle Buchung und Kundensystem, Antwor
 - Täglicher Lauf im Serverprozess (`lib/retention.ts`), fällig ab 03:30 Uhr Berliner Zeit, einmal je Tag; ein verpasster Lauf (Neustart) wird beim nächsten Tick nachgeholt, der Tag steht in der Tabelle `meta`.
 - Buchungen, deren Termin mehr als 90 Tage zurückliegt und deren Ereignisse alle vom Kundensystem bestätigt sind (seq kleiner oder gleich der kleinsten bestätigten Nummer aller Abnehmer), werden gelöscht: Zeile, Belegung und Idempotenzschlüssel weg, Ereignis `deleted` nur mit `id` und `reference`. Nach 120 Tagen auch unbestätigt, mit Protokollzeile `retention_forced_delete` (nur Buchungsnummer). Solange kein Abnehmer angemeldet ist, greift nur die 120-Tage-Regel.
 - Ereignisse werden gelöscht, sobald sie bestätigt und älter als 90 Tage sind, nach 120 Tagen auch unbestätigt (`retention_forced_events`). Nummern werden nie wiederverwendet.
-- Kalenderexport: „Palo Skin Termine“ 7 Tage zurück bis 90 Tage voraus als `palo-skin-termine-JJJJ-MM-TT.ics` unter `/var/lib/paloskin/export` (0700, Dateien 0600), 30 Tage aufbewahrt.
+- Kalenderexport: „PALO SKIN Termine“ 7 Tage zurück bis 90 Tage voraus als `palo-skin-termine-JJJJ-MM-TT.ics` unter `/var/lib/paloskin/export` (0700, Dateien 0600), 30 Tage aufbewahrt.
 - Sicherung: `deploy/backup.sh` als root per Cron um 03:45 Uhr: `sqlite3 .backup` nach `/var/backups/paloskin/buchung-JJJJ-MM-TT.sqlite.gz` mit Integritätsprüfung, 14 Tage, dazu der jüngste Kalenderexport. Der Heartbeat bleibt aus, wenn die jüngste Sicherung älter als 26 Stunden ist. restic zum Sicherungsserver folgt, sobald er existiert (10.0.0.4).
 - Wiederherstellungstest: Anleitung Abschnitt 19, durchgeführt auf der Testinstanz.
 
@@ -156,7 +156,7 @@ Kurzfassung der „Entscheidungen Schnittstelle Buchung und Kundensystem, Antwor
 
 ### Nacharbeiten Datenschutzerklärung (3. Oktober 2026, abends)
 
-- Löschlauf löscht mit der Buchung auch den Kalendereintrag in „Palo Skin Termine“ (über `calendar_event_id`); ein schon fehlender Eintrag ist kein Fehler, bei nicht erreichbarem Kalender bleibt die Buchung bis zum nächsten Lauf. Protokoll nur mit Anzahlen.
+- Löschlauf löscht mit der Buchung auch den Kalendereintrag in „PALO SKIN Termine“ (über `calendar_event_id`); ein schon fehlender Eintrag ist kein Fehler, bei nicht erreichbarem Kalender bleibt die Buchung bis zum nächsten Lauf. Protokoll nur mit Anzahlen.
 - Kalendereintrag verschlankt: Titel „Palo Skin: Vorname N.“, Buchungsnummer, Besuch, zu zweit, Vorauswahl mit Preisen, Sprache, gegebenenfalls Empfehlung, bei WhatsApp-Haken „WhatsApp-Erinnerung: ja, <Nummer>“. E-Mail-Adresse, Einwilligungszeitpunkt und Dauer stehen nur noch in der Datenbank. Ziffer 4 der Datenschutzerklärung entsprechend gekürzt.
 
 ### Gesamtauftrag Kundentexte, Kartenlink, Kalender-Knöpfe, Erinnerung, Liste (3. Oktober 2026, abends)
@@ -194,7 +194,7 @@ Folgebesuche dauern so lang wie erste Besuche; Termine von 20 Minuten gibt es ni
 
 ## Kalender als Werkzeug des Studios (3. Oktober 2026, abends)
 
-Alle 5 Minuten gleicht `lib/calendar-sync.ts` Änderungen im Kalender „Palo Skin Termine“ mit den Buchungen ab (Google `events.list` mit `updatedMin` und `showDeleted`, Marke `calendar_sync_since` in `meta`, eine Minute Überlappung).
+Alle 5 Minuten gleicht `lib/calendar-sync.ts` Änderungen im Kalender „PALO SKIN Termine“ mit den Buchungen ab (Google `events.list` mit `updatedMin` und `showDeleted`, Marke `calendar_sync_since` in `meta`, eine Minute Überlappung).
 
 - Eintrag gelöscht: Buchung abgesagt mit `cancel_reason studio_calendar`, Zeit frei, Erinnerung entfällt, Ereignis `cancelled`, keine Kundenmail, Studio-Mail „Im Kalender abgesagt: Mittwoch, 7.10., 07:30 Uhr“.
 - Beginn verschoben: Ereignis `rescheduled` (Status bleibt `confirmed`), Kunde bekommt Mail C „Verschoben“, Studio-Mail „Im Kalender verschoben“ mit Bisher und Neu, Zusage zurückgesetzt, Erinnerung nach den normalen Regeln. Der Kalender wird dabei nicht angefasst.
@@ -226,5 +226,5 @@ Bezeichnungen in der Buchung angeglichen (`lib/texts.ts`, `lib/treatments.ts`, `
 - Logo freigegeben (4. Oktober 2026): Querformat Fassung A, Fassung B entfernt; favicon.ico mit eigener 16-Pixel-Fassung (Zeichen 82 Prozent), 32 und 48 Pixel unverändert; im Kopf nur noch das ICO angeboten, weil ein SVG-Favicon die 16-Pixel-Fassung verdrängen würde.
 - Reparaturauftrag (4. Oktober 2026, zunächst nur neu.paloskin.de): keine Buchung und keine Verschiebung ohne erfolgreiche Prüfung der Verfügbarkeit (`unavailable`, Hinweis in fünf Sprachen); Verschieben schreibt neue Zeit und „Kalender nachziehen“ in einer Transaktion (`calendar_state pending`, `calendar_pending_at`, Version `calendar_rev`), ältere Kalenderantworten setzen nie „written“; Kalenderabgleich ignoriert Zeitänderungen im Zwischenzustand; Hintergrundlauf ohne Überschneidung; Mails werden vor dem Senden beansprucht; Löschlauf und Export mit eigenen Erledigt-Marken; Testinstanz mit eigener Umgebungsdatei und nur Testkalender; Heartbeat mit Sicherung, Hintergrundlauf, Kalenderabgleich und überfälligen Arbeiten; Terminlinks nur mit LINK_SECRET. Tests in `lib/__tests__/reparatur.test.ts`.
 - Blaue Kugel (4. Oktober 2026): Kundenmails (Bestätigung, Anfrage, Verschoben, Erinnerung) beginnen im Betreff mit 🔵, höchstens 42 Zeichen; der Kalendertitel für Kunden ebenso (`KUGEL`, `customerSubject`, `calendarTitle` in `lib/mail-content.ts`). Studio-Mails, 18-Uhr-Liste und Studio-Kalender ohne Kugel. In der Testinstanz steht „[TEST]“ hinter der Kugel.
-- Zusage erst ab Vortag 10 Uhr (4. Oktober 2026, `lib/attendance.ts`): Block „Ja, ich komme“ auf der Terminseite erst ab dann, der Server lehnt frühere Zusagen ab; kurzfristige Buchungen und Verschiebungen in dieses Fenster sind automatisch bestätigt (auch Verschiebungen im Kalender); frühere Zusagen werden vom Hintergrundlauf zurückgesetzt (Ereignis `attendance_confirmed` mit null). 18-Uhr-Liste zeigt automatisch Bestätigte als „bestätigt“. Studio-Mail nennt den Kalender der Instanz (neu „Palo Skin Test“, www „Palo Skin Termine“).
+- Zusage erst ab Vortag 10 Uhr (4. Oktober 2026, `lib/attendance.ts`): Block „Ja, ich komme“ auf der Terminseite erst ab dann, der Server lehnt frühere Zusagen ab; kurzfristige Buchungen und Verschiebungen in dieses Fenster sind automatisch bestätigt (auch Verschiebungen im Kalender); frühere Zusagen werden vom Hintergrundlauf zurückgesetzt (Ereignis `attendance_confirmed` mit null). 18-Uhr-Liste zeigt automatisch Bestätigte als „bestätigt“. Studio-Mail nennt den Kalender der Instanz (neu „PALO SKIN Test“, www „PALO SKIN Termine“).
 - Ereignisstrom ohne Lücke (4. Oktober 2026, Anforderung des Kundensystems): `oldest_seq` und `stream_generation` in `GET /intern/v1/events` und `/health`; mit angemeldetem Verbraucher keine Löschung unbestätigter Ereignisse; Alarm bei Ereignis länger als 3 Tage unbestätigt; Kennung nach Wiederherstellung erneuern (UMZUG-HETZNER Abschnitt 19). Datenschutzerklärung Ziffer zur Speicherdauer um den Fall der noch nicht bestätigten Übernahme ergänzt. Tests in `lib/__tests__/ereignisstrom.test.ts`.
