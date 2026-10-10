@@ -15,7 +15,7 @@ import "@/app/design/design.css";
  * Die Sprachwahl führt auf die Arztseite der Sprache; nicht freigegebene Sprachen leitet der Proxy auf Deutsch weiter.
  */
 
-/* **fett** und __kursiv__ aus den Texten */
+/* __kursiv__ aus den Texten (Zeitschriften); **fett** wird nicht mehr verwendet */
 function Txt({ s }: { s: string }) {
   return (
     <>
@@ -24,6 +24,11 @@ function Txt({ s }: { s: string }) {
       )}
     </>
   );
+}
+
+/* Abschnittsüberschrift wie auf der Startseite: zweiter Teil blau und kursiv in der zweiten Schrift */
+function H2({ h }: { h: [string, string] }) {
+  return <h2 className="h2">{h[0]} <em>{h[1]}</em></h2>;
 }
 
 export function Arztseite({ lang }: { lang: ArztLang }) {
@@ -39,8 +44,8 @@ export function Arztseite({ lang }: { lang: ArztLang }) {
       <main className="wrap arzt">
         <section className="arzt-top">
           <div>
-            <h1 className="h2">Dr. med. Sebastian Vogel</h1>
-            <p className="arzt-sub"><strong>{t.sub}</strong></p>
+            <h1 className="arzt-name">Dr. med. Sebastian Vogel</h1>
+            <p className="arzt-sub">{t.sub}</p>
             <p className="arzt-intro">{t.intro}</p>
           </div>
           <div className="ph ph-hero">
@@ -49,7 +54,7 @@ export function Arztseite({ lang }: { lang: ArztLang }) {
         </section>
 
         <div className="arzt-txt">
-          <h2 className="h2">{t.expH}</h2>
+          <H2 h={t.expH} />
           {stationen.map((b) => (
             <section key={b.h}>
               <h3>{b.h}</h3>
@@ -69,14 +74,14 @@ export function Arztseite({ lang }: { lang: ArztLang }) {
             ))}
           </section>
 
-          <h2 className="h2">{t.awardsH}</h2>
+          <H2 h={t.awardsH} />
           <ul className="arzt-awards">
             {t.awards.map((a) => (
               <li key={a}><Txt s={a} /></li>
             ))}
           </ul>
 
-          <h2 className="h2">{t.langH}</h2>
+          <H2 h={t.langH} />
           {t.langP.map((p) => (
             <p key={p}><Txt s={p} /></p>
           ))}

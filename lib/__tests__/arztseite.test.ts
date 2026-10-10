@@ -55,11 +55,15 @@ describe("Seite über Dr. Vogel", () => {
     expect(t.intro).toBe("Bei PALO SKIN behandle und berate ich Sie als Patientin oder Patient. Dabei bringe ich Erfahrung aus mehr als 5.000 ästhetischen Behandlungen mit. Fragen Sie mich gern alles, was Sie wissen möchten.");
     expect(t.exp.map((x) => x.h)).toEqual(["Ästhetische Medizin", "Chirurgie und Intensivmedizin", "Approbation und Promotion zum Dr. med. an der Universität Freiburg", "Plastische Chirurgie in Brasilien", "Wissenschaftliche Veröffentlichungen"]);
     expect(JSON.stringify(t)).not.toMatch(/Universtität|botox/i);
+    // 10. Oktober 2026: Australien ergänzt, „u.a.“ ausgeschrieben, kein Fett im Fließtext, Überschriften wie auf der Startseite
+    expect(t.exp[3].p).toBe("Während meines Medizinstudiums sammelte ich unter anderem Erfahrung in der plastischen Chirurgie in Brasilien. Weitere Studien- und Klinikaufenthalte führten mich nach Frankreich, Spanien, Mexiko und Australien.");
+    expect([t.expH, t.awardsH, t.langH]).toEqual([["Medizinische", "Erfahrung."], ["Stipendien und", "Auszeichnungen."], ["Fünf Sprachen,", "viele Perspektiven."]]);
     for (const l of ["de", "en", "es", "fr", "pt"] as const) {
       expect(ARZT_TEXTE[l].exp).toHaveLength(5);
       expect(ARZT_TEXTE[l].pubLinks.map((p) => p[1])).toEqual(t.pubLinks.map((p) => p[1]));
       expect(ARZT_TEXTE[l].awards).toHaveLength(4);
-      expect(JSON.stringify(ARZT_TEXTE[l]), l).not.toMatch(/[–—]|botox/i);
+      expect(JSON.stringify(ARZT_TEXTE[l]), l).not.toMatch(/[–—]|botox|\*\*|u\.a\./i);
+      expect(ARZT_TEXTE[l].exp[3].p, l).toMatch(/Austr[aá]li/);
     }
   });
 
