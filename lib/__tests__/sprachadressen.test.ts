@@ -127,19 +127,34 @@ describe("Kopfangaben je Sprache", () => {
       expect(graph.map((n: { "@type": string }) => n["@type"])).toEqual(["MedicalBusiness", "Person", "WebPage"]);
       expect(graph[0]).toMatchObject({
         name: "PALO SKIN by Dr. Vogel",
+        alternateName: ["PALO SKIN", "Palo Skin", "Paloskin", "paloskin.de"],
         url: `${WWW}/`,
+        geo: { "@type": "GeoCoordinates", latitude: 52.5393548, longitude: 13.416081 },
+        priceRange: "€€",
         logo: `${WWW}/assets/icon-512.png`,
         image: bilder,
-        description: HOME_TEXTS[lang].metaDesc,
+        description: `${HOME_TEXTS[lang].metaDesc} ${HOME_TEXTS[lang].selfTreat}`,
         telephone: "+49 151 58872566",
         address: { streetAddress: "Hagenauer Straße 14", postalCode: "10435", addressLocality: "Berlin", addressCountry: "DE" },
         areaServed: { "@type": "City", name: "Berlin" },
         parentOrganization: { name: "Nidus Skin Berlin GmbH" },
         sameAs: ["https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8", "https://www.instagram.com/palo.skin"],
       });
-      expect(graph[1]).toMatchObject({ name: "Dr. med. Sebastian Vogel", jobTitle: "Arzt", worksFor: { "@id": `${WWW}/#studio` } });
+      expect(graph[1]).toMatchObject({
+        name: "Dr. med. Sebastian Vogel",
+        honorificPrefix: "Dr. med.",
+        jobTitle: "Arzt",
+        worksFor: { "@id": `${WWW}/#studio` },
+        image: `${WWW}/bilder/palo-skin-berlin-dr-sebastian-vogel.jpg`,
+        sameAs: ["https://www.linkedin.com/in/dr-sebastian-vogel/"],
+        knowsLanguage: ["de", "en", "es", "fr", "pt"],
+        alumniOf: { name: "Albert-Ludwigs-Universität Freiburg" },
+      });
+      expect(graph[1].award).toHaveLength(4);
+      // url erst, wenn die Arztseite live ist
+      expect(graph[1].url).toBeUndefined();
       expect(graph[2]).toMatchObject({ url: `${WWW}${PFAD[lang]}`, inLanguage: lang, name: HOME_TEXTS[lang].title });
-      expect(text).not.toMatch(/botox|openingHours|aggregateRating|price|email/i);
+      expect(text).not.toMatch(/botox|openingHours|aggregateRating|"price"|offers|email/i);
     }
   });
 

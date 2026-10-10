@@ -3,7 +3,7 @@ import { readEnv } from "./env";
 import { homePath } from "./home-paths";
 import { LANG_IDS, type Lang } from "./i18n";
 import { isTestInstance } from "./instance";
-import { MAPS } from "./kopf";
+import { ARZT, LANGUAGE_NAMES_EN, STUDIO } from "./studio";
 import { HOME_TEXTS } from "./texts-home";
 
 /*
@@ -107,61 +107,71 @@ export function homeJsonLd(lang: Lang): string {
   return JSON.stringify(studioJsonLd(lang));
 }
 
-/* Beratungssprachen im Studio (wie in der Buchung), als Sprache mit Namen und Kürzel */
-const BERATUNG: [string, string][] = [["de", "German"], ["en", "English"], ["es", "Spanish"], ["fr", "French"], ["pt", "Portuguese"]];
-
 /*
- * Strukturierte Daten der Startseite (überarbeitet 10. Oktober 2026, Grundlage die bisherigen Daten): Studio als
- * MedicalBusiness, Dr. med. Sebastian Vogel als Person, dazu die Seite. Nur Angaben, die auch sichtbar auf der Seite stehen:
- * Telefonnummer ja (WhatsApp-Nummer im Abschnitt Studio), keine Öffnungszeiten und keine E-Mail-Adresse. Nie „Botox“, keine
- * Preise, keine Bewertungen. Beschreibung je Sprache aus metaDesc.
+ * Strukturierte Daten der Startseite (überarbeitet 10. Oktober 2026, Angaben aus lib/studio.ts): Studio als MedicalBusiness,
+ * Dr. med. Sebastian Vogel als Person, dazu die Seite. Telefonnummer ja (sichtbar im Abschnitt Studio), keine Öffnungszeiten
+ * und keine E-Mail-Adresse. Nie „Botox“, keine Bewertungen; als Preisangabe nur die Spanne priceRange. Beschreibung je
+ * Sprache aus metaDesc und dem Satz selfTreat. Die Person bekommt eine url erst, wenn die Arztseite live ist.
  */
 export function studioJsonLd(lang: Lang) {
   const base = site();
   const studio = `${base}/#studio`;
   const arzt = `${base}/#arzt`;
   const [vogel, ...raeume] = studioImages();
+  const a = STUDIO.address;
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "MedicalBusiness",
         "@id": studio,
-        name: "PALO SKIN by Dr. Vogel",
-        alternateName: "PALO SKIN",
-        description: HOME_TEXTS[lang].metaDesc,
+        name: STUDIO.name,
+        alternateName: [...STUDIO.alternateNames],
+        description: `${HOME_TEXTS[lang].metaDesc} ${HOME_TEXTS[lang].selfTreat}`,
         url: `${base}/`,
         logo: `${base}/assets/icon-512.png`,
         image: [...raeume, vogel],
-        telephone: "+49 151 58872566",
-        address: { "@type": "PostalAddress", streetAddress: "Hagenauer Straße 14", postalCode: "10435", addressLocality: "Berlin", addressCountry: "DE" },
+        telephone: STUDIO.phone.display,
+        address: { "@type": "PostalAddress", streetAddress: a.street, postalCode: a.postalCode, addressLocality: a.city, addressCountry: a.country },
+        geo: { "@type": "GeoCoordinates", latitude: STUDIO.geo.latitude, longitude: STUDIO.geo.longitude },
         areaServed: { "@type": "City", name: "Berlin" },
-        parentOrganization: { "@type": "Organization", name: "Nidus Skin Berlin GmbH" },
+        priceRange: STUDIO.priceRange,
+        parentOrganization: { "@type": "Organization", name: STUDIO.operator },
         founder: { "@id": arzt },
         employee: { "@id": arzt },
         // Beratungssprachen am Kontaktpunkt (availableLanguage gehört laut schema.org nicht direkt an MedicalBusiness)
         contactPoint: {
           "@type": "ContactPoint",
           contactType: "customer service",
-          telephone: "+49 151 58872566",
-          availableLanguage: BERATUNG.map(([code, name]) => ({ "@type": "Language", name, alternateName: code })),
+          telephone: STUDIO.phone.display,
+          availableLanguage: STUDIO.consultationLanguages.map((code) => ({ "@type": "Language", name: LANGUAGE_NAMES_EN[code], alternateName: code })),
         },
-        sameAs: [MAPS, "https://www.instagram.com/palo.skin"],
+        sameAs: [STUDIO.maps, STUDIO.instagram.url],
       },
-      {
-        "@type": "Person",
-        "@id": arzt,
-        name: "Dr. med. Sebastian Vogel",
-        givenName: "Sebastian",
-        familyName: "Vogel",
-        honorificPrefix: "Dr. med.",
-        jobTitle: "Arzt",
-        image: vogel,
-        worksFor: { "@id": studio },
-        url: `${base}/`,
-      },
+      personJsonLd(base, vogel),
       { "@type": "WebPage", "@id": `${homeUrl(lang)}#seite`, url: homeUrl(lang), name: HOME_TEXTS[lang].title, inLanguage: lang, primaryImageOfPage: vogel, about: { "@id": studio } },
     ],
+  };
+}
+
+/** Dr. med. Sebastian Vogel als Person (nicht Physician, das wäre eine Einrichtung) */
+export function personJsonLd(base: string, image: string, url?: string) {
+  return {
+    "@type": "Person",
+    "@id": `${base}/#arzt`,
+    name: ARZT.name,
+    givenName: ARZT.givenName,
+    familyName: ARZT.familyName,
+    honorificPrefix: ARZT.honorificPrefix,
+    jobTitle: ARZT.jobTitle,
+    image,
+    worksFor: { "@id": `${base}/#studio` },
+    sameAs: [ARZT.linkedin],
+    knowsLanguage: [...STUDIO.consultationLanguages],
+    knowsAbout: [...ARZT.knowsAbout],
+    alumniOf: { "@type": "CollegeOrUniversity", name: ARZT.alumniOf },
+    award: [...ARZT.awards],
+    ...(url ? { url } : {}),
   };
 }
 
