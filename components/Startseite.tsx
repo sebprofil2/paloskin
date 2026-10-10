@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Fusszeile, Kopfzeile } from "@/components/Kopfzeile";
 import { bookHref, kopfTexte, MAPS } from "@/lib/kopf";
 import { BILDER } from "@/lib/bilder";
+import { STUDIO } from "@/lib/studio";
 import { SprachHinweis } from "@/components/SprachHinweis";
 import { homeJsonLd } from "@/lib/share-meta";
 import { HOME_TEXTS, REVIEWS, type HomeTexts } from "@/lib/texts-home";
@@ -15,9 +16,9 @@ import "@/app/design/design.css";
  * Seit 5. Oktober 2026 mit eigener Adresse je Sprache: app/page.tsx (Deutsch auf „/“) und app/[lang]/page.tsx
  * (/en, /es, /fr, /pt, /uk, /ar) zeigen diese Seite; die Sprache kommt aus der Adresse, nie aus dem Gerät.
  */
-const WA = "https://wa.me/4915158872566";
-const TEL = "tel:+4915158872566";
-const IG = "https://www.instagram.com/palo.skin";
+const WA = STUDIO.whatsapp;
+const TEL = STUDIO.phone.tel;
+const IG = STUDIO.instagram.url;
 const THOUSANDS: Record<Lang, string> = { de: ".", en: ",", es: ".", fr: " ", pt: ".", it: ".", tr: ".", uk: " ", ar: "," };
 const price = (lang: Lang, n: number) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, THOUSANDS[lang])} €*`;
 
@@ -110,9 +111,9 @@ export function Startseite({ lang }: { lang: Lang }) {
                 <li className="links">
                   <a href={MAPS} target="_blank" rel="noopener">{t.mapL}</a>
                   {/* Telefon und WhatsApp unter derselben Nummer (Entscheidung Dr. Vogel, 10. Oktober 2026) */}
-                  <span className="tel">{t.phoneWa} <a href={TEL}><bdi>+49 151 58872566</bdi></a></span>
+                  <span className="tel">{t.phoneWa} <a href={TEL}><bdi>{STUDIO.phone.display}</bdi></a></span>
                   <a href={WA} target="_blank" rel="noopener">WhatsApp</a>
-                  <a href={IG} target="_blank" rel="noopener"><bdi>Instagram @palo.skin</bdi></a>
+                  <a href={IG} target="_blank" rel="noopener"><bdi>Instagram {STUDIO.instagram.handle}</bdi></a>
                 </li>
               </ul>
               <details className="studio">
@@ -264,7 +265,7 @@ export function Startseite({ lang }: { lang: Lang }) {
         </div>
       </section>
 
-      <Fusszeile lang={lang} t={kopfTexte(t)} mobileBar />
+      <Fusszeile lang={lang} t={kopfTexte(t)} mobileBar domain />
     </div>
   );
 }

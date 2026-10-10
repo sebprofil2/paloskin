@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { homePath } from "@/lib/home-paths";
 import { LANG_LABEL, LANG_SHORT, LANGS, langButtonLabel, saveLangChoice, type Lang } from "@/lib/i18n";
 import { bookHref, MAPS, type KopfTexte } from "@/lib/kopf";
+import { STUDIO } from "@/lib/studio";
 
 /*
  * Kopfzeile und Fußzeile nach Entwurf B, gleich auf Startseite und Buchung. Sprachauswahl mit allen sieben Sprachen
@@ -89,7 +90,8 @@ export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte;
   );
 }
 
-export function Fusszeile({ lang, t, mobileBar }: { lang: Lang; t: KopfTexte; mobileBar: boolean }) {
+/* domain: „ · paloskin.de“ hinter dem Namen (Marke, 10. Oktober 2026); nicht auf Buchung und Verschieben */
+export function Fusszeile({ lang, t, mobileBar, domain = false }: { lang: Lang; t: KopfTexte; mobileBar: boolean; domain?: boolean }) {
   return (
     <>
       <footer className="ft">
@@ -97,7 +99,7 @@ export function Fusszeile({ lang, t, mobileBar }: { lang: Lang; t: KopfTexte; mo
           <div className="ft-l">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/assets/logo/web/zeichen.svg" alt="" width={20} height={28} />
-            <bdi>{t.copyright}</bdi>
+            <bdi>{t.copyright}{domain ? ` · ${STUDIO.domain}` : null}</bdi>
           </div>
           <div className="ft-r">
             <a href={bookHref(lang)}>{t.book}</a>

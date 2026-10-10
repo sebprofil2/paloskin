@@ -10,6 +10,8 @@ import type { Lang } from "./i18n";
 export interface HomeTexts {
   title: string;
   metaDesc: string;
+  /** Nur in den strukturierten Daten, hinter metaDesc (10. Oktober 2026) */
+  selfTreat: string;
   /* Kopfzeile */
   rateLong: string;
   rateShort: string;
@@ -132,6 +134,7 @@ export const REVIEWS: { text: string; lang: Lang; name: string; initial: string 
 const de: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Ärztliche Faltenbehandlung in Berlin",
   metaDesc: "PALO SKIN by Dr. Vogel in Berlin Prenzlauer Berg: ärztliche Faltenbehandlung durch Dr. med. Sebastian Vogel. Termine vor und nach der Arbeit und am Wochenende.",
+  selfTreat: "Alle Behandlungen führt Dr. med. Sebastian Vogel selbst durch.",
   rateLong: "★ 5,0 Kundenbewertungen",
   rateShort: "★ 5,0",
   rateAria: "5,0 Kundenbewertungen auf Google Maps",
@@ -237,6 +240,7 @@ const de: HomeTexts = {
 const en: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Physician-led wrinkle treatment in Berlin",
   metaDesc: "PALO SKIN by Dr. Vogel in Berlin Prenzlauer Berg: physician-led wrinkle treatment by Dr. med. Sebastian Vogel. Open before and after work and at weekends.",
+  selfTreat: "Dr. med. Sebastian Vogel performs all treatments himself.",
   rateLong: "★ 5.0 client rating",
   rateShort: "★ 5.0",
   rateAria: "5.0 client rating on Google Maps",
@@ -341,6 +345,7 @@ const en: HomeTexts = {
 const es: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Tratamiento médico de arrugas en Berlín",
   metaDesc: "PALO SKIN by Dr. Vogel en Berlín Prenzlauer Berg: tratamiento médico de arrugas del Dr. med. Sebastian Vogel. Citas antes y tras el trabajo y el fin de semana.",
+  selfTreat: "El Dr. med. Sebastian Vogel realiza personalmente todos los tratamientos.",
   rateLong: "★ 5,0 en valoraciones de clientes",
   rateShort: "★ 5,0",
   rateAria: "Valoración de clientes de 5,0 en Google Maps",
@@ -445,6 +450,7 @@ const es: HomeTexts = {
 const fr: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Traitement médical des rides à Berlin",
   metaDesc: "PALO SKIN by Dr. Vogel à Berlin Prenzlauer Berg : traitement médical des rides du Dr med. Sebastian Vogel. Créneaux avant et après le travail et le week-end.",
+  selfTreat: "Le Dr. med. Sebastian Vogel réalise lui-même tous les soins.",
   rateLong: "★ 5,0 avis clients",
   rateShort: "★ 5,0",
   rateAria: "Note de 5,0 dans les avis clients sur Google Maps",
@@ -549,6 +555,7 @@ const fr: HomeTexts = {
 const pt: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Tratamento médico de rugas em Berlim",
   metaDesc: "PALO SKIN by Dr. Vogel em Berlim Prenzlauer Berg: tratamento médico de rugas pelo Dr. med. Sebastian Vogel. Horários antes e após o trabalho e no fim de semana.",
+  selfTreat: "O Dr. med. Sebastian Vogel realiza pessoalmente todos os tratamentos.",
   rateLong: "★ 5,0 nas avaliações de clientes",
   rateShort: "★ 5,0",
   rateAria: "5,0 nas avaliações de clientes no Google Maps",
@@ -653,6 +660,7 @@ const pt: HomeTexts = {
 const it: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Trattamento medico delle rughe a Berlino",
   metaDesc: "PALO SKIN by Dr. Vogel a Berlino Prenzlauer Berg: trattamento medico delle rughe con il Dr. med. Sebastian Vogel. Orari prima e dopo il lavoro e nel weekend.",
+  selfTreat: "Il Dr. med. Sebastian Vogel esegue personalmente tutti i trattamenti.",
   rateLong: "★ 5,0 nelle recensioni dei clienti",
   rateShort: "★ 5,0",
   rateAria: "5,0 nelle recensioni dei clienti su Google Maps",
@@ -757,6 +765,7 @@ const it: HomeTexts = {
 const tr: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Berlin’de tıbbi kırışıklık tedavisi",
   metaDesc: "PALO SKIN by Dr. Vogel, Berlin Prenzlauer Berg: Dr. med. Sebastian Vogel tarafından tıbbi kırışıklık tedavisi. İş öncesi, iş sonrası ve hafta sonu randevu.",
+  selfTreat: "Tüm tedavileri Dr. med. Sebastian Vogel bizzat yapar.",
   rateLong: "★ 5,0 danışan değerlendirmesi",
   rateShort: "★ 5,0",
   rateAria: "Google Maps’te 5,0 danışan değerlendirmesi",
@@ -861,6 +870,7 @@ const tr: HomeTexts = {
 const uk: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Лікарська корекція зморшок у Берліні",
   metaDesc: "PALO SKIN by Dr. Vogel у Берліні, Prenzlauer Berg: лікарська корекція зморшок від Dr. med. Sebastian Vogel. Прийом до та після роботи, а також у вихідні.",
+  selfTreat: "Усі процедури Dr. med. Sebastian Vogel проводить особисто.",
   rateLong: "★ 5,0 відгуки клієнтів",
   rateShort: "★ 5,0",
   rateAria: "Оцінка 5,0 у відгуках клієнтів на Google Maps",
@@ -965,6 +975,7 @@ const uk: HomeTexts = {
 const ar: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | علاج طبي للتجاعيد في برلين",
   metaDesc: "PALO SKIN by Dr. Vogel في Prenzlauer Berg ببرلين: علاج طبي للتجاعيد على يد Dr. med. Sebastian Vogel. مواعيد قبل العمل وبعده وفي عطلة نهاية الأسبوع.",
+  selfTreat: "يجري Dr. med. Sebastian Vogel جميع العلاجات بنفسه.",
   rateLong: "★ 5.0 في تقييمات العملاء",
   rateShort: "★ 5.0",
   rateAria: "5.0 في تقييمات العملاء على Google Maps",
