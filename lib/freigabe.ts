@@ -16,7 +16,7 @@ export const ARZTSEITE_SPRACHEN: readonly Lang[] = ["de", "en", "es", "fr", "pt"
  * Livegang der Arztseite auf www. Erst wenn true: Seite auf www erreichbar, Links aus Startseite und Fußzeile,
  * Einträge in der Sitemap, url der Person in den strukturierten Daten. Auf neu ist die Seite immer zu sehen (noindex).
  */
-export const ARZTSEITE_LIVE = false;
+export const ARZTSEITE_LIVE = true;
 
 /* ---------- Behandlungsseiten (/behandlungen/<name>) ---------- */
 

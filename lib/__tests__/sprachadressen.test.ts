@@ -157,8 +157,8 @@ describe("Kopfangaben je Sprache", () => {
         alumniOf: { name: "Albert-Ludwigs-Universität Freiburg" },
       });
       expect(graph[1].award).toHaveLength(4);
-      // url erst, wenn die Arztseite live ist
-      expect(graph[1].url).toBeUndefined();
+      // url der Person: die Arztseite (live seit 10. Oktober 2026)
+      expect(graph[1].url).toBe(`${WWW}/dr-sebastian-vogel`);
       expect(graph[2]).toMatchObject({ url: `${WWW}${PFAD[lang]}`, inLanguage: lang, name: HOME_TEXTS[lang].title });
       expect(text).not.toMatch(/botox|openingHours|aggregateRating|"price"|offers|email/i);
     }
@@ -184,15 +184,19 @@ describe("Kopfangaben je Sprache", () => {
 describe("Sitemap und robots.txt", () => {
   it("alle Startseiten (neun Sprachen) mit gegenseitigem hreflang und die Buchung; Impressum und Datenschutz nicht (noindex)", () => {
     const s = sitemap();
-    expect(s.map((e) => e.url)).toEqual([...LANG_IDS.map((l) => `${WWW}${PFAD[l]}`), `${WWW}/booking`]);
+    const arzt = ["/dr-sebastian-vogel", "/en/dr-sebastian-vogel", "/es/dr-sebastian-vogel", "/fr/dr-sebastian-vogel", "/pt/dr-sebastian-vogel"].map((p) => `${WWW}${p}`);
+    expect(s.map((e) => e.url)).toEqual([...LANG_IDS.map((l) => `${WWW}${PFAD[l]}`), ...arzt, `${WWW}/booking`]);
+    const buchungsEintrag = s[s.length - 1];
     const alle = { ...Object.fromEntries(LANG_IDS.map((l) => [l, `${WWW}${PFAD[l]}`])), "x-default": `${WWW}/` };
     for (const e of s.slice(0, LANG_IDS.length)) expect(e.alternates?.languages).toEqual(alle);
     const buchung = { ...Object.fromEntries(LANG_IDS.map((l) => [l, l === "de" ? `${WWW}/booking` : `${WWW}/booking?lang=${l}`])), "x-default": `${WWW}/booking` };
-    expect(s[LANG_IDS.length].alternates?.languages).toEqual(buchung);
+    expect(buchungsEintrag.alternates?.languages).toEqual(buchung);
     // Bildeinträge nur für die Startseiten, mit den festen Studiofotos
     const bilder = ["dr-sebastian-vogel", "beratungsbereich", "behandlungsraum", "eingang"].map((n) => `${WWW}/bilder/palo-skin-berlin-${n}.jpg`);
     for (const e of s.slice(0, LANG_IDS.length)) expect(e.images).toEqual(bilder);
-    expect(s[LANG_IDS.length].images).toBeUndefined();
+    expect(buchungsEintrag.images).toBeUndefined();
+    // Arztseite: hreflang nur zwischen den fünf freigegebenen Sprachen, x-default Deutsch
+    expect(Object.keys(s[LANG_IDS.length].alternates?.languages ?? {})).toEqual(["de", "en", "es", "fr", "pt", "x-default"]);
     expect(JSON.stringify(s)).not.toMatch(/impressum|datenschutz/);
   });
 
