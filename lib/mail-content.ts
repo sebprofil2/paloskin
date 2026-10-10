@@ -1,6 +1,7 @@
 import { terminToken, terminUrl } from "./links";
 import type { MailMessage } from "./mail";
 import { readEnv } from "./env";
+import { bookHref } from "./kopf";
 import { confirmFromFor } from "./attendance";
 import type { BookingRow } from "./store";
 import { LANGS, TEXTS } from "./texts";
@@ -260,4 +261,58 @@ export function reminderMail(b: BookingRow): MailMessage {
   ]);
 
   return { to: b.email, subject: customerSubject(m.subjectReminder(when.time), test), text: text.join("\n"), html };
+}
+
+/**
+ * Kalenderdatei zum Entfernen (Absage, 10. Oktober 2026): METHOD:CANCEL mit derselben UID wie in der Bestätigung
+ * (Buchungskennung, bleibt auch beim Verschieben gleich), STATUS:CANCELLED und eine höhere SEQUENCE als die Bestätigung.
+ */
+export function buildCancelIcs(b: BookingRow, now = new Date()): string {
+  const m = readEnv().mail;
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//PALO SKIN by Dr. Vogel//Buchung//DE",
+    "CALSCALE:GREGORIAN",
+    "METHOD:CANCEL",
+    "BEGIN:VEVENT",
+    `UID:${b.id}@paloskin.de`,
+    "SEQUENCE:1",
+    `DTSTAMP:${icsStamp(now)}`,
+    `DTSTART:${icsStamp(new Date(b.starts_at))}`,
+    `DTEND:${icsStamp(new Date(b.ends_at))}`,
+    `ORGANIZER;CN=${icsEscape(m.fromName)}:mailto:${m.from}`,
+    `SUMMARY:${icsEscape(calendarTitle(b))}`,
+    `LOCATION:${icsEscape(`${STUDIO}, ${ADDRESS}`)}`,
+    "STATUS:CANCELLED",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ];
+  return lines.map(icsFold).join("\r\n") + "\r\n";
+}
+
+/**
+ * Absage-Bestätigung an die Kundin, wenn sie selbst abgesagt hat (10. Oktober 2026). Form wie die Terminbestätigung:
+ * gleicher Absender, Anrede, Kugel im Betreff, Fußzeile; Sprache wie die Bestätigung. Ein Satz, Link zur Buchung in ihrer
+ * Sprache, Kalenderdatei zum Entfernen. Kein Hinweis auf Gebühren.
+ */
+export function cancellationMail(b: BookingRow, now = new Date()): MailMessage {
+  const lang = b.language;
+  const m = MAIL_TEXTS[lang];
+  const when = whenLabels(new Date(b.starts_at), lang);
+  const test = b.test_mode === 1;
+  const bookUrl = `${readEnv().publicBaseUrl}${bookHref(lang)}`;
+
+  const text: string[] = [];
+  if (test) text.push(m.testNote, "");
+  text.push(m.greeting(b.first_name), "", m.introCancelled(when.dateIn, when.time), "", m.bookNewQ, `${m.bookNew}: ${bookUrl}`, "", m.closing, SIGNER, STUDIO);
+
+  const html = wrap(lang, test, [
+    p(m.greeting(b.first_name)),
+    p(m.introCancelled(when.dateIn, when.time)),
+    `<p style="margin:0 0 6px">${escapeHtml(m.bookNewQ)}</p><p style="margin:0 0 14px">${button(bookUrl, m.bookNew)}</p>`,
+    `<p style="margin:16px 0 0">${escapeHtml(m.closing)}<br>${escapeHtml(SIGNER)}<br>${escapeHtml(STUDIO)}</p>`,
+  ]);
+
+  return { to: b.email, subject: customerSubject(m.subjectCancelled(when.date, when.time), test), text: text.join("\n"), html, ics: { filename: "termin-abgesagt.ics", content: buildCancelIcs(b, now), method: "CANCEL" } };
 }

@@ -27,7 +27,8 @@ export interface MailMessage {
   subject: string;
   text: string;
   html: string;
-  ics?: { filename: string; content: string };
+  /** method: PUBLISH (Bestätigung) oder CANCEL (Absage, entfernt den Eintrag mit derselben UID) */
+  ics?: { filename: string; content: string; method?: "PUBLISH" | "CANCEL" };
 }
 
 export interface Mailer {
@@ -76,7 +77,7 @@ class RelayMailer implements Mailer {
       text: message.text,
       html: message.html,
       attachments: message.ics
-        ? [{ filename: message.ics.filename, content: message.ics.content, contentType: "text/calendar; charset=utf-8; method=PUBLISH" }]
+        ? [{ filename: message.ics.filename, content: message.ics.content, contentType: `text/calendar; charset=utf-8; method=${message.ics.method ?? "PUBLISH"}` }]
         : [],
     });
   }

@@ -22,6 +22,12 @@ export interface MailTexts {
   subjectRequest: When;
   subjectRescheduled: When;
   subjectReminder: (time: string) => string;
+  /* Absage durch die Kundin selbst (10. Oktober 2026): Betreff mit ausgeschriebenem Datum, ein Satz, Link zur Buchung */
+  subjectCancelled: When;
+  /** Datum mitten im Satz (dateIn), Uhrzeit wie in der Bestätigung */
+  introCancelled: When;
+  bookNewQ: string;
+  bookNew: string;
   /* Bestätigungsmail */
   greeting: (firstName: string) => string;
   introBooked: string;
@@ -98,6 +104,10 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     subjectBooked: (d, t) => `Gebucht: ${d}, ${t}`,
     subjectRequest: (d, t) => `Angefragt: ${d}, ${t}`,
     subjectRescheduled: (d, t) => `Verschoben: ${d}, ${t}`,
+    subjectCancelled: (d, t) => `Abgesagt: ${d}, ${t}`,
+    introCancelled: (d, t) => `Ihr Termin am ${d}, um ${t} ist abgesagt.`,
+    bookNewQ: "Wenn Sie einen neuen Termin möchten, können Sie ihn hier buchen:",
+    bookNew: "Neuen Termin buchen",
     subjectReminder: (t) => `Bitte kurz bestätigen: morgen, ${t}`,
     greeting: (n) => `Hallo ${n},`,
     introBooked: "schön, dass Sie zu uns kommen! Wir freuen uns auf Sie:",
@@ -161,6 +171,10 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     subjectBooked: (d, t) => `Booked: ${d}, ${t}`,
     subjectRequest: (d, t) => `Requested: ${d}, ${t}`,
     subjectRescheduled: (d, t) => `Rescheduled: ${d}, ${t}`,
+    subjectCancelled: (d, t) => `Cancelled: ${d}, ${t}`,
+    introCancelled: (d, t) => `Your appointment on ${d} at ${t} has been cancelled.`,
+    bookNewQ: "If you would like a new appointment, you can book it here:",
+    bookNew: "Book a new appointment",
     subjectReminder: (t) => `Please confirm: tomorrow, ${t}`,
     greeting: (n) => `Hello ${n},`,
     introBooked: "lovely that you’re coming to see us! We look forward to seeing you:",
@@ -224,6 +238,10 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     subjectBooked: (d, t) => `Reservado: ${d}, ${t}`,
     subjectRequest: (d, t) => `Solicitado: ${d}, ${t}`,
     subjectRescheduled: (d, t) => `Cambiado: ${d}, ${t}`,
+    subjectCancelled: (d, t) => `Cancelada: ${d}, ${t}`,
+    introCancelled: (d, t) => `Su cita del ${d} a las ${t} ha sido cancelada.`,
+    bookNewQ: "Si desea una nueva cita, puede reservarla aquí:",
+    bookNew: "Reservar una nueva cita",
     subjectReminder: (t) => `Por favor, confirme: mañana, ${t}`,
     greeting: (n) => `Hola ${n},`,
     introBooked: "¡qué bien que venga a vernos! Le esperamos:",
@@ -287,6 +305,10 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     subjectBooked: (d, t) => `Réservé${NB}: ${d}, ${t}`,
     subjectRequest: (d, t) => `Demandé${NB}: ${d}, ${t}`,
     subjectRescheduled: (d, t) => `Déplacé${NB}: ${d}, ${t}`,
+    subjectCancelled: (d, t) => `Annulé${NB}: ${d}, ${t}`,
+    introCancelled: (d, t) => `Votre rendez-vous du ${d} à ${t} est annulé.`,
+    bookNewQ: `Si vous souhaitez un nouveau rendez-vous, vous pouvez le réserver ici${NB}:`,
+    bookNew: "Réserver un nouveau rendez-vous",
     subjectReminder: (t) => `Merci de confirmer${NB}: demain, ${t}`,
     greeting: (n) => `Bonjour ${n},`,
     introBooked: `quel plaisir de vous accueillir${NB}! Nous avons hâte de vous voir${NB}:`,
@@ -350,6 +372,10 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     subjectBooked: (d, t) => `Marcado: ${d}, ${t}`,
     subjectRequest: (d, t) => `Pedido: ${d}, ${t}`,
     subjectRescheduled: (d, t) => `Remarcado: ${d}, ${t}`,
+    subjectCancelled: (d, t) => `Cancelada: ${d}, ${t}`,
+    introCancelled: (d, t) => `Sua consulta de ${d}, às ${t}, foi cancelada.`,
+    bookNewQ: "Se quiser uma nova consulta, você pode agendá-la aqui:",
+    bookNew: "Agendar nova consulta",
     subjectReminder: (t) => `Confirme, por favor: amanhã, ${t}`,
     greeting: (n) => `Olá ${n},`,
     introBooked: "que bom que você vem nos ver! Esperamos por você:",
@@ -413,6 +439,10 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     subjectBooked: (d, t) => `Prenotato: ${d}, ${t}`,
     subjectRequest: (d, t) => `Richiesto: ${d}, ${t}`,
     subjectRescheduled: (d, t) => `Spostato: ${d}, ${t}`,
+    subjectCancelled: (d, t) => `Annullato: ${d}, ${t}`,
+    introCancelled: (d, t) => `Il Suo appuntamento di ${d} alle ${t} è stato annullato.`,
+    bookNewQ: "Se desidera un nuovo appuntamento, può prenotarlo qui:",
+    bookNew: "Prenoti un nuovo appuntamento",
     subjectReminder: (t) => `Confermi, per favore: domani, ${t}`,
     greeting: (n) => `Buongiorno ${n},`,
     introBooked: "che bello che venga da noi! La aspettiamo con piacere:",
@@ -476,6 +506,10 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     subjectBooked: (d, t) => `Randevu alındı: ${d}, ${t}`,
     subjectRequest: (d, t) => `Randevu talebi: ${d}, ${t}`,
     subjectRescheduled: (d, t) => `Yeni randevu: ${d}, ${t}`,
+    subjectCancelled: (d, t) => `İptal edildi: ${d}, ${t}`,
+    introCancelled: (d, t) => `${d}, ${t} randevunuz iptal edildi.`,
+    bookNewQ: "Yeni bir randevu isterseniz buradan alabilirsiniz:",
+    bookNew: "Yeni randevu al",
     subjectReminder: (t) => `Lütfen onaylayın: yarın, ${t}`,
     greeting: (n) => `Merhaba ${n},`,
     introBooked: "Bize geleceğiniz için çok sevindik! Sizi bekliyoruz:",
@@ -539,6 +573,10 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     subjectBooked: (d, t) => `Заброньовано: ${d}, ${t}`,
     subjectRequest: (d, t) => `Запит прийнято: ${d}, ${t}`,
     subjectRescheduled: (d, t) => `Перенесено: ${d}, ${t}`,
+    subjectCancelled: (d, t) => `Скасовано: ${d}, ${t}`,
+    introCancelled: (d, t) => `Ваш запис на ${d}, ${t} скасовано.`,
+    bookNewQ: "Якщо бажаєте новий запис, ви можете зробити його тут:",
+    bookNew: "Записатися знову",
     subjectReminder: (t) => `Просимо підтвердити: завтра, ${t}`,
     greeting: (n) => `Добрий день, ${n},`,
     introBooked: "Чудово, що Ви до нас завітаєте! Чекаємо на Вас:",
@@ -602,6 +640,10 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     subjectBooked: (d, t) => `محجوز: ${d} ${t}`,
     subjectRequest: (d, t) => `طلبكم: ${d} ${t}`,
     subjectRescheduled: (d, t) => `تعديل: ${d} ${t}`,
+    subjectCancelled: (d, t) => `إلغاء: ${d} ${t}`,
+    introCancelled: (d, t) => `تم إلغاء موعدكم يوم ${d}، ${t}.`,
+    bookNewQ: "إذا رغبتم في موعد جديد، يمكنكم حجزه هنا:",
+    bookNew: "حجز موعد جديد",
     subjectReminder: (t) => `يرجى التأكيد: غدًا ${t}`,
     greeting: (n) => `مرحبًا ${n}،`,
     introBooked: "يسعدنا قدومكم إلينا! نتطلع إلى لقائكم:",

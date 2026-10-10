@@ -2,7 +2,7 @@ import { buildDescription, buildTitle, PHONE_CHECK_NOTE, serviceCode } from "./b
 import { getEngine, SlotsUnavailableError, type BookingEngine } from "./engine";
 import { errorClass, logEvent } from "./log";
 import { getMailer, mailErrorClass, type Mailer } from "./mail";
-import { calendarLinks, CANCEL_LEAD_MS, confirmationMail, reminderMail } from "./mail-content";
+import { calendarLinks, CANCEL_LEAD_MS, cancellationMail, confirmationMail, reminderMail } from "./mail-content";
 import { anchorStarts, bookingRange, isBookableStart, type Interval } from "./slots";
 import { readEnv } from "./env";
 import { notifyStudio } from "./studio-mail";
@@ -320,8 +320,25 @@ export async function cancelBooking(id: string, reason: string, deps: Deps = def
   if (!row) return null;
   logEvent("info", "cancelled", { bookingRef: row.reference, reason });
   await removeCalendarEvent(row, deps);
-  if (isCustomerCancel(reason)) await notifyStudio(shortNotice ? "cancelled_short" : "cancelled", row, deps, now);
+  if (isCustomerCancel(reason)) await Promise.all([notifyStudio(shortNotice ? "cancelled_short" : "cancelled", row, deps, now), sendCancellation(row, deps, now)]);
   return row;
+}
+
+/**
+ * Absage-Bestätigung an die Kundin (nur bei Absage durch sie selbst, 10. Oktober 2026). Einmaliger Versand ohne
+ * Wiederholung; ein Fehler steht im Protokoll, die Absage selbst gilt trotzdem.
+ */
+export async function sendCancellation(b: BookingRow, deps: Deps = defaultDeps(), now = new Date()): Promise<boolean> {
+  const { mailer } = deps;
+  if (!mailer.enabled || b.channel === CHANNEL_WALK_IN || !b.email) return false;
+  try {
+    await mailer.send(cancellationMail(b, now));
+    logEvent("info", "mail_sent", { bookingRef: b.reference, mail: "cancellation" });
+    return true;
+  } catch (e) {
+    logEvent("error", "mail_failed", { bookingRef: b.reference, mail: "cancellation", errorClass: mailErrorClass(e) });
+    return false;
+  }
 }
 
 export type RescheduleResult = { status: "rescheduled"; booking: BookingRow } | { status: "conflict" } | { status: "invalid" } | { status: "missing" } | { status: "unavailable" };
