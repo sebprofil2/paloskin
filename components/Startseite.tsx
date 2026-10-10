@@ -47,8 +47,13 @@ const ICONS = [
 function Google({ t, lang }: { t: HomeTexts; lang: Lang }) {
   return (
     <a className="gbtn" href={GOOGLE_BEWERTUNG.profil} target="_blank" rel="noopener">
-      {sterneText(lang)} <span className="st5" aria-hidden="true">★★★★★</span>
-      <span className="sr">5 / 5</span> · <bdi>{anzahlText(lang)}</bdi> {t.googleB}
+      <span className="g-sterne">
+        {sterneText(lang)} <span className="st5" aria-hidden="true">★★★★★</span>
+        <span className="sr">5 / 5</span>
+      </span>
+      <span className="g-anzahl">
+        <span className="g-sep" aria-hidden="true">· </span><bdi>{anzahlText(lang)}</bdi> {t.googleB}
+      </span>
     </a>
   );
 }

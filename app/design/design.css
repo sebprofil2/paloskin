@@ -613,3 +613,11 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 .pb .hd .dnav .rate-lang{display:none}
 .pb .hd .dnav .rate-kurz{display:inline}
 }
+
+/* Google-Badge mit Anzahl (10. Oktober 2026): auf schmalen Bildschirmen zweizeilig, Sterne oben, Anzahl und Quelle darunter */
+.pb .gbtn .g-sterne{display:inline-flex;align-items:center;gap:var(--sp-10)}
+.pb .gbtn .g-anzahl{display:inline;white-space:nowrap}
+@media (max-width:599px){
+.pb .gbtn{flex-direction:column;justify-content:center;gap:var(--sp-2);padding:var(--sp-10) var(--sp-24);border-radius:var(--r-l)}
+.pb .gbtn .g-sep{display:none}
+}
