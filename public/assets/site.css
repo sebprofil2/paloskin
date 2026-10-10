@@ -205,6 +205,11 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
 .legal ul{padding-inline-start:20px;margin:0 0 12px}
 .legal a{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ultramarin)}
 .legal .meta{color:var(--ink-3);font-size:14px;margin-bottom:8px}
+/* Tabelle der Speicherfristen in der Datenschutzerklärung (11. Oktober 2026): am Handy ohne seitliches Scrollen */
+.legal .fristen{width:100%;border-collapse:collapse;margin:4px 0 16px;font-size:15px;line-height:1.45}
+.legal .fristen th,.legal .fristen td{text-align:start;vertical-align:top;padding:10px 12px 10px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere;hyphens:auto}
+.legal .fristen th{font-weight:600;color:var(--ink)}
+.legal .fristen td:first-child{width:46%}
 
 /* Kontrast auf farbigen Flächen */
 .blue .steps3 p,.blue p{color:rgba(255,255,255,.86)}
