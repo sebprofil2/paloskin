@@ -49,6 +49,7 @@
   --fs-cta:clamp(30px,4vw + 14px,64px);
   /* Name auf der Arztseite: größer als die Abschnittsüberschriften (--fs-h2), kleiner als die Startseiten-Überschrift */
   --fs-name:clamp(34px,3.4vw + 21px,64px);
+  --fs-name-max:64px;
   /* Radien */
   --r-pill:999px;
   --r-xl:32px;
@@ -576,6 +577,15 @@ html[lang="ar"] .pb *{letter-spacing:normal}
  * Fett nur für Zwischenüberschriften.
  */
 .pb .arzt-name{font-weight:500;font-size:var(--fs-name);line-height:1.05;letter-spacing:-.03em;margin:0 0 var(--sp-16)}
+/*
+ * Name einzeilig (10. Oktober 2026, Auftrag Dr. Vogel): Schriftgröße nach der Breite der Textspalte, höchstens 64 Pixel.
+ * Der Name ist etwa elfmal so breit wie seine Schriftgröße (gemessen 10,95); 11,2 lässt etwas Luft. Ältere Browser ohne
+ * Container-Einheiten behalten die bisherige Größe und dürfen umbrechen.
+ */
+@supports (container-type:inline-size){
+.pb .arzt-top>div:first-child{container-type:inline-size;min-width:0}
+.pb .arzt-name{font-size:min(var(--fs-name-max),calc(100cqi / 11.2));white-space:nowrap}
+}
 .pb .arzt-sub{font-size:var(--fs-l);font-weight:500;line-height:1.35;margin-bottom:var(--sp-20);color:var(--c-ink)}
 .pb .arzt-intro{font-size:var(--fs-m);line-height:1.6;max-width:52ch;color:var(--c-ink)}
 .pb .arzt-txt{max-width:var(--sp-820);font-size:var(--fs-m);line-height:1.6;color:var(--c-ink)}
