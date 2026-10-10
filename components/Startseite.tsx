@@ -87,8 +87,8 @@ export function Startseite({ lang }: { lang: Lang }) {
           <div className="ph ph-hero">
             <Image src={BILDER.startbild} alt={t.heroAlt} fill priority sizes="(max-width: 899px) 100vw, (max-width: 1200px) 45vw, 520px" />
             <div className="nameplate">
-              {/* „Dr. med. Sebastian Vogel · chirurgisch geschult“ (Entscheidung Dr. Vogel, 10. Oktober 2026, statt Etikett über dem Abschnitt) */}
-              <b><bdi className="nw">Dr. med. Sebastian Vogel</bdi> · <span className="nw">{t.surgical}</span></b>
+              {/* Erste Zeile nur der Name (Entscheidung Dr. Vogel, 10. Oktober 2026), zweite Zeile die Rolle */}
+              <b><bdi className="nw">Dr. med. Sebastian Vogel</bdi></b>
               <span>{t.docRole}</span>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { LANG_IDS, pickLang, type Lang } from "../i18n";
-import { bookingMetadata, homeShare, STUDIO_JSONLD } from "../share-meta";
+import { bookingMetadata, homeShare, studioJsonLd } from "../share-meta";
 import { TEXTS } from "../texts";
 import { HOME_TEXTS } from "../texts-home";
 import { MAIL_TEXTS } from "../texts-mail";
@@ -43,7 +43,7 @@ describe("Gemeinsames Sprachsystem (4. Oktober 2026)", () => {
     expect(pickLang({ param: "xx", cookie: "yy", acceptLanguage: "zz" })).toBe("de");
   });
 
-  it("Startseite (Entwurf B): Titel und Vorschau wie bisher, kein „Botox“, keine GmbH, JSON-LD unverändert", () => {
+  it("Startseite (Entwurf B): Titel und Vorschau wie bisher, kein „Botox“, keine GmbH, JSON-LD vorhanden", () => {
     expect(HOME_TEXTS.de.title).toBe("PALO SKIN by Dr. Vogel | Ärztliche Faltenbehandlung in Berlin");
     for (const lang of LANG_IDS) {
       const all = JSON.stringify(HOME_TEXTS[lang]) + JSON.stringify(homeShare(lang));
@@ -53,6 +53,6 @@ describe("Gemeinsames Sprachsystem (4. Oktober 2026)", () => {
       expect(HOME_TEXTS[lang].copyright).toBe("© 2026 PALO SKIN by Dr. Vogel");
       expect(HOME_TEXTS[lang].h1A + " " + HOME_TEXTS[lang].h1B).toBe("Goodbye wrinkles.");
     }
-    expect(JSON.parse(STUDIO_JSONLD)["@graph"][0]["@type"]).toBe("MedicalBusiness");
+    expect(studioJsonLd("de")["@graph"][0]["@type"]).toBe("MedicalBusiness");
   });
 });
