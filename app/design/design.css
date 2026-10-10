@@ -526,3 +526,19 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 /* Zeile unter dem Foto: Name und Zusatz bleiben jeweils zusammen, umgebrochen wird nur nach dem Punkt (10. Oktober 2026) */
 .pb .nameplate .nw{white-space:nowrap}
 .pb .nameplate b .nw{font-size:inherit;color:inherit}
+
+/*
+ * Verschieben-Seite im Design der Buchung (10. Oktober 2026, components/RescheduleApp.tsx): dieselben Bausteine wie Schritt 2,
+ * nur hier ergänzt (Klasse rs). Der Knopf „Termin buchen“ der Kopfzeile zeigt außerhalb der Startseite auf die aktuelle
+ * Seite und entfällt hier. Bisheriger Termin am Computer rechts in der Seitenkarte, auf dem Handy oben in der Karte.
+ */
+.pb.rs .hd .dbook{display:none}
+.pb.rs .rs-bisher{margin-bottom:var(--sp-24)}
+.pb.rs .rs-bisher b,.pb.rs .rs-top b{display:block;margin-bottom:var(--sp-6);font-weight:600;font-size:var(--fs-m)}
+.pb.rs .rs-when{font-size:var(--fs-l);font-weight:600;line-height:1.35;margin-bottom:var(--sp-8)}
+.pb.rs .rs-bisher p:not(.rs-when){font-size:var(--fs-s);line-height:1.5;color:var(--c-ink-3)}
+.pb.rs .rs-top{display:none}
+@media (max-width:899px){
+.pb.rs .rs-top{display:block;margin-bottom:var(--sp-24)}
+.pb.rs .rs-side{display:none}
+}

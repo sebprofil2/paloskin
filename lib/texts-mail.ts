@@ -73,6 +73,12 @@ export interface MailTexts {
   testNote: string;
   /* Verschieben */
   rescheduleH: string;
+  /** Verschieben-Seite im Design der Buchung (10. Oktober 2026): Überschrift in zwei Teilen, Kasten zum bisherigen Termin, Bestätigung */
+  rsHA: string;
+  rsHB: string;
+  rsCurrentL: string;
+  rsKeepP: string;
+  rsDoneH: string;
   rescheduleP: When;
   rescheduleBtn: When;
   rescheduledH: When;
@@ -138,6 +144,9 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     waButton: "Per WhatsApp schreiben",
     testNote: "Testbetrieb: Diese Nachricht gehört zu einer Testbuchung.",
     rescheduleH: "Neue Zeit wählen",
+    rsHA: "Wann passt es", rsHB: "Ihnen besser?", rsCurrentL: "Ihr bisheriger Termin",
+    rsKeepP: "Er bleibt für Sie reserviert, bis Sie eine neue Zeit gewählt haben.",
+    rsDoneH: "Ihr Termin ist verschoben.",
     rescheduleP: (d, t) => `Ihr bisheriger Termin: ${d}, ${t}. Er bleibt für Sie reserviert, bis Sie eine neue Zeit gewählt haben.`,
     rescheduleBtn: (d, t) => `Auf ${d}, ${t} verschieben`,
     rescheduledH: (d, t) => `Verschoben! Ihr neuer Termin: ${d}, ${t}.`,
@@ -198,6 +207,9 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     waButton: "Message us on WhatsApp",
     testNote: "Test mode: this message belongs to a test booking.",
     rescheduleH: "Choose a new time",
+    rsHA: "When would", rsHB: "suit you better?", rsCurrentL: "Your current appointment",
+    rsKeepP: "It stays reserved for you until you have chosen a new time.",
+    rsDoneH: "Your appointment has been moved.",
     rescheduleP: (d, t) => `Your current appointment: ${d}, ${t}. It stays reserved for you until you have chosen a new time.`,
     rescheduleBtn: (d, t) => `Move to ${d}, ${t}`,
     rescheduledH: (d, t) => `Rescheduled! Your new appointment: ${d}, ${t}.`,
@@ -258,6 +270,9 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     waButton: "Escribir por WhatsApp",
     testNote: "Modo de prueba: este mensaje pertenece a una reserva de prueba.",
     rescheduleH: "Elegir una nueva hora",
+    rsHA: "¿Cuándo le viene", rsHB: "mejor?", rsCurrentL: "Su cita actual",
+    rsKeepP: "Se la mantenemos reservada hasta que elija una nueva hora.",
+    rsDoneH: "Su cita ha sido cambiada.",
     rescheduleP: (d, t) => `Su cita actual: ${d}, ${t}. Queda reservada para usted hasta que elija una nueva hora.`,
     rescheduleBtn: (d, t) => `Cambiar al ${d}, ${t}`,
     rescheduledH: (d, t) => `¡Cambiada! Su nueva cita: ${d}, ${t}.`,
@@ -318,6 +333,9 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     waButton: "Écrire sur WhatsApp",
     testNote: `Mode test${NB}: ce message concerne une réservation de test.`,
     rescheduleH: "Choisir un nouveau créneau",
+    rsHA: "Quel moment vous", rsHB: "conviendrait mieux ?", rsCurrentL: "Votre rendez-vous actuel",
+    rsKeepP: "Il reste réservé pour vous jusqu’à ce que vous ayez choisi un nouvel horaire.",
+    rsDoneH: "Votre rendez-vous est déplacé.",
     rescheduleP: (d, t) => `Votre rendez-vous actuel${NB}: ${d}, ${t}. Il reste réservé pour vous jusqu’à ce que vous ayez choisi un nouveau créneau.`,
     rescheduleBtn: (d, t) => `Déplacer au ${d}, ${t}`,
     rescheduledH: (d, t) => `Déplacé${NB}! Votre nouveau rendez-vous${NB}: ${d}, ${t}.`,
@@ -378,6 +396,9 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     waButton: "Escrever pelo WhatsApp",
     testNote: "Modo de teste: esta mensagem pertence a uma reserva de teste.",
     rescheduleH: "Escolher um novo horário",
+    rsHA: "Quando fica", rsHB: "melhor para você?", rsCurrentL: "Seu horário atual",
+    rsKeepP: "Ele continua reservado para você até que escolha um novo horário.",
+    rsDoneH: "Seu horário foi remarcado.",
     rescheduleP: (d, t) => `Sua consulta atual: ${d}, ${t}. Ela continua reservada para você até você escolher um novo horário.`,
     rescheduleBtn: (d, t) => `Remarcar para ${d}, ${t}`,
     rescheduledH: (d, t) => `Remarcado! Sua nova consulta: ${d}, ${t}.`,
@@ -438,6 +459,9 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     waButton: "Scrivere su WhatsApp",
     testNote: "Modalità di prova: questo messaggio riguarda una prenotazione di prova.",
     rescheduleH: "Scelga un nuovo orario",
+    rsHA: "Quando Le", rsHB: "va meglio?", rsCurrentL: "Il Suo appuntamento attuale",
+    rsKeepP: "Resta riservato per Lei finché non sceglie un nuovo orario.",
+    rsDoneH: "Il Suo appuntamento è stato spostato.",
     rescheduleP: (d, t) => `Il Suo appuntamento attuale: ${d}, ${t}. Resta riservato per Lei finché non avrà scelto un nuovo orario.`,
     rescheduleBtn: (d, t) => `Sposta a ${d}, ${t}`,
     rescheduledH: (d, t) => `Spostato! Il Suo nuovo appuntamento: ${d}, ${t}.`,
@@ -498,6 +522,9 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     waButton: "WhatsApp üzerinden yazın",
     testNote: "Test modu: Bu mesaj bir test rezervasyonuna aittir.",
     rescheduleH: "Yeni bir saat seçin",
+    rsHA: "Size hangi zaman", rsHB: "daha uygun?", rsCurrentL: "Mevcut randevunuz",
+    rsKeepP: "Yeni bir saat seçene kadar sizin için ayrılmış kalır.",
+    rsDoneH: "Randevunuz değiştirildi.",
     rescheduleP: (d, t) => `Mevcut randevunuz: ${d}, ${t}. Yeni bir saat seçene kadar bu randevu sizin için ayrılmış kalır.`,
     rescheduleBtn: (d, t) => `Yeni saat olarak seç: ${d}, ${t}`,
     rescheduledH: (d, t) => `Değiştirildi! Yeni randevunuz: ${d}, ${t}.`,
@@ -558,6 +585,9 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     waButton: "Написати у WhatsApp",
     testNote: "Тестовий режим: це повідомлення стосується тестового бронювання.",
     rescheduleH: "Оберіть новий час",
+    rsHA: "Коли Вам", rsHB: "зручніше?", rsCurrentL: "Ваш поточний запис",
+    rsKeepP: "Він залишається за Вами, доки Ви не оберете новий час.",
+    rsDoneH: "Ваш запис перенесено.",
     rescheduleP: (d, t) => `Ваш поточний запис: ${d}, ${t}. Він залишається за Вами, доки Ви не оберете новий час.`,
     rescheduleBtn: (d, t) => `Перенести: ${d}, ${t}`,
     rescheduledH: (d, t) => `Перенесено! Ваш новий запис: ${d}, ${t}.`,
@@ -618,6 +648,9 @@ export const MAIL_TEXTS: Record<Lang, MailTexts> = {
     waButton: "المراسلة عبر WhatsApp",
     testNote: "وضع تجريبي: هذه الرسالة تتعلق بحجز تجريبي.",
     rescheduleH: "اختيار وقت جديد",
+    rsHA: "متى يناسبكم", rsHB: "أكثر؟", rsCurrentL: "موعدكم الحالي",
+    rsKeepP: "يبقى محجوزًا لكم إلى أن تختاروا وقتًا جديدًا.",
+    rsDoneH: "تم تعديل موعدكم.",
     rescheduleP: (d, t) => `موعدكم الحالي: ${d}، ${t}. يبقى محجوزًا لكم إلى أن تختاروا وقتًا جديدًا.`,
     rescheduleBtn: (d, t) => `النقل إلى ${d}، ${t}`,
     rescheduledH: (d, t) => `تم التغيير! موعدكم الجديد: ${d}، ${t}.`,
