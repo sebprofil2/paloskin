@@ -126,12 +126,6 @@ export interface HomeTexts {
   privacy: string;
 }
 
-/* Kundenstimmen von Google Maps: Zitate bleiben in der Originalsprache und werden nicht übersetzt */
-export const REVIEWS: { text: string; lang: Lang; name: string; initial: string }[] = [
-  { text: "„Ich bin selbst Ärztin (…). Bei Dr. Sebastian Vogel habe ich mich von Anfang an sehr gut aufgehoben gefühlt.“", lang: "de", name: "Kathleen", initial: "K" },
-  { text: "„Er nimmt sich immer Zeit und hat beim ersten Mal direkt gesehen, dass meine linke Zornesfalte stärker ist als die rechte (…).“", lang: "de", name: "Antje D.", initial: "A" },
-  { text: "„Dr. Vogel is a true professional (…). The location is also beautifully designed and makes you feel welcomed immediately.“", lang: "en", name: "Cyril S.", initial: "C" },
-];
 
 const de: HomeTexts = {
   title: "PALO SKIN by Dr. Vogel | Ärztliche Faltenbehandlung in Berlin",

@@ -606,3 +606,10 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 .pb .bh-kurz{padding:var(--sp-20) var(--sp-22)}
 .pb .bh-kurz p{font-size:var(--fs-m)}
 }
+
+/* Bewertungspille (10. Oktober 2026): Sterne und Anzahl; unter 1180 Pixeln (gemessen, alle Sprachen) nur die Kurzform „★ 5,0 · 28“ */
+.pb .hd .rate-kurz{display:none}
+@media (max-width:1179px){
+.pb .hd .dnav .rate-lang{display:none}
+.pb .hd .dnav .rate-kurz{display:inline}
+}

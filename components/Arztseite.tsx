@@ -6,6 +6,7 @@ import { bookHref, kopfTexte } from "@/lib/kopf";
 import { arztPath } from "@/lib/seiten-pfade";
 import { arztJsonLd } from "@/lib/share-meta";
 import { ARZT_TEXTE, type ArztLang } from "@/lib/texts-arzt";
+import { bewertungPille } from "@/lib/bewertungen";
 import { HOME_TEXTS } from "@/lib/texts-home";
 import "@/app/design/design.css";
 
@@ -35,7 +36,7 @@ export function Arztseite({ lang }: { lang: ArztLang }) {
   return (
     <div className="pb" id="top">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: arztJsonLd(lang) }} />
-      <Kopfzeile lang={lang} t={kopfTexte(home)} page="seite" langHrefs={langHrefs} />
+      <Kopfzeile lang={lang} t={kopfTexte(home)} page="seite" langHrefs={langHrefs} pille={bewertungPille(lang, home.googleB)} />
       <main className="wrap arzt">
         <section className="arzt-top">
           <div>

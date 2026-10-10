@@ -9,7 +9,8 @@ import { ARZTSEITE_LIVE, BEHANDLUNGEN_KARTEN_AKTIV, freigegeben } from "@/lib/fr
 import { arztPath, behandlungPath } from "@/lib/seiten-pfade";
 import { SprachHinweis } from "@/components/SprachHinweis";
 import { homeJsonLd } from "@/lib/share-meta";
-import { HOME_TEXTS, REVIEWS, type HomeTexts } from "@/lib/texts-home";
+import { bewertungPille, GOOGLE_BEWERTUNG, ZITATE, anzahlText, sterneText } from "@/lib/bewertungen";
+import { HOME_TEXTS, type HomeTexts } from "@/lib/texts-home";
 import type { Lang } from "@/lib/i18n";
 import "@/app/design/design.css";
 
@@ -42,11 +43,12 @@ const ICONS = [
   <><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z" /><path d="M9 12l2 2 4-4" /></>,
 ];
 
-function Google({ t }: { t: HomeTexts }) {
+/* Badge mit Sternen und Anzahl aus lib/bewertungen.ts, Quelle „bei Google“ (googleB) */
+function Google({ t, lang }: { t: HomeTexts; lang: Lang }) {
   return (
-    <a className="gbtn" href={MAPS} target="_blank" rel="noopener">
-      {t.googleA} <span className="st5" aria-hidden="true">★★★★★</span>
-      <span className="sr">5 / 5</span> {t.googleB}
+    <a className="gbtn" href={GOOGLE_BEWERTUNG.profil} target="_blank" rel="noopener">
+      {sterneText(lang)} <span className="st5" aria-hidden="true">★★★★★</span>
+      <span className="sr">5 / 5</span> · <bdi>{anzahlText(lang)}</bdi> {t.googleB}
     </a>
   );
 }
@@ -71,7 +73,7 @@ export function Startseite({ lang }: { lang: Lang }) {
   return (
     <div className="pb" id="top">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: homeJsonLd(lang) }} />
-      <Kopfzeile lang={lang} t={kopfTexte(t)} page="home" />
+      <Kopfzeile lang={lang} t={kopfTexte(t)} page="home" pille={bewertungPille(lang, t.googleB)} />
       {lang === "de" ? <SprachHinweis /> : null}
 
       <section className="wrap hero">
@@ -83,7 +85,7 @@ export function Startseite({ lang }: { lang: Lang }) {
           <p className="lead">{t.lead}</p>
           <div className="cta-row">
             <a className="btn" href={book}>{t.book}</a>
-            <Google t={t} />
+            <Google t={t} lang={lang} />
           </div>
         </div>
         <div className="arch">
@@ -228,10 +230,10 @@ export function Startseite({ lang }: { lang: Lang }) {
             <div className="sec-head">
               <H a={t.revHA} b={t.revHB} />
             </div>
-            <Google t={t} />
+            <Google t={t} lang={lang} />
           </div>
           <div className="revs">
-            {REVIEWS.map((r) => (
+            {ZITATE.map((r) => (
               <div className="rc" key={r.name}>
                 <blockquote lang={r.lang} dir="ltr">{r.text}</blockquote>
                 <p className="by"><span className="av" aria-hidden="true">{r.initial}</span><bdi>{r.name} · Google Maps</bdi></p>
@@ -239,7 +241,7 @@ export function Startseite({ lang }: { lang: Lang }) {
             ))}
           </div>
           <div className="rev-foot">
-            <a className="btn ghost" href={MAPS} target="_blank" rel="noopener">{t.allReviews}</a>
+            <a className="btn ghost" href={GOOGLE_BEWERTUNG.profil} target="_blank" rel="noopener">{t.allReviews}</a>
           </div>
         </div>
       </section>
