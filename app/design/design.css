@@ -32,6 +32,9 @@
   --c-blue-line:#CFD8F2;
   --c-focus:#9FB4F0;
   --c-shadow:rgba(27,26,31,.1);
+  /* Großansicht der Studiofotos: abgedunkelter Hintergrund, helle Knöpfe */
+  --c-galerie:rgba(17,16,20,.94);
+  --c-galerie-knopf:rgba(255,255,255,.92);
   /* Abdunkelung unten im Kopffoto, damit die Bildunterschrift auch über Händen und Tablet lesbar bleibt */
   --c-scrim:rgba(27,26,31,.6);
   --c-scrim-0:rgba(27,26,31,0);
@@ -646,4 +649,28 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 @media (max-width:599px){
 .pb .gbtn{flex-direction:column;justify-content:center;gap:var(--sp-2);padding:var(--sp-10) var(--sp-24);border-radius:var(--r-l)}
 .pb .gbtn .g-sep{display:none}
+}
+
+/* ---------- Studiofotos zum Vergrößern (10. Oktober 2026, components/StudioGalerie.tsx) ---------- */
+.pb .studio-zoom{display:block;width:100%;padding:0;border:0;background:none;border-radius:var(--r-s);cursor:pointer}
+.pb .studio-zoom:focus-visible{outline:var(--sp-2) solid var(--c-focus);outline-offset:var(--sp-2)}
+@media (hover:hover) and (pointer:fine){.pb .studio-zoom{cursor:zoom-in}}
+.pb .galerie{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;color:var(--c-white);overscroll-behavior:contain}
+.pb .galerie::backdrop{background:var(--c-galerie)}
+.pb .galerie[open]{display:block}
+.pb .galerie-buehne{position:absolute;inset:var(--sp-72) var(--sp-80);display:flex;align-items:center;justify-content:center}
+.pb .galerie-buehne img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:var(--r-s)}
+.pb .galerie button{position:absolute;display:flex;align-items:center;justify-content:center;width:var(--sp-52);height:var(--sp-52);padding:0;border:0;border-radius:50%;background:var(--c-galerie-knopf);color:var(--c-ink);cursor:pointer}
+.pb .galerie button:focus-visible{outline:var(--sp-2) solid var(--c-focus);outline-offset:var(--sp-2)}
+.pb .galerie button svg{width:var(--sp-24);height:var(--sp-24);fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.pb .galerie-zu{top:var(--sp-14);inset-inline-end:var(--sp-14)}
+.pb .galerie-pfeil{top:50%;transform:translateY(-50%)}
+.pb .galerie-zurueck{inset-inline-start:var(--sp-14)}
+.pb .galerie-vor{inset-inline-end:var(--sp-14)}
+html[dir="rtl"] .pb .galerie-pfeil svg{transform:scaleX(-1)}
+.pb .galerie-zahl{position:absolute;left:0;right:0;bottom:var(--sp-22);text-align:center;font-size:var(--fs-m);font-weight:600;color:var(--c-white)}
+@media (max-width:899px){
+.pb .galerie-buehne{inset:var(--sp-72) var(--sp-12) var(--sp-96)}
+.pb .galerie-pfeil{top:auto;bottom:var(--sp-12);transform:none}
+.pb .galerie-zahl{bottom:var(--sp-26)}
 }

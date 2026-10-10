@@ -8,10 +8,11 @@ import { price } from "@/lib/preise";
 import { ARZTSEITE_LIVE, BEHANDLUNGEN_KARTEN_AKTIV, freigegeben } from "@/lib/freigabe";
 import { arztPath, behandlungPath } from "@/lib/seiten-pfade";
 import { SprachHinweis } from "@/components/SprachHinweis";
+import { StudioGalerie } from "@/components/StudioGalerie";
 import { homeJsonLd } from "@/lib/share-meta";
 import { GOOGLE_BEWERTUNG, ZITATE, anzahlText, sterneText, zitatMitZeichen } from "@/lib/bewertungen";
 import { HOME_TEXTS, type HomeTexts } from "@/lib/texts-home";
-import type { Lang } from "@/lib/i18n";
+import { langDir, type Lang } from "@/lib/i18n";
 import "@/app/design/design.css";
 
 /*
@@ -128,14 +129,8 @@ export function Startseite({ lang }: { lang: Lang }) {
               </ul>
               <details className="studio">
                 <summary className="btn ghost"><span className="lbl1">{t.studioOpen}</span><span className="lbl2">{t.studioClose}</span></summary>
-                <div className="studio-grid">
-                  {photos.map((p) => (
-                    <figure key={p.c}>
-                      {/* Ohne sichtbare Beschriftung (Entscheidung Dr. Vogel, 5. Oktober 2026), der Alt-Text bleibt */}
-                      <Image src={p.img} alt={p.c} sizes="(max-width: 899px) 50vw, 160px" />
-                    </figure>
-                  ))}
-                </div>
+                {/* Ohne sichtbare Beschriftung (Entscheidung Dr. Vogel, 5. Oktober 2026), der Alt-Text bleibt; antippen vergrößert (10. Oktober 2026) */}
+                <StudioGalerie photos={photos.map((p) => ({ img: p.img, alt: p.c }))} t={{ zoomPhoto: t.zoomPhoto, closeView: t.closeView, prevPhoto: t.prevPhoto, nextPhoto: t.nextPhoto, photosView: t.photosView }} rtl={langDir(lang) === "rtl"} />
               </details>
             </div>
           </div>
