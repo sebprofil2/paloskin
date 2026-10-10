@@ -83,6 +83,12 @@ describe("Proxy: „/“ immer Deutsch, Weiterleitungen mit 301", () => {
     expect(proxy(anfrage("/")).headers.get("x-robots-tag")).toBe("noindex, nofollow");
     expect(proxy(anfrage("/de")).headers.get("x-robots-tag")).toBe("noindex, nofollow");
   });
+
+  it("Terminseiten: X-Robots-Tag noindex, nofollow auch auf www", () => {
+    expect(proxy(anfrage("/termin/abc")).headers.get("x-robots-tag")).toBe("noindex, nofollow");
+    expect(proxy(anfrage("/termin/abc/verschieben")).headers.get("x-robots-tag")).toBe("noindex, nofollow");
+    expect(proxy(anfrage("/booking")).headers.get("x-robots-tag")).toBeNull();
+  });
 });
 
 describe("Kopfangaben je Sprache", () => {
@@ -170,7 +176,7 @@ describe("Sitemap und robots.txt", () => {
   });
 
   it("robots.txt verweist auf die Sitemap", () => {
-    expect(robots()).toEqual({ rules: { userAgent: "*", allow: "/" }, sitemap: `${WWW}/sitemap.xml` });
+    expect(robots()).toEqual({ rules: { userAgent: "*", allow: "/", disallow: ["/intern/", "/api/"] }, sitemap: `${WWW}/sitemap.xml` });
   });
 
   it("Testinstanz: keine Einträge, alles gesperrt, keine Adresse von neu", () => {

@@ -16,6 +16,7 @@ import "@/app/design/design.css";
  * (/en, /es, /fr, /pt, /uk, /ar) zeigen diese Seite; die Sprache kommt aus der Adresse, nie aus dem Gerät.
  */
 const WA = "https://wa.me/4915158872566";
+const TEL = "tel:+4915158872566";
 const IG = "https://www.instagram.com/palo.skin";
 const THOUSANDS: Record<Lang, string> = { de: ".", en: ",", es: ".", fr: " ", pt: ".", it: ".", tr: ".", uk: " ", ar: "," };
 const price = (lang: Lang, n: number) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, THOUSANDS[lang])} €*`;
@@ -108,7 +109,9 @@ export function Startseite({ lang }: { lang: Lang }) {
                 <li>{t.address}</li>
                 <li className="links">
                   <a href={MAPS} target="_blank" rel="noopener">{t.mapL}</a>
-                  <a href={WA} target="_blank" rel="noopener"><bdi>WhatsApp +49 151 58872566</bdi></a>
+                  {/* Telefon und WhatsApp unter derselben Nummer (Entscheidung Dr. Vogel, 10. Oktober 2026) */}
+                  <span className="tel">{t.phoneWa} <a href={TEL}><bdi>+49 151 58872566</bdi></a></span>
+                  <a href={WA} target="_blank" rel="noopener">WhatsApp</a>
                   <a href={IG} target="_blank" rel="noopener"><bdi>Instagram @palo.skin</bdi></a>
                 </li>
               </ul>

@@ -178,6 +178,8 @@ body{margin:0;background:var(--c-bg)}
 .pb .quote{font-family:var(--font-serif);font-style:normal;font-size:var(--fs-l);line-height:1.5;margin:0 0 var(--sp-28)}
 .pb .contact{list-style:none;display:flex;flex-direction:column;gap:var(--sp-2);margin-bottom:var(--sp-28);font-size:var(--fs-m);color:var(--c-ink-3)}
 .pb .contact .links{display:flex;flex-wrap:wrap;gap:0 var(--sp-24)}
+.pb .contact .links .tel{display:inline-flex;flex-wrap:wrap;align-items:center;column-gap:var(--sp-6)}
+.pb .contact .links .tel a{white-space:nowrap}
 .pb .contact .links a{display:inline-flex;align-items:center;min-height:var(--sp-44);color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-4);text-decoration-thickness:var(--sp-1)}
 .pb .studio .lbl2{display:none}
 .pb .studio[open] .lbl1{display:none}

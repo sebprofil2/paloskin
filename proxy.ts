@@ -9,7 +9,8 @@ import { homePathLang, legacyHomeRedirect } from "./lib/home-paths";
  * Startseite (5. Oktober 2026): Die Adresse bestimmt die Sprache. „/“ ist immer Deutsch, unabhängig von Gerätesprache und
  * gespeicherter Wahl; /en, /es, /fr, /pt, /uk, /ar sind die anderen Fassungen. /de und /?lang=xx leiten dauerhaft (301) weiter.
  * Übrige Seiten wie bisher: ?lang=, gespeicherte Wahl im Cookie, Sprache des Geräts, sonst Deutsch.
- * Testinstanz (neu.paloskin.de): jede Seite noindex über X-Robots-Tag.
+ * Testinstanz (neu.paloskin.de): jede Seite noindex über X-Robots-Tag. Terminseiten (/termin/…) überall zusätzlich zum
+ * Meta-Tag noindex, nofollow im X-Robots-Tag (10. Oktober 2026); sie bleiben in robots.txt lesbar.
  */
 export function proxy(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
@@ -18,7 +19,7 @@ export function proxy(req: NextRequest) {
     const url = req.nextUrl.clone();
     url.pathname = ziel;
     url.searchParams.delete("lang");
-    return withRobots(NextResponse.redirect(url, 301));
+    return withRobots(NextResponse.redirect(url, 301), pathname);
   }
   const lang =
     homePathLang(pathname) ??
@@ -30,11 +31,11 @@ export function proxy(req: NextRequest) {
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set(LANG_HEADER, lang);
   // Seiten mit Sprache sind dynamisch und werden nicht zwischengespeichert (Cache-Control private bzw. no-store)
-  return withRobots(NextResponse.next({ request: { headers: requestHeaders } }));
+  return withRobots(NextResponse.next({ request: { headers: requestHeaders } }), pathname);
 }
 
-function withRobots(res: NextResponse): NextResponse {
-  if (isTestInstance()) res.headers.set("X-Robots-Tag", "noindex, nofollow");
+function withRobots(res: NextResponse, pathname: string): NextResponse {
+  if (isTestInstance() || pathname.startsWith("/termin/")) res.headers.set("X-Robots-Tag", "noindex, nofollow");
   return res;
 }
 
