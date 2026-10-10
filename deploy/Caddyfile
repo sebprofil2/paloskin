@@ -38,7 +38,7 @@
 	}
 }
 
-# Wallet-Pass (Auftrag Dr. Vogel, 10. Oktober 2026): /wallet und /wallet/ leiten vorübergehend (302) auf den Pass weiter.
+# Wallet-Pass (Auftrag Dr. Vogel, 10. Oktober 2026): /wallet und /wallet/ leiten auf paloskin.de, www und neu vorübergehend (302) auf den Pass weiter.
 # Absichtlich nirgends verlinkt und nicht in der Sitemap; Dr. Vogel gibt die Adresse nur auf Nachfrage weiter.
 # Das Ziel bei Bedarf hier ändern (siehe CLAUDE.md). 302, damit Browser die Weiterleitung nicht dauerhaft speichern.
 (wallet) {
@@ -53,10 +53,15 @@ neu.paloskin.de {
 }
 
 paloskin.de {
-	redir https://www.paloskin.de{uri} permanent
+	# /wallet zuerst (302 direkt zum Pass), alles andere wie bisher dauerhaft auf www
+	import wallet
+	handle {
+		redir https://www.paloskin.de{uri} permanent
+	}
 }
 
 www.paloskin.de {
+	import wallet
 	import paloskin app:3000
 }
 
