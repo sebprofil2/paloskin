@@ -44,6 +44,13 @@
 (wallet) {
 	@wallet path /wallet /wallet/
 	redir @wallet https://pass.walletwallet.dev/p/bfdfdded-f6a9-4b8b-97cf-1d2c1bd106f3 302
+	# Einladung zur Eröffnung am 24. Oktober 2026 (Auftrag Dr. Vogel, 10. Oktober 2026): /oysters und /oysters/, 302,
+	# unverlinkt; nach dem Event wieder entfernen. Erster Schritt: nur auf neu (Host-Bedingung), danach überall.
+	@oysters {
+		path /oysters /oysters/
+		host neu.paloskin.de
+	}
+	redir @oysters https://oysters-and-botox.netlify.app 302
 }
 
 # Testname: zeigt auf die Testinstanz app-test (Profil test), nicht auf die laufende Seite.
