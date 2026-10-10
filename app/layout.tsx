@@ -1,0 +1,44 @@
+import type { Metadata, Viewport } from "next";
+import "./globals.css";
+import { fontVariables } from "./fonts";
+import { langDir, LANG_MIGRATE_SCRIPT } from "@/lib/i18n";
+import { requestLang } from "@/lib/i18n-server";
+import { indexable, site } from "@/lib/share-meta";
+
+/* Adresse aus der Umgebung (PUBLIC_BASE_URL); die Testinstanz ist auf jeder Seite noindex */
+export const generateMetadata = (): Metadata => ({
+  metadataBase: new URL(site()),
+  ...(indexable() ? {} : { robots: { index: false, follow: false } }),
+  title: "PALO SKIN by Dr. Vogel",
+  icons: {
+    /* Nur ICO: 16 Pixel als eigene, größere Fassung (freigegeben 4. Oktober 2026); ein SVG-Favicon würde sie verdrängen.
+       Seit 5. Oktober 2026 im Knopf-Blau #1534A6 (scripts/logo/web-blau.mjs); public/favicon.ico bleibt als Rückfall für Anfragen ohne Link */
+    icon: [
+      { url: "/assets/logo/web/favicon.ico", sizes: "16x16 32x32 48x48" },
+      /* Zusätzlich PNG mit neuem Namen (10. Oktober 2026), damit Google das alte Symbol „PS“ ersetzt; aus favicon.svg erzeugt */
+      { url: "/assets/favicon-96-v2.png", type: "image/png", sizes: "96x96" },
+    ],
+    apple: { url: "/assets/apple-touch-icon.png", sizes: "180x180" },
+  },
+  manifest: "/site.webmanifest",
+});
+
+export const viewport: Viewport = {
+  themeColor: "#1534A6",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
+/* Sprache und Schreibrichtung setzt schon der Server (proxy.ts, lib/i18n.ts) */
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const lang = await requestLang();
+  return (
+    <html lang={lang} dir={langDir(lang)} className={fontVariables} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: LANG_MIGRATE_SCRIPT }} />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}

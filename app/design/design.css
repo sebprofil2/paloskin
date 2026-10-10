@@ -1,0 +1,677 @@
+/*
+ * Gestaltung PALO SKIN, Entwurf B „Persönlich“ (Vorlage vom 5. Oktober 2026, Startseite und Buchung).
+ * Alle Farben, Schriftgrößen, Radien und Maße stehen hier zentral als Variablen; die Werte stammen genau aus den Vorlagen.
+ * Im Projekt keine Einzelwerte daneben. Umbruchpunkte wie in den Vorlagen: 1100, 1023 und 899 Pixel (in Media Queries
+ * lassen sich keine Variablen verwenden, deshalb stehen dort die Zahlen).
+ * Schriften über next/font (app/fonts.ts): Schibsted Grotesk 400 bis 700, Newsreader kursiv für den blauen zweiten Teil
+ * der Überschriften und aufrecht für das Zitat im Kasten „Ihr Arzt“; für Ukrainisch und Arabisch Noto Sans und Noto Sans Arabic (nur bei solchen Zeichen geladen).
+ */
+:root{
+  /* Farben */
+  --c-bg:#F6F0E6;
+  --c-bg-97:rgba(246,240,230,.97);
+  --c-card:#FFFDF9;
+  --c-card-97:rgba(255,253,249,.97);
+  --c-sand:#EFE3D0;
+  --c-white:#fff;
+  --c-white-75:rgba(255,255,255,.75);
+  --c-ink:#1B1A1F;
+  --c-ink-2:#5A5750;
+  --c-ink-3:#3B3E45;
+  --c-line:#E6DCCB;
+  --c-line-2:#D9CDB7;
+  --c-box:#B9AE9A;
+  --c-blue:#1534A6;
+  --c-blue-dark:#0F2780;
+  --c-blue-light:#E4EAFB;
+  --c-blue-soft:#DDE5FB;
+  --c-blue-soft-hover:#CBD7F8;
+  --c-blue-panel:#EAEFFB;
+  --c-blue-pale:#DCE4FA;
+  --c-blue-tint:#F7F9FE;
+  --c-blue-line:#CFD8F2;
+  --c-focus:#9FB4F0;
+  --c-shadow:rgba(27,26,31,.1);
+  /* Großansicht der Studiofotos: abgedunkelter Hintergrund, helle Knöpfe */
+  --c-galerie:rgba(17,16,20,.94);
+  --c-galerie-knopf:rgba(255,255,255,.92);
+  /* Abdunkelung unten im Kopffoto, damit die Bildunterschrift auch über Händen und Tablet lesbar bleibt */
+  --c-scrim:rgba(27,26,31,.6);
+  --c-scrim-0:rgba(27,26,31,0);
+  /* Fehlermeldungen (Buchung, Bestand: Kontrast 6,4 zu 1 auf Weiß) */
+  --c-error:#A3392A;
+  /* Schriften */
+  --font-sans:var(--font-schibsted),var(--font-noto-kyr),var(--font-noto-ar),system-ui,sans-serif;
+  --font-serif:var(--font-newsreader-ext),var(--font-newsreader),var(--font-noto-kyr),var(--font-noto-ar),Georgia,serif;
+  /* Schriftgrößen */
+  --fs-s:14px;
+  --fs-m:17px;
+  --fs-l:21px;
+  --fs-h1:clamp(52px,5.2vw + 22px,96px);
+  --fs-h2:clamp(26px,2.2vw + 14px,44px);
+  --fs-cta:clamp(30px,4vw + 14px,64px);
+  /* Name auf der Arztseite: größer als die Abschnittsüberschriften (--fs-h2), kleiner als die Startseiten-Überschrift */
+  --fs-name:clamp(34px,3.4vw + 21px,64px);
+  --fs-name-max:64px;
+  /* Radien */
+  --r-pill:999px;
+  --r-xl:32px;
+  --r-l:28px;
+  --r-m:24px;
+  --r-card:20px;
+  --r-s:16px;
+  --r-xs:10px;
+  --r-box:7px;
+  /* Maße und Abstände in Pixel */
+  --sp-1:1px;
+  --sp-1-5:1.5px;
+  --sp-2:2px;
+  --sp-3:3px;
+  --sp-4:4px;
+  --sp-6:6px;
+  --sp-8:8px;
+  --sp-10:10px;
+  --sp-12:12px;
+  --sp-14:14px;
+  --sp-16:16px;
+  --sp-18:18px;
+  --sp-20:20px;
+  --sp-22:22px;
+  --sp-24:24px;
+  --sp-26:26px;
+  --sp-28:28px;
+  --sp-30:30px;
+  --sp-32:32px;
+  --sp-36:36px;
+  --sp-40:40px;
+  --sp-44:44px;
+  --sp-48:48px;
+  --sp-50:50px;
+  --sp-52:52px;
+  --sp-54:54px;
+  --sp-56:56px;
+  --sp-58:58px;
+  --sp-60:60px;
+  --sp-64:64px;
+  --sp-72:72px;
+  --sp-80:80px;
+  --sp-92:92px;
+  --sp-96:96px;
+  --sp-104:104px;
+  --sp-112:112px;
+  --sp-180:180px;
+  --sp-200:200px;
+  --sp-320:320px;
+  --sp-380:380px;
+  --sp-820:820px;
+  --sp-1200:1200px;
+}
+
+body{margin:0;background:var(--c-bg)}
+
+.pb{font-family:var(--font-sans);font-size:var(--fs-m);line-height:1.6;color:var(--c-ink);background:var(--c-bg);width:100%;overflow-x:clip}
+.pb *{box-sizing:border-box}
+.pb a{color:inherit;text-decoration:none}
+.pb p,.pb ul,.pb blockquote{margin:0;padding:0}
+.pb h1,.pb h2,.pb h3{margin:0}
+.pb summary{list-style:none}
+.pb summary::-webkit-details-marker{display:none}
+.pb .wrap{max-width:var(--sp-1200);margin:0 auto;padding:0 var(--sp-40)}
+.pb .eyebrow{font-size:var(--fs-s);line-height:1.4;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--c-ink-2)}
+.pb .eyebrow.plain{text-transform:none;letter-spacing:.04em;font-size:var(--fs-s);font-weight:500}
+.pb .btn{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-8);min-height:var(--sp-50);padding:0 var(--sp-30);border-radius:var(--r-pill);background:var(--c-blue);border:var(--sp-1-5) solid var(--c-blue);color:var(--c-white);font-family:inherit;font-weight:600;font-size:var(--fs-m);line-height:1.2;cursor:pointer;text-align:center}
+.pb .btn:hover{background:var(--c-blue-dark);border-color:var(--c-blue-dark)}
+.pb .btn.ghost{background:transparent;color:var(--c-blue)}
+.pb .btn.ghost:hover{background:var(--c-blue);color:var(--c-white)}
+.pb .btn.light{background:var(--c-white);border-color:var(--c-white);color:var(--c-blue)}
+.pb .btn.light:hover{background:var(--c-blue-light);border-color:var(--c-blue-light)}
+.pb .h2{font-weight:500;font-size:var(--fs-h2);line-height:1.12;letter-spacing:-.02em;margin-top:var(--sp-12)}
+.pb .h2 em{display:inline-block;font-family:var(--font-serif);font-style:italic;font-weight:400;font-size:1.08em;letter-spacing:-.01em;color:var(--c-blue)}
+.pb .sec{padding:var(--sp-104) 0}
+.pb .sec-head{display:flex;flex-direction:column}
+.pb .center{align-items:center;text-align:center}
+
+/* Kopfzeile */
+.pb .hd{position:sticky;top:0;z-index:20;background:var(--c-bg);border-bottom:var(--sp-1) solid var(--c-line)}
+.pb .hd-in{display:flex;align-items:center;gap:var(--sp-24);min-height:var(--sp-80)}
+.pb .logo{display:flex;align-items:center;gap:var(--sp-12);margin-inline-end:auto}
+.pb .logo svg{width:var(--sp-36);height:var(--sp-36);color:var(--c-blue);flex:none}
+.pb .logo-text{display:flex;flex-direction:column;line-height:1.15}
+.pb .logo-name{font-size:var(--fs-l);font-weight:600;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.pb .logo-by{font-family:var(--font-serif);font-style:italic;font-size:var(--fs-s);color:var(--c-ink-2)}
+.pb .dnav{white-space:nowrap;display:flex;align-items:center;gap:var(--sp-24);font-size:var(--fs-m);font-weight:500}
+.pb .dnav a:hover{color:var(--c-blue)}
+.pb .rate{display:inline-flex;align-items:center;min-height:var(--sp-44);padding:0 var(--sp-18);border-radius:var(--r-pill);background:var(--c-blue-soft);color:var(--c-blue);font-weight:600;font-size:var(--fs-m);white-space:nowrap}
+.pb .dnav a.rate:hover{background:var(--c-blue-soft-hover)}
+.pb .mrate,.pb .mmenu,.pb .bar{display:none}
+.pb .cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-14) var(--sp-16)}
+.pb .lang{position:relative}
+/* Sprachknopf mit Kürzel (9. Oktober 2026): Pillenform und Rahmen wie der Menü-Knopf */
+.pb .lang summary.pill{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;min-height:var(--sp-44);min-width:var(--sp-44);padding:0 var(--sp-16);border:var(--sp-1-5) solid var(--c-ink);border-radius:var(--r-pill);cursor:pointer;font-size:var(--fs-s);font-weight:600;letter-spacing:.04em}
+.pb .lang ul{position:absolute;inset-inline-end:0;top:var(--sp-48);list-style:none;min-width:var(--sp-180);padding:var(--sp-8);background:var(--c-white);border:var(--sp-1) solid var(--c-line);border-radius:var(--r-s);box-shadow:0 var(--sp-12) var(--sp-28) var(--c-shadow)}
+.pb .lang li a{display:flex;align-items:center;min-height:var(--sp-44);padding:0 var(--sp-14);border-radius:var(--r-xs)}
+.pb .lang li a:hover{background:var(--c-bg)}
+
+.pb .ph{position:relative;overflow:hidden;background:var(--c-sand)}
+
+
+.pb .ph-hero{aspect-ratio:4/5;border-radius:var(--r-l)}
+
+
+
+.pb .nameplate{position:absolute;inset-inline-end:6%;bottom:4.5%;z-index:2;display:flex;flex-direction:column;align-items:flex-end;gap:var(--sp-2);text-align:end;font-size:var(--fs-m);line-height:1.3;color:var(--c-white)}
+.pb .nameplate b{font-weight:600}
+.pb .nameplate span{font-size:var(--fs-s);color:var(--c-white-75)}
+
+
+
+
+
+/* Start */
+.pb .hero{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:var(--sp-56);align-items:center;padding-top:var(--sp-56);padding-bottom:var(--sp-96)}
+.pb .h1{font-weight:500;font-size:var(--fs-h1);line-height:1;letter-spacing:-.035em;margin:var(--sp-18) 0 var(--sp-24)}
+.pb .h1 em{display:block;font-family:var(--font-serif);font-style:italic;font-weight:400;font-size:1.06em;letter-spacing:-.02em;color:var(--c-blue)}
+.pb .lead{font-size:var(--fs-l);line-height:1.45;max-width:40ch;margin-bottom:var(--sp-36);color:var(--c-ink)}
+.pb .arch{position:relative}
+.pb .arch .ph{position:relative;z-index:1}
+
+/* Ihr Arzt */
+.pb .panel{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--sp-64);align-items:start;background:var(--c-blue-panel);color:var(--c-ink);border-radius:var(--r-xl);padding:var(--sp-64)}
+.pb .panel .eyebrow{color:var(--c-blue)}
+.pb .panel .h2{color:var(--c-ink)}
+.pb .panel .h2 em{color:var(--c-blue)}
+.pb .ph-hand{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:var(--r-m);margin-top:var(--sp-36)}
+.pb .quote{font-family:var(--font-serif);font-style:normal;font-size:var(--fs-l);line-height:1.5;margin:0 0 var(--sp-28)}
+.pb .contact{list-style:none;display:flex;flex-direction:column;gap:var(--sp-2);margin-bottom:var(--sp-28);font-size:var(--fs-m);color:var(--c-ink-3)}
+.pb .contact .links{display:flex;flex-wrap:wrap;gap:0 var(--sp-24)}
+.pb .contact .links .tel{display:inline-flex;flex-wrap:wrap;align-items:center;column-gap:var(--sp-6)}
+.pb .contact .links .tel a{white-space:nowrap}
+.pb .contact .links a{display:inline-flex;align-items:center;min-height:var(--sp-44);color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-4);text-decoration-thickness:var(--sp-1)}
+.pb .studio .lbl2{display:none}
+.pb .studio[open] .lbl1{display:none}
+.pb .studio[open] .lbl2{display:inline}
+.pb .studio-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-12);margin-top:var(--sp-24)}
+
+/* Für wen */
+.pb .why{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-20);margin-top:var(--sp-48)}
+.pb .wc{background:var(--c-card);border:var(--sp-1) solid var(--c-line);border-radius:var(--r-m);padding:var(--sp-28)}
+.pb .ic{width:var(--sp-48);height:var(--sp-48);border-radius:50%;background:var(--c-blue-light);color:var(--c-blue);display:flex;align-items:center;justify-content:center;margin-bottom:var(--sp-18)}
+.pb .ic svg{width:var(--sp-24);height:var(--sp-24)}
+.pb .wc h3{font-size:var(--fs-l);font-weight:500;letter-spacing:-.01em;line-height:1.25;margin-bottom:var(--sp-8)}
+.pb .wc p{font-size:var(--fs-m);line-height:1.55;color:var(--c-ink-2)}
+
+/* Behandlungen */
+.pb .treat{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-20);margin-top:var(--sp-48)}
+.pb .tc{display:flex;flex-direction:column;background:var(--c-card);border:var(--sp-1) solid var(--c-line);border-radius:var(--r-m);overflow:hidden}
+.pb .tc .ph{aspect-ratio:3/2}
+.pb .tc-b{display:flex;flex-direction:column;gap:var(--sp-6);flex:1;padding:var(--sp-20) var(--sp-22) var(--sp-24)}
+.pb .tc h3{font-size:var(--fs-l);font-weight:500;letter-spacing:-.01em;line-height:1.25}
+.pb .tc-d{font-size:var(--fs-m);line-height:1.5;color:var(--c-ink-2)}
+.pb .tc-p{margin-top:auto;padding-top:var(--sp-12)}
+.pb .price{display:inline-block;background:var(--c-blue-light);color:var(--c-blue);font-weight:700;font-size:var(--fs-m);padding:var(--sp-6) var(--sp-14);border-radius:var(--r-pill);font-variant-numeric:tabular-nums}
+.pb .prices{margin-top:var(--sp-40)}
+.pb .prices>summary{display:inline-flex}
+.pb .plist{margin-top:var(--sp-24);background:var(--c-card);border:var(--sp-1) solid var(--c-line);border-radius:var(--r-m);padding:var(--sp-8) var(--sp-32)}
+.pb .prow{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--sp-24);padding:var(--sp-20) 0;border-bottom:var(--sp-1) solid var(--c-line)}
+.pb .prow:last-child{border-bottom:0}
+.pb .prow-l b{display:block;font-weight:600;font-size:var(--fs-l);line-height:1.3}
+.pb .prow-l span{font-size:var(--fs-m);color:var(--c-ink-2)}
+.pb .prow-r{display:flex;flex-direction:column;gap:var(--sp-2);font-weight:600;text-align:end;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pb .fn{margin-top:var(--sp-16);font-size:var(--fs-s);color:var(--c-ink-2)}
+
+/* Ablauf */
+.pb .ablauf{background:var(--c-sand);border-radius:var(--r-xl);padding:var(--sp-64)}
+.pb .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-20);margin-top:var(--sp-72)}
+.pb .sc{position:relative;background:var(--c-card);border-radius:var(--r-m);padding:var(--sp-44) var(--sp-26) var(--sp-28)}
+.pb .sn{position:absolute;top:calc(-1 * var(--sp-24));inset-inline-start:var(--sp-26);width:var(--sp-48);height:var(--sp-48);border-radius:50%;background:var(--c-blue);color:var(--c-white);font-weight:700;font-size:var(--fs-l);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--sp-6) var(--c-sand)}
+.pb .sc h3{font-size:var(--fs-l);font-weight:500;letter-spacing:-.01em;line-height:1.25;margin-bottom:var(--sp-8)}
+.pb .sc p{color:var(--c-ink-2)}
+.pb .ab-cta{margin-top:var(--sp-40);display:flex;justify-content:center}
+
+/* Bewertungen */
+.pb .rev-head{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--sp-24);flex-wrap:wrap}
+.pb .gbtn{display:inline-flex;align-items:center;gap:var(--sp-10);min-height:var(--sp-50);padding:0 var(--sp-24);background:var(--c-card);border:var(--sp-1) solid var(--c-line-2);border-radius:var(--r-pill);font-weight:600;font-size:var(--fs-m);white-space:nowrap}
+.pb .gbtn .st5{color:var(--c-blue);letter-spacing:.06em}
+.pb .gbtn:hover{background:var(--c-white);border-color:var(--c-blue)}
+.pb .revs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-20);margin-top:var(--sp-40)}
+.pb .rc{display:flex;flex-direction:column;gap:var(--sp-24);background:var(--c-card);border:var(--sp-1) solid var(--c-line);border-radius:var(--r-m);padding:var(--sp-28)}
+.pb .rc blockquote{font-size:var(--fs-l);line-height:1.55}
+.pb .by{display:flex;align-items:center;gap:var(--sp-12);margin-top:auto;font-size:var(--fs-s);font-weight:500;color:var(--c-ink-2)}
+.pb .av{flex:none;width:var(--sp-40);height:var(--sp-40);border-radius:50%;background:var(--c-blue-light);color:var(--c-blue);font-weight:700;display:flex;align-items:center;justify-content:center}
+.pb .rev-foot{display:flex;flex-direction:column;align-items:flex-start;gap:var(--sp-20);margin-top:var(--sp-40)}
+
+/* Fragen */
+.pb .faq-list{max-width:var(--sp-820);margin:var(--sp-44) auto 0;display:flex;flex-direction:column;gap:var(--sp-12)}
+.pb .fq{background:var(--c-card);border:var(--sp-1) solid var(--c-line);border-radius:var(--r-card)}
+.pb .fq summary{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-16);min-height:var(--sp-64);padding-block:var(--sp-10);padding-inline:var(--sp-26) var(--sp-20);cursor:pointer;font-weight:600;font-size:var(--fs-l);line-height:1.3}
+.pb .fq summary::after{content:"+";flex:none;width:var(--sp-36);height:var(--sp-36);border-radius:50%;background:var(--c-blue-light);color:var(--c-blue);display:flex;align-items:center;justify-content:center;font-size:var(--fs-l);line-height:1}
+.pb .fq[open] summary::after{transform:rotate(45deg)}
+.pb .fq p{padding:0 var(--sp-26) var(--sp-26);color:var(--c-ink-2)}
+
+/* Abschluss und Fußzeile */
+.pb .cta{position:relative;overflow:hidden;background:var(--c-blue);color:var(--c-white);border-radius:var(--r-xl);padding:var(--sp-96) var(--sp-40);text-align:center}
+.pb .cta>*{position:relative;z-index:1}
+.pb .cta .h2{font-size:var(--fs-cta);color:var(--c-white);margin:0 0 var(--sp-36);line-height:1.08}
+.pb .cta .h2 em{color:var(--c-blue-pale)}
+.pb .ft{padding:var(--sp-12) 0 var(--sp-40)}
+.pb .ft-in{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-16) var(--sp-32);flex-wrap:wrap;font-size:var(--fs-m);padding-top:var(--sp-28)}
+.pb .ft-l{display:flex;align-items:center;gap:var(--sp-14)}
+.pb .ft-l svg{width:var(--sp-30);height:var(--sp-30);color:var(--c-blue);flex:none}
+.pb .ft-r{display:flex;flex-wrap:wrap;gap:0 var(--sp-24)}
+.pb .ft-r a{display:inline-flex;align-items:center;min-height:var(--sp-44)}
+.pb .ft-r a:hover{color:var(--c-blue)}
+
+@media (min-width:1100px){
+.pb .h2{white-space:nowrap}
+}
+@media (max-width:1023px){
+.pb .treat{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pb .why{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+/*
+ * Kopfzeile bis 1179 Pixel (10. Oktober 2026): Logo, Bewertung, Sprache und Menü wie am Handy, weil die Navigation
+ * zwischen 900 und 1179 Pixeln Sprachknopf und „Termin buchen“ abschnitt. Ab 900 Pixeln bleibt „Termin buchen“ zusätzlich
+ * sichtbar (dort gibt es keine untere Leiste). Bei Arabisch gespiegelt wie die ganze Zeile.
+ */
+@media (max-width:1179px){
+.pb .dnav{display:none}
+.pb .hd .mrate{order:1}
+.pb .hd .lang{order:2}
+.pb .hd .mmenu{order:3}
+.pb .hd .dbook{order:4}
+.pb .mrate{display:inline-flex}
+.pb .mmenu{display:block}
+.pb .mbtn{display:inline-flex;align-items:center;justify-content:center;min-height:var(--sp-44);min-width:var(--sp-44);padding:0 var(--sp-16);border:var(--sp-1-5) solid var(--c-ink);border-radius:var(--r-pill);font-size:var(--fs-s);font-weight:600;cursor:pointer}
+.pb .mpanel{position:absolute;left:0;right:0;top:100%;display:flex;flex-direction:column;align-items:flex-start;padding:var(--sp-12) var(--sp-40) var(--sp-24);background:var(--c-bg);border-bottom:var(--sp-1) solid var(--c-line);box-shadow:0 var(--sp-14) var(--sp-28) var(--c-shadow)}
+.pb .mpanel>a:not(.rate){display:flex;align-items:center;align-self:stretch;min-height:var(--sp-52);font-size:var(--fs-l);font-weight:500;border-bottom:var(--sp-1) solid var(--c-line)}
+.pb .mpanel>a.rate{margin-bottom:var(--sp-8)}
+.pb .mlang{display:flex;flex-wrap:wrap;gap:0 var(--sp-18);padding:var(--sp-8) 0 var(--sp-4)}
+.pb .mlang a{display:inline-flex;align-items:center;min-height:var(--sp-44);font-size:var(--fs-m);color:var(--c-ink-2)}
+}
+@media (max-width:899px){
+.pb .wrap{padding:0 var(--sp-20)}
+.pb .sec{padding:var(--sp-64) 0}
+.pb .hd-in{min-height:var(--sp-64);gap:var(--sp-10)}
+.pb .mpanel{padding:var(--sp-12) var(--sp-20) var(--sp-24)}
+.pb .hd .dbook{display:none}
+.pb .cta-row .btn{flex:1 1 100%}
+.pb .bar{display:block;position:sticky;bottom:0;z-index:30;padding:var(--sp-10) var(--sp-20);background:var(--c-bg-97);border-top:var(--sp-1) solid var(--c-line)}
+.pb .bar .btn{width:100%;min-height:var(--sp-52)}
+.pb .logo-name{font-size:var(--fs-m)}
+.pb .logo-by{font-size:var(--fs-s)}
+.pb .hero{grid-template-columns:minmax(0,1fr);gap:var(--sp-44);padding-top:var(--sp-36);padding-bottom:var(--sp-56)}
+.pb .lead{font-size:var(--fs-m);margin-bottom:var(--sp-28)}
+.pb .ph-hero{border-radius:var(--r-m)}
+.pb .panel{grid-template-columns:minmax(0,1fr);gap:var(--sp-32);padding:var(--sp-32) var(--sp-22);border-radius:var(--r-l)}
+.pb .quote{font-size:var(--fs-l);margin:var(--sp-18) 0 var(--sp-22)}
+.pb .why{grid-template-columns:minmax(0,1fr);gap:var(--sp-12);margin-top:var(--sp-32)}
+.pb .wc{display:grid;grid-template-columns:var(--sp-48) minmax(0,1fr);column-gap:var(--sp-16);padding:var(--sp-18)}
+.pb .ic{grid-row:1/3;margin:0}
+.pb .wc h3{margin-bottom:var(--sp-4);font-size:var(--fs-l)}
+.pb .treat{grid-template-columns:minmax(0,1fr);gap:var(--sp-12);margin-top:var(--sp-32)}
+.pb .tc{flex-direction:row}
+.pb .tc .ph{flex:none;width:var(--sp-112);aspect-ratio:auto;align-self:stretch}
+
+.pb .tc-b{padding-block:var(--sp-16);padding-inline:var(--sp-18) var(--sp-16)}
+.pb .tc h3{font-size:var(--fs-l)}
+.pb .tc-d{font-size:var(--fs-m)}
+.pb .plist{padding:var(--sp-4) var(--sp-20)}
+.pb .prow{flex-direction:column;gap:var(--sp-10)}
+.pb .prow-r{text-align:start}
+.pb .ablauf{padding:var(--sp-36) var(--sp-20) var(--sp-32);border-radius:var(--r-l)}
+.pb .steps{grid-template-columns:minmax(0,1fr);gap:var(--sp-40);margin-top:var(--sp-56)}
+.pb .rev-head{align-items:flex-start}
+.pb .revs{grid-template-columns:minmax(0,1fr);margin-top:var(--sp-28)}
+.pb .rc{padding:var(--sp-22)}
+.pb .rc blockquote{font-size:var(--fs-m)}
+.pb .faq-list{margin-top:var(--sp-28)}
+.pb .fq summary{font-size:var(--fs-m);padding-inline-start:var(--sp-20)}
+.pb .fq p{padding:0 var(--sp-20) var(--sp-22)}
+.pb .cta{padding:var(--sp-64) var(--sp-22);border-radius:var(--r-l)}
+.pb .ft-in{flex-direction:column;align-items:flex-start}
+}
+
+/* Buchung */
+.pb .bk{padding-top:var(--sp-48);padding-bottom:var(--sp-96)}
+.pb .bk .h2{margin-top:0}
+.pb .bk .stepper{list-style:none;display:flex;align-items:center;flex-wrap:wrap;gap:var(--sp-8) 0;margin:var(--sp-24) 0 var(--sp-32);padding:0}
+.pb .bk .stp{display:flex;align-items:center;gap:var(--sp-10);font-weight:600;font-size:var(--fs-m);color:var(--c-ink-2)}
+.pb .bk .stp+.stp::before{content:"";width:var(--sp-44);height:var(--sp-2);margin:0 var(--sp-14);background:var(--c-line-2)}
+.pb .bk .snr{position:static;display:flex;align-items:center;justify-content:center;width:var(--sp-36);height:var(--sp-36);border-radius:50%;background:var(--c-sand);color:var(--c-ink);font-weight:600;font-size:var(--fs-m)}
+.pb .bk .stp.cur{color:var(--c-ink)}
+.pb .bk .stp.cur .snr{background:var(--c-blue);color:var(--c-white)}
+.pb .bk .stp.done .snr{background:var(--c-blue-soft);color:var(--c-blue)}
+.pb .bk .bk-grid{display:grid;grid-template-columns:minmax(0,1fr) var(--sp-380);gap:var(--sp-32);align-items:start}
+.pb .bk .fcard{background:var(--c-card);border:var(--sp-1) solid var(--c-line);border-radius:var(--r-l);padding:var(--sp-40)}
+.pb .bk .grp{border:0;margin:0 0 var(--sp-36);padding:0;min-width:0}
+.pb .bk .grp legend{padding:0;margin-bottom:var(--sp-12);font-weight:600;font-size:var(--fs-m);line-height:1.3}
+.pb .bk .hint{margin:calc(-1 * var(--sp-4)) 0 var(--sp-14);font-size:var(--fs-s);line-height:1.5;color:var(--c-ink-2)}
+.pb .bk .note{margin-top:var(--sp-12);font-size:var(--fs-s);line-height:1.5;color:var(--c-ink-2)}
+.pb .bk .note a,.pb .bk .lnk{color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-3)}
+.pb .bk .opts{display:flex;flex-wrap:wrap;gap:var(--sp-10)}
+.pb .bk .ch{position:relative;display:inline-flex}
+.pb .bk .ch input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.pb .bk .ch>span{display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--sp-50);padding:0 var(--sp-22);border:var(--sp-1-5) solid var(--c-line-2);border-radius:var(--r-pill);background:var(--c-white);font-weight:500;font-size:var(--fs-m);line-height:1.25;text-align:center}
+.pb .bk .ch input:checked+span{background:var(--c-blue);border-color:var(--c-blue);color:var(--c-white)}
+.pb .bk .ch input:focus-visible+span{outline:var(--sp-3) solid var(--c-focus);outline-offset:var(--sp-2)}
+.pb .bk .ch:hover>span{border-color:var(--c-blue)}
+.pb .bk .ch input:disabled{cursor:default}
+.pb .bk .ch input:disabled+span{opacity:.4;border-style:dashed}
+.pb .bk .opts.two .ch{flex:1 1 var(--sp-200)}
+.pb .bk .tl{display:flex;flex-direction:column;gap:var(--sp-10)}
+.pb .bk .tr{border:var(--sp-1-5) solid var(--c-line-2);border-radius:var(--r-card);background:var(--c-white)}
+.pb .bk .tr.on{border-color:var(--c-blue);background:var(--c-blue-tint)}
+.pb .bk .tr-h{display:flex;align-items:center;gap:var(--sp-14);min-height:var(--sp-64);padding:var(--sp-12) var(--sp-20);cursor:pointer}
+.pb .bk .box{flex:none;display:flex;align-items:center;justify-content:center;width:var(--sp-24);height:var(--sp-24);border:var(--sp-1-5) solid var(--c-box);border-radius:var(--r-box);background:var(--c-white);color:var(--c-white)}
+.pb .bk .box svg{width:var(--sp-16);height:var(--sp-16);opacity:0}
+.pb .bk .tr.on .box{background:var(--c-blue);border-color:var(--c-blue)}
+.pb .bk .tr.on .box svg{opacity:1}
+.pb .bk .tr-t{flex:1;min-width:0;overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto;hyphenate-limit-chars:12 5 5}
+.pb .bk .tr-t b{display:block;font-weight:600;font-size:var(--fs-m);line-height:1.3}
+.pb .bk .tr-t span{display:block;font-size:var(--fs-s);line-height:1.45;color:var(--c-ink-2)}
+/* Preis darf zwischen den Wörtern umbrechen („başlangıç fiyatı“, „à partir de“), Zahl und Euro bleiben zusammen; die Beschreibung behält ihre Breite (9. Oktober 2026) */
+.pb .bk .tr-p{flex:0 1 auto;max-width:6.5em;text-align:end;font-weight:600;font-variant-numeric:tabular-nums;color:var(--c-blue)}
+.pb .bk .tr-b{padding-block:var(--sp-4) var(--sp-20);padding-inline:var(--sp-58) var(--sp-20)}
+.pb .bk .zones{display:flex;flex-wrap:wrap;gap:var(--sp-8)}
+.pb .bk .zones .ch>span{min-height:var(--sp-44);padding:0 var(--sp-16)}
+.pb .bk .zsum{display:flex;justify-content:space-between;gap:var(--sp-12);margin-top:var(--sp-16);padding-top:var(--sp-14);border-top:var(--sp-1) solid var(--c-line);font-weight:600;font-variant-numeric:tabular-nums}
+.pb .bk .fn{margin-top:var(--sp-14);font-size:var(--fs-s);line-height:1.5;color:var(--c-ink-2)}
+.pb .bk .nav{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-12);padding-top:var(--sp-28);border-top:var(--sp-1) solid var(--c-line)}
+.pb .bk .nav .end{display:flex;gap:var(--sp-12);margin-inline-start:auto}
+.pb .bk .next{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-16);width:100%;margin-bottom:var(--sp-36);padding:var(--sp-18) var(--sp-22);border:var(--sp-1-5) solid var(--c-blue);border-radius:var(--r-card);background:var(--c-blue-panel);cursor:pointer}
+.pb .bk .next .eyebrow{color:var(--c-blue)}
+.pb .bk .next b{display:block;font-weight:600;font-size:var(--fs-l);line-height:1.3}
+.pb .bk .next .go{flex:none;font-weight:600;color:var(--c-blue);white-space:nowrap}
+.pb .bk .dayhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-12)}
+.pb .bk .dayhead legend,.pb .bk .dayhead p{margin:0;font-weight:600;font-size:var(--fs-m)}
+.pb .bk .arrows{display:flex;gap:var(--sp-8)}
+.pb .bk .arr{display:inline-flex;align-items:center;justify-content:center;width:var(--sp-44);height:var(--sp-44);border:var(--sp-1-5) solid var(--c-line-2);border-radius:50%;background:var(--c-white);font-size:var(--fs-m);cursor:pointer}
+.pb .bk .days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:var(--sp-8)}
+.pb .bk .day>span{flex-direction:column;gap:0;min-height:var(--sp-96);padding:var(--sp-10) var(--sp-2);border-radius:var(--r-card)}
+.pb .bk .day .wd{font-size:var(--fs-s);font-weight:500;line-height:1.3}
+.pb .bk .day .nr{font-size:var(--fs-l);font-weight:600;line-height:1.3}
+.pb .bk .day .mo{font-size:var(--fs-s);font-weight:500;line-height:1.3}
+.pb .bk .times{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-10)}
+.pb .bk .times .ch>span{padding:0 var(--sp-8)}
+.pb .bk .frow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--sp-16)}
+.pb .bk .field{margin-bottom:var(--sp-22)}
+.pb .bk .field label{display:block;margin-bottom:var(--sp-8);font-weight:600;font-size:var(--fs-m)}
+.pb .bk .field input{display:block;width:100%;min-height:var(--sp-54);padding:0 var(--sp-18);border:var(--sp-1-5) solid var(--c-line-2);border-radius:var(--r-s);background:var(--c-white);font-family:inherit;font-size:var(--fs-m);color:var(--c-ink)}
+.pb .bk .field input:focus{outline:var(--sp-3) solid var(--c-focus);outline-offset:var(--sp-1);border-color:var(--c-blue)}
+.pb .bk .consent{display:flex;align-items:flex-start;gap:var(--sp-14);min-height:var(--sp-48);padding:var(--sp-8) 0;font-size:var(--fs-m);line-height:1.5;cursor:pointer}
+.pb .bk .consent input{flex:none;width:var(--sp-24);height:var(--sp-24);margin:var(--sp-2) 0 0;accent-color:var(--c-blue)}
+.pb .bk .consent small{display:block;font-size:var(--fs-s);color:var(--c-ink-2)}
+.pb .bk .zeit{margin:var(--sp-12) 0 var(--sp-32);padding:var(--sp-22) var(--sp-24);border-radius:var(--r-card);background:var(--c-bg)}
+.pb .bk .zeit b{display:block;margin-bottom:var(--sp-6);font-weight:600;font-size:var(--fs-m)}
+.pb .bk .zeit p{font-size:var(--fs-m);line-height:1.55;color:var(--c-ink-3)}
+.pb .bk .zeit p+p{margin-top:var(--sp-8)}
+.pb .bk .sum{position:sticky;top:var(--sp-104);background:var(--c-blue-panel);color:var(--c-ink);border-radius:var(--r-l);padding:var(--sp-32)}
+.pb .bk .sum .eyebrow{color:var(--c-blue)}
+.pb .bk .rows{margin:var(--sp-14) 0 0}
+.pb .bk .rows>div{padding:var(--sp-14) 0;border-bottom:var(--sp-1) solid var(--c-blue-line)}
+.pb .bk .rows dt{display:flex;justify-content:space-between;gap:var(--sp-12);font-size:var(--fs-s);line-height:1.4;color:var(--c-ink-2)}
+.pb .bk .rows dt a{color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-3)}
+.pb .bk .rows dd{margin:var(--sp-2) 0 0;font-weight:600;font-size:var(--fs-m);line-height:1.4}
+.pb .bk .rows dd span{display:block;font-weight:400;font-size:var(--fs-s);color:var(--c-ink-3)}
+.pb .bk .rows dd.open{font-weight:400;color:var(--c-ink-2)}
+.pb .bk .sum .fn{margin:var(--sp-10) 0 var(--sp-24)}
+.pb .bk .doc{display:flex;align-items:center;gap:var(--sp-14);margin-bottom:var(--sp-18)}
+.pb .bk .doc img{flex:none;width:var(--sp-60);height:var(--sp-60);border-radius:50%;object-fit:cover;display:block}
+.pb .bk .doc b{display:block;font-weight:600;font-size:var(--fs-m);line-height:1.3}
+.pb .bk .doc span{display:block;font-size:var(--fs-s);line-height:1.35;color:var(--c-ink-3)}
+.pb .bk .sum .rate{background:var(--c-white);margin-bottom:var(--sp-16)}
+.pb .bk .addr{font-size:var(--fs-s);line-height:1.5;color:var(--c-ink-3);margin-bottom:var(--sp-8)}
+.pb .bk .move{font-size:var(--fs-s);line-height:1.5;font-weight:600}
+@media (max-width:1023px){
+.pb .bk .bk-grid{grid-template-columns:minmax(0,1fr) var(--sp-320)}
+.pb .bk .times{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:899px){
+.pb .bk{padding-top:var(--sp-28);padding-bottom:var(--sp-40)}
+.pb .bk .stepper{margin:var(--sp-16) 0 var(--sp-20)}
+.pb .bk .stp+.stp::before{width:var(--sp-20);margin:0 var(--sp-8)}
+.pb .bk .stp:not(.cur) .stl{display:none}
+.pb .bk .bk-grid{grid-template-columns:minmax(0,1fr);gap:var(--sp-20)}
+.pb .bk .fcard{padding:var(--sp-24) var(--sp-20) 0;border-radius:var(--r-m)}
+.pb .bk .tr-h{padding:var(--sp-12) var(--sp-16)}
+.pb .bk .tr-b{padding:var(--sp-4) var(--sp-16) var(--sp-18)}
+.pb .bk .next{flex-direction:column;align-items:flex-start;gap:var(--sp-6)}
+.pb .bk .next b{font-size:var(--fs-m)}
+.pb .bk .days{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:var(--sp-4)}
+.pb .bk .day{flex:none;width:var(--sp-92);scroll-snap-align:start}
+.pb .bk .times{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pb .bk .frow{grid-template-columns:minmax(0,1fr)}
+.pb .bk .nav{position:sticky;bottom:0;z-index:5;margin:0 calc(-1 * var(--sp-20));padding:var(--sp-12) var(--sp-20) var(--sp-16);background:var(--c-card-97);border-radius:0 0 var(--r-m) var(--r-m)}
+.pb .bk .nav .btn{flex:1}
+.pb .bk .nav .end{flex:2;margin-inline-start:0}
+.pb .bk .nav .end .btn{width:100%}
+.pb .bk .sum{position:static;padding:var(--sp-24) var(--sp-22);border-radius:var(--r-m)}
+}
+@media (max-width:899px){
+.pb .bk .fcard{padding:var(--sp-24) var(--sp-16) 0}
+.pb .bk .nav{margin:0 calc(-1 * var(--sp-16));padding:var(--sp-12) var(--sp-16) var(--sp-16)}
+.pb .bk .nav .btn{white-space:normal;padding:0 var(--sp-16);text-align:center}
+.pb .bk .nav>.btn.ghost{flex:0 0 auto}
+.pb .bk .times{gap:var(--sp-8)}
+.pb .bk .times .ch>span{padding:0 var(--sp-4);white-space:nowrap}
+}
+
+/* ---------- Ergänzungen zur Vorlage: Bilder, Logo (echte Logo-Dateien), Studiofotos; Kopfzeile voll deckend (Korrektur Dr. Vogel, 5. Oktober 2026) ---------- */
+.pb .logo img{display:block;height:var(--sp-44);width:auto}
+.pb .ph img{object-fit:cover}
+.pb .ph-hero img{object-position:center 30%}
+.pb .ph-hero::after{content:"";position:absolute;inset:auto 0 0 0;height:30%;background:linear-gradient(to top,var(--c-scrim),var(--c-scrim-0));pointer-events:none}
+.pb .ph-hand{height:auto}
+.pb .studio-grid figure{margin:0}
+.pb .studio-grid img{display:block;width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:var(--r-s)}
+.pb .ft-l img{display:block;height:var(--sp-28);width:auto}
+/* Fußzeile mit paloskin.de (10. Oktober 2026): auf schmalen Handys steht die Domain ohne Punkt in einer eigenen Zeile */
+@media (max-width:519px){
+.pb .ft-sep{display:none}
+.pb .ft-dom{display:block}
+}
+.pb .lang li a[aria-current="true"],.pb .mlang a[aria-current="true"]{color:var(--c-blue);font-weight:600}
+.pb :focus-visible{outline:var(--sp-3) solid var(--c-focus);outline-offset:var(--sp-2)}
+.pb .sr{position:absolute;width:var(--sp-1);height:var(--sp-1);overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Arabisch: verbundene Schrift ohne Zeichenabstand; Zahlen, Preise und Nummern bleiben links nach rechts */
+html[lang="ar"] .pb *{letter-spacing:normal}
+[dir="rtl"] .pb .h1 em,[dir="rtl"] .pb .h2 em{letter-spacing:normal}
+
+/* ---------- Ergänzungen Buchung: Zustände, die die Vorlage nicht zeigt ---------- */
+/* Uhrzeiten ohne Tabellenziffern: Schibsted Grotesk setzt mit tnum den Doppelpunkt auf Ziffernbreite („10 : 00“) */
+.pb .bk .next{font:inherit;color:inherit;text-align:start}
+.pb .bk .next>span:first-child{display:flex;flex-direction:column}
+.pb .bk .stp .snr{border:0;font:inherit;font-weight:600;cursor:default}
+.pb .bk .stp button.snr{cursor:pointer}
+.pb .testbar{background:var(--c-ink);color:var(--c-bg);font-size:var(--fs-s);line-height:1.45;padding:var(--sp-8) var(--sp-20)}
+.pb .bk .missing{margin:0 0 var(--sp-12);padding:var(--sp-10) var(--sp-14);border-radius:var(--r-s);background:var(--c-white);border:var(--sp-1-5) solid var(--c-error);color:var(--c-error);font-size:var(--fs-s);line-height:1.5}
+.pb .bk .field .err{display:block;margin-top:var(--sp-6);font-size:var(--fs-s);color:var(--c-error)}
+.pb .bk .field.invalid input{border-color:var(--c-error)}
+.pb .bk .consent.invalid span{color:var(--c-error)}
+.pb .bk .wait{padding:var(--sp-18) 0;font-size:var(--fs-m);color:var(--c-ink-2)}
+.pb .bk .alert{margin:0 0 var(--sp-24);padding:var(--sp-18) var(--sp-22);border-radius:var(--r-card);background:var(--c-bg);font-size:var(--fs-m);line-height:1.55}
+.pb .bk .alert b{display:block;margin-bottom:var(--sp-6);font-weight:600}
+.pb .bk .alert .num{display:block;margin:var(--sp-8) 0 var(--sp-12);font-size:var(--fs-l);font-weight:600}
+.pb .bk .alert .row{display:flex;flex-wrap:wrap;gap:var(--sp-10)}
+.pb .bk .alert a:not(.btn){color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-3)}
+.pb .bk .sub{display:grid;gap:var(--sp-10);margin-top:var(--sp-12)}
+.pb .bk .sub input[type=text]{display:block;width:100%;min-height:var(--sp-44);padding:0 var(--sp-16);border:var(--sp-1-5) solid var(--c-line-2);border-radius:var(--r-s);background:var(--c-white);font-family:inherit;font-size:var(--fs-m);color:var(--c-ink)}
+.pb .bk .tr-h{width:100%;border:0;background:transparent;font:inherit;color:inherit;text-align:start}
+.pb .bk .day.closed>span{opacity:.4;border-style:dashed}
+.pb .bk .hp{position:absolute;inset-inline-start:calc(-1 * var(--sp-1200));width:var(--sp-1);height:var(--sp-1);overflow:hidden}
+.pb .bk .donecard{background:var(--c-blue);color:var(--c-white);border-radius:var(--r-l);padding:var(--sp-40)}
+.pb .bk .donecard .h2{color:var(--c-white);white-space:normal}
+.pb .bk .donecard .h2 em{color:var(--c-blue-pale)}
+.pb .bk .donecard p{font-size:var(--fs-m);line-height:1.55}
+.pb .bk .donecard dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--sp-6) var(--sp-16);margin:var(--sp-24) 0}
+.pb .bk .donecard dt{color:var(--c-blue-pale)}
+.pb .bk .donecard dd{margin:0;font-weight:600}
+.pb .bk .donecard dd a{color:inherit;text-decoration:underline;text-underline-offset:var(--sp-3)}
+.pb .bk .cal{display:grid;gap:var(--sp-10);margin-top:var(--sp-14)}
+.pb .bk .cal a{justify-content:space-between}
+.pb .bk .after{display:grid;gap:var(--sp-16);margin-top:var(--sp-24)}
+.pb .bk .after .field{margin-bottom:0}
+@media (max-width:899px){
+.pb .logo img{height:var(--sp-36)}
+/* Studiofotos am Handy zwei je Reihe (Korrektur Dr. Vogel, 5. Oktober 2026) */
+.pb .studio-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-12)}
+.pb .bk .donecard{padding:var(--sp-28) var(--sp-20);border-radius:var(--r-m)}
+}
+
+/* Hinweis auf die eigene Sprachadresse (components/SprachHinweis.tsx), nur im Browser */
+.pb .shint{background:var(--c-blue-light);border-bottom:var(--sp-1) solid var(--c-blue-line);font-size:var(--fs-s);color:var(--c-ink)}
+.pb .shint-in{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-12);padding-top:var(--sp-8);padding-bottom:var(--sp-8)}
+.pb .shint p{margin:0}
+.pb .shint a{color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-3)}
+.pb .shint button{background:none;border:0;color:var(--c-ink-2);font:inherit;font-size:var(--fs-l);line-height:1;padding:var(--sp-4) var(--sp-8);cursor:pointer;border-radius:var(--r-xs)}
+.pb .shint button:focus-visible{outline:var(--sp-2) solid var(--c-focus);outline-offset:var(--sp-2)}
+
+/*
+ * Kopfzeile am Handy mit Sprachknopf (9. Oktober 2026): nichts darf umbrechen oder überlappen. Die Pillen behalten
+ * Schrift, Farbe und Rahmen; wird es eng, werden zuerst ihre Innenabstände und die Abstände dazwischen kleiner. Das Logo
+ * passt sich der verbleibenden Breite an (höchstens 36 Pixel hoch) und bleibt immer sichtbar, ebenso die Bewertung.
+ */
+@media (max-width:899px){
+.pb .hd .logo{flex:0 1 auto;min-width:0}
+.pb .hd .logo img{width:auto;height:auto;max-width:100%;max-height:var(--sp-36)}
+.pb .hd .mrate,.pb .hd .lang,.pb .hd .mmenu{flex:none}
+}
+@media (max-width:419px){
+.pb .hd .mrate,.pb .hd .lang summary.pill,.pb .hd .mbtn{padding:0 var(--sp-12)}
+.pb .hd-in{gap:var(--sp-8)}
+}
+@media (max-width:379px){
+.pb .hd .mrate,.pb .hd .lang summary.pill,.pb .hd .mbtn{padding:0 var(--sp-10)}
+.pb .hd-in{gap:var(--sp-6);padding:0 var(--sp-16)}
+}
+@media (max-width:339px){
+.pb .hd .mrate,.pb .hd .lang summary.pill,.pb .hd .mbtn{padding:0 var(--sp-8)}
+.pb .hd-in{gap:var(--sp-4)}
+}
+
+/* Zeile unter dem Foto: Name und Zusatz bleiben jeweils zusammen, umgebrochen wird nur nach dem Punkt (10. Oktober 2026) */
+.pb .nameplate .nw{white-space:nowrap}
+.pb .nameplate b .nw{font-size:inherit;color:inherit}
+
+/*
+ * Verschieben-Seite im Design der Buchung (10. Oktober 2026, components/RescheduleApp.tsx): dieselben Bausteine wie Schritt 2,
+ * nur hier ergänzt (Klasse rs). Der Knopf „Termin buchen“ der Kopfzeile zeigt außerhalb der Startseite auf die aktuelle
+ * Seite und entfällt hier. Bisheriger Termin am Computer rechts in der Seitenkarte, auf dem Handy oben in der Karte.
+ */
+.pb.rs .hd .dbook{display:none}
+.pb.rs .rs-bisher{margin-bottom:var(--sp-24)}
+.pb.rs .rs-bisher b,.pb.rs .rs-top b{display:block;margin-bottom:var(--sp-6);font-weight:600;font-size:var(--fs-m)}
+.pb.rs .rs-when{font-size:var(--fs-l);font-weight:600;line-height:1.35;margin-bottom:var(--sp-8)}
+.pb.rs .rs-bisher p:not(.rs-when){font-size:var(--fs-s);line-height:1.5;color:var(--c-ink-3)}
+.pb.rs .rs-top{display:none}
+@media (max-width:899px){
+.pb.rs .rs-top{display:block;margin-bottom:var(--sp-24)}
+.pb.rs .rs-side{display:none}
+}
+
+/* ---------- Seite über Dr. Vogel (10. Oktober 2026), im Design der Startseite ---------- */
+.pb .more-doc{margin:calc(var(--sp-12) * -1) 0 var(--sp-24)}
+.pb .more-doc a{color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-4);text-decoration-thickness:var(--sp-1);font-size:var(--fs-m)}
+.pb .arzt{padding-top:var(--sp-56);padding-bottom:var(--sp-96)}
+.pb .arzt-top{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:var(--sp-56);align-items:center;margin-bottom:var(--sp-40)}
+/*
+ * Schrift der Arztseite (10. Oktober 2026, Auftrag Dr. Vogel): vier Stufen. Name (H1) am größten, Abschnitte (H2) wie auf
+ * der Startseite, Zwischenüberschriften (H3) und Unterzeile in --fs-l, aller Fließtext in --fs-m wie auf der Startseite.
+ * Fett nur für Zwischenüberschriften.
+ */
+.pb .arzt-name{font-weight:500;font-size:var(--fs-name);line-height:1.05;letter-spacing:-.03em;margin:0 0 var(--sp-16)}
+/*
+ * Name einzeilig (10. Oktober 2026, Auftrag Dr. Vogel): Schriftgröße nach der Breite der Textspalte, höchstens 64 Pixel.
+ * Der Name ist etwa elfmal so breit wie seine Schriftgröße (gemessen 10,95); 11,2 lässt etwas Luft. Ältere Browser ohne
+ * Container-Einheiten behalten die bisherige Größe und dürfen umbrechen.
+ */
+@supports (container-type:inline-size){
+.pb .arzt-top>div:first-child{container-type:inline-size;min-width:0}
+.pb .arzt-name{font-size:min(var(--fs-name-max),calc(100cqi / 11.2));white-space:nowrap}
+}
+.pb .arzt-sub{font-size:var(--fs-l);font-weight:500;line-height:1.35;margin-bottom:var(--sp-20);color:var(--c-ink)}
+.pb .arzt-intro{font-size:var(--fs-m);line-height:1.6;max-width:52ch;color:var(--c-ink)}
+.pb .arzt-txt{max-width:var(--sp-820);font-size:var(--fs-m);line-height:1.6;color:var(--c-ink)}
+.pb .arzt-txt .h2{margin:var(--sp-56) 0 var(--sp-8);white-space:normal}
+.pb .arzt-txt h3{font-size:var(--fs-l);font-weight:600;line-height:1.3;margin:var(--sp-28) 0 var(--sp-8)}
+.pb .arzt-txt p{margin-bottom:var(--sp-14)}
+.pb .arzt-txt ul{padding-inline-start:var(--sp-22);margin:var(--sp-12) 0 var(--sp-20)}
+.pb .arzt-txt li{margin-bottom:var(--sp-10)}
+.pb .arzt-awards{margin-top:var(--sp-20)}
+.pb .arzt-pubs a{color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-4);text-decoration-thickness:var(--sp-1)}
+.pb .arzt-cta{margin-top:var(--sp-44)}
+@media (max-width:899px){
+.pb .arzt{padding-top:var(--sp-36);padding-bottom:var(--sp-56)}
+.pb .arzt-top{grid-template-columns:minmax(0,1fr);gap:var(--sp-32)}
+.pb .arzt-txt .h2{margin-top:var(--sp-44)}
+}
+
+/* ---------- Behandlungsseiten (Gerüst vom 10. Oktober 2026), im Design der Startseite ---------- */
+.pb .bh{padding-top:var(--sp-40);padding-bottom:var(--sp-96)}
+.pb .krumen ol{list-style:none;display:flex;flex-wrap:wrap;gap:var(--sp-4) var(--sp-8);padding:0;margin:0 0 var(--sp-20);font-size:var(--fs-s);color:var(--c-ink-2)}
+.pb .krumen li{display:inline-flex;align-items:center;gap:var(--sp-8)}
+.pb .krumen li+li::before{content:"›";color:var(--c-ink-2)}
+.pb .krumen a{color:var(--c-ink-2);text-decoration:underline;text-underline-offset:var(--sp-4);text-decoration-thickness:var(--sp-1);display:inline-flex;align-items:center;min-height:var(--sp-44)}
+.pb .bh > .h2{margin:0 0 var(--sp-28);white-space:normal}
+.pb .bh-kurz{max-width:var(--sp-820);background:var(--c-blue-panel);border-radius:var(--r-l);padding:var(--sp-24) var(--sp-28);margin-bottom:var(--sp-40)}
+.pb .bh-kurz h2{font-size:var(--fs-m);font-weight:600;margin-bottom:var(--sp-8)}
+.pb .bh-kurz p{font-size:var(--fs-l);line-height:1.45;color:var(--c-ink)}
+.pb .bh-txt{max-width:var(--sp-820);font-size:var(--fs-m);line-height:1.6;color:var(--c-ink)}
+.pb .bh-txt h2{font-size:var(--fs-l);font-weight:600;line-height:1.3;margin:var(--sp-32) 0 var(--sp-8)}
+.pb .bh-txt p{margin-bottom:var(--sp-12)}
+.pb .bh-txt .fn{font-size:var(--fs-s);color:var(--c-ink-2)}
+.pb .bh-fragen{margin-top:var(--sp-56)}
+.pb .bh-fragen .h2{white-space:normal}
+.pb .bh-fragen .faq-list{margin:var(--sp-24) 0 0}
+.pb .bh-quellen,.pb .bh-passend{padding-inline-start:var(--sp-22);margin:var(--sp-8) 0 var(--sp-12)}
+.pb .bh-quellen li,.pb .bh-passend li{margin-bottom:var(--sp-6)}
+.pb .bh-txt a:not(.btn),.pb .bh-geprueft a{color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-4);text-decoration-thickness:var(--sp-1)}
+.pb .bh-sprache{margin-top:var(--sp-28);color:var(--c-ink-2)}
+.pb .bh-cta{margin:var(--sp-40) 0 var(--sp-28)}
+.pb .bh-geprueft{font-size:var(--fs-s);color:var(--c-ink-2);border-top:var(--sp-1) solid var(--c-line);padding-top:var(--sp-16)}
+@media (max-width:899px){
+.pb .bh{padding-top:var(--sp-20);padding-bottom:var(--sp-56)}
+.pb .bh-kurz{padding:var(--sp-20) var(--sp-22)}
+.pb .bh-kurz p{font-size:var(--fs-m)}
+}
+
+/* Bewertungspille (10. Oktober 2026): Sterne und Anzahl; unter 1180 Pixeln (gemessen, alle Sprachen) nur die Kurzform „★ 5,0 · 28“.
+   Gilt für die Kopfzeile und die Pille im Kasten „Ihre Buchung“. */
+.pb .hd .rate-kurz,.pb .bk .sum .rate-kurz{display:none}
+@media (max-width:1179px){
+.pb .hd .dnav .rate-lang,.pb .bk .sum .rate-lang{display:none}
+.pb .hd .dnav .rate-kurz,.pb .bk .sum .rate-kurz{display:inline}
+}
+
+/* Google-Badge mit Anzahl (10. Oktober 2026): auf schmalen Bildschirmen zweizeilig, Sterne oben, Anzahl und Quelle darunter */
+.pb .gbtn .g-sterne{display:inline-flex;align-items:center;gap:var(--sp-10)}
+.pb .gbtn .g-anzahl{display:inline;white-space:nowrap}
+@media (max-width:599px){
+.pb .gbtn{flex-direction:column;justify-content:center;gap:var(--sp-2);padding:var(--sp-10) var(--sp-24);border-radius:var(--r-l)}
+.pb .gbtn .g-sep{display:none}
+}
+
+/* ---------- Studiofotos zum Vergrößern (10. Oktober 2026, components/StudioGalerie.tsx) ---------- */
+.pb .studio-zoom{display:block;width:100%;padding:0;border:0;background:none;border-radius:var(--r-s);cursor:pointer}
+.pb .studio-zoom:focus-visible{outline:var(--sp-2) solid var(--c-focus);outline-offset:var(--sp-2)}
+@media (hover:hover) and (pointer:fine){.pb .studio-zoom{cursor:zoom-in}}
+.pb .galerie{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;color:var(--c-white);overscroll-behavior:contain}
+.pb .galerie::backdrop{background:var(--c-galerie)}
+html.galerie-offen .pb .bar{visibility:hidden}
+.pb .galerie[open]{display:block}
+.pb .galerie-buehne{position:absolute;inset:var(--sp-72) var(--sp-80);display:flex;align-items:center;justify-content:center}
+.pb .galerie-buehne img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:var(--r-s)}
+.pb .galerie button{position:absolute;display:flex;align-items:center;justify-content:center;width:var(--sp-52);height:var(--sp-52);padding:0;border:0;border-radius:50%;background:var(--c-galerie-knopf);color:var(--c-ink);cursor:pointer}
+.pb .galerie button:focus-visible{outline:var(--sp-2) solid var(--c-focus);outline-offset:var(--sp-2)}
+.pb .galerie button svg{width:var(--sp-24);height:var(--sp-24);fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.pb .galerie-zu{top:var(--sp-14);inset-inline-end:var(--sp-14)}
+.pb .galerie-pfeil{top:50%;transform:translateY(-50%)}
+.pb .galerie-zurueck{inset-inline-start:var(--sp-14)}
+.pb .galerie-vor{inset-inline-end:var(--sp-14)}
+html[dir="rtl"] .pb .galerie-pfeil svg{transform:scaleX(-1)}
+.pb .galerie-zahl{position:absolute;left:0;right:0;bottom:var(--sp-22);text-align:center;font-size:var(--fs-m);font-weight:600;color:var(--c-white)}
+@media (max-width:899px){
+.pb .galerie-buehne{inset:var(--sp-72) var(--sp-12) var(--sp-96)}
+.pb .galerie-pfeil{top:auto;bottom:var(--sp-12);transform:none}
+.pb .galerie-zahl{bottom:var(--sp-26)}
+}

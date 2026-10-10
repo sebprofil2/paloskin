@@ -1,0 +1,35 @@
+# Abhängigkeiten
+node_modules/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Umgebungsvariablen und Schlüssel: niemals ins Repository
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+service-account*.json
+
+# Lokale Buchungsdatenbank
+.data/
+
+
+# Tests, Protokolle, System
+coverage/
+*.log
+.DS_Store
+
+# Lokale Startkonfiguration der Claude-App
+.claude/
+*.tsbuildinfo
+
+# Google-Schlüsseldateien
+palo-skin-buchung-*.json
+*gserviceaccount*.json
+
+# Original-Vektordateien von Dr. Vogel (Visitenkarten-Entwürfe mit Porträt, Schild): nur lokal, Repository ist öffentlich
+/design/
