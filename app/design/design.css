@@ -577,3 +577,32 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 .pb .arzt-sub,.pb .arzt-intro{font-size:var(--fs-m)}
 .pb .arzt-txt .h2{margin-top:var(--sp-44)}
 }
+
+/* ---------- Behandlungsseiten (Gerüst vom 10. Oktober 2026), im Design der Startseite ---------- */
+.pb .bh{padding-top:var(--sp-40);padding-bottom:var(--sp-96)}
+.pb .krumen ol{list-style:none;display:flex;flex-wrap:wrap;gap:var(--sp-4) var(--sp-8);padding:0;margin:0 0 var(--sp-20);font-size:var(--fs-s);color:var(--c-ink-2)}
+.pb .krumen li{display:inline-flex;align-items:center;gap:var(--sp-8)}
+.pb .krumen li+li::before{content:"›";color:var(--c-ink-2)}
+.pb .krumen a{color:var(--c-ink-2);text-decoration:underline;text-underline-offset:var(--sp-4);text-decoration-thickness:var(--sp-1);display:inline-flex;align-items:center;min-height:var(--sp-44)}
+.pb .bh > .h2{margin:0 0 var(--sp-28);white-space:normal}
+.pb .bh-kurz{max-width:var(--sp-820);background:var(--c-blue-panel);border-radius:var(--r-l);padding:var(--sp-24) var(--sp-28);margin-bottom:var(--sp-40)}
+.pb .bh-kurz h2{font-size:var(--fs-m);font-weight:600;margin-bottom:var(--sp-8)}
+.pb .bh-kurz p{font-size:var(--fs-l);line-height:1.45;color:var(--c-ink)}
+.pb .bh-txt{max-width:var(--sp-820);font-size:var(--fs-m);line-height:1.6;color:var(--c-ink)}
+.pb .bh-txt h2{font-size:var(--fs-l);font-weight:600;line-height:1.3;margin:var(--sp-32) 0 var(--sp-8)}
+.pb .bh-txt p{margin-bottom:var(--sp-12)}
+.pb .bh-txt .fn{font-size:var(--fs-s);color:var(--c-ink-2)}
+.pb .bh-fragen{margin-top:var(--sp-56)}
+.pb .bh-fragen .h2{white-space:normal}
+.pb .bh-fragen .faq-list{margin:var(--sp-24) 0 0}
+.pb .bh-quellen,.pb .bh-passend{padding-inline-start:var(--sp-22);margin:var(--sp-8) 0 var(--sp-12)}
+.pb .bh-quellen li,.pb .bh-passend li{margin-bottom:var(--sp-6)}
+.pb .bh-txt a:not(.btn),.pb .bh-geprueft a{color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-4);text-decoration-thickness:var(--sp-1)}
+.pb .bh-sprache{margin-top:var(--sp-28);color:var(--c-ink-2)}
+.pb .bh-cta{margin:var(--sp-40) 0 var(--sp-28)}
+.pb .bh-geprueft{font-size:var(--fs-s);color:var(--c-ink-2);border-top:var(--sp-1) solid var(--c-line);padding-top:var(--sp-16)}
+@media (max-width:899px){
+.pb .bh{padding-top:var(--sp-20);padding-bottom:var(--sp-56)}
+.pb .bh-kurz{padding:var(--sp-20) var(--sp-22)}
+.pb .bh-kurz p{font-size:var(--fs-m)}
+}

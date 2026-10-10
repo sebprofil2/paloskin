@@ -4,8 +4,9 @@ import { Fusszeile, Kopfzeile } from "@/components/Kopfzeile";
 import { bookHref, kopfTexte, MAPS } from "@/lib/kopf";
 import { BILDER } from "@/lib/bilder";
 import { STUDIO } from "@/lib/studio";
-import { ARZTSEITE_LIVE } from "@/lib/freigabe";
-import { arztPath } from "@/lib/seiten-pfade";
+import { price } from "@/lib/preise";
+import { ARZTSEITE_LIVE, BEHANDLUNGEN_KARTEN_AKTIV, freigegeben } from "@/lib/freigabe";
+import { arztPath, behandlungPath } from "@/lib/seiten-pfade";
 import { SprachHinweis } from "@/components/SprachHinweis";
 import { homeJsonLd } from "@/lib/share-meta";
 import { HOME_TEXTS, REVIEWS, type HomeTexts } from "@/lib/texts-home";
@@ -21,8 +22,6 @@ import "@/app/design/design.css";
 const WA = STUDIO.whatsapp;
 const TEL = STUDIO.phone.tel;
 const IG = STUDIO.instagram.url;
-const THOUSANDS: Record<Lang, string> = { de: ".", en: ",", es: ".", fr: " ", pt: ".", it: ".", tr: ".", uk: " ", ar: "," };
-const price = (lang: Lang, n: number) => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, THOUSANDS[lang])} €*`;
 
 /* Zweiteilige Überschrift: zweiter Teil kursiv in Blau */
 function H({ a, b, as: Tag = "h2", className = "h2", style }: { a: string; b: string; as?: "h1" | "h2"; className?: string; style?: React.CSSProperties }) {
@@ -57,10 +56,10 @@ export function Startseite({ lang }: { lang: Lang }) {
   const book = bookHref(lang);
   const why: [string, string][] = [[t.why1H, t.why1P], [t.why2H, t.why2P], [t.why3H, t.why3P], [t.why4H, t.why4P], [t.why5H, t.why5P], [t.why6H, t.why6P]];
   const treat = [
-    { h: t.t1H, d: t.t1D, alt: t.t1Alt, img: BILDER.faltenbehandlung, p: t.priceFrom(price(lang, 120)) },
-    { h: t.t2H, d: t.t2D, alt: t.t2Alt, img: BILDER.kaumuskel, p: price(lang, 280) },
-    { h: t.t3H, d: t.t3D, alt: t.t3Alt, img: BILDER.nefertiti, p: price(lang, 280) },
-    { h: t.t4H, d: t.t4D, alt: t.t4Alt, img: BILDER.lachsDna, p: t.priceFrom(price(lang, 280)) },
+    { slug: "faltenbehandlung" as const, h: t.t1H, d: t.t1D, alt: t.t1Alt, img: BILDER.faltenbehandlung, p: t.priceFrom(price(lang, "zone1")) },
+    { slug: "kaumuskel-masseter" as const, h: t.t2H, d: t.t2D, alt: t.t2Alt, img: BILDER.kaumuskel, p: price(lang, "kaumuskel") },
+    { slug: "nefertiti-lift" as const, h: t.t3H, d: t.t3D, alt: t.t3Alt, img: BILDER.nefertiti, p: price(lang, "nefertiti") },
+    { slug: "lachs-dna-polynukleotide" as const, h: t.t4H, d: t.t4D, alt: t.t4Alt, img: BILDER.lachsDna, p: t.priceFrom(price(lang, "lachs")) },
   ];
   const photos = [
     { img: BILDER.beratungsraum, c: t.photoConsult },
@@ -167,7 +166,8 @@ export function Startseite({ lang }: { lang: Lang }) {
                   <Image src={c.img} alt={c.alt} fill sizes="(max-width: 899px) 112px, (max-width: 1023px) 50vw, 300px" />
                 </div>
                 <div className="tc-b">
-                  <h3>{c.h}</h3>
+                  {/* Link auf die Behandlungsseite: vorbereitet, aktiv erst mit BEHANDLUNGEN_KARTEN_AKTIV und Freigabe */}
+                  <h3>{BEHANDLUNGEN_KARTEN_AKTIV && freigegeben(c.slug, lang) ? <a href={behandlungPath(c.slug, lang)}>{c.h}</a> : c.h}</h3>
                   <p className="tc-d">{c.d}</p>
                   <p className="tc-p"><span className="price"><bdi>{c.p}</bdi></span></p>
                 </div>
@@ -180,20 +180,20 @@ export function Startseite({ lang }: { lang: Lang }) {
               <div className="prow">
                 <div className="prow-l"><b>{t.pZones}</b></div>
                 <div className="prow-r">
-                  <span>{t.pZone1} <bdi>{price(lang, 120)}</bdi></span>
-                  <span>{t.pZone2} <bdi>{price(lang, 210)}</bdi></span>
-                  <span>{t.pZone3} <bdi>{price(lang, 300)}</bdi></span>
-                  <span>{t.pZoneMore} <bdi>{price(lang, 80)}</bdi></span>
+                  <span>{t.pZone1} <bdi>{price(lang, "zone1")}</bdi></span>
+                  <span>{t.pZone2} <bdi>{price(lang, "zone2")}</bdi></span>
+                  <span>{t.pZone3} <bdi>{price(lang, "zone3")}</bdi></span>
+                  <span>{t.pZoneMore} <bdi>{price(lang, "zoneMore")}</bdi></span>
                 </div>
               </div>
-              <div className="prow"><div className="prow-l"><b>{t.t3H}</b><span>{t.pNefD}</span></div><div className="prow-r"><bdi>{price(lang, 280)}</bdi></div></div>
-              <div className="prow"><div className="prow-l"><b>{t.t2H}</b><span>{t.t2D.replace(/\.$/, "")}</span></div><div className="prow-r"><bdi>{price(lang, 280)}</bdi></div></div>
-              <div className="prow"><div className="prow-l"><b>{t.pAchselH}</b><span>{t.pAchselD}</span></div><div className="prow-r"><bdi>{price(lang, 480)}</bdi></div></div>
+              <div className="prow"><div className="prow-l"><b>{t.t3H}</b><span>{t.pNefD}</span></div><div className="prow-r"><bdi>{price(lang, "nefertiti")}</bdi></div></div>
+              <div className="prow"><div className="prow-l"><b>{t.t2H}</b><span>{t.t2D.replace(/\.$/, "")}</span></div><div className="prow-r"><bdi>{price(lang, "kaumuskel")}</bdi></div></div>
+              <div className="prow"><div className="prow-l"><b>{t.pAchselH}</b><span>{t.pAchselD}</span></div><div className="prow-r"><bdi>{price(lang, "achsel")}</bdi></div></div>
               <div className="prow">
                 <div className="prow-l"><b>{t.pLachsH}</b></div>
                 <div className="prow-r">
-                  <span>{t.pLachs1} <bdi>{price(lang, 280)}</bdi></span>
-                  <span>{t.pLachs4} <bdi>{price(lang, 1000)}</bdi></span>
+                  <span>{t.pLachs1} <bdi>{price(lang, "lachs")}</bdi></span>
+                  <span>{t.pLachs4} <bdi>{price(lang, "lachsPack")}</bdi></span>
                 </div>
               </div>
             </div>

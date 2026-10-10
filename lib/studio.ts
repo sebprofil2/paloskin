@@ -1,3 +1,4 @@
+import type { BehandlungSlug } from "./behandlungen";
 import type { Lang } from "./i18n";
 
 /*
@@ -49,3 +50,28 @@ export const ARZT = {
     "Erster Bundespreis Jugend musiziert",
   ],
 } as const;
+
+/**
+ * Datum der medizinischen Prüfung je Behandlungsseite durch Dr. med. Sebastian Vogel (JJJJ-MM-TT). Nur echte Prüfdaten
+ * eintragen: Davon hängen der sichtbare Vermerk „Medizinisch geprüft … Stand:“ und lastReviewed ab. null = noch nicht geprüft.
+ */
+export const PRUEFDATUM: Record<BehandlungSlug, string | null> = {
+  faltenbehandlung: null,
+  zornesfalte: null,
+  stirnfalten: null,
+  kraehenfuesse: null,
+  "lip-flip": null,
+  "gummy-smile": null,
+  "bunny-lines": null,
+  "brow-lift": null,
+  nasenverschmaelerung: null,
+  erdbeerkinn: null,
+  "haengende-mundwinkel": null,
+  lippenfaeltchen: null,
+  "nasenspitze-anheben": null,
+  "kaumuskel-masseter": null,
+  "nefertiti-lift": null,
+  trapezius: null,
+  "lachs-dna-polynukleotide": null,
+  hyperhidrose: null,
+};

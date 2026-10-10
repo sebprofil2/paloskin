@@ -3,9 +3,11 @@ import { readEnv } from "./env";
 import { homePath } from "./home-paths";
 import { LANG_IDS, type Lang } from "./i18n";
 import { isTestInstance } from "./instance";
-import { ARZTSEITE_LIVE, ARZTSEITE_SPRACHEN } from "./freigabe";
-import { arztPath } from "./seiten-pfade";
-import { ARZT, LANGUAGE_NAMES_EN, STUDIO } from "./studio";
+import { BEHANDLUNGEN, inhalt, type BehandlungSlug } from "./behandlungen";
+import { ARZTSEITE_LIVE, ARZTSEITE_SPRACHEN, BEHANDLUNGEN_FREIGABE, freigegeben } from "./freigabe";
+import { arztPath, behandlungPath } from "./seiten-pfade";
+import { ARZT, LANGUAGE_NAMES_EN, PRUEFDATUM, STUDIO } from "./studio";
+import { BEHANDLUNG_TEXTE } from "./texts-behandlung";
 import { ARZT_TEXTE, type ArztLang } from "./texts-arzt";
 import { HOME_TEXTS } from "./texts-home";
 
@@ -230,5 +232,79 @@ export function arztJsonLd(lang: ArztLang): string {
     inLanguage: lang,
     primaryImageOfPage: vogel,
     mainEntity: personJsonLd(base, vogel, ARZTSEITE_LIVE ? `${base}${arztPath("de")}` : undefined),
+  });
+}
+
+/* ---------- Behandlungsseiten (Gerüst vom 10. Oktober 2026) ---------- */
+
+export function behandlungUrl(slug: BehandlungSlug, lang: Lang): string {
+  return `${site()}${behandlungPath(slug, lang)}`;
+}
+
+/** Seitentitel: Überschrift der Seite und Marke */
+export function behandlungTitel(slug: BehandlungSlug, lang: Lang): string {
+  const c = inhalt(slug, lang);
+  return `${c.titelA} ${c.titelB} | PALO SKIN`;
+}
+
+/** hreflang nur zwischen freigegebenen Sprachen, x-default auf Deutsch, wenn Deutsch freigegeben ist */
+export function behandlungAlternates(slug: BehandlungSlug): { hreflang: string; href: string }[] {
+  const langs = BEHANDLUNGEN_FREIGABE[slug];
+  return [...langs.map((l) => ({ hreflang: l, href: behandlungUrl(slug, l) })), ...(langs.includes("de") ? [{ hreflang: "x-default", href: behandlungUrl(slug, "de") }] : [])];
+}
+
+/** Indexierbar nur auf www und nur in freigegebenen Sprachen; sonst noindex ohne kanonische Angabe und hreflang */
+export function behandlungMetadata(slug: BehandlungSlug, lang: Lang): Metadata {
+  const c = inhalt(slug, lang);
+  const title = behandlungTitel(slug, lang);
+  const url = behandlungUrl(slug, lang);
+  const image = homeShareImage(lang);
+  return {
+    title: { absolute: title },
+    description: c.beschreibung,
+    ...(indexable() && freigegeben(slug, lang)
+      ? { alternates: { canonical: url, languages: Object.fromEntries(behandlungAlternates(slug).map((l) => [l.hreflang, l.href])) } }
+      : { robots: { index: false, follow: false } }),
+    openGraph: { type: "website", siteName: STUDIO.name, locale: LOCALE[lang], url, title, description: c.beschreibung, images: [image] },
+    twitter: { card: "summary_large_image", title, description: c.beschreibung, images: [{ url: image.url, alt: image.alt }] },
+  };
+}
+
+/**
+ * Strukturierte Daten je Behandlungsseite: MedicalWebPage mit about (MedicalProcedure), reviewedBy (Person #arzt),
+ * lastReviewed nur mit echtem Prüfdatum aus lib/studio.ts, BreadcrumbList wie die sichtbare Navigation.
+ */
+export function behandlungJsonLd(slug: BehandlungSlug, lang: Lang): string {
+  const base = site();
+  const url = behandlungUrl(slug, lang);
+  const t = BEHANDLUNG_TEXTE[lang];
+  const title = behandlungTitel(slug, lang);
+  const datum = PRUEFDATUM[slug];
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "MedicalWebPage",
+        "@id": `${url}#seite`,
+        url,
+        name: title,
+        description: inhalt(slug, lang).beschreibung,
+        inLanguage: lang,
+        about: { "@type": "MedicalProcedure", name: BEHANDLUNGEN[slug].name },
+        reviewedBy: { "@id": `${base}/#arzt` },
+        ...(datum ? { lastReviewed: datum } : {}),
+        breadcrumb: { "@id": `${url}#krumen` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${url}#krumen`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: t.startseite, item: homeUrl(lang) },
+          { "@type": "ListItem", position: 2, name: t.behandlungen, item: `${homeUrl(lang)}#behandlungen` },
+          { "@type": "ListItem", position: 3, name: title, item: url },
+        ],
+      },
+      personJsonLd(base, studioImages()[0], ARZTSEITE_LIVE ? `${base}${arztPath("de")}` : undefined),
+    ],
   });
 }

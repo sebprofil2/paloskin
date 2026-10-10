@@ -1,4 +1,5 @@
-import { ARZTSEITE_SPRACHEN } from "./freigabe";
+import { isBehandlung, type BehandlungSlug } from "./behandlungen";
+import { ARZTSEITE_SPRACHEN, freigegeben } from "./freigabe";
 import { isLang, type Lang } from "./i18n";
 
 /*
@@ -11,12 +12,22 @@ export function arztPath(lang: Lang): string {
   return lang === "de" ? `/${ARZT_SLUG}` : `/${lang}/${ARZT_SLUG}`;
 }
 
-/** Zerlegt /dr-sebastian-vogel oder /en/dr-sebastian-vogel; null für alle anderen Pfade */
+export function behandlungPath(slug: BehandlungSlug, lang: Lang): string {
+  return lang === "de" ? `/behandlungen/${slug}` : `/${lang}/behandlungen/${slug}`;
+}
+
+/** Name der Behandlung aus dem Pfadrest /behandlungen/<name>; null für alles andere */
+function behandlungAus(rest: string): BehandlungSlug | null {
+  const m = /^\/behandlungen\/([a-z-]+)$/.exec(rest);
+  return m && isBehandlung(m[1]) ? m[1] : null;
+}
+
+/** Zerlegt /dr-sebastian-vogel, /en/dr-sebastian-vogel, /behandlungen/<name>, /en/behandlungen/<name>; sonst null */
 function parse(pathname: string): { lang: Lang; rest: string } | null {
   const m = /^(?:\/([a-z]{2}))?(\/.+?)\/?$/.exec(pathname);
   if (!m) return null;
   const rest = m[2];
-  if (rest !== `/${ARZT_SLUG}`) return null;
+  if (rest !== `/${ARZT_SLUG}` && !behandlungAus(rest)) return null;
   if (m[1] === undefined) return { lang: "de", rest };
   return isLang(m[1]) ? { lang: m[1], rest } : null;
 }
@@ -35,5 +46,7 @@ export function pageRedirect(pathname: string): { to: string; status: 301 | 302 
   if (!p) return null;
   if (/^\/de\//.test(pathname)) return { to: p.rest, status: 301 };
   if (p.rest === `/${ARZT_SLUG}` && !ARZTSEITE_SPRACHEN.includes(p.lang)) return { to: arztPath("de"), status: 302 };
+  const slug = behandlungAus(p.rest);
+  if (slug && p.lang !== "de" && !freigegeben(slug, p.lang)) return { to: behandlungPath(slug, "de"), status: 302 };
   return null;
 }
