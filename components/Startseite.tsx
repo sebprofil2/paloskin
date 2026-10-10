@@ -4,6 +4,8 @@ import { Fusszeile, Kopfzeile } from "@/components/Kopfzeile";
 import { bookHref, kopfTexte, MAPS } from "@/lib/kopf";
 import { BILDER } from "@/lib/bilder";
 import { STUDIO } from "@/lib/studio";
+import { ARZTSEITE_LIVE } from "@/lib/freigabe";
+import { arztPath } from "@/lib/seiten-pfade";
 import { SprachHinweis } from "@/components/SprachHinweis";
 import { homeJsonLd } from "@/lib/share-meta";
 import { HOME_TEXTS, REVIEWS, type HomeTexts } from "@/lib/texts-home";
@@ -106,6 +108,8 @@ export function Startseite({ lang }: { lang: Lang }) {
             </div>
             <div className="panel-txt">
               <blockquote className="quote">{t.quote}</blockquote>
+              {/* Link auf die Arztseite, aktiv erst mit dem Livegang auf www (lib/freigabe.ts) */}
+              {ARZTSEITE_LIVE ? <p className="more-doc"><a href={arztPath(lang)}>{t.moreDoc}</a></p> : null}
               <ul className="contact">
                 <li>{t.address}</li>
                 <li className="links">

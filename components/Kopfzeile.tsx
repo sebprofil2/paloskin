@@ -5,6 +5,8 @@ import { homePath } from "@/lib/home-paths";
 import { LANG_LABEL, LANG_SHORT, LANGS, langButtonLabel, saveLangChoice, type Lang } from "@/lib/i18n";
 import { bookHref, MAPS, type KopfTexte } from "@/lib/kopf";
 import { STUDIO } from "@/lib/studio";
+import { ARZTSEITE_LIVE } from "@/lib/freigabe";
+import { arztPath } from "@/lib/seiten-pfade";
 
 /*
  * Kopfzeile und Fußzeile nach Entwurf B, gleich auf Startseite und Buchung. Sprachauswahl mit allen sieben Sprachen
@@ -14,10 +16,15 @@ import { STUDIO } from "@/lib/studio";
  * Sprachknopf (9. Oktober 2026): Pille mit dem Kürzel der Seitensprache (DE, EN, ES, FR, PT, UA, AR), auf dem Handy direkt
  * links neben „Menü“, im Stil des Menü-Knopfs; dieselbe Liste wie bisher. Im Menü bleibt die Auswahl zusätzlich.
  */
-export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte; page: "home" | "booking"; onLang?: (id: Lang) => void }) {
+/*
+ * page „seite“ (10. Oktober 2026): Inhaltsseiten wie die Arztseite. Menüpunkte führen auf die Startseite, „Termin buchen“
+ * zur Buchung, die Sprachwahl auf langHrefs (Adresse der Seite je Sprache). Buchung und Startseite unverändert.
+ */
+export function Kopfzeile({ lang, t, page, onLang, langHrefs }: { lang: Lang; t: KopfTexte; page: "home" | "booking" | "seite"; onLang?: (id: Lang) => void; langHrefs?: Record<Lang, string> }) {
   const langRef = useRef<HTMLDetailsElement>(null);
   const menuRef = useRef<HTMLDetailsElement>(null);
   const home = page === "home";
+  const booking = page === "booking";
   const anchor = (id: string) => (home ? `#${id}` : `${homePath(lang)}#${id}`);
   const cur = LANGS.find((x) => x.id === lang)!;
   const close = () => {
@@ -37,7 +44,7 @@ export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte;
     }
   };
   const langLink = (x: (typeof LANGS)[number]) => (
-    <a href={home ? homePath(x.id) : `?lang=${x.id}`} lang={x.id} hrefLang={x.id} aria-current={x.id === lang ? "true" : undefined} onClick={(e) => pick(e, x.id)}>
+    <a href={langHrefs?.[x.id] ?? (home ? homePath(x.id) : `?lang=${x.id}`)} lang={x.id} hrefLang={x.id} aria-current={x.id === lang ? "true" : undefined} onClick={(e) => pick(e, x.id)}>
       {x.name}
     </a>
   );
@@ -71,7 +78,7 @@ export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte;
             ))}
           </ul>
         </details>
-        <a className="btn dbook" href={home ? bookHref(lang) : "#"} aria-current={home ? undefined : "page"}>{t.book}</a>
+        <a className="btn dbook" href={booking ? "#" : bookHref(lang)} aria-current={booking ? "page" : undefined}>{t.book}</a>
         <a className="rate mrate" href={MAPS} target="_blank" rel="noopener" aria-label={t.rateAria}>{t.rateShort}</a>
         <details className="mmenu" ref={menuRef} onToggle={only(langRef)}>
           <summary className="mbtn pill">{t.menu}</summary>
@@ -90,7 +97,10 @@ export function Kopfzeile({ lang, t, page, onLang }: { lang: Lang; t: KopfTexte;
   );
 }
 
-/* domain: „ · paloskin.de“ hinter dem Namen (Marke, 10. Oktober 2026); nicht auf Buchung und Verschieben */
+/*
+ * domain: „ · paloskin.de“ hinter dem Namen (Marke, 10. Oktober 2026) und, sobald live, der Link zur Arztseite;
+ * nicht auf Buchung und Verschieben.
+ */
 export function Fusszeile({ lang, t, mobileBar, domain = false }: { lang: Lang; t: KopfTexte; mobileBar: boolean; domain?: boolean }) {
   return (
     <>
@@ -113,6 +123,7 @@ export function Fusszeile({ lang, t, mobileBar, domain = false }: { lang: Lang; 
             <a href={bookHref(lang)}>{t.book}</a>
             <a href={legal("/impressum", lang)}>{t.imprint}</a>
             <a href={legal("/datenschutz", lang)}>{t.privacy}</a>
+            {domain && ARZTSEITE_LIVE ? <a href={arztPath(lang)}>Dr. med. Sebastian Vogel</a> : null}
           </div>
         </div>
       </footer>

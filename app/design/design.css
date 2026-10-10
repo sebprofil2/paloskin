@@ -553,3 +553,27 @@ html[lang="ar"] .pb *{letter-spacing:normal}
 .pb.rs .rs-top{display:block;margin-bottom:var(--sp-24)}
 .pb.rs .rs-side{display:none}
 }
+
+/* ---------- Seite über Dr. Vogel (10. Oktober 2026), im Design der Startseite ---------- */
+.pb .more-doc{margin:calc(var(--sp-12) * -1) 0 var(--sp-24)}
+.pb .more-doc a{color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-4);text-decoration-thickness:var(--sp-1);font-size:var(--fs-m)}
+.pb .arzt{padding-top:var(--sp-56);padding-bottom:var(--sp-96)}
+.pb .arzt-top{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:var(--sp-56);align-items:center;margin-bottom:var(--sp-40)}
+.pb .arzt-top .h2{margin:0 0 var(--sp-14)}
+.pb .arzt-sub{font-size:var(--fs-l);line-height:1.35;margin-bottom:var(--sp-20)}
+.pb .arzt-intro{font-size:var(--fs-l);line-height:1.5;max-width:44ch;color:var(--c-ink)}
+.pb .arzt-txt{max-width:var(--sp-820);font-size:var(--fs-m);line-height:1.6;color:var(--c-ink)}
+.pb .arzt-txt .h2{margin:var(--sp-56) 0 var(--sp-8);white-space:normal}
+.pb .arzt-txt h3{font-size:var(--fs-l);font-weight:600;line-height:1.3;margin:var(--sp-28) 0 var(--sp-8)}
+.pb .arzt-txt p{margin-bottom:var(--sp-14)}
+.pb .arzt-txt ul{padding-inline-start:var(--sp-22);margin:var(--sp-12) 0 var(--sp-20)}
+.pb .arzt-txt li{margin-bottom:var(--sp-10)}
+.pb .arzt-awards{margin-top:var(--sp-20)}
+.pb .arzt-pubs a{color:var(--c-blue);text-decoration:underline;text-underline-offset:var(--sp-4);text-decoration-thickness:var(--sp-1)}
+.pb .arzt-cta{margin-top:var(--sp-44)}
+@media (max-width:899px){
+.pb .arzt{padding-top:var(--sp-36);padding-bottom:var(--sp-56)}
+.pb .arzt-top{grid-template-columns:minmax(0,1fr);gap:var(--sp-32)}
+.pb .arzt-sub,.pb .arzt-intro{font-size:var(--fs-m)}
+.pb .arzt-txt .h2{margin-top:var(--sp-44)}
+}

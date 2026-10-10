@@ -3,7 +3,10 @@ import { readEnv } from "./env";
 import { homePath } from "./home-paths";
 import { LANG_IDS, type Lang } from "./i18n";
 import { isTestInstance } from "./instance";
+import { ARZTSEITE_LIVE, ARZTSEITE_SPRACHEN } from "./freigabe";
+import { arztPath } from "./seiten-pfade";
 import { ARZT, LANGUAGE_NAMES_EN, STUDIO } from "./studio";
+import { ARZT_TEXTE, type ArztLang } from "./texts-arzt";
 import { HOME_TEXTS } from "./texts-home";
 
 /*
@@ -148,7 +151,7 @@ export function studioJsonLd(lang: Lang) {
         },
         sameAs: [STUDIO.maps, STUDIO.instagram.url],
       },
-      personJsonLd(base, vogel),
+      personJsonLd(base, vogel, ARZTSEITE_LIVE ? `${base}${arztPath("de")}` : undefined),
       { "@type": "WebPage", "@id": `${homeUrl(lang)}#seite`, url: homeUrl(lang), name: HOME_TEXTS[lang].title, inLanguage: lang, primaryImageOfPage: vogel, about: { "@id": studio } },
     ],
   };
@@ -184,4 +187,48 @@ export function hreflangLinks(path: string): { hreflang: string; href: string }[
 export function homeShare(lang: Lang) {
   const t = HOME_TEXTS[lang];
   return { title: t.title, description: t.metaDesc, locale: LOCALE[lang], url: homeUrl(lang), canonical: homeUrl(lang) };
+}
+
+/* ---------- Seite über Dr. Vogel (10. Oktober 2026) ---------- */
+
+/** Sprache der Arztseite: freigegebene Sprachen, sonst Deutsch */
+export function arztLang(lang: Lang): ArztLang {
+  return (ARZTSEITE_SPRACHEN.includes(lang) ? lang : "de") as ArztLang;
+}
+
+/** hreflang der Arztseite: nur freigegebene Sprachen, x-default Deutsch */
+export function arztAlternates(): { hreflang: string; href: string }[] {
+  return [...ARZTSEITE_SPRACHEN.map((l) => ({ hreflang: l, href: `${site()}${arztPath(l)}` })), { hreflang: "x-default", href: `${site()}${arztPath("de")}` }];
+}
+
+export function arztMetadata(lang: ArztLang): Metadata {
+  const t = ARZT_TEXTE[lang];
+  const url = `${site()}${arztPath(lang)}`;
+  const image = { url: studioImages()[0], width: 1080, height: 1350, alt: t.alt };
+  return {
+    title: { absolute: t.title },
+    description: t.description,
+    ...(indexable() && ARZTSEITE_LIVE
+      ? { alternates: { canonical: url, languages: Object.fromEntries(arztAlternates().map((l) => [l.hreflang, l.href])) } }
+      : { robots: { index: false, follow: false } }),
+    openGraph: { type: "profile", siteName: STUDIO.name, locale: LOCALE[lang], url, title: t.title, description: t.description, images: [image] },
+    twitter: { card: "summary_large_image", title: t.title, description: t.description, images: [{ url: image.url, alt: image.alt }] },
+  };
+}
+
+/** Strukturierte Daten der Arztseite: ProfilePage mit der Person aus personJsonLd als mainEntity */
+export function arztJsonLd(lang: ArztLang): string {
+  const base = site();
+  const url = `${base}${arztPath(lang)}`;
+  const vogel = studioImages()[0];
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "@id": `${url}#seite`,
+    url,
+    name: ARZT_TEXTE[lang].title,
+    inLanguage: lang,
+    primaryImageOfPage: vogel,
+    mainEntity: personJsonLd(base, vogel, ARZTSEITE_LIVE ? `${base}${arztPath("de")}` : undefined),
+  });
 }

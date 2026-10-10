@@ -39,6 +39,8 @@ export interface HomeTexts {
   quote: string;
   address: string;
   mapL: string;
+  /** Link aus dem Arztabschnitt auf die Arztseite (aktiv erst mit ARZTSEITE_LIVE) */
+  moreDoc: string;
   /** Vor der Nummer im Abschnitt Studio: dieselbe Nummer für Anrufe und WhatsApp */
   phoneWa: string;
   studioOpen: string;
@@ -159,6 +161,7 @@ const de: HomeTexts = {
   quote: "„Ich bin Dr. med. Sebastian Vogel. Ich habe mehrere Jahre in der Chirurgie und in weiteren Fachrichtungen gearbeitet und viele tausend ästhetische Behandlungen durchgeführt. Bei PALO SKIN behandle ich Sie selbst. Mein Ziel sind dezente Ergebnisse, die zu Ihrem Gesicht passen.“",
   address: "Hagenauer Straße 14, 10435 Berlin, Prenzlauer Berg",
   mapL: "So finden Sie uns",
+  moreDoc: "Mehr über Dr. Vogel",
   phoneWa: "Telefon und WhatsApp",
   studioOpen: "Das Studio ansehen",
   studioClose: "Fotos schließen",
@@ -265,6 +268,7 @@ const en: HomeTexts = {
   quote: "“I am Dr. med. Sebastian Vogel. I worked for several years in surgery and other specialities, and I have performed many thousands of aesthetic treatments. At PALO SKIN, I treat you myself. My aim is subtle results that suit your face.”",
   address: "Hagenauer Straße 14, 10435 Berlin, Prenzlauer Berg",
   mapL: "How to find us",
+  moreDoc: "More about Dr. Vogel",
   phoneWa: "Phone and WhatsApp",
   studioOpen: "See the studio",
   studioClose: "Close photos",
@@ -370,6 +374,7 @@ const es: HomeTexts = {
   quote: "«Soy el Dr. med. Sebastian Vogel. He trabajado varios años en cirugía y en otras especialidades y he realizado miles de tratamientos estéticos. En PALO SKIN le trato yo personalmente. Mi objetivo son resultados discretos, acordes con su rostro.»",
   address: "Hagenauer Straße 14, 10435 Berlin, Prenzlauer Berg",
   mapL: "Cómo llegar",
+  moreDoc: "Más sobre el Dr. Vogel",
   phoneWa: "Teléfono y WhatsApp",
   studioOpen: "Ver el estudio",
   studioClose: "Cerrar las fotos",
@@ -475,6 +480,7 @@ const fr: HomeTexts = {
   quote: "« Je suis le Dr. med. Sebastian Vogel. J’ai travaillé plusieurs années en chirurgie et dans d’autres spécialités, et j’ai réalisé des milliers de soins esthétiques. Chez PALO SKIN, c’est moi qui vous soigne. Mon objectif : des résultats discrets, en accord avec votre visage. »",
   address: "Hagenauer Straße 14, 10435 Berlin, Prenzlauer Berg",
   mapL: "Comment nous trouver",
+  moreDoc: "En savoir plus sur le Dr Vogel",
   phoneWa: "Téléphone et WhatsApp",
   studioOpen: "Découvrir le studio",
   studioClose: "Fermer les photos",
@@ -580,6 +586,7 @@ const pt: HomeTexts = {
   quote: "“Sou o Dr. med. Sebastian Vogel. Trabalhei vários anos em cirurgia e em outras especialidades e realizei muitos milhares de tratamentos estéticos. Na PALO SKIN, eu mesmo cuido do seu tratamento. Meu objetivo são resultados discretos, que combinem com o seu rosto.”",
   address: "Hagenauer Straße 14, 10435 Berlin, Prenzlauer Berg",
   mapL: "Como chegar",
+  moreDoc: "Mais sobre o Dr. Vogel",
   phoneWa: "Telefone e WhatsApp",
   studioOpen: "Ver o estúdio",
   studioClose: "Fechar fotos",
@@ -685,6 +692,7 @@ const it: HomeTexts = {
   quote: "«Sono il Dr. med. Sebastian Vogel. Ho lavorato per diversi anni in chirurgia e in altre specialità e ho eseguito molte migliaia di trattamenti estetici. Da PALO SKIN mi occupo io personalmente del Suo trattamento. Il mio obiettivo sono risultati discreti, in armonia con il Suo viso.»",
   address: "Hagenauer Straße 14, 10435 Berlin, Prenzlauer Berg",
   mapL: "Come raggiungerci",
+  moreDoc: "Di più sul Dr. Vogel",
   phoneWa: "Telefono e WhatsApp",
   studioOpen: "Scopra lo studio",
   studioClose: "Chiudi le foto",
@@ -790,6 +798,7 @@ const tr: HomeTexts = {
   quote: "“Ben Dr. med. Sebastian Vogel. Birkaç yıl cerrahide ve başka uzmanlık alanlarında çalıştım, binlerce estetik uygulama yaptım. PALO SKIN’de sizi bizzat ben tedavi ediyorum. Amacım, yüzünüze yakışan ölçülü sonuçlar.”",
   address: "Hagenauer Straße 14, 10435 Berlin, Prenzlauer Berg",
   mapL: "Yol tarifi",
+  moreDoc: "Dr. Vogel hakkında daha fazlası",
   phoneWa: "Telefon ve WhatsApp",
   studioOpen: "Stüdyoya göz atın",
   studioClose: "Fotoğrafları kapat",
@@ -895,6 +904,7 @@ const uk: HomeTexts = {
   quote: "«Я Dr. med. Sebastian Vogel. Кілька років я працював у хірургії та інших галузях медицини і провів багато тисяч естетичних процедур. У PALO SKIN процедури Вам проводжу я сам. Моя мета: делікатні результати, які пасують саме Вашому обличчю.»",
   address: "Hagenauer Straße 14, 10435 Berlin, Prenzlauer Berg",
   mapL: "Як нас знайти",
+  moreDoc: "Більше про Dr. Vogel",
   phoneWa: "Телефон і WhatsApp",
   studioOpen: "Переглянути студію",
   studioClose: "Закрити фото",
@@ -1000,6 +1010,7 @@ const ar: HomeTexts = {
   quote: "«أنا Dr. med. Sebastian Vogel. عملتُ عدة سنوات في الجراحة وفي تخصصات طبية أخرى، وأجريتُ آلاف العلاجات التجميلية. في PALO SKIN أعالجكم بنفسي. هدفي نتائج طبيعية غير مبالغ فيها، تنسجم مع ملامح وجهكم.»",
   address: "Hagenauer Straße 14, 10435 Berlin, Prenzlauer Berg",
   mapL: "الطريق إلينا",
+  moreDoc: "المزيد عن Dr. Vogel",
   phoneWa: "الهاتف و WhatsApp",
   studioOpen: "إلقاء نظرة على المركز",
   studioClose: "إغلاق الصور",
