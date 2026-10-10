@@ -210,6 +210,8 @@ footer .fl{display:flex;flex-wrap:wrap;gap:18px}
 .legal .fristen th,.legal .fristen td{text-align:start;vertical-align:top;padding:10px 12px 10px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere;hyphens:auto}
 .legal .fristen th{font-weight:600;color:var(--ink)}
 .legal .fristen td:first-child{width:46%}
+/* Hervorgehobener Absatz (Widerspruchsrecht nach Artikel 21 Datenschutz-Grundverordnung) */
+.legal .kasten{border:1px solid var(--line);border-inline-start:4px solid var(--ultramarin);padding:14px 16px;margin:16px 0}
 
 /* Kontrast auf farbigen Flächen */
 .blue .steps3 p,.blue p{color:rgba(255,255,255,.86)}
