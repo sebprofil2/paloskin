@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { anzahlText, bewertungPille, GOOGLE_BEWERTUNG, RESERVE, sterneText, ZITATE } from "../bewertungen";
+import { anzahlText, bewertungPille, GOOGLE_BEWERTUNG, RESERVE, sterneText, ZITATE, zitatMitZeichen } from "../bewertungen";
 import { LANG_IDS } from "../i18n";
 import { homeJsonLd } from "../share-meta";
 
@@ -24,7 +24,10 @@ describe("Bewertungen aus einer Datei", () => {
 
   it("drei Zitate angezeigt, eines in Reserve; nie „Botox“, keine langen Gedankenstriche", () => {
     expect(ZITATE.map((z) => z.name)).toEqual(["Kathleen", "Antje D.", "Michael B."]);
-    expect(ZITATE[2]).toMatchObject({ text: "„He never tries to make you look ridiculous.“", lang: "en" });
+    expect(ZITATE[2]).toMatchObject({ text: "He never tries to make you look ridiculous.", lang: "en" });
+    // Anführungszeichen nach Originalsprache: Englisch “…”, Deutsch „…“
+    expect(zitatMitZeichen(ZITATE[2])).toBe("“He never tries to make you look ridiculous.”");
+    expect(zitatMitZeichen(ZITATE[0])).toBe("„Ich bin selbst Ärztin (…). Bei Dr. Sebastian Vogel habe ich mich von Anfang an sehr gut aufgehoben gefühlt.“");
     expect(RESERVE.map((z) => z.name)).toEqual(["Blushing Indigo"]);
     for (const z of [...ZITATE, ...RESERVE]) expect(z.text).not.toMatch(/botox|[–—]/i);
   });

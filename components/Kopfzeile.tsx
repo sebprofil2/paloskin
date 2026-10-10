@@ -3,8 +3,8 @@
 import { useRef } from "react";
 import { homePath } from "@/lib/home-paths";
 import { LANG_LABEL, LANG_SHORT, LANGS, langButtonLabel, saveLangChoice, type Lang } from "@/lib/i18n";
-import { bookHref, MAPS, type KopfTexte } from "@/lib/kopf";
-import type { PillenTexte } from "@/lib/bewertungen";
+import { bookHref, type KopfTexte } from "@/lib/kopf";
+import { bewertungPille } from "@/lib/bewertungen";
 import { STUDIO } from "@/lib/studio";
 import { ARZTSEITE_LIVE } from "@/lib/freigabe";
 import { arztPath } from "@/lib/seiten-pfade";
@@ -22,17 +22,17 @@ import { arztPath } from "@/lib/seiten-pfade";
  * zur Buchung, die Sprachwahl auf langHrefs (Adresse der Seite je Sprache). Buchung und Startseite unverändert.
  */
 /*
- * pille (10. Oktober 2026): Sterne und Anzahl aus lib/bewertungen.ts mit Link aufs Google-Profil. Ohne pille (Buchung,
- * Verschieben) bleiben die bisherigen Texte und Links.
+ * Bewertungspille (10. Oktober 2026): auf allen Seiten, auch Buchung und Verschieben, Sterne und Anzahl aus
+ * lib/bewertungen.ts mit Link aufs Google-Profil (Freigabe Dr. Vogel nur für Text und Link dieser Pille).
  */
-export function Kopfzeile({ lang, t, page, onLang, langHrefs, pille }: { lang: Lang; t: KopfTexte; page: "home" | "booking" | "seite"; onLang?: (id: Lang) => void; langHrefs?: Record<Lang, string>; pille?: PillenTexte }) {
+export function Kopfzeile({ lang, t, page, onLang, langHrefs }: { lang: Lang; t: KopfTexte; page: "home" | "booking" | "seite"; onLang?: (id: Lang) => void; langHrefs?: Record<Lang, string> }) {
   const langRef = useRef<HTMLDetailsElement>(null);
   const menuRef = useRef<HTMLDetailsElement>(null);
   const home = page === "home";
   const booking = page === "booking";
   const anchor = (id: string) => (home ? `#${id}` : `${homePath(lang)}#${id}`);
   const cur = LANGS.find((x) => x.id === lang)!;
-  const rate = pille ?? { lang: t.rateLong, kurz: t.rateShort, aria: t.rateAria, href: MAPS };
+  const rate = bewertungPille(lang, t.googleB);
   const close = () => {
     if (langRef.current) langRef.current.open = false;
     if (menuRef.current) menuRef.current.open = false;
@@ -72,8 +72,8 @@ export function Kopfzeile({ lang, t, page, onLang, langHrefs, pille }: { lang: L
         </a>
         <nav className="dnav" aria-label={t.navAria}>
           {/* Unter 1180 Pixeln Breite nur „★ 5,0 · 28“, sonst sprengt die Pille die Kopfzeile (design.css, rate-kurz) */}
-          <a className="rate" href={rate.href} target="_blank" rel="noopener" aria-label={pille ? rate.aria : undefined}>
-            {pille ? <><span className="rate-lang">{rate.lang}</span><span className="rate-kurz" aria-hidden="true">{rate.kurz}</span></> : rate.lang}
+          <a className="rate" href={rate.href} target="_blank" rel="noopener" aria-label={rate.aria}>
+            <span className="rate-lang">{rate.lang}</span><span className="rate-kurz" aria-hidden="true">{rate.kurz}</span>
           </a>
           {links}
         </nav>

@@ -4,6 +4,7 @@ import { LANGS, type Lang } from "./i18n";
  * Bewertungen an EINER Stelle (10. Oktober 2026). Austausch eines Zitats, der Sterne oder der Anzahl: nur hier ändern.
  * - Sterne und Anzahl: GOOGLE_BEWERTUNG (dazu „stand“ auf das Datum der Abfrage setzen).
  * - Angezeigte Zitate: ZITATE (genau drei Karten; Wortlaut unverändert, Kürzungen nur mit „(…)“, Sprache des Originals).
+ *   Text ohne Anführungszeichen eintragen; sie kommen je Originalsprache dazu (Deutsch „…“, Englisch “…”).
  * - Reserve: RESERVE (gespeichert, nicht angezeigt); zum Tauschen einen Eintrag zwischen ZITATE und RESERVE verschieben.
  * Bewertungen nie in die strukturierten Daten (kein aggregateRating, kein Review): Google lässt eigene Bewertungen dort nicht zu.
  */
@@ -18,14 +19,32 @@ export const GOOGLE_BEWERTUNG = {
 export type Zitat = { text: string; lang: Lang; name: string; initial: string };
 
 export const ZITATE: Zitat[] = [
-  { text: "„Ich bin selbst Ärztin (…). Bei Dr. Sebastian Vogel habe ich mich von Anfang an sehr gut aufgehoben gefühlt.“", lang: "de", name: "Kathleen", initial: "K" },
-  { text: "„Er nimmt sich immer Zeit und hat beim ersten Mal direkt gesehen, dass meine linke Zornesfalte stärker ist als die rechte (…).“", lang: "de", name: "Antje D.", initial: "A" },
-  { text: "„He never tries to make you look ridiculous.“", lang: "en", name: "Michael B.", initial: "M" },
+  { text: "Ich bin selbst Ärztin (…). Bei Dr. Sebastian Vogel habe ich mich von Anfang an sehr gut aufgehoben gefühlt.", lang: "de", name: "Kathleen", initial: "K" },
+  { text: "Er nimmt sich immer Zeit und hat beim ersten Mal direkt gesehen, dass meine linke Zornesfalte stärker ist als die rechte (…).", lang: "de", name: "Antje D.", initial: "A" },
+  { text: "He never tries to make you look ridiculous.", lang: "en", name: "Michael B.", initial: "M" },
 ];
 
 export const RESERVE: Zitat[] = [
-  { text: "„Ich war das erste Mal bei Dr. Vogel nachdem ich 12 Jahre lang einem anderen Studio treu gewesen bin. (…) Ich werde neue Stammkundin!“", lang: "de", name: "Blushing Indigo", initial: "B" },
+  { text: "Ich war das erste Mal bei Dr. Vogel nachdem ich 12 Jahre lang einem anderen Studio treu gewesen bin. (…) Ich werde neue Stammkundin!", lang: "de", name: "Blushing Indigo", initial: "B" },
 ];
+
+/* Anführungszeichen nach der Originalsprache des Zitats */
+const ZEICHEN: Record<Lang, [string, string]> = {
+  de: ["„", "“"],
+  en: ["“", "”"],
+  es: ["«", "»"],
+  fr: ["«\u00a0", "\u00a0»"],
+  pt: ["“", "”"],
+  it: ["«", "»"],
+  tr: ["“", "”"],
+  uk: ["«", "»"],
+  ar: ["«", "»"],
+};
+
+export function zitatMitZeichen(z: Zitat): string {
+  const [auf, zu] = ZEICHEN[z.lang];
+  return `${auf}${z.text}${zu}`;
+}
 
 /* Wort für „Bewertungen“ je Sprache und Mehrzahlform (Intl.PluralRules); {n} ist die formatierte Anzahl */
 const WORT: Record<Lang, Partial<Record<Intl.LDMLPluralRule, string>> & { other: string }> = {

@@ -9,7 +9,7 @@ import { ARZTSEITE_LIVE, BEHANDLUNGEN_KARTEN_AKTIV, freigegeben } from "@/lib/fr
 import { arztPath, behandlungPath } from "@/lib/seiten-pfade";
 import { SprachHinweis } from "@/components/SprachHinweis";
 import { homeJsonLd } from "@/lib/share-meta";
-import { bewertungPille, GOOGLE_BEWERTUNG, ZITATE, anzahlText, sterneText } from "@/lib/bewertungen";
+import { GOOGLE_BEWERTUNG, ZITATE, anzahlText, sterneText, zitatMitZeichen } from "@/lib/bewertungen";
 import { HOME_TEXTS, type HomeTexts } from "@/lib/texts-home";
 import type { Lang } from "@/lib/i18n";
 import "@/app/design/design.css";
@@ -78,7 +78,7 @@ export function Startseite({ lang }: { lang: Lang }) {
   return (
     <div className="pb" id="top">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: homeJsonLd(lang) }} />
-      <Kopfzeile lang={lang} t={kopfTexte(t)} page="home" pille={bewertungPille(lang, t.googleB)} />
+      <Kopfzeile lang={lang} t={kopfTexte(t)} page="home" />
       {lang === "de" ? <SprachHinweis /> : null}
 
       <section className="wrap hero">
@@ -240,7 +240,7 @@ export function Startseite({ lang }: { lang: Lang }) {
           <div className="revs">
             {ZITATE.map((r) => (
               <div className="rc" key={r.name}>
-                <blockquote lang={r.lang} dir="ltr">{r.text}</blockquote>
+                <blockquote lang={r.lang} dir="ltr">{zitatMitZeichen(r)}</blockquote>
                 <p className="by"><span className="av" aria-hidden="true">{r.initial}</span><bdi>{r.name} · Google Maps</bdi></p>
               </div>
             ))}

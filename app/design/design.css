@@ -262,26 +262,35 @@ body{margin:0;background:var(--c-bg)}
 .pb .treat{grid-template-columns:repeat(2,minmax(0,1fr))}
 .pb .why{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media (max-width:899px){
-.pb .wrap{padding:0 var(--sp-20)}
-.pb .sec{padding:var(--sp-64) 0}
-.pb .hd-in{min-height:var(--sp-64);gap:var(--sp-10)}
-.pb .dnav,.pb .hd .dbook{display:none}
-/* Handy: Logo, Bewertung, Sprache, Menü; Sprache direkt links neben dem Menü (bei Arabisch gespiegelt wie die ganze Zeile) */
+/*
+ * Kopfzeile bis 1179 Pixel (10. Oktober 2026): Logo, Bewertung, Sprache und Menü wie am Handy, weil die Navigation
+ * zwischen 900 und 1179 Pixeln Sprachknopf und „Termin buchen“ abschnitt. Ab 900 Pixeln bleibt „Termin buchen“ zusätzlich
+ * sichtbar (dort gibt es keine untere Leiste). Bei Arabisch gespiegelt wie die ganze Zeile.
+ */
+@media (max-width:1179px){
+.pb .dnav{display:none}
 .pb .hd .mrate{order:1}
 .pb .hd .lang{order:2}
 .pb .hd .mmenu{order:3}
+.pb .hd .dbook{order:4}
 .pb .mrate{display:inline-flex}
-.pb .cta-row .btn{flex:1 1 100%}
-.pb .bar{display:block;position:sticky;bottom:0;z-index:30;padding:var(--sp-10) var(--sp-20);background:var(--c-bg-97);border-top:var(--sp-1) solid var(--c-line)}
-.pb .bar .btn{width:100%;min-height:var(--sp-52)}
 .pb .mmenu{display:block}
 .pb .mbtn{display:inline-flex;align-items:center;justify-content:center;min-height:var(--sp-44);min-width:var(--sp-44);padding:0 var(--sp-16);border:var(--sp-1-5) solid var(--c-ink);border-radius:var(--r-pill);font-size:var(--fs-s);font-weight:600;cursor:pointer}
-.pb .mpanel{position:absolute;left:0;right:0;top:100%;display:flex;flex-direction:column;align-items:flex-start;padding:var(--sp-12) var(--sp-20) var(--sp-24);background:var(--c-bg);border-bottom:var(--sp-1) solid var(--c-line);box-shadow:0 var(--sp-14) var(--sp-28) var(--c-shadow)}
+.pb .mpanel{position:absolute;left:0;right:0;top:100%;display:flex;flex-direction:column;align-items:flex-start;padding:var(--sp-12) var(--sp-40) var(--sp-24);background:var(--c-bg);border-bottom:var(--sp-1) solid var(--c-line);box-shadow:0 var(--sp-14) var(--sp-28) var(--c-shadow)}
 .pb .mpanel>a:not(.rate){display:flex;align-items:center;align-self:stretch;min-height:var(--sp-52);font-size:var(--fs-l);font-weight:500;border-bottom:var(--sp-1) solid var(--c-line)}
 .pb .mpanel>a.rate{margin-bottom:var(--sp-8)}
 .pb .mlang{display:flex;flex-wrap:wrap;gap:0 var(--sp-18);padding:var(--sp-8) 0 var(--sp-4)}
 .pb .mlang a{display:inline-flex;align-items:center;min-height:var(--sp-44);font-size:var(--fs-m);color:var(--c-ink-2)}
+}
+@media (max-width:899px){
+.pb .wrap{padding:0 var(--sp-20)}
+.pb .sec{padding:var(--sp-64) 0}
+.pb .hd-in{min-height:var(--sp-64);gap:var(--sp-10)}
+.pb .mpanel{padding:var(--sp-12) var(--sp-20) var(--sp-24)}
+.pb .hd .dbook{display:none}
+.pb .cta-row .btn{flex:1 1 100%}
+.pb .bar{display:block;position:sticky;bottom:0;z-index:30;padding:var(--sp-10) var(--sp-20);background:var(--c-bg-97);border-top:var(--sp-1) solid var(--c-line)}
+.pb .bar .btn{width:100%;min-height:var(--sp-52)}
 .pb .logo-name{font-size:var(--fs-m)}
 .pb .logo-by{font-size:var(--fs-s)}
 .pb .hero{grid-template-columns:minmax(0,1fr);gap:var(--sp-44);padding-top:var(--sp-36);padding-bottom:var(--sp-56)}

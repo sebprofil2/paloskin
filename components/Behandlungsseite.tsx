@@ -9,7 +9,6 @@ import { arztPath, behandlungPath } from "@/lib/seiten-pfade";
 import { behandlungJsonLd } from "@/lib/share-meta";
 import { ARZT, PRUEFDATUM, STUDIO } from "@/lib/studio";
 import { BEHANDLUNG_TEXTE } from "@/lib/texts-behandlung";
-import { bewertungPille } from "@/lib/bewertungen";
 import { HOME_TEXTS } from "@/lib/texts-home";
 import { homePath } from "@/lib/home-paths";
 import "@/app/design/design.css";
@@ -45,7 +44,7 @@ export function Behandlungsseite({ slug, lang }: { slug: BehandlungSlug; lang: L
   return (
     <div className="pb" id="top">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: behandlungJsonLd(slug, lang) }} />
-      <Kopfzeile lang={lang} t={kopfTexte(home)} page="seite" langHrefs={langHrefs} pille={bewertungPille(lang, home.googleB)} />
+      <Kopfzeile lang={lang} t={kopfTexte(home)} page="seite" langHrefs={langHrefs} />
       <main className="wrap bh">
         <nav className="krumen" aria-label={t.krumenAria}>
           <ol>
