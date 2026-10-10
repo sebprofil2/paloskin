@@ -3,7 +3,9 @@
  * Eingebunden über next/image (Größen für Computer und Handy erzeugt Next.js). Austausch eines Bildes: Datei in app/bilder
  * ersetzen oder hier den Pfad ändern.
  */
-import startbild from "@/app/bilder/startbild-dr-vogel.jpg";
+// Kopffoto seit 10. Oktober 2026: weißes T-Shirt, 4:5 zugeschnitten (oben 90 Pixel Wand weg). Das frühere Foto
+// (schwarzes T-Shirt mit Handspiegel) liegt weiter als app/bilder/startbild-dr-vogel.jpg; zum Zurückwechseln nur den Pfad tauschen.
+import startbild from "@/app/bilder/startbild-dr-vogel-weiss.jpg";
 // Vorläufig: Eine saubere Fassung folgt, dann nur diese Datei ersetzen
 import haende from "@/app/bilder/haende-ruhige-hand.jpg";
 import portraetRund from "@/app/bilder/dr-vogel-portraet-rund.jpg";
