@@ -127,6 +127,6 @@ describe("Beratungssprache und Seitensprachen Ukrainisch und Arabisch", () => {
     const links = hreflangLinks("/");
     expect(links.map((x) => x.hreflang)).toEqual(["de", "en", "es", "fr", "pt", "it", "tr", "uk", "ar", "x-default"]);
     // Strukturierte Daten: beraten wird weiterhin in fünf Sprachen
-    for (const l of LANG_IDS) expect(studioJsonLd(l)["@graph"][0].availableLanguage!.map((x) => x.alternateName)).toEqual(["de", "en", "es", "fr", "pt"]);
+    for (const l of LANG_IDS) expect(studioJsonLd(l)["@graph"][0].contactPoint!.availableLanguage.map((x) => x.alternateName)).toEqual(["de", "en", "es", "fr", "pt"]);
   });
 });
