@@ -38,8 +38,17 @@
 	}
 }
 
+# Wallet-Pass (Auftrag Dr. Vogel, 10. Oktober 2026): /wallet und /wallet/ leiten vorübergehend (302) auf den Pass weiter.
+# Absichtlich nirgends verlinkt und nicht in der Sitemap; Dr. Vogel gibt die Adresse nur auf Nachfrage weiter.
+# Das Ziel bei Bedarf hier ändern (siehe CLAUDE.md). 302, damit Browser die Weiterleitung nicht dauerhaft speichern.
+(wallet) {
+	@wallet path /wallet /wallet/
+	redir @wallet https://pass.walletwallet.dev/p/bfdfdded-f6a9-4b8b-97cf-1d2c1bd106f3 302
+}
+
 # Testname: zeigt auf die Testinstanz app-test (Profil test), nicht auf die laufende Seite.
 neu.paloskin.de {
+	import wallet
 	import paloskin app-test:3000
 }
 
