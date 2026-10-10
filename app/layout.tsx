@@ -13,7 +13,11 @@ export const generateMetadata = (): Metadata => ({
   icons: {
     /* Nur ICO: 16 Pixel als eigene, größere Fassung (freigegeben 4. Oktober 2026); ein SVG-Favicon würde sie verdrängen.
        Seit 5. Oktober 2026 im Knopf-Blau #1534A6 (scripts/logo/web-blau.mjs); public/favicon.ico bleibt als Rückfall für Anfragen ohne Link */
-    icon: [{ url: "/assets/logo/web/favicon.ico", sizes: "16x16 32x32 48x48" }],
+    icon: [
+      { url: "/assets/logo/web/favicon.ico", sizes: "16x16 32x32 48x48" },
+      /* Zusätzlich PNG mit neuem Namen (10. Oktober 2026), damit Google das alte Symbol „PS“ ersetzt; aus favicon.svg erzeugt */
+      { url: "/assets/favicon-96-v2.png", type: "image/png", sizes: "96x96" },
+    ],
     apple: { url: "/assets/apple-touch-icon.png", sizes: "180x180" },
   },
   manifest: "/site.webmanifest",
