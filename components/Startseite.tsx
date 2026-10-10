@@ -17,7 +17,7 @@ import "@/app/design/design.css";
  * Startseite nach Entwurf B „Persönlich“ (Vorlage vom 5. Oktober 2026): Aufbau, Texte und Gestaltung wie in der Vorlage,
  * Werte zentral in app/design/design.css, Texte in lib/texts-home.ts, Bilder in lib/bilder.ts.
  * Seit 5. Oktober 2026 mit eigener Adresse je Sprache: app/page.tsx (Deutsch auf „/“) und app/[lang]/page.tsx
- * (/en, /es, /fr, /pt, /uk, /ar) zeigen diese Seite; die Sprache kommt aus der Adresse, nie aus dem Gerät.
+ * (/en, /es, /fr, /pt, /it, /tr, /ua, /ar) zeigen diese Seite; die Sprache kommt aus der Adresse, nie aus dem Gerät.
  */
 const WA = STUDIO.whatsapp;
 const TEL = STUDIO.phone.tel;

@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { Behandlungsseite } from "@/components/Behandlungsseite";
 import { isBehandlung, type BehandlungSlug } from "@/lib/behandlungen";
 import { freigegeben } from "@/lib/freigabe";
-import { isLang, type Lang } from "@/lib/i18n";
+import { segmentLang } from "@/lib/home-paths";
+import type { Lang } from "@/lib/i18n";
 import { behandlungMetadata } from "@/lib/share-meta";
 
 /*
@@ -15,8 +16,10 @@ export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ lang: string; slug: string }> };
 
 async function seite(params: Props["params"]): Promise<{ slug: BehandlungSlug; lang: Lang }> {
-  const { lang, slug } = await params;
-  if (!isLang(lang) || lang === "de" || !isBehandlung(slug) || !freigegeben(slug, lang)) notFound();
+  const p = await params;
+  const lang = segmentLang(p.lang);
+  const slug = p.slug;
+  if (!lang || lang === "de" || !isBehandlung(slug) || !freigegeben(slug, lang)) notFound();
   return { slug, lang };
 }
 

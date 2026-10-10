@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Arztseite } from "@/components/Arztseite";
 import { ARZTSEITE_LIVE, ARZTSEITE_SPRACHEN } from "@/lib/freigabe";
-import { isLang } from "@/lib/i18n";
+import { segmentLang } from "@/lib/home-paths";
 import { isTestInstance } from "@/lib/instance";
 import { arztMetadata } from "@/lib/share-meta";
 import type { ArztLang } from "@/lib/texts-arzt";
@@ -16,8 +16,8 @@ export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ lang: string }> };
 
 async function sprache(params: Props["params"]): Promise<ArztLang> {
-  const l = (await params).lang;
-  if (!isLang(l) || l === "de" || !ARZTSEITE_SPRACHEN.includes(l)) notFound();
+  const l = segmentLang((await params).lang);
+  if (!l || l === "de" || !ARZTSEITE_SPRACHEN.includes(l)) notFound();
   return l as ArztLang;
 }
 

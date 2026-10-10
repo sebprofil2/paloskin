@@ -10,12 +10,12 @@ import { homeAlternates, homeJsonLd, homeMetadata } from "../share-meta";
 import { HOME_TEXTS } from "../texts-home";
 
 /*
- * Eigene Adresse je Sprache (Auftrag vom 5. Oktober 2026): „/“ immer Deutsch, /en, /es, /fr, /pt, /uk, /ar,
+ * Eigene Adresse je Sprache (Auftrag vom 5. Oktober 2026): „/“ immer Deutsch, /en, /es, /fr, /pt, /ua (Ukrainisch, seit 10. Oktober 2026 statt /uk), /ar,
  * /de und /?lang=xx dauerhaft weitergeleitet, hreflang vollständig und gegenseitig, Adressen aus der Umgebung,
  * Testinstanz komplett noindex.
  */
 const WWW = "https://www.paloskin.de";
-const PFAD: Record<Lang, string> = { de: "/", en: "/en", es: "/es", fr: "/fr", pt: "/pt", it: "/it", tr: "/tr", uk: "/uk", ar: "/ar" };
+const PFAD: Record<Lang, string> = { de: "/", en: "/en", es: "/es", fr: "/fr", pt: "/pt", it: "/it", tr: "/tr", uk: "/ua", ar: "/ar" };
 const TITEL_DE = "PALO SKIN by Dr. Vogel | Ärztliche Faltenbehandlung in Berlin";
 const BESCHREIBUNG_DE = "PALO SKIN by Dr. Vogel in Berlin Prenzlauer Berg: ärztliche Faltenbehandlung durch Dr. med. Sebastian Vogel. Termine vor und nach der Arbeit und am Wochenende.";
 const GOOGLEBOT = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
@@ -73,7 +73,13 @@ describe("Proxy: „/“ immer Deutsch, Weiterleitungen mit 301", () => {
     const en = proxy(anfrage("/?lang=en"));
     expect(en.status).toBe(301);
     expect(en.headers.get("location")).toBe(`${WWW}/en`);
-    expect(proxy(anfrage("/?lang=uk&utm_source=x")).headers.get("location")).toBe(`${WWW}/uk?utm_source=x`);
+    expect(proxy(anfrage("/?lang=uk&utm_source=x")).headers.get("location")).toBe(`${WWW}/ua?utm_source=x`);
+    // Alte ukrainische Adressen dauerhaft auf /ua (10. Oktober 2026)
+    for (const [alt, neu] of [["/uk", "/ua"], ["/uk/dr-sebastian-vogel", "/ua/dr-sebastian-vogel"], ["/uk/behandlungen/zornesfalte", "/ua/behandlungen/zornesfalte"]]) {
+      const r = proxy(anfrage(alt));
+      expect(r.status, alt).toBe(301);
+      expect(r.headers.get("location"), alt).toBe(`${WWW}${neu}`);
+    }
     expect(proxy(anfrage("/?lang=de")).headers.get("location")).toBe(`${WWW}/`);
   });
 

@@ -1,6 +1,7 @@
 import { isBehandlung, type BehandlungSlug } from "./behandlungen";
 import { ARZTSEITE_SPRACHEN, freigegeben } from "./freigabe";
-import { isLang, type Lang } from "./i18n";
+import { langSegment, segmentLang } from "./home-paths";
+import type { Lang } from "./i18n";
 
 /*
  * Adressen der Inhaltsseiten mit Sprache im Pfad, wie bei der Startseite: Deutsch ohne Kürzel, sonst /en/…, /es/… .
@@ -9,11 +10,11 @@ import { isLang, type Lang } from "./i18n";
 export const ARZT_SLUG = "dr-sebastian-vogel";
 
 export function arztPath(lang: Lang): string {
-  return lang === "de" ? `/${ARZT_SLUG}` : `/${lang}/${ARZT_SLUG}`;
+  return lang === "de" ? `/${ARZT_SLUG}` : `/${langSegment(lang)}/${ARZT_SLUG}`;
 }
 
 export function behandlungPath(slug: BehandlungSlug, lang: Lang): string {
-  return lang === "de" ? `/behandlungen/${slug}` : `/${lang}/behandlungen/${slug}`;
+  return lang === "de" ? `/behandlungen/${slug}` : `/${langSegment(lang)}/behandlungen/${slug}`;
 }
 
 /** Name der Behandlung aus dem Pfadrest /behandlungen/<name>; null für alles andere */
@@ -29,7 +30,8 @@ function parse(pathname: string): { lang: Lang; rest: string } | null {
   const rest = m[2];
   if (rest !== `/${ARZT_SLUG}` && !behandlungAus(rest)) return null;
   if (m[1] === undefined) return { lang: "de", rest };
-  return isLang(m[1]) ? { lang: m[1], rest } : null;
+  const lang = segmentLang(m[1]);
+  return lang ? { lang, rest } : null;
 }
 
 /** Sprache aus dem Pfad einer Inhaltsseite; null für alle anderen Pfade */

@@ -5,7 +5,7 @@ import { homePathLang } from "@/lib/home-paths";
 import { homeMetadata } from "@/lib/share-meta";
 
 /*
- * Startseite in den anderen Sprachen: /en, /es, /fr, /pt, /uk, /ar, vollständig auf dem Server in der Sprache der Adresse.
+ * Startseite in den anderen Sprachen: /en, /es, /fr, /pt, /it, /tr, /ua, /ar, vollständig auf dem Server in der Sprache der Adresse.
  * /de leitet der Proxy dauerhaft auf „/“ weiter; jede andere Angabe ist keine Seite.
  */
 export const dynamic = "force-dynamic";

@@ -11,7 +11,7 @@ import { arztPath } from "@/lib/seiten-pfade";
 /*
  * Kopfzeile und Fußzeile nach Entwurf B, gleich auf Startseite und Buchung. Sprachauswahl mit allen sieben Sprachen
  * (details und summary, per Tastatur bedienbar); auf dem Handy Menü hinter „Menü“ und kleiner Bewertungsknopf „★ 5,0“.
- * Startseite: Die Sprachwahl führt auf die eigene Adresse der Sprache („/“, /en, /es, /fr, /pt, /uk, /ar).
+ * Startseite: Die Sprachwahl führt auf die eigene Adresse der Sprache („/“, /en, /es, /fr, /pt, /it, /tr, /ua, /ar; Ukrainisch seit 10. Oktober 2026 unter /ua).
  * Mit onLang wechselt die Seite selbst (Buchung, Eingaben bleiben); ohne Skript dort ?lang=.
  * Sprachknopf (9. Oktober 2026): Pille mit dem Kürzel der Seitensprache (DE, EN, ES, FR, PT, UA, AR), auf dem Handy direkt
  * links neben „Menü“, im Stil des Menü-Knopfs; dieselbe Liste wie bisher. Im Menü bleibt die Auswahl zusätzlich.

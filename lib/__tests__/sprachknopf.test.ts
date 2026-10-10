@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { homePath, homePathLang } from "../home-paths";
 import { homeAlternates } from "../share-meta";
 import { LANG_IDS, LANG_SHORT, langButtonLabel, pickLang } from "../i18n";
 
@@ -8,14 +9,18 @@ describe("Sprachknopf: Kürzel und Beschriftung", () => {
     expect(LANG_IDS.map((l) => LANG_SHORT[l])).toEqual(["DE", "EN", "ES", "FR", "PT", "IT", "TR", "UA", "AR"]);
   });
 
-  it("Ukrainisch zeigt UA, intern bleibt es uk (Adresse, gespeicherte Wahl, hreflang)", () => {
+  it("Ukrainisch zeigt UA, Adresse /ua (seit 10. Oktober 2026), intern bleibt es uk (gespeicherte Wahl, hreflang, lang)", () => {
     expect(LANG_SHORT.uk).toBe("UA");
     expect(LANG_IDS).toContain("uk");
     expect(LANG_IDS).not.toContain("ua");
     expect(pickLang({ param: "uk" })).toBe("uk");
     expect(pickLang({ param: "ua" })).toBe("de");
     expect(homeAlternates().map((a) => a.hreflang)).toContain("uk");
-    expect(homeAlternates().some((a) => a.hreflang === "ua" || a.href.endsWith("/ua"))).toBe(false);
+    expect(homeAlternates().some((a) => a.hreflang === "ua")).toBe(false);
+    expect(homeAlternates().find((a) => a.hreflang === "uk")!.href).toMatch(/\/ua$/);
+    expect(homePath("uk")).toBe("/ua");
+    expect(homePathLang("/ua")).toBe("uk");
+    expect(homePathLang("/uk")).toBeNull();
   });
 
   it("Beschriftung für Bildschirmleser mit vollem Sprachnamen, übersetzt", () => {

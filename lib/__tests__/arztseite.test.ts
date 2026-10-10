@@ -29,7 +29,8 @@ describe("Seite über Dr. Vogel", () => {
 
   it("nicht freigegebene Sprachen vorübergehend auf Deutsch, /de dauerhaft ohne Kürzel", () => {
     expect(ARZTSEITE_SPRACHEN).toEqual(["de", "en", "es", "fr", "pt"]);
-    for (const l of ["it", "tr", "uk", "ar"]) expect(pageRedirect(`/${l}/dr-sebastian-vogel`)).toEqual({ to: "/dr-sebastian-vogel", status: 302 });
+    for (const l of ["it", "tr", "ua", "ar"]) expect(pageRedirect(`/${l}/dr-sebastian-vogel`)).toEqual({ to: "/dr-sebastian-vogel", status: 302 });
+    expect(arztPath("uk")).toBe("/ua/dr-sebastian-vogel");
     expect(pageRedirect("/de/dr-sebastian-vogel")).toEqual({ to: "/dr-sebastian-vogel", status: 301 });
     expect(pageRedirect("/en/dr-sebastian-vogel")).toBeNull();
     const r = proxy(anfrage("/ar/dr-sebastian-vogel"));
