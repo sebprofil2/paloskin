@@ -105,18 +105,35 @@ describe("Kopfangaben je Sprache", () => {
       expect(og.title).toBe(HOME_TEXTS[lang].title);
       expect(og.description).toBe(HOME_TEXTS[lang].metaDesc);
       expect(og.locale).toMatch(new RegExp(`^${lang}_`));
-      expect(og.images[0].url).toBe(`${WWW}/assets/og-1200x630.png`);
+      expect(og.images).toEqual([{ url: `${WWW}/bilder/palo-skin-berlin-studio-linkvorschau.jpg`, width: 1200, height: 630, alt: HOME_TEXTS[lang].photoConsult }]);
+      expect(m.twitter).toMatchObject({ card: "summary_large_image", images: [{ url: og.images[0].url, alt: HOME_TEXTS[lang].photoConsult }] });
       expect(m.robots).toBeUndefined();
       expect(JSON.stringify(m)).not.toMatch(/botox/i);
     }
     expect(new Set(LANG_IDS.map((l) => homeMetadata(l).title)).size).toBe(9);
   });
 
-  it("strukturierte Daten: Studio und Arzt unverändert, Seite mit passender Sprache", () => {
+  it("strukturierte Daten: Studio, Arzt als Person, Seite mit passender Sprache; nur sichtbare Angaben, nie „Botox“", () => {
+    const bilder = ["beratungsbereich", "behandlungsraum", "eingang", "dr-sebastian-vogel"].map((n) => `${WWW}/bilder/palo-skin-berlin-${n}.jpg`);
     for (const lang of LANG_IDS) {
-      const graph = JSON.parse(homeJsonLd(lang))["@graph"];
-      expect(graph.map((n: { "@type": string }) => n["@type"])).toEqual(["MedicalBusiness", "Physician", "WebPage"]);
+      const text = homeJsonLd(lang);
+      const graph = JSON.parse(text)["@graph"];
+      expect(graph.map((n: { "@type": string }) => n["@type"])).toEqual(["MedicalBusiness", "Person", "WebPage"]);
+      expect(graph[0]).toMatchObject({
+        name: "PALO SKIN by Dr. Vogel",
+        url: `${WWW}/`,
+        logo: `${WWW}/assets/icon-512.png`,
+        image: bilder,
+        description: HOME_TEXTS[lang].metaDesc,
+        telephone: "+49 151 58872566",
+        address: { streetAddress: "Hagenauer Straße 14", postalCode: "10435", addressLocality: "Berlin", addressCountry: "DE" },
+        areaServed: { "@type": "City", name: "Berlin" },
+        parentOrganization: { name: "Nidus Skin Berlin GmbH" },
+        sameAs: ["https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8", "https://www.instagram.com/palo.skin"],
+      });
+      expect(graph[1]).toMatchObject({ name: "Dr. med. Sebastian Vogel", jobTitle: "Arzt", worksFor: { "@id": `${WWW}/#studio` } });
       expect(graph[2]).toMatchObject({ url: `${WWW}${PFAD[lang]}`, inLanguage: lang, name: HOME_TEXTS[lang].title });
+      expect(text).not.toMatch(/botox|openingHours|aggregateRating|price|email/i);
     }
   });
 
@@ -145,6 +162,10 @@ describe("Sitemap und robots.txt", () => {
     for (const e of s.slice(0, LANG_IDS.length)) expect(e.alternates?.languages).toEqual(alle);
     const buchung = { ...Object.fromEntries(LANG_IDS.map((l) => [l, l === "de" ? `${WWW}/booking` : `${WWW}/booking?lang=${l}`])), "x-default": `${WWW}/booking` };
     expect(s[LANG_IDS.length].alternates?.languages).toEqual(buchung);
+    // Bildeinträge nur für die Startseiten, mit den festen Studiofotos
+    const bilder = ["dr-sebastian-vogel", "beratungsbereich", "behandlungsraum", "eingang"].map((n) => `${WWW}/bilder/palo-skin-berlin-${n}.jpg`);
+    for (const e of s.slice(0, LANG_IDS.length)) expect(e.images).toEqual(bilder);
+    expect(s[LANG_IDS.length].images).toBeUndefined();
     expect(JSON.stringify(s)).not.toMatch(/impressum|datenschutz/);
   });
 

@@ -4,7 +4,7 @@ import { CONSULT_IDS, defaultConsult, LANG_IDS, langDir, pickLang } from "../i18
 import { confirmationMail, reminderMail } from "../mail-content";
 import { listMail } from "../reminder-list";
 import { bookRequestSchema } from "../schema";
-import { hreflangLinks, STUDIO_JSONLD } from "../share-meta";
+import { hreflangLinks, studioJsonLd } from "../share-meta";
 import { openStore, type ReserveInput } from "../store";
 import { studioMailFor } from "../studio-mail";
 import { TEXTS } from "../texts";
@@ -127,6 +127,6 @@ describe("Beratungssprache und Seitensprachen Ukrainisch und Arabisch", () => {
     const links = hreflangLinks("/");
     expect(links.map((x) => x.hreflang)).toEqual(["de", "en", "es", "fr", "pt", "it", "tr", "uk", "ar", "x-default"]);
     // Strukturierte Daten: beraten wird weiterhin in fünf Sprachen
-    expect(STUDIO_JSONLD).toContain('"availableLanguage": ["de", "en", "es", "fr", "pt"]');
+    for (const l of LANG_IDS) expect(studioJsonLd(l)["@graph"][0].availableLanguage!.map((x) => x.alternateName)).toEqual(["de", "en", "es", "fr", "pt"]);
   });
 });

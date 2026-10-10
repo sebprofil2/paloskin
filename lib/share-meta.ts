@@ -3,6 +3,7 @@ import { readEnv } from "./env";
 import { homePath } from "./home-paths";
 import { LANG_IDS, type Lang } from "./i18n";
 import { isTestInstance } from "./instance";
+import { MAPS } from "./kopf";
 import { HOME_TEXTS } from "./texts-home";
 
 /*
@@ -24,6 +25,20 @@ export function shareImages() {
     { url: `${site()}/assets/og-1200x630.png`, width: 1200, height: 630, alt: "PALO SKIN by Dr. Vogel, Goodbye wrinkles." },
     { url: `${site()}/assets/og-1200x1200.png`, width: 1200, height: 1200, alt: "PALO SKIN by Dr. Vogel, Goodbye wrinkles." },
   ];
+}
+
+/*
+ * Linkvorschau der Startseite (10. Oktober 2026): echtes Studiofoto statt Logo auf Blau, Beratungsbereich mit dem blauen
+ * Wandobjekt, 1200 mal 630 Pixel. Dieselbe Datei für og:image und twitter:image, Alt-Text je Sprache. Die Buchung behält
+ * ihre bisherige Vorschau (shareImages).
+ */
+export function homeShareImage(lang: Lang) {
+  return { url: `${site()}/bilder/palo-skin-berlin-studio-linkvorschau.jpg`, width: 1200, height: 630, alt: HOME_TEXTS[lang].photoConsult };
+}
+
+/* Feste Studiofotos unter /public/bilder/ für strukturierte Daten und Sitemap; die Startseite zeigt weiter app/bilder */
+export function studioImages(): string[] {
+  return ["dr-sebastian-vogel", "beratungsbereich", "behandlungsraum", "eingang"].map((n) => `${site()}/bilder/palo-skin-berlin-${n}.jpg`);
 }
 
 const BOOKING: Record<Lang, { title: string; description: string; locale: string }> = {
@@ -66,7 +81,7 @@ export function homeUrl(lang: Lang): string {
   return `${site()}${homePath(lang)}`;
 }
 
-/** hreflang der Startseite: alle sieben Fassungen, absolute Adressen, x-default auf „/“ */
+/** hreflang der Startseite: alle neun Fassungen, absolute Adressen, x-default auf „/“ */
 export function homeAlternates(): { hreflang: string; href: string }[] {
   return [...LANG_IDS.map((l) => ({ hreflang: l, href: homeUrl(l) })), { hreflang: "x-default", href: homeUrl("de") }];
 }
@@ -75,26 +90,76 @@ export function homeAlternates(): { hreflang: string; href: string }[] {
 export function homeMetadata(lang: Lang): Metadata {
   const t = HOME_TEXTS[lang];
   const url = homeUrl(lang);
-  const images = shareImages();
+  const image = homeShareImage(lang);
   return {
     title: t.title,
     description: t.metaDesc,
     ...(indexable()
       ? { alternates: { canonical: url, languages: Object.fromEntries(homeAlternates().map((l) => [l.hreflang, l.href])) } }
       : { robots: { index: false, follow: false } }),
-    openGraph: { type: "website", siteName: "PALO SKIN by Dr. Vogel", locale: LOCALE[lang], url, title: t.title, description: t.metaDesc, images },
-    twitter: { card: "summary_large_image", title: t.title, description: t.metaDesc, images: [images[0].url] },
+    openGraph: { type: "website", siteName: "PALO SKIN by Dr. Vogel", locale: LOCALE[lang], url, title: t.title, description: t.metaDesc, images: [image] },
+    twitter: { card: "summary_large_image", title: t.title, description: t.metaDesc, images: [{ url: image.url, alt: image.alt }] },
   };
 }
 
-/** Strukturierte Daten je Sprache: Studio und Arzt unverändert, dazu die Seite selbst mit ihrer Sprache (inLanguage) */
+/** Strukturierte Daten je Sprache: Studio, Arzt und die Seite selbst mit ihrer Sprache (inLanguage) */
 export function homeJsonLd(lang: Lang): string {
-  const data = JSON.parse(STUDIO_JSONLD) as { "@context": string; "@graph": object[] };
-  data["@graph"].push({ "@type": "WebPage", "@id": `${homeUrl(lang)}#seite`, url: homeUrl(lang), name: HOME_TEXTS[lang].title, inLanguage: lang, about: { "@id": "https://www.paloskin.de/#studio" } });
-  return JSON.stringify(data);
+  return JSON.stringify(studioJsonLd(lang));
 }
 
-/* hreflang für alle sieben Sprachen, dazu x-default (Deutsch) */
+/* Beratungssprachen im Studio (wie in der Buchung), als Sprache mit Namen und Kürzel */
+const BERATUNG: [string, string][] = [["de", "German"], ["en", "English"], ["es", "Spanish"], ["fr", "French"], ["pt", "Portuguese"]];
+
+/*
+ * Strukturierte Daten der Startseite (überarbeitet 10. Oktober 2026, Grundlage die bisherigen Daten): Studio als
+ * MedicalBusiness, Dr. med. Sebastian Vogel als Person, dazu die Seite. Nur Angaben, die auch sichtbar auf der Seite stehen:
+ * Telefonnummer ja (WhatsApp-Nummer im Abschnitt Studio), keine Öffnungszeiten und keine E-Mail-Adresse. Nie „Botox“, keine
+ * Preise, keine Bewertungen. Beschreibung je Sprache aus metaDesc.
+ */
+export function studioJsonLd(lang: Lang) {
+  const base = site();
+  const studio = `${base}/#studio`;
+  const arzt = `${base}/#arzt`;
+  const [vogel, ...raeume] = studioImages();
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "MedicalBusiness",
+        "@id": studio,
+        name: "PALO SKIN by Dr. Vogel",
+        alternateName: "PALO SKIN",
+        description: HOME_TEXTS[lang].metaDesc,
+        url: `${base}/`,
+        logo: `${base}/assets/icon-512.png`,
+        image: [...raeume, vogel],
+        telephone: "+49 151 58872566",
+        address: { "@type": "PostalAddress", streetAddress: "Hagenauer Straße 14", postalCode: "10435", addressLocality: "Berlin", addressCountry: "DE" },
+        areaServed: { "@type": "City", name: "Berlin" },
+        parentOrganization: { "@type": "Organization", name: "Nidus Skin Berlin GmbH" },
+        founder: { "@id": arzt },
+        employee: { "@id": arzt },
+        availableLanguage: BERATUNG.map(([code, name]) => ({ "@type": "Language", name, alternateName: code })),
+        sameAs: [MAPS, "https://www.instagram.com/palo.skin"],
+      },
+      {
+        "@type": "Person",
+        "@id": arzt,
+        name: "Dr. med. Sebastian Vogel",
+        givenName: "Sebastian",
+        familyName: "Vogel",
+        honorificPrefix: "Dr. med.",
+        jobTitle: "Arzt",
+        image: vogel,
+        worksFor: { "@id": studio },
+        url: `${base}/`,
+      },
+      { "@type": "WebPage", "@id": `${homeUrl(lang)}#seite`, url: homeUrl(lang), name: HOME_TEXTS[lang].title, inLanguage: lang, primaryImageOfPage: vogel, about: { "@id": studio } },
+    ],
+  };
+}
+
+/* hreflang für alle neun Sprachen, dazu x-default (Deutsch) */
 export function hreflangLinks(path: string): { hreflang: string; href: string }[] {
   return [...LANG_IDS.map((l) => ({ hreflang: l, href: langUrl(path, l) })), { hreflang: "x-default", href: langUrl(path, "de") }];
 }
@@ -104,6 +169,3 @@ export function homeShare(lang: Lang) {
   const t = HOME_TEXTS[lang];
   return { title: t.title, description: t.metaDesc, locale: LOCALE[lang], url: homeUrl(lang), canonical: homeUrl(lang) };
 }
-
-/* Strukturierte Daten der Startseite (MedicalBusiness und Arzt), Zeichen für Zeichen wie bisher in public/index.html */
-export const STUDIO_JSONLD = `{"@context": "https://schema.org", "@graph": [{"@type": "MedicalBusiness", "@id": "https://www.paloskin.de/#studio", "name": "PALO SKIN by Dr. Vogel", "alternateName": "PALO SKIN", "url": "https://www.paloskin.de/", "telephone": "+4915158872566", "email": "info@paloskin.de", "address": {"@type": "PostalAddress", "streetAddress": "Hagenauer Straße 14", "postalCode": "10435", "addressLocality": "Berlin", "addressCountry": "DE"}, "parentOrganization": {"@type": "Organization", "name": "Nidus Skin Berlin GmbH"}, "founder": {"@id": "https://www.paloskin.de/#arzt"}, "employee": {"@id": "https://www.paloskin.de/#arzt"}, "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"], "opens": "07:30", "closes": "20:00"}, {"@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "07:30", "closes": "19:00"}, {"@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "09:00", "closes": "17:00"}, {"@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "11:00", "closes": "17:00"}], "availableLanguage": ["de", "en", "es", "fr", "pt"], "sameAs": ["https://maps.app.goo.gl/c3KoXo6d9YU5P2wy8", "https://www.instagram.com/palo.skin"]}, {"@type": "Physician", "@id": "https://www.paloskin.de/#arzt", "name": "Dr. med. Sebastian Vogel", "givenName": "Sebastian", "familyName": "Vogel", "honorificPrefix": "Dr. med.", "jobTitle": "Arzt", "worksFor": {"@id": "https://www.paloskin.de/#studio"}, "url": "https://www.paloskin.de/"}]}`;
