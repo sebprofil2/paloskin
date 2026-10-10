@@ -139,7 +139,13 @@ export function studioJsonLd(lang: Lang) {
         parentOrganization: { "@type": "Organization", name: "Nidus Skin Berlin GmbH" },
         founder: { "@id": arzt },
         employee: { "@id": arzt },
-        availableLanguage: BERATUNG.map(([code, name]) => ({ "@type": "Language", name, alternateName: code })),
+        // Beratungssprachen am Kontaktpunkt (availableLanguage gehört laut schema.org nicht direkt an MedicalBusiness)
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "customer service",
+          telephone: "+49 151 58872566",
+          availableLanguage: BERATUNG.map(([code, name]) => ({ "@type": "Language", name, alternateName: code })),
+        },
         sameAs: [MAPS, "https://www.instagram.com/palo.skin"],
       },
       {
